@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- YAY Theme Practice! -->
+    <style name="customThemeDrawer" parent="Theme.AppCompat.Light">
+        <item name="android:background">@drawable/bg_orange_stroke_left</item>
+    </style>
+
+    <style name="customeThemePopup" parent="Theme.AppCompat.Light">
+        <item name="android:background">@drawable/bg_green_stroke_right</item>
+        <item name="android:textColor">#00AA00</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+</resources>
