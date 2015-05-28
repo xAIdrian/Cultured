@@ -57,12 +57,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    //Division div1 = new Division("Academy", "Honogi, Japan");
+    //Division div2 = new Division("Hawk", "North Carolina, USA");
+    //Division div3 = new Division("Boar", "Moscow, Russia");
     @Override
     public void onCreate(SQLiteDatabase db) {
         //creating the required tables
         db.execSQL(CREATE_TABLE_SOLDIER);
         db.execSQL(CREATE_TABLE_DIVISION);
         db.execSQL(CREATE_TABLE_COMMAND);
+
+        //insert into TABLE_DIVISION (_id, name, local) values(1, 'Hinogi', 'Japan')
+        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'Hinogi', 'North Japan')");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'SunSayer', 'South Japan')");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'HawkEye', 'East Japan')");
     }
 
     @Override

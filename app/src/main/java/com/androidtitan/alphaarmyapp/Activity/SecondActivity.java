@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,6 +16,7 @@ import com.androidtitan.alphaarmyapp.R;
 
 
 public class SecondActivity extends ActionBarActivity implements SecondF2AInterface{
+    private final String ADD_FRAG_TAG = "adderTag";
 
     private FragmentManager fragMag;
     private FragmentTransaction fragTran;
@@ -25,10 +27,20 @@ public class SecondActivity extends ActionBarActivity implements SecondF2AInterf
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
 
-        fragMag = getFragmentManager();
-        fragTran = fragMag.beginTransaction();
-        adderFragment = new AdderFragment();
-        fragTran.addToBackStack(null).add(R.id.container2, adderFragment, "adderFrag").commit();
+        //onOrientationChange Block
+        if(savedInstanceState != null) {
+            //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
+            adderFragment = (AdderFragment) getFragmentManager().findFragmentByTag(ADD_FRAG_TAG);
+            Log.e("SAonCreate", "inside first if");
+        }
+        else if(adderFragment == null) {
+            adderFragment = new AdderFragment();
+        }
+        if(!adderFragment.isInLayout()) {
+            fragMag = getFragmentManager();
+            fragTran = fragMag.beginTransaction();
+            fragTran.addToBackStack(null).replace(R.id.container2, adderFragment, ADD_FRAG_TAG).commit();
+        }
 
         ActionBar actionbar = getSupportActionBar();
         actionbar.hide();

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,14 +25,14 @@ import com.androidtitan.alphaarmyapp.R;
 
 public class AdderFragment extends Fragment {
     public static final String SINFO = "soldierInformation";
-    private static final String SAVED_FIRST = "SAVED_FIRST";
-    private static final String SAVED_LAST = "SAVED_LAST";
-    private static final String SAVED_SPECIAL = "SAVED_SPECIAL";
+    private static final String SAVED_FIRST = "savedFirst";
+    private static final String SAVED_LAST = "savedLast";
+    private static final String SAVED_SPECIAL = "savedSpecial";
 
     DatabaseHelper databaseHelper;
     SecondF2AInterface toSecActivityInterface;
 
-    LinearLayout backLayout;
+    private LinearLayout backLayout;
     private ImageView backImage;
 
     private EditText firstEdit;
@@ -65,6 +66,8 @@ public class AdderFragment extends Fragment {
         //loads data that is saved when the screen is rotated
         setRetainInstance(true); //retains our data object when activity is desroyed
         if(savedInstanceState != null){
+            Log.e("AFonCreate", savedInstanceState.getString(SAVED_FIRST) + " " + savedInstanceState.getString(SAVED_LAST)
+                    + " - " + savedInstanceState.getString(SAVED_SPECIAL));
             newFname = savedInstanceState.getString(SAVED_FIRST);
             newLname = savedInstanceState.getString(SAVED_LAST);
             newSpecs = savedInstanceState.getString(SAVED_SPECIAL);
@@ -162,6 +165,8 @@ public class AdderFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         //super.onSaveInstanceState(savedInstanceState);
+        Log.e("AFonSaveInstanceState", firstEdit.getText().toString() + " " + lastEdit.getText().toString()
+            + " - " + specialEdit.getText().toString());
 
         outState.putString(SAVED_FIRST, firstEdit.getText().toString());
         outState.putString(SAVED_LAST, lastEdit.getText().toString());

@@ -13,6 +13,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -54,9 +55,9 @@ public class ListViewFragment extends ListFragment implements ListView.OnItemCli
     private ListViewAdapter adapter;
 
     private View toolbarContainer;
-    private View toolbarTabContainer;
+    private LinearLayout madderLayout;
     private ImageView drawerToggle;
-    private ImageView adderStache;
+
     private TextView tab_one;
     private TextView tab_two;
     private TextView tab_three;
@@ -123,10 +124,10 @@ public class ListViewFragment extends ListFragment implements ListView.OnItemCli
         //drawerListView.setOnClickListener(new DrawerItemClickListener());
 
         final View toolbar = getActivity().findViewById(R.id.toolbar);
-        toolbarTabContainer = getActivity().findViewById(R.id.toolbar_tab_container);
         toolbarContainer = getActivity().findViewById(R.id.toolbar_container);
-        adderStache = (ImageView) getActivity().findViewById(R.id.adder_icon);
+        madderLayout = (LinearLayout) getActivity().findViewById(R.id.adder_layout);
         drawerToggle = (ImageView) getActivity().findViewById(R.id.drawer_icon);
+
         tab_one = (TextView) getActivity().findViewById(R.id.tab_one);
         tab_two = (TextView) getActivity().findViewById(R.id.tab_two);
         tab_three = (TextView) getActivity().findViewById(R.id.tab_three);
@@ -135,7 +136,7 @@ public class ListViewFragment extends ListFragment implements ListView.OnItemCli
         adapter = new ListViewAdapter(getActivity(), getMyListItems());
         listView.setAdapter(adapter);
 
-        adderStache.setOnClickListener(new ImageView.OnClickListener(){
+        madderLayout.setOnClickListener(new ImageView.OnClickListener(){
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SecondActivity.class);
@@ -201,12 +202,15 @@ public class ListViewFragment extends ListFragment implements ListView.OnItemCli
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             Integer receiver = bundle.getInt("num", 0);
-            Log.e("getMyListItems", String.valueOf(receiver));
-                    Log.e("getMyListItems", "Made it here" + databaseHelper.getAllDivisions().isEmpty());
+            Log.e("getMyListItems", "valueOf(receiver) = " + String.valueOf(receiver));
+                    Log.e("getMyListItems", "Made it here " + databaseHelper.getAllDivisions().isEmpty());
+            for(Division div : databaseHelper.getAllDivisions()) {
+                Log.e("getMyListItems", "Div " + div.getName());
+            }
             troopsByDivision = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receiver));
         }
         else{
-            troopsByDivision = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(1));
+            troopsByDivision = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(0));
         }
         return troopsByDivision;
     }

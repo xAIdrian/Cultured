@@ -56,13 +56,15 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
         divisionTroops = new ArrayList<Soldier>();
         battalion = new ArrayList<Division>();
 
-        Division div1 = new Division("Academy", "Honogi, Japan");
-        Division div2 = new Division("Hawk", "North Carolina, USA");
-        Division div3 = new Division("Boar", "Moscow, Russia");
+        //Division div1 = new Division("Academy", "Honogi, Japan");
+        //Division div2 = new Division("Hawk", "North Carolina, USA");
+        //Division div3 = new Division("Boar", "Moscow, Russia");
 
-        databaseHelper.createDivision(div1);
-        databaseHelper.createDivision(div2);
-        databaseHelper.createDivision(div3);
+        //maybe a try/catch here
+        //databaseHelper.createDivision(div1);
+        //databaseHelper.createDivision(div2);
+        //databaseHelper.createDivision(div3);
+
         //View Pager Follows .....
         //WE MIGHT REMOVE THIS AND MAKE IT DYNAMIC LATER
         listFrag1 = new ListViewFragment();

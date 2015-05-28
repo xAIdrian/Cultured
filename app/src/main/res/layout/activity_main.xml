@@ -21,8 +21,8 @@
             android:id="@+id/toolbar_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#33b5e5">
+            android:background="#33b5e5"
+            android:orientation="vertical">
 
             <android.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -59,7 +59,7 @@
                     android:background="#ee3124"
                     android:gravity="center"
                     android:padding="16dp"
-                    android:text="Hawk"
+                    android:text="SunSayer"
                     android:textAllCaps="true"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold" />
@@ -72,7 +72,7 @@
                     android:background="#00AA00"
                     android:gravity="center"
                     android:padding="16dp"
-                    android:text="Boar"
+                    android:text="HawkEye"
                     android:textAllCaps="true"
                     android:textColor="#FFFFFF"
                     android:textStyle="bold" />
@@ -81,28 +81,30 @@
 
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/adder_layout"
+        <LinearLayout
+            android:id="@+id/adder_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
             android:orientation="vertical"
-            android:padding="5dp"
-            android:layout_marginLeft="7dp">
+            android:padding="5dp">
 
-        <ImageView
-            android:id="@+id/adder_icon"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|top"
-            android:contentDescription="mustache opener"
-            android:gravity="start"
-            android:src="@drawable/up_arrow" />
+            <ImageView
+                android:id="@+id/adder_icon"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|top"
+                android:contentDescription="mustache opener"
+                android:gravity="start"
+                android:src="@drawable/up_arrow" />
 
-        <TextView android:id="@+id/adder_text"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Add"
-            android:textColor="#FFFFFF"
-            android:gravity="center"/>
+            <TextView
+                android:id="@+id/adder_text"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Add"
+                android:textColor="#FFFFFF" />
 
         </LinearLayout>
 
@@ -122,11 +124,11 @@
         android:layout_width="150dp"
         android:layout_height="match_parent"
         android:layout_gravity="end"
-        android:paddingTop="10dp"
         android:choiceMode="singleChoice"
         android:divider="@android:color/transparent"
         android:dividerHeight="0dp"
-        android:theme="@style/customThemeDrawer"/>
+        android:paddingTop="10dp"
+        android:theme="@style/customThemeDrawer" />
 
 </android.support.v4.widget.DrawerLayout>
 
