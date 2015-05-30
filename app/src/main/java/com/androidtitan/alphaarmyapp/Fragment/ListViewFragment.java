@@ -36,7 +36,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link F2AInterface}
  * interface.
  */
-public class ListViewFragment extends ListFragment implements ListView.OnItemClickListener{
+public class ListViewFragment extends ListFragment implements AdapterView.OnItemLongClickListener{
     //this is just a way to recognize this as a public variable that is being passed across
     //   fragments or to other controllers and views.
     //   This could just as easily be a lowercase int, locationXY, or poop.
@@ -64,6 +64,8 @@ public class ListViewFragment extends ListFragment implements ListView.OnItemCli
 
     private List<Soldier> troopsByDivision;
     private List<Division> allDivisions;
+
+    int previousPosition = -1;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -135,8 +137,9 @@ public class ListViewFragment extends ListFragment implements ListView.OnItemCli
         listView = (ListView) v.findViewById(android.R.id.list);
         adapter = new ListViewAdapter(getActivity(), getMyListItems());
         listView.setAdapter(adapter);
+        listView.setOnItemLongClickListener(this);
 
-        madderLayout.setOnClickListener(new ImageView.OnClickListener(){
+        madderLayout.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), SecondActivity.class);
@@ -184,9 +187,9 @@ public class ListViewFragment extends ListFragment implements ListView.OnItemCli
         drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //incorporating position still needs to happen
-                    //selectItem(position)
+
             }
+
         });
 
         return v;
@@ -215,11 +218,41 @@ public class ListViewFragment extends ListFragment implements ListView.OnItemCli
         return troopsByDivision;
     }
 
+
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int currPosition, long id) {
 
+
+        TextView removeOne = (TextView) view.findViewById(R.id.text_1);
+        TextView removeTwo = (TextView) view.findViewById(R.id.text_2);
+
+        removeOne.setVisibility(View.GONE);
+        removeTwo.setVisibility(View.GONE);
+
+        LinearLayout holderLayout = (LinearLayout) view.findViewById(R.id.listItem_linear);
+        View child = view.inflate(getActivity(), R.layout.listview_long_item, null);
+        View older = view.inflate(getActivity(), R.layout.listview_item, null);
+
+        if(previousPosition != -1 && currPosition != previousPosition) {
+            Log.e("LVFonItemLongClick", String.valueOf(previousPosition) + " -- " + String.valueOf(currPosition));
+
+            removeOne.setVisibility(View.VISIBLE);
+            removeTwo.setVisibility(View.VISIBLE);
+
+            holderLayout.addView(older, previousPosition);
+
+        }
+        else{
+            holderLayout.addView(child);
+        }
+        Log.e("LVFonItemLongClick", String.valueOf(previousPosition) + " -- " + String.valueOf(currPosition));
+        previousPosition = currPosition;
+        Log.e("LVFonItemLongClick", String.valueOf(previousPosition) + " -- " + String.valueOf(currPosition));
+
+        TextView deleteText = (TextView) view.findViewById(R.id.delete_text);
+        TextView editText = (TextView) view.findViewById(R.id.edit_text);
+        TextView exitText = (TextView) view.findViewById(R.id.exit_text);
+
+        return true;
     }
-
-
-/**/
 }

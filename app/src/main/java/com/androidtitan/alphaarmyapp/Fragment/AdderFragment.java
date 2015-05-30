@@ -79,14 +79,17 @@ public class AdderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_adder, container, false);
+        if(getResources().getConfiguration().orientation != getResources().getConfiguration().ORIENTATION_LANDSCAPE) {
+            backImage = (ImageView) v.findViewById(R.id.back_header);
+            backImage.setColorFilter(0xFFf16b0c);
+        }
 
         firstEdit = (EditText) v.findViewById(R.id.firstName_edit);
         lastEdit = (EditText) v.findViewById(R.id.lastName_edit);
         specialEdit = (EditText) v.findViewById(R.id.specialty_edit);
 
         backLayout = (LinearLayout) v.findViewById(R.id.back_layout);
-        backImage = (ImageView) v.findViewById(R.id.back_header);
-        backImage.setColorFilter(0xFFf16b0c);
+
         addBtn = (TextView) v.findViewById(R.id.submit_button);
 
         alertList = (ListView) v.findViewById(R.id.basicList);

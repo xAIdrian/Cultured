@@ -22,14 +22,6 @@
             android:orientation="vertical"
             android:padding="5dp">
 
-            <ImageView
-                android:id="@+id/back_header"
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:layout_weight="2"
-                android:background="#FFFFFF"
-                android:src="@drawable/down_arrow" />
-
             <TextView
                 android:id="@+id/adder_text"
                 android:layout_width="fill_parent"
@@ -50,7 +42,7 @@
             android:background="#FFFFFF"
             android:gravity="end"
             android:padding="5dp"
-            android:text=" Who Would You\nLike to Add?"
+            android:text=" Who Would You Like to Add?"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#f16b0c" />
 
@@ -59,6 +51,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
         android:layout_marginBottom="50dp">
 
         <RelativeLayout

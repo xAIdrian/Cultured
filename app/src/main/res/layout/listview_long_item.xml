@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/longClick_linear"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp"
+    android:orientation="horizontal"
+    android:weightSum="9">
+
+    <TextView android:id="@+id/delete_text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:text="Delete"
+        android:textSize="25dp"
+        android:textColor="#F90101"/>
+
+    <TextView android:id="@+id/edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:text="Edit"
+        android:textSize="25dp"
+        android:textColor="#00AA00"/>
+
+    <TextView android:id="@+id/exit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Exit"
+        android:textSize="25dp"/>
+
+</LinearLayout>

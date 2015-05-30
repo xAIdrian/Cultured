@@ -2,14 +2,15 @@ package com.androidtitan.alphaarmyapp.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.alphaarmyapp.Data.Soldier;
+import com.androidtitan.alphaarmyapp.R;
 
 import java.util.List;
 
@@ -47,12 +48,11 @@ public class ListViewAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = convertView;
         ListViewHolder viewHolder;
-
+        LayoutInflater li = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         if(convertView == null) {
             //inflate the listview_item_row.xml
-            LayoutInflater li = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = li.inflate(R.layout.listview_item, null);
 
             viewHolder = new ListViewHolder(v);
@@ -62,8 +62,22 @@ public class ListViewAdapter extends BaseAdapter {
             viewHolder = (ListViewHolder) v.getTag();
         }
 
-        viewHolder.firstItem.setText(adapterData.get(position).getfName() + " " +adapterData.get(position).getlName());
-        viewHolder.lastItem.setText(adapterData.get(position).getSpecialty());
+        try {
+            viewHolder.firstItem.setText(adapterData.get(position).getfName() + " " +adapterData.get(position).getlName());
+            viewHolder.lastItem.setText(adapterData.get(position).getSpecialty());
+
+        } catch (NullPointerException e) {
+            Log.e("LVAgetView", e.toString());
+            v = li.inflate(R.layout.listview_item, null);
+
+            viewHolder = new ListViewHolder(v);
+            //v.setTag(viewHolder);
+
+            viewHolder.firstItem.setText(adapterData.get(position).getfName() + " " +adapterData.get(position).getlName());
+            viewHolder.lastItem.setText(adapterData.get(position).getSpecialty());
+        }
+
+
 
         return v;
     }
