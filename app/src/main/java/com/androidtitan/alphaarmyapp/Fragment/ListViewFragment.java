@@ -9,8 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -48,7 +46,6 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
 
     DatabaseHelper databaseHelper;
     MainActivity mainActivity;
-    Runnable run;
 
     private String[] drawerTitles;
     private DrawerLayout drawerLayout;
@@ -133,7 +130,7 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
 
         //Main Activity View Controls as follows...
         //Navigation Drawer
-        drawerTitles = new String[]{"Map", "All Soldiers"};
+        drawerTitles = new String[]{"View Map", "Add Division"};
         drawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         drawerListView = (ListView) getActivity().findViewById(R.id.right_drawer);
 
@@ -151,56 +148,91 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
         tab_three = (TextView) getActivity().findViewById(R.id.tab_three);
 
         listView = (ListView) v.findViewById(android.R.id.list);
-        adapter = new ListViewAdapter(getActivity(), getMyListItems());
-        adapter.notifyDataSetChanged();
-        listView.setAdapter(adapter);
-        listView.setOnItemLongClickListener(this);
 
+        //setting listview items depending on the orientation.
+        if(getResources().getConfiguration().orientation == getResources().getConfiguration().ORIENTATION_LANDSCAPE) {
+            //In landscape we will display all of the soldiers
+            adapter = new ListViewAdapter(getActivity(), databaseHelper.getAllSoldiers());
 
-        madderLayout.setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), SecondActivity.class);
-                intent.putExtra("pass2second", TOSECONDACTIVITY);
-                startActivity(intent);
-            }
-        });
-        drawerToggle.setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.openDrawer(drawerListView);
-            }
-        });
-        tab_one.setOnClickListener(new TextView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toActivityInterface.tabInteraction(0);
-                mainActivity.setToolbarHighlight(0);
-            }
-        });
-        tab_two.setOnClickListener(new TextView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toActivityInterface.tabInteraction(1);
-                mainActivity.setToolbarHighlight(1);
-            }
-        });
-        tab_three.setOnClickListener(new TextView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toActivityInterface.tabInteraction(2);
-                mainActivity.setToolbarHighlight(2);
-            }
-        });
+            adapter.notifyDataSetChanged();
+            listView.setAdapter(adapter);
+            listView.setOnItemLongClickListener(this);
 
-        drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            madderLayout.setOnClickListener(new ImageView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), SecondActivity.class);
+                    intent.putExtra("pass2second", TOSECONDACTIVITY);
+                    startActivity(intent);
+                }
+            });
+            drawerToggle.setOnClickListener(new ImageView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    drawerLayout.openDrawer(drawerListView);
+                }
+            });
+            drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-            }
+                }
 
-        });
+            });
+        }
+        else {
+            //portrait. Soldiers by Division
+            adapter = new ListViewAdapter(getActivity(), getMyListItems());
 
+            adapter.notifyDataSetChanged();
+            listView.setAdapter(adapter);
+            listView.setOnItemLongClickListener(this);
+
+            madderLayout.setOnClickListener(new ImageView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), SecondActivity.class);
+                    intent.putExtra("pass2second", TOSECONDACTIVITY);
+                    startActivity(intent);
+                }
+            });
+            drawerToggle.setOnClickListener(new ImageView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    drawerLayout.openDrawer(drawerListView);
+                }
+            });
+
+            drawerListView.setOnItemClickListener(new ListView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                }
+
+            });
+            tab_one.setOnClickListener(new TextView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toActivityInterface.tabInteraction(0);
+                    mainActivity.setToolbarHighlight(0);
+                }
+            });
+            tab_two.setOnClickListener(new TextView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toActivityInterface.tabInteraction(1);
+                    mainActivity.setToolbarHighlight(1);
+                }
+            });
+            tab_three.setOnClickListener(new TextView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toActivityInterface.tabInteraction(2);
+                    mainActivity.setToolbarHighlight(2);
+                }
+            });
+
+        }
         return v;
     }
     @Override
@@ -214,7 +246,7 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
         //outState.putInt(ORIENT, tabTracker);
     }
 
-
+    //Receiving viewpager index from MainActivity. Determines which division to display.
     private List<Soldier> getMyListItems() {
         Bundle bundle = new Bundle();
 
@@ -232,8 +264,6 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-
-        final Animation slidein = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in);
 
         if(itemsOpen == false) {
             itemsOpen = true;

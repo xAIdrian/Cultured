@@ -64,29 +64,32 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(viewPagerAdapter);
 
-        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                setToolbarHighlight(position);
+        if(getResources().getConfiguration().orientation != getResources().getConfiguration().ORIENTATION_LANDSCAPE) {
+
+            viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                    setToolbarHighlight(position);
+                }
+
+                @Override
+                public void onPageSelected(int position) {
+
+                }
+
+                @Override
+                public void onPageScrollStateChanged(int state) {
+
+                }
+            });
+
+            try {
+                Intent intent = getIntent();
+                int temp = intent.getIntExtra("viewpagerIndex", 0);
+                tabInteraction(temp);
+            } catch (NullPointerException e) {
+                Log.e("MAonCreate", "catcher " + String.valueOf(e));
             }
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
-
-        try {
-            Intent intent = getIntent();
-            int temp = intent.getIntExtra("viewpagerIndex", 0);
-            tabInteraction(temp);
-        } catch (NullPointerException e) {
-            Log.e("MAonCreate", "catcher " + String.valueOf(e));
         }
     }
 
@@ -137,7 +140,7 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
             case 0:
                 toolbarContainer.setBackgroundColor(0xFF33b5e5);
                 tab_one.setBackgroundColor(0xFF33b5e5);
-                tab_two.setBackgroundColor(0xFFee3124);
+                tab_two.setBackgroundColor(0xFFee7125);
                 tab_three.setBackgroundColor(0xFF0f9d58);
 
                 break;
@@ -154,7 +157,7 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
                 toolbarContainer.setBackgroundColor(0xFF39bd00);
                 tab_three.setBackgroundColor(0xFF39bd00);
                 tab_one.setBackgroundColor(0xFF4285f4);
-                tab_two.setBackgroundColor(0xFFee3124);
+                tab_two.setBackgroundColor(0xFFee7125);
 
                 break;
 
