@@ -1,12 +1,13 @@
 package com.androidtitan.alphaarmyapp.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.Adapter.ViewPagerAdapter;
 import com.androidtitan.alphaarmyapp.Data.DatabaseHelper;
@@ -29,20 +30,16 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
     // When requested, this adapter returns a ListViewFragment,
     // representing an object in the collection.
     private ViewPagerAdapter viewPagerAdapter;
-    private ViewPager viewPager;
+    public ViewPager viewPager;
 
     private ListViewFragment listFrag1;
     private ListViewFragment listFrag2;
     private ListViewFragment listFrag3;
 
-    private ActionBar actionBar;
-
     private List<Soldier> troops;
     private List<Division> battalion;
 
     private List<Soldier> divisionTroops;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +53,6 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
         divisionTroops = new ArrayList<Soldier>();
         battalion = new ArrayList<Division>();
 
-        //Division div1 = new Division("Academy", "Honogi, Japan");
-        //Division div2 = new Division("Hawk", "North Carolina, USA");
-        //Division div3 = new Division("Boar", "Moscow, Russia");
-
-        //maybe a try/catch here
-        //databaseHelper.createDivision(div1);
-        //databaseHelper.createDivision(div2);
-        //databaseHelper.createDivision(div3);
-
         //View Pager Follows .....
         //WE MIGHT REMOVE THIS AND MAKE IT DYNAMIC LATER
         listFrag1 = new ListViewFragment();
@@ -76,7 +64,30 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(viewPagerAdapter);
 
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                setToolbarHighlight(position);
+            }
 
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        try {
+            Intent intent = getIntent();
+            int temp = intent.getIntExtra("viewpagerIndex", 0);
+            tabInteraction(temp);
+        } catch (NullPointerException e) {
+            Log.e("MAonCreate", "catcher " + String.valueOf(e));
+        }
     }
 
     private List<Fragment> getFragments() {
@@ -88,37 +99,66 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void tabInteraction(int id) {
-        //We need to pass arguments here too for our adapter.
+
         ListViewFragment fragment = new ListViewFragment();
-        //this.myFrags.get(pos)
         Bundle args = new Bundle();
         args.putInt("num", id);
         fragment.setArguments(args);
 
         viewPager.setCurrentItem(id, true);
+
+        switch (id) {
+
+            case 0:
+                setToolbarHighlight(0);
+                break;
+
+            case 1:
+                setToolbarHighlight(1);
+                break;
+
+            case 2:
+                setToolbarHighlight(2);
+                break;
+        }
+
     }
 
+    //changes the tab that is "selected"
+    public int setToolbarHighlight(int item) {
+
+        View toolbarContainer = findViewById(R.id.toolbar_container);
+        TextView tab_one = (TextView) findViewById(R.id.tab_one);
+        TextView tab_two = (TextView) findViewById(R.id.tab_two);
+        TextView tab_three = (TextView) findViewById(R.id.tab_three);
+
+        switch (item) {
+            case 0:
+                toolbarContainer.setBackgroundColor(0xFF33b5e5);
+                tab_one.setBackgroundColor(0xFF33b5e5);
+                tab_two.setBackgroundColor(0xFFee3124);
+                tab_three.setBackgroundColor(0xFF0f9d58);
+
+                break;
+
+            case 1:
+                toolbarContainer.setBackgroundColor(0xFFf16b0c);
+                tab_two.setBackgroundColor(0xFFf1b0c);
+                tab_one.setBackgroundColor(0xFF4285f4);
+                tab_three.setBackgroundColor(0xFF0f9d58);
+
+                break;
+
+            case 2:
+                toolbarContainer.setBackgroundColor(0xFF39bd00);
+                tab_three.setBackgroundColor(0xFF39bd00);
+                tab_one.setBackgroundColor(0xFF4285f4);
+                tab_two.setBackgroundColor(0xFFee3124);
+
+                break;
+
+        }
+        return item;
+    }
 }

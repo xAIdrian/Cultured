@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,10 +19,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.androidtitan.alphaarmyapp.Activity.MainActivity;
 import com.androidtitan.alphaarmyapp.Activity.SecondActivity;
 import com.androidtitan.alphaarmyapp.Adapter.ListViewAdapter;
 import com.androidtitan.alphaarmyapp.Data.DatabaseHelper;
-import com.androidtitan.alphaarmyapp.Data.Division;
 import com.androidtitan.alphaarmyapp.Data.Soldier;
 import com.androidtitan.alphaarmyapp.Interface.F2AInterface;
 import com.androidtitan.alphaarmyapp.R;
@@ -42,8 +44,10 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
     //   This could just as easily be a lowercase int, locationXY, or poop.
     // //   Just so long as it is public and static
     public static final String TOSECONDACTIVITY = "Hello, SecondActivity";
+    private static final String ORIENT = "orientInt";
 
     DatabaseHelper databaseHelper;
+    MainActivity mainActivity;
     Runnable run;
 
     private String[] drawerTitles;
@@ -63,13 +67,14 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
     private TextView tab_three;
 
     private List<Soldier> troopsByDivision;
-    private List<Division> allDivisions;
 
-    int previousPosition = -1;
+    private int highlightInt;
+    private Boolean itemsOpen = false;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
     }
 
     @Override
@@ -79,7 +84,7 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
             toActivityInterface = (F2AInterface) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement SecondF2AInterface");
         }
     }
 
@@ -98,6 +103,19 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         databaseHelper = new DatabaseHelper(getActivity());
+        mainActivity = (MainActivity) getActivity();
+/*
+        //setRetainInstance(true);
+        if(savedInstanceState != null){
+            int temp = savedInstanceState.getInt(ORIENT);
+            Log.e("LVFonCreateView", String.valueOf(temp));
+            mainActivity.setToolbarHighlight(temp);
+        }*/
+
+        Bundle bundle = new Bundle();
+        bundle = this.getArguments();
+        highlightInt = bundle.getInt("num");
+        Log.e("LVFonCreate", String.valueOf(highlightInt));
 
         Runnable run = new Runnable() {
             @Override
@@ -113,7 +131,6 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_item, container, false);
 
-
         //Main Activity View Controls as follows...
         //Navigation Drawer
         drawerTitles = new String[]{"Map", "All Soldiers"};
@@ -125,7 +142,6 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED); //keeps from swiping open
         //drawerListView.setOnClickListener(new DrawerItemClickListener());
 
-        final View toolbar = getActivity().findViewById(R.id.toolbar);
         toolbarContainer = getActivity().findViewById(R.id.toolbar_container);
         madderLayout = (LinearLayout) getActivity().findViewById(R.id.adder_layout);
         drawerToggle = (ImageView) getActivity().findViewById(R.id.drawer_icon);
@@ -136,8 +152,10 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
 
         listView = (ListView) v.findViewById(android.R.id.list);
         adapter = new ListViewAdapter(getActivity(), getMyListItems());
+        adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
         listView.setOnItemLongClickListener(this);
+
 
         madderLayout.setOnClickListener(new ImageView.OnClickListener() {
             @Override
@@ -157,30 +175,21 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
             @Override
             public void onClick(View v) {
                 toActivityInterface.tabInteraction(0);
-                toolbarContainer.setBackgroundColor(0xFF33b5e5);
-                tab_one.setBackgroundColor(0xFF33b5e5);
-                tab_two.setBackgroundColor(0xFFee3124);
-                tab_three.setBackgroundColor(0xFF0f9d58);
+                mainActivity.setToolbarHighlight(0);
             }
         });
         tab_two.setOnClickListener(new TextView.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toActivityInterface.tabInteraction(1);
-                toolbarContainer.setBackgroundColor(0xFFf16b0c);
-                tab_two.setBackgroundColor(0xFFf1b0c);
-                tab_one.setBackgroundColor(0xFF4285f4);
-                tab_three.setBackgroundColor(0xFF0f9d58);
+                mainActivity.setToolbarHighlight(1);
             }
         });
         tab_three.setOnClickListener(new TextView.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toActivityInterface.tabInteraction(2);
-                toolbarContainer.setBackgroundColor(0xFF39bd00);
-                tab_three.setBackgroundColor(0xFF39bd00);
-                tab_one.setBackgroundColor(0xFF4285f4);
-                tab_two.setBackgroundColor(0xFFee3124);
+                mainActivity.setToolbarHighlight(2);
             }
         });
 
@@ -200,19 +209,21 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
         toActivityInterface = null;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        //outState.putInt(ORIENT, tabTracker);
+    }
+
 
     private List<Soldier> getMyListItems() {
-        Bundle bundle = this.getArguments();
+        Bundle bundle = new Bundle();
+
         if (bundle != null) {
-            Integer receiver = bundle.getInt("num", 0);
-            Log.e("getMyListItems", "valueOf(receiver) = " + String.valueOf(receiver));
-                    Log.e("getMyListItems", "Made it here " + databaseHelper.getAllDivisions().isEmpty());
-            for(Division div : databaseHelper.getAllDivisions()) {
-                Log.e("getMyListItems", "Div " + div.getName());
-            }
+            bundle = this.getArguments();
+            Integer receiver = bundle.getInt("num");
             troopsByDivision = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receiver));
-        }
-        else{
+
+        } else {
             troopsByDivision = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(0));
         }
         return troopsByDivision;
@@ -220,39 +231,103 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
 
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int currPosition, long id) {
+    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 
+        final Animation slidein = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_in);
 
-        TextView removeOne = (TextView) view.findViewById(R.id.text_1);
-        TextView removeTwo = (TextView) view.findViewById(R.id.text_2);
+        if(itemsOpen == false) {
+            itemsOpen = true;
 
-        removeOne.setVisibility(View.GONE);
-        removeTwo.setVisibility(View.GONE);
+            TextView removeOne = (TextView) view.findViewById(R.id.text_1);
+            TextView removeTwo = (TextView) view.findViewById(R.id.text_2);
 
-        LinearLayout holderLayout = (LinearLayout) view.findViewById(R.id.listItem_linear);
-        View child = view.inflate(getActivity(), R.layout.listview_long_item, null);
-        View older = view.inflate(getActivity(), R.layout.listview_item, null);
+            removeOne.setVisibility(View.GONE);
+            removeTwo.setVisibility(View.GONE);
 
-        if(previousPosition != -1 && currPosition != previousPosition) {
-            Log.e("LVFonItemLongClick", String.valueOf(previousPosition) + " -- " + String.valueOf(currPosition));
-
-            removeOne.setVisibility(View.VISIBLE);
-            removeTwo.setVisibility(View.VISIBLE);
-
-            holderLayout.addView(older, previousPosition);
-
-        }
-        else{
+            final LinearLayout holderLayout = (LinearLayout) view.findViewById(R.id.listItem_linear);
+            final View child = view.inflate(getActivity(), R.layout.listview_long_item, null);
             holderLayout.addView(child);
-        }
-        Log.e("LVFonItemLongClick", String.valueOf(previousPosition) + " -- " + String.valueOf(currPosition));
-        previousPosition = currPosition;
-        Log.e("LVFonItemLongClick", String.valueOf(previousPosition) + " -- " + String.valueOf(currPosition));
 
-        TextView deleteText = (TextView) view.findViewById(R.id.delete_text);
-        TextView editText = (TextView) view.findViewById(R.id.edit_text);
-        TextView exitText = (TextView) view.findViewById(R.id.exit_text);
+            //wait for the view to be added
+            new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            //final: the variable will always contain the same value but the context may change.
+            final TextView deleteText = (TextView) child.findViewById(R.id.delete_text);
+            final TextView editText = (TextView) child.findViewById(R.id.edit_text);
+            final TextView closeText = (TextView) child.findViewById(R.id.close_text);
+
+            final View older = view.inflate(getActivity(), R.layout.listview_item, null);
+
+            closeText.setOnClickListener(new TextView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //resume clickable actions. Return view at position.
+                    itemsOpen = false;
+
+                    deleteText.setVisibility(View.GONE);
+                    editText.setVisibility(View.GONE);
+                    closeText.setVisibility(View.GONE);
+
+                    holderLayout.removeAllViews();
+                    holderLayout.setPadding(0, 0, 0, 0);
+                    holderLayout.addView(adapter.getView(position, older, null));
+
+
+                    //holderLayout.addView(adapter.getView(listView.getCheckedItemPosition(), getView(), null));
+                }
+            });
+
+            deleteText.setOnClickListener(new TextView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("LVFonLongClick", "Deleted! " + troopsByDivision.get(position).getfName());
+                    databaseHelper.deleteSoldier(position);
+                    adapter.remove(position);
+                    adapter.notifyDataSetChanged();
+
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    itemsOpen = false;
+
+                    deleteText.setVisibility(View.GONE);
+                    editText.setVisibility(View.GONE);
+                    closeText.setVisibility(View.GONE);
+
+                    //if it is our last view we are just going to remove it...
+                    try{
+                        holderLayout.removeAllViews();
+                        holderLayout.setPadding(0, 0, 0, 0);
+                        holderLayout.addView(adapter.getView(position, older, null));
+                    } catch (IndexOutOfBoundsException e) {
+                        holderLayout.removeAllViews();
+                    }
+
+                }
+            });
+        }
+
+        else {
+            //hacky way to disable onItemLongClickListener()
+        }
 
         return true;
     }
+
 }

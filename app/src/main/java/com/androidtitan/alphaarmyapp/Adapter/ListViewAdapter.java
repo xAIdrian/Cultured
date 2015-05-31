@@ -62,6 +62,7 @@ public class ListViewAdapter extends BaseAdapter {
             viewHolder = (ListViewHolder) v.getTag();
         }
 
+        //used for replacing view programmatically.  After listview has already been created.
         try {
             viewHolder.firstItem.setText(adapterData.get(position).getfName() + " " +adapterData.get(position).getlName());
             viewHolder.lastItem.setText(adapterData.get(position).getSpecialty());
@@ -73,13 +74,15 @@ public class ListViewAdapter extends BaseAdapter {
             viewHolder = new ListViewHolder(v);
             //v.setTag(viewHolder);
 
-            viewHolder.firstItem.setText(adapterData.get(position).getfName() + " " +adapterData.get(position).getlName());
+            viewHolder.firstItem.setText(adapterData.get(position).getfName() + " " + adapterData.get(position).getlName());
             viewHolder.lastItem.setText(adapterData.get(position).getSpecialty());
         }
 
-
-
         return v;
+    }
+
+    public void remove(int position) {
+        adapterData.remove(position);
     }
 
     class ListViewHolder {

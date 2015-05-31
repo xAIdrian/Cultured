@@ -3,8 +3,8 @@
     android:id="@+id/longClick_linear"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="15dp"
-    android:paddingBottom="15dp"
+    android:paddingTop="13.5dp"
+    android:paddingBottom="13dp"
     android:orientation="horizontal"
     android:weightSum="9">
 
@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="4"
-        android:text="Delete"
+        android:text="Kill"
         android:textSize="25dp"
         android:textColor="#F90101"/>
 
@@ -24,7 +24,7 @@
         android:textSize="25dp"
         android:textColor="#00AA00"/>
 
-    <TextView android:id="@+id/exit_text"
+    <TextView android:id="@+id/close_text"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1"

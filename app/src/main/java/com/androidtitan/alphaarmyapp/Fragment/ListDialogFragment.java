@@ -2,7 +2,6 @@ package com.androidtitan.alphaarmyapp.Fragment;
 
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,10 +12,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.androidtitan.alphaarmyapp.Activity.MainActivity;
 import com.androidtitan.alphaarmyapp.Data.DatabaseHelper;
 import com.androidtitan.alphaarmyapp.Data.Division;
 import com.androidtitan.alphaarmyapp.Data.Soldier;
+import com.androidtitan.alphaarmyapp.Interface.SecondF2AInterface;
 import com.androidtitan.alphaarmyapp.R;
 
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import java.util.List;
 public class ListDialogFragment extends DialogFragment {
 
     DatabaseHelper databaseHelper;
+    SecondF2AInterface toSecondActivityInterface;
 
     private ListView myList;
     private TextView addDialog;
@@ -54,18 +54,16 @@ public class ListDialogFragment extends DialogFragment {
         myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    selection = position;
-                    Soldier temp = new Soldier(fName, lName, sName);
-                    Division assignerDiv = allDivisions.get(selection);
+                selection = position;
+                Soldier temp = new Soldier(fName, lName, sName);
+                Division assignerDiv = allDivisions.get(selection);
 
-                    databaseHelper.createSoldier(temp);
-                    databaseHelper.assignSoldierToDivision(temp, assignerDiv);
+                databaseHelper.createSoldier(temp);
+                databaseHelper.assignSoldierToDivision(temp, assignerDiv);
 
-                    dismiss();
+                dismiss();
 
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    intent.putExtra("pass2second", "gah");
-                    startActivity(intent);
+                toSecondActivityInterface.tabInteraction(selection);
             }
         });
     }
@@ -74,10 +72,10 @@ public class ListDialogFragment extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            //mListener = (OnFragmentInteractionListener) activity;
+            toSecondActivityInterface = (SecondF2AInterface) activity;
         } catch (ClassCastException e) {
-            //throw new ClassCastException(activity.toString()
-             //       + " must implement OnFragmentInteractionListener");
+            throw new ClassCastException(activity.toString()
+                    + " must implement F2AInterface");
         }
     }
 

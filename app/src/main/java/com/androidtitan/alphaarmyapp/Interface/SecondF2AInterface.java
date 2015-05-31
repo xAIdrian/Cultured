@@ -5,4 +5,5 @@ package com.androidtitan.alphaarmyapp.Interface;
  */
 public interface SecondF2AInterface {
     public void soldierInfo(String first, String last, String specialty);
+    public void tabInteraction(int selection);
 }

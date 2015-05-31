@@ -167,7 +167,6 @@ public class AdderFragment extends Fragment {
     //Saves data that is lost on rotation
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        //super.onSaveInstanceState(savedInstanceState);
         Log.e("AFonSaveInstanceState", firstEdit.getText().toString() + " " + lastEdit.getText().toString()
             + " - " + specialEdit.getText().toString());
 

@@ -2,10 +2,10 @@ package com.androidtitan.alphaarmyapp.Activity;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -31,7 +31,6 @@ public class SecondActivity extends ActionBarActivity implements SecondF2AInterf
         if(savedInstanceState != null) {
             //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
             adderFragment = (AdderFragment) getFragmentManager().findFragmentByTag(ADD_FRAG_TAG);
-            Log.e("SAonCreate", "inside first if");
         }
         else if(adderFragment == null) {
             adderFragment = new AdderFragment();
@@ -80,5 +79,12 @@ public class SecondActivity extends ActionBarActivity implements SecondF2AInterf
         dialog.setArguments(args);
 
         dialog.show(manager, "dialog");
+    }
+
+    @Override
+    public void tabInteraction(int selection) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("viewpagerIndex", selection);
+        startActivity(intent);
     }
 }
