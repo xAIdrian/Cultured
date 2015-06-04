@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.androidtitan.alphaarmyapp.Data.DatabaseHelper;
 import com.androidtitan.alphaarmyapp.Fragment.ListViewFragment;
@@ -17,7 +17,7 @@ import java.util.List;
  * Since this is an object collection, use a FragmentStatePagerAdapter,
  * and NOT a FragmentPagerAdapter.
  */
-public class ViewPagerAdapter extends FragmentPagerAdapter {
+public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
 
     //http://www.androidhive.info/2013/10/android-tab-layout-with-swipeable-views-1/

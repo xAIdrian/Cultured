@@ -66,8 +66,6 @@ public class AdderFragment extends Fragment {
         //loads data that is saved when the screen is rotated
         setRetainInstance(true); //retains our data object when activity is desroyed
         if(savedInstanceState != null){
-            Log.e("AFonCreate", savedInstanceState.getString(SAVED_FIRST) + " " + savedInstanceState.getString(SAVED_LAST)
-                    + " - " + savedInstanceState.getString(SAVED_SPECIAL));
             newFname = savedInstanceState.getString(SAVED_FIRST);
             newLname = savedInstanceState.getString(SAVED_LAST);
             newSpecs = savedInstanceState.getString(SAVED_SPECIAL);

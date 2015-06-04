@@ -1,4 +1,4 @@
-package com.androidtitan.alphaarmyapp.Fragment;
+package com.androidtitan.alphaarmyapp.Dialog;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ListDialogFragment extends DialogFragment {
+public class DialogListFragment extends DialogFragment {
 
     DatabaseHelper databaseHelper;
     SecondF2AInterface toSecondActivityInterface;
@@ -79,7 +79,7 @@ public class ListDialogFragment extends DialogFragment {
         }
     }
 
-    public ListDialogFragment() {
+    public DialogListFragment() {
         // Required empty public constructor
     }
 

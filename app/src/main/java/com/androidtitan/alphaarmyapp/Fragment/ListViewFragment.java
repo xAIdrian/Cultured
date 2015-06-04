@@ -158,6 +158,8 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
             listView.setAdapter(adapter);
             listView.setOnItemLongClickListener(this);
 
+            itemsOpen = true;
+
             madderLayout.setOnClickListener(new ImageView.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -258,12 +260,13 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
         } else {
             troopsByDivision = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(0));
         }
+
         return troopsByDivision;
     }
 
 
     @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+    public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
 
         if(itemsOpen == false) {
             itemsOpen = true;
@@ -276,6 +279,8 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
 
             final LinearLayout holderLayout = (LinearLayout) view.findViewById(R.id.listItem_linear);
             final View child = view.inflate(getActivity(), R.layout.listview_long_item, null);
+            final View older = view.inflate(getActivity(), R.layout.listview_item, null);
+
             holderLayout.addView(child);
 
             //wait for the view to be added
@@ -295,32 +300,11 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
             final TextView editText = (TextView) child.findViewById(R.id.edit_text);
             final TextView closeText = (TextView) child.findViewById(R.id.close_text);
 
-            final View older = view.inflate(getActivity(), R.layout.listview_item, null);
-
-            closeText.setOnClickListener(new TextView.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //resume clickable actions. Return view at position.
-                    itemsOpen = false;
-
-                    deleteText.setVisibility(View.GONE);
-                    editText.setVisibility(View.GONE);
-                    closeText.setVisibility(View.GONE);
-
-                    holderLayout.removeAllViews();
-                    holderLayout.setPadding(0, 0, 0, 0);
-                    holderLayout.addView(adapter.getView(position, older, null));
-
-
-                    //holderLayout.addView(adapter.getView(listView.getCheckedItemPosition(), getView(), null));
-                }
-            });
-
             deleteText.setOnClickListener(new TextView.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Log.e("LVFonLongClick", "Deleted! " + troopsByDivision.get(position).getfName());
-                    databaseHelper.deleteSoldier(position);
+                    databaseHelper.deleteSoldier(troopsByDivision.get(position));
                     adapter.remove(position);
                     adapter.notifyDataSetChanged();
 
@@ -351,6 +335,43 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
 
                 }
             });
+
+            editText.setOnClickListener(new TextView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listView.smoothScrollToPosition(position);
+
+                    Log.e("LVFonLongClick", "initialDivision info: "
+                            + databaseHelper.getAllDivisions().get(mainActivity.getCurrentPage()));
+
+                    toActivityInterface.dialogPasser(position, //soldier
+                            mainActivity.getCurrentPage(), //divisionIndex
+                            troopsByDivision.get(position).getfName(),
+                            troopsByDivision.get(position).getlName(),
+                            troopsByDivision.get(position).getSpecialty());
+
+                }
+            });
+
+            closeText.setOnClickListener(new TextView.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //resume clickable actions. Return view at position.
+                    itemsOpen = false;
+
+                    deleteText.setVisibility(View.GONE);
+                    editText.setVisibility(View.GONE);
+                    closeText.setVisibility(View.GONE);
+
+                    holderLayout.removeAllViews();
+                    holderLayout.setPadding(0, 0, 0, 0);
+                    holderLayout.addView(adapter.getView(position, older, null));
+
+
+                    //holderLayout.addView(adapter.getView(listView.getCheckedItemPosition(), getView(), null));
+                }
+            });
+
         }
 
         else {
@@ -358,6 +379,10 @@ public class ListViewFragment extends ListFragment implements AdapterView.OnItem
         }
 
         return true;
+    }
+
+    public void onClick(View view) {
+
     }
 
 }

@@ -75,7 +75,8 @@
         android:backgroundTint="#00AA00"
         android:gravity="center"
         android:imeOptions="actionNext"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:inputType="textCapSentences"/>
 
     <TextView
         android:id="@+id/lastTitleText"
@@ -100,7 +101,8 @@
         android:backgroundTint="#00AA00"
         android:gravity="center"
         android:imeOptions="actionNext"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:inputType="textCapSentences"/>
 
     <TextView
         android:id="@+id/specialtyTitleText"
@@ -127,7 +129,8 @@
         android:backgroundTint="#00AA00"
         android:gravity="center"
         android:imeOptions="actionDone"
-        android:singleLine="true" />
+        android:singleLine="true"
+        android:inputType="textCapSentences"/>
     <!-- Only works in API 21-->
 
     <TextView

@@ -137,6 +137,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return soldier;
     }
 
+/*
     //TODO:
     public int soldierBelongs2whcihDivision (Soldier soldier) {
         SQLiteDatabase database = this.getReadableDatabase();
@@ -150,13 +151,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Integer integer = cursor.getColumnIndex(KEY_DIVISION_ID);
         Log.e("soldierBelonging", String.valueOf(integer));
 
-        //ContentValues values = new ContentValues();
-        //values.put(KEY_DIVISION_ID, division.getId());
-        //update
-        //return database.update(TABLE_COMMAND, values,
-                //KEY_SOLDIER_ID + " = ?", new String[]{ String.valueOf(soldier.getId()) });
+
+
+//this could be trouble. the problem is because we are rebuilding the adapter.
+// It thinks that there is only one at a time
         return integer;
     }
+*/
 
     /**
      * Fetching all soldiers involves reading all soldier rows and adding them to
@@ -234,17 +235,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_LASTNAME, soldier.getlName());
         values.put(KEY_SPECIALTY, soldier.getSpecialty());
         //updating
+        Log.e("DBHupdateSoldier","Updated!" + TABLE_SOLDIER + " " + KEY_ID + " = " + String.valueOf(soldier.getId()));
+
         return database.update(TABLE_SOLDIER, values,
                 KEY_ID + " = ?", new String[] { String.valueOf(soldier.getId()) });
+
     }
 
     /**
      * Pass Soldier_Id to delete Soldier
     **/
-    public void deleteSoldier(long soldier_id) {
+    public void deleteSoldier(Soldier soldier) {
         SQLiteDatabase database = this.getWritableDatabase();
         database.delete(TABLE_SOLDIER,
-                KEY_ID + " = ?", new String[] { String.valueOf( soldier_id)});
+                KEY_ID + " = ?", new String[] { String.valueOf(soldier.getId())});
     }
 
     //DIVISION TABLE
@@ -310,8 +314,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if(should_delete_all_soldiers) {
             List<Soldier> troops = getAllSoldiersByDivision(division);
             //delete all soldiers
-            for(Soldier item : troops) {
-                deleteSoldier(item.getId());
+            for(Soldier soldier : troops) {
+                deleteSoldier(soldier);
             }
         }
         Log.e("insideDeleteDivision", TABLE_DIVISION + ": " +  KEY_ID + " = ? " +  division.getId());

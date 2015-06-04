@@ -1,5 +1,6 @@
 package com.androidtitan.alphaarmyapp.Activity;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import com.androidtitan.alphaarmyapp.Adapter.ViewPagerAdapter;
 import com.androidtitan.alphaarmyapp.Data.DatabaseHelper;
 import com.androidtitan.alphaarmyapp.Data.Division;
 import com.androidtitan.alphaarmyapp.Data.Soldier;
+import com.androidtitan.alphaarmyapp.Dialog.DialogAdderFragment;
 import com.androidtitan.alphaarmyapp.Fragment.ListViewFragment;
 import com.androidtitan.alphaarmyapp.Interface.F2AInterface;
 import com.androidtitan.alphaarmyapp.R;
@@ -41,6 +43,8 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
 
     private List<Soldier> divisionTroops;
 
+    public int currentPage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +58,6 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
         battalion = new ArrayList<Division>();
 
         //View Pager Follows .....
-        //WE MIGHT REMOVE THIS AND MAKE IT DYNAMIC LATER
         listFrag1 = new ListViewFragment();
         listFrag2 = new ListViewFragment();
         listFrag3 = new ListViewFragment();
@@ -64,12 +67,14 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(viewPagerAdapter);
 
+        //Landscape orientation changes view and shows a listview of allSoldiers()
         if(getResources().getConfiguration().orientation != getResources().getConfiguration().ORIENTATION_LANDSCAPE) {
 
             viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                 @Override
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                     setToolbarHighlight(position);
+                    currentPage = position;
                 }
 
                 @Override
@@ -93,6 +98,8 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
         }
     }
 
+    //adds all fragments to viewPager
+    //@return: List of Fragments for listview
     private List<Fragment> getFragments() {
         List<Fragment> fragList = new ArrayList<Fragment>();
         fragList.add(listFrag1);
@@ -101,6 +108,12 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
         return fragList;
     }
 
+    //returns the index of the viewPager
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    //Called from F2AInterface to color tabs on adds and edits
     @Override
     public void tabInteraction(int id) {
 
@@ -109,6 +122,7 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
         args.putInt("num", id);
         fragment.setArguments(args);
 
+        currentPage = id;
         viewPager.setCurrentItem(id, true);
 
         switch (id) {
@@ -126,6 +140,36 @@ public class MainActivity extends FragmentActivity implements F2AInterface {
                 break;
         }
 
+    }
+
+    //Called from F2AInterface to open the edit Soldier dialog and prep updateSoldier()
+    @Override
+    public void dialogPasser(int soldierInt, int divisionInt, String first, String last, String spec) {
+        DialogAdderFragment dialogAdder = new DialogAdderFragment();
+
+        Bundle args = new Bundle();
+        args.putInt("dialogInt", soldierInt);
+        args.putInt("dialogDiv", divisionInt);
+        args.putString("dialogFirst", first);
+        args.putString("dialogLast", last);
+        args.putString("dialogSpec", spec);
+
+        dialogAdder.setArguments(args);
+
+        FragmentManager fm = getFragmentManager();
+        dialogAdder.show(fm, "dialog");
+
+    }
+
+    //refreshes viewPager on editing a soldier item
+    @Override
+    public void refreshViewPager(int index) {
+        List<Fragment> fragments = getFragments();
+
+        currentPage = index;
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPager.setCurrentItem(index, true);
     }
 
     //changes the tab that is "selected"

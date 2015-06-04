@@ -78,6 +78,7 @@ public class ListViewAdapter extends BaseAdapter {
             viewHolder.lastItem.setText(adapterData.get(position).getSpecialty());
         }
 
+
         return v;
     }
 

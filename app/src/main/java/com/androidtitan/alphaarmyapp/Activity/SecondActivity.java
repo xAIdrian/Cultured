@@ -10,7 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.androidtitan.alphaarmyapp.Fragment.AdderFragment;
-import com.androidtitan.alphaarmyapp.Fragment.ListDialogFragment;
+import com.androidtitan.alphaarmyapp.Dialog.DialogListFragment;
 import com.androidtitan.alphaarmyapp.Interface.SecondF2AInterface;
 import com.androidtitan.alphaarmyapp.R;
 
@@ -41,6 +41,7 @@ public class SecondActivity extends ActionBarActivity implements SecondF2AInterf
             fragTran.addToBackStack(null).replace(R.id.container2, adderFragment, ADD_FRAG_TAG).commit();
         }
 
+        //hide actionbar
         ActionBar actionbar = getSupportActionBar();
         actionbar.hide();
     }
@@ -67,6 +68,7 @@ public class SecondActivity extends ActionBarActivity implements SecondF2AInterf
         return super.onOptionsItemSelected(item);
     }
 
+    //called from SecondF2AInterface. Creates AdderFragment and passes information to populate editTets
     @Override
     public void soldierInfo(String first, String last, String specialty) {
         Bundle args = new Bundle();
@@ -75,12 +77,14 @@ public class SecondActivity extends ActionBarActivity implements SecondF2AInterf
         args.putString("Spassable", specialty);
 
         FragmentManager manager = getFragmentManager();
-        ListDialogFragment dialog = new ListDialogFragment();
+        DialogListFragment dialog = new DialogListFragment();
         dialog.setArguments(args);
 
         dialog.show(manager, "dialog");
     }
 
+    //called from SecondF2AInterface.  Passes integer so main activity can page to
+    //newly added soldier's division
     @Override
     public void tabInteraction(int selection) {
         Intent intent = new Intent(this, MainActivity.class);
