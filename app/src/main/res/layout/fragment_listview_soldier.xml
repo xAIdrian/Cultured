@@ -7,6 +7,48 @@
         android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:drawSelectorOnTop="true"/>
+        android:drawSelectorOnTop="true"
+        android:layout_marginLeft="8dp"
+        android:layout_above="@+id/low_actionBar"/>
+
+    <LinearLayout
+        android:id="@+id/low_actionBar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/abc_action_bar_default_height_material"
+        android:layout_marginLeft="8dp"
+        android:layout_alignParentBottom="true"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:weightSum="3">
+
+        <ImageView
+            android:id="@+id/toolbar_addBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="5dp"
+            android:src="@drawable/add_icon"/>
+
+        <ImageView
+            android:id="@+id/toolbar_editBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="5dp"
+            android:src="@drawable/edit_icon"/>
+
+        <ImageView
+            android:id="@+id/toolbar_deleteBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="5dp"
+            android:src="@drawable/delete_icon"/>
+
+    </LinearLayout>
+    <!--Custom background -->
 
 </RelativeLayout>

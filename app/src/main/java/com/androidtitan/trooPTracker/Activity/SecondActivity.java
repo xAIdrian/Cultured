@@ -1,20 +1,20 @@
 package com.androidtitan.trooPTracker.Activity;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooPTracker.Dialog.DialogListFragment;
 import com.androidtitan.trooPTracker.Fragment.AdderFragment;
 import com.androidtitan.trooPTracker.Interface.SecondInterface;
 
-
+//ToDo: receive whether this is a SOLDIER or DIVISION
 public class SecondActivity extends ActionBarActivity implements SecondInterface {
     private final String ADD_FRAG_TAG = "adderTag";
 
@@ -30,18 +30,18 @@ public class SecondActivity extends ActionBarActivity implements SecondInterface
         //onOrientationChange Block
         if(savedInstanceState != null) {
             //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
-            adderFragment = (AdderFragment) getFragmentManager().findFragmentByTag(ADD_FRAG_TAG);
+            adderFragment = (AdderFragment) getSupportFragmentManager().findFragmentByTag(ADD_FRAG_TAG);
         }
         else if(adderFragment == null) {
             adderFragment = new AdderFragment();
         }
         if(!adderFragment.isInLayout()) {
-            fragMag = getFragmentManager();
+            fragMag = getSupportFragmentManager();
             fragTran = fragMag.beginTransaction();
             fragTran.addToBackStack(null).replace(R.id.landingContainer, adderFragment, ADD_FRAG_TAG).commit();
         }
 
-        //hide actionbar
+        //hide actionbar.  will it ever return? maybe...
         ActionBar actionbar = getSupportActionBar();
         actionbar.hide();
     }
@@ -68,27 +68,22 @@ public class SecondActivity extends ActionBarActivity implements SecondInterface
         return super.onOptionsItemSelected(item);
     }
 
-    //called from SecondF2AInterface. Creates AdderFragment and passes information to populate editTets
     @Override
-    public void soldierInfo(String first, String last, String specialty) {
-        Bundle args = new Bundle();
-        args.putString("Fpassable", first);
-        args.putString("Lpassable", last);
-        args.putString("Spassable", specialty);
-
-        FragmentManager manager = getFragmentManager();
-        DialogListFragment dialog = new DialogListFragment();
-        dialog.setArguments(args);
-
-        dialog.show(manager, "dialog");
+    public void onBackPressed() {
+        Intent intent = new Intent(this, MainActivity.class);
+        this.finish();
+        startActivity(intent);
     }
+
 
     //called from SecondF2AInterface.  Passes integer so main activity can page to
     //newly added soldier's division
     @Override
-    public void tabInteraction(int selection) {
+    public void divInteraction(int divSelected) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("viewpagerIndex", selection);
+        Log.e("SAdivInteractin", "landingDivision: " + divSelected);
+
+        intent.putExtra("landingDivision", divSelected);
         startActivity(intent);
     }
 }

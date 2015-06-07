@@ -63,7 +63,7 @@ public class DialogListFragment extends DialogFragment {
 
                 dismiss();
 
-                toSecondActivityInterface.tabInteraction(selection);
+                //toSecondActivityInterface.tabInteraction(selection);
             }
         });
     }

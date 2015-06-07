@@ -53,7 +53,7 @@ public class ListViewAdapter extends BaseAdapter {
 
         if(convertView == null) {
             //inflate the listview_item_row.xml
-            v = li.inflate(R.layout.listview_item_soldier, null);
+            v = li.inflate(R.layout.fragment_listview_soldier_item, null);
 
             viewHolder = new ListViewHolder(v);
             v.setTag(viewHolder);
@@ -65,17 +65,15 @@ public class ListViewAdapter extends BaseAdapter {
         //used for replacing view programmatically.  After listview has already been created.
         try {
             viewHolder.firstItem.setText(adapterData.get(position).getfName() + " " +adapterData.get(position).getlName());
-            viewHolder.lastItem.setText(adapterData.get(position).getSpecialty());
 
         } catch (NullPointerException e) {
             Log.e("LVAgetView", e.toString());
-            v = li.inflate(R.layout.listview_item_soldier, null);
+            v = li.inflate(R.layout.fragment_listview_soldier_item, null);
 
             viewHolder = new ListViewHolder(v);
             //v.setTag(viewHolder);
 
             viewHolder.firstItem.setText(adapterData.get(position).getfName() + " " + adapterData.get(position).getlName());
-            viewHolder.lastItem.setText(adapterData.get(position).getSpecialty());
         }
 
 
@@ -88,11 +86,9 @@ public class ListViewAdapter extends BaseAdapter {
 
     class ListViewHolder {
         public TextView firstItem;
-        public TextView lastItem;
 
         public ListViewHolder(View view) {
             firstItem = (TextView) view.findViewById(R.id.text_1);
-            lastItem = (TextView) view.findViewById(R.id.text_2);
         }
     }
 }

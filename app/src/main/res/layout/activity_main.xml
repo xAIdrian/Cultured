@@ -8,96 +8,76 @@
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
+
     <FrameLayout
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".MainActivity"
+        android:background="@drawable/bg_green">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="50dp"/>
+            android:layout_marginTop="60dp"/>
 
 
-            <android.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="#7db701">
+        <android.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="-17dp"
+            android:background="#FFFFFF">
 
-            <LinearLayout
-                android:id="@+id/toolbar_tab_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:weightSum="3">
+                <LinearLayout
+                    android:id="@+id/toolbar_tab_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="58dp"
+                    android:layout_alignParentTop="true"
+                    android:background="#4CAF50"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
 
-                <TextView
-                    android:id="@+id/tab_one"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#7db701"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:text="@string/find"
-                    android:textAllCaps="true"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tab_one"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="#4CAF50"
+                        android:gravity="center"
+                        android:text="@string/find"
+                        android:textAllCaps="true"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tab_two"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#4285f4"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:text="@string/locate"
-                    android:textAllCaps="true"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tab_two"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="#448AFF"
+                        android:gravity="center"
+                        android:text="@string/locate"
+                        android:textAllCaps="true"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tab_three"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="#ee3124"
-                    android:gravity="center"
-                    android:padding="16dp"
-                    android:text="@string/places"
-                    android:textAllCaps="true"
-                    android:textColor="#FFFFFF"
-                    android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tab_three"
+                        android:layout_width="wrap_content"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:background="#727272"
+                        android:gravity="center"
+                        android:text="@string/places"
+                        android:textAllCaps="true"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold" />
 
                 </LinearLayout>
-            </android.widget.Toolbar>
-
-<!--
-            <ImageView
-                android:id="@+id/adder_icon"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start|top"
-                android:contentDescription="mustache opener"
-                android:gravity="start"
-                android:src="@drawable/up_arrow" />
-
-            <TextView
-                android:id="@+id/adder_text"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Add"
-                android:textColor="#FFFFFF" />
--->
-
-        <!-- </FrameLayout> -->
-
+        </android.widget.Toolbar>
 
     </FrameLayout>
 
@@ -108,11 +88,12 @@
          android:layout_gravity="left" instead. -->
     <!-- The drawer is given a fixed width in dp and extends the full height of
          the container. -->
-    <fragment android:id="@+id/navigation_drawer"
+    <fragment
+        android:id="@+id/drawer_container"
+        android:name="com.androidtitan.trooPTracker.Fragment.NavigationDrawerFragment"
         android:layout_width="@dimen/navigation_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:name="com.androidtitan.trooPTracker.Fragment.NavigationDrawerFragment"
         tools:layout="@layout/fragment_navigation_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

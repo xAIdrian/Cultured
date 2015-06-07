@@ -124,17 +124,19 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
-        soldierCount = databaseHelper.getAllSoldiersByDivision(adapterData.get(groupPosition)).size();
+        childItems[0] = "Troop Count: " + databaseHelper.getAllSoldiersByDivision(adapterData.get(groupPosition)).size();
 
         //index is used to step through our String array as a means to populate
         if(index > 2) {
             index = 0;
         }
 
+/*
         if(index == 0) {
             childItems[index] = "Troop Count: " + String.valueOf(soldierCount);
             index ++;
         }
+*/
 
         final String child = childItems[index];
         TextView text;
@@ -171,7 +173,6 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
     private class ExpandableListViewHolder {
         public TextView divisionTitle;
         public TextView viewBtn;
-
 
         public ExpandableListViewHolder(View view) {
             divisionTitle = (TextView) view.findViewById(R.id.divGroupListItem);

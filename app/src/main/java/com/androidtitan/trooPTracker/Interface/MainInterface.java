@@ -18,4 +18,5 @@ public interface MainInterface {
     public void tabInteraction(int id);
     public void dialogPasser(int soldierInt, int divisionInt, String first, String last, String spec);
     public void refreshViewPager(int index);
+    public void drawerSelection(int selection);
 }

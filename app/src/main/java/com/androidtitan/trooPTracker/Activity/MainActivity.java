@@ -1,45 +1,47 @@
 package com.androidtitan.trooPTracker.Activity;
 
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooPTracker.Adapter.ViewPagerAdapter;
 import com.androidtitan.trooPTracker.Data.DatabaseHelper;
 import com.androidtitan.trooPTracker.Dialog.DialogAdderFragment;
+import com.androidtitan.trooPTracker.Fragment.AdderFragment;
 import com.androidtitan.trooPTracker.Fragment.NavigationDrawerFragment;
 import com.androidtitan.trooPTracker.Fragment.SoldierListFragment;
+import com.androidtitan.trooPTracker.Interface.MainDataPullInterface;
 import com.androidtitan.trooPTracker.Interface.MainInterface;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, MainInterface {
-
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+public class MainActivity extends FragmentActivity implements MainInterface, MainDataPullInterface {
 
     private static MainActivity instance = null;
     public static int NUM_OF_LISTS = 1;
 
     DatabaseHelper databaseHelper;
+    List<Fragment> fragList = new ArrayList<Fragment>();
 
     private ViewPagerAdapter viewPagerAdapter;
     public ViewPager viewPager;
+    private NavigationDrawerFragment navigationDrawerFragment;
+
+    FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
+    private AdderFragment adderFragment;
     private SoldierListFragment soldierFrag;
 
+    int divisionIndex;
     public int currentPage;
-
-/*
-        private List<Soldier> troops;
-        private List<Division> battalion;
-        private List<Soldier> divisionTroops;
-*/
 
 
     @Override
@@ -47,52 +49,23 @@ public class MainActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
+        Intent intent = getIntent();
+        divisionIndex = intent.getIntExtra("landingDivision", -1);
+        Log.e("MAonCreate", "divisionIndex: " + divisionIndex);
+
+        navigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.drawer_container);
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
+        navigationDrawerFragment.setUp(
+                R.id.drawer_container,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        //Database initialization and population follows
         databaseHelper = new DatabaseHelper(this);
-
-/*
-        troops = new ArrayList<Soldier>();
-        divisionTroops = new ArrayList<Soldier>();
-        battalion = new ArrayList<Division>();
-*/
-        soldierFrag = new SoldierListFragment();
 
         List<Fragment> fragments = getFragments();
 
-/*
-        //returning to the main activity after adding a new soldier
 
-        try{
-            Intent intent = getIntent();
-            int divisionIndex = intent.getIntExtra("landingDivision", -1);
-
-            soldierFrag = new SoldierListFragment();
-
-            Bundle args = new Bundle();
-            args.putInt("num", divisionIndex);
-            soldierFrag.setArguments(args);
-
-        } catch(NullPointerException e) {
-
-        }
-
-        //ToDo: Edit. On Soldier Addition it will automatically go to 1
-        try {
-            Intent intent = getIntent();
-            int temp = intent.getIntExtra("viewpagerIndex", 0);
-            tabInteraction(temp);
-        } catch (NullPointerException e) {
-            Log.e("MAonCreate", "catcher " + String.valueOf(e));
-        }
-*/
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(viewPagerAdapter);
@@ -117,16 +90,10 @@ public class MainActivity extends FragmentActivity
 
     }
 
-
-    //TODO: complete navigation drawer fragment
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-    }
-
     //adds all fragments to viewPager
     //@return: List of Fragments for listview
     private List<Fragment> getFragments() {
-        List<Fragment> fragList = new ArrayList<Fragment>();
+
         fragList.add(soldierFrag);
         return fragList;
     }
@@ -185,12 +152,25 @@ public class MainActivity extends FragmentActivity
     public void refreshViewPager(int index) {
 
         List<Fragment> fragments = getFragments();
-
         currentPage = index;
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setCurrentItem(index, true);
+
     }
+
+    @Override
+    public void drawerSelection(int selection) {
+
+    }
+
+
+        /*fragTrans.addToBackStack(null).replace(R.id.drawer_container, adderFragment).commit();
+        // Set up the drawer.
+        navigationDrawerFragment.setUp(
+                R.id.drawer_container,
+                (DrawerLayout) findViewById(R.id.drawer_layout));*/
+
 
     //changes the tab that is "selected"
     public int setToolbarHighlight(int item) {
@@ -201,16 +181,27 @@ public class MainActivity extends FragmentActivity
 
         switch (item) {
             case 0:
-                tab_one.setBackgroundColor(0xFF7db701);
+                tab_one.setBackgroundColor(0xFF4CAF50);
                 break;
             case 1:
-                tab_two.setBackgroundColor(0xFF4285f4);
+                tab_two.setBackgroundColor(0xFF448AFF);
                 break;
             case 2:
-                tab_three.setBackgroundColor(0xFFee3124);
+                tab_three.setBackgroundColor(0xFF727272);
                 break;
         }
         return item;
+    }
+
+    public int getDivisionIndex() {
+        return divisionIndex;
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, LandingActivity.class);
+        this.finish();
+        startActivity(intent);
     }
 
 

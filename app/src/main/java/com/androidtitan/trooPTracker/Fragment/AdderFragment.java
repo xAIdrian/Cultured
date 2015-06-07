@@ -1,15 +1,17 @@
 package com.androidtitan.trooPTracker.Fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,31 +22,34 @@ import android.widget.Toast;
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooPTracker.Activity.MainActivity;
 import com.androidtitan.trooPTracker.Data.DatabaseHelper;
+import com.androidtitan.trooPTracker.Data.Division;
+import com.androidtitan.trooPTracker.Data.Soldier;
 import com.androidtitan.trooPTracker.Interface.SecondInterface;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class AdderFragment extends Fragment {
     public static final String SINFO = "soldierInformation";
     private static final String SAVED_FIRST = "savedFirst";
     private static final String SAVED_LAST = "savedLast";
-    private static final String SAVED_SPECIAL = "savedSpecial";
 
     DatabaseHelper databaseHelper;
     SecondInterface toSecActivityInterface;
 
     private LinearLayout backLayout;
-    private ImageView backImage;
 
     private EditText firstEdit;
     private EditText lastEdit;
-    private EditText specialEdit;
+    private ListView addListView;
+    //private mapBtn;
     private TextView addBtn;
 
     private String newFname;
     private String newLname;
-    private String newSpecs;
 
-    ListView alertList;
+    private int divSelected = -1;
 
     @Override
     public void onAttach(Activity activity) {
@@ -68,7 +73,6 @@ public class AdderFragment extends Fragment {
         if(savedInstanceState != null){
             newFname = savedInstanceState.getString(SAVED_FIRST);
             newLname = savedInstanceState.getString(SAVED_LAST);
-            newSpecs = savedInstanceState.getString(SAVED_SPECIAL);
         }
         databaseHelper = new DatabaseHelper(getActivity());
     }
@@ -78,19 +82,14 @@ public class AdderFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_adder, container, false);
         if(getResources().getConfiguration().orientation != getResources().getConfiguration().ORIENTATION_LANDSCAPE) {
-            backImage = (ImageView) v.findViewById(R.id.back_header);
-            backImage.setColorFilter(0xFFf16b0c);
         }
+        backLayout = (LinearLayout) v.findViewById(R.id.back_layout);
 
         firstEdit = (EditText) v.findViewById(R.id.firstName_edit);
         lastEdit = (EditText) v.findViewById(R.id.lastName_edit);
-        specialEdit = (EditText) v.findViewById(R.id.specialty_edit);
 
-        backLayout = (LinearLayout) v.findViewById(R.id.back_layout);
-
+        //mapBtn
         addBtn = (TextView) v.findViewById(R.id.submit_button);
-
-        alertList = (ListView) v.findViewById(R.id.basicList);
 
         backLayout.setOnClickListener(new ImageView.OnClickListener() {
             @Override
@@ -131,30 +130,50 @@ public class AdderFragment extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
-        specialEdit.setText(newSpecs);
-        specialEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                newSpecs = s.toString();
-            }
+        //ListView and adapter
+        addListView = (ListView) v.findViewById(R.id.adder_listview);
+        ArrayList<String> divisionList = new ArrayList<String>();
+        final List<Division> allDivisions = databaseHelper.getAllDivisions();
 
+        for (int i = 0; i < allDivisions.size(); i++) {
+            divisionList.add(allDivisions.get(i).getName());
+        }
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1, divisionList);
+        addListView.setAdapter(adapter);
+
+        addListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void afterTextChanged(Editable s) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                divSelected = position;
+
+                for (int i = 0; i < adapter.getCount(); i++) {
+                    View item = addListView.getChildAt(i);
+                    item.setBackgroundColor(0xFFFFFFFF);
+                }
+
+                view.setBackgroundColor(0xCC448AFF);
             }
         });
+
         addBtn.setOnClickListener(new TextView.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (firstEdit.getText().toString().matches("") || lastEdit.getText().toString().matches("") ||
-                        specialEdit.getText().toString().matches("")) {
+                if (firstEdit.getText().toString().matches("") || lastEdit.getText().toString().matches("")) {
                     Toast.makeText(getActivity(), "Please complete fields", Toast.LENGTH_LONG).show();
 
                 } else {
-                    toSecActivityInterface.soldierInfo(newFname, newLname, newSpecs);
+                    //add to database. associate division
+                    Soldier temp = new Soldier(newFname, newLname, null);
+                    Division assignedToDiv = allDivisions.get(divSelected);
+
+                    databaseHelper.createSoldier(temp);
+                    databaseHelper.assignSoldierToDivision(temp, assignedToDiv);
+
+                    Log.e("AFaddOnClickListener", "divSelected: " + divSelected);
+                    toSecActivityInterface.divInteraction(divSelected);
                 }
             }
         });
@@ -165,12 +184,10 @@ public class AdderFragment extends Fragment {
     //Saves data that is lost on rotation
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.e("AFonSaveInstanceState", firstEdit.getText().toString() + " " + lastEdit.getText().toString()
-            + " - " + specialEdit.getText().toString());
+        Log.e("AFonSaveInstanceState", firstEdit.getText().toString() + " " + lastEdit.getText().toString());
 
         outState.putString(SAVED_FIRST, firstEdit.getText().toString());
         outState.putString(SAVED_LAST, lastEdit.getText().toString());
-        outState.putString(SAVED_SPECIAL, specialEdit.getText().toString());
     }
 
     @Override

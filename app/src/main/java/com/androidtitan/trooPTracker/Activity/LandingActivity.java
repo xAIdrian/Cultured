@@ -23,6 +23,7 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
         landingFrag = new LandingFragment();
         fragTran.addToBackStack(null).add(R.id.landingContainer, landingFrag, "landingFrag")
                 .commit();
+
     }
 
     //Launches our main activity and tells which soldier item to display.

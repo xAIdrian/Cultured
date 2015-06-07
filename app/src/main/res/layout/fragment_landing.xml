@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="#7db701">
+        android:background="#388E3C">
 
         <TextView
             android:id="@+id/landing_welcome_text"

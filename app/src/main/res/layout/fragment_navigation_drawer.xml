@@ -1,6 +1,31 @@
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:choiceMode="singleChoice"
-    android:divider="@android:color/transparent" android:dividerHeight="0dp"
-    android:background="#cccc"
-    tools:context="com.androidtitan.trooPTracker.Fragment.NavigationDrawerFragment" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.androidtitan.trooPTracker.Fragment.NavigationDrawerFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ccffffff"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/navDivHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:paddingBottom="10dp"
+        android:text="@string/options"
+        android:textSize="@dimen/abc_text_size_headline_material"
+        android:textStyle="italic"
+        android:textColor="#33b5e5"/>
+
+    <ListView
+        android:id="@+id/navList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/navDivHeader"
+        android:paddingBottom="8dp"/>
+
+        <!-- android:divider="#33b5e5"
+        android:dividerHeight="2dp" -->
+
+
+</RelativeLayout>

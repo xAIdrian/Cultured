@@ -30,15 +30,25 @@
     <string name="add">Add</string>
     <string name="title_activity_main_activity2">MainActivity2Activity</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="division">Division</string>
+    <string name="soldier">Soldier</string>
 
     <string name="find">Find</string>
     <string name="locate">Locate</string>
     <string name="places">Places</string>
 
     <string name="open_naviagtion_drawer">open navigation drawer</string>
-    <string name="close_navigation_drawer">close navigation drawer</string>
+    <string name="close_navigation_drawer">close navigation dra</string>
+
+    <string name="add_soldier">Add to Track</string>
+    <string name="quit">Quit</string>
+    <string name="first_name">first name</string>
+    <string name="last_name">last name</string>
+    <string name="mapit">Map It!</string>
+
+    <string name="options">Options</string>
+    <string name="opt_solo">All My Soldiers</string>
+    <string name="opt_map">View Entire Map</string>
+    <string name="opt_saves">What\'s Been Saved</string>
 
 </resources>

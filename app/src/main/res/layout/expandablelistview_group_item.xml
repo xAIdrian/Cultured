@@ -23,7 +23,7 @@
         android:background="#00000000"
         android:gravity="center"
         android:text="@string/view"
-        android:textColor="#7db701"
+        android:textColor="#388E3C"
         android:textStyle="bold"
         android:focusable="false"/>
 
