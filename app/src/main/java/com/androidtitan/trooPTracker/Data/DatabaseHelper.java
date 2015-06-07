@@ -32,11 +32,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //soldier table
     private static final String KEY_FIRSTNAME = "first";
     private static final String KEY_LASTNAME = "last";
-    private static final String KEY_SPECIALTY = "specialty";
 
     //division table
     private static final String KEY_NAME = "name";
-    private static final String KEY_LOCAL = "location";
+    private static final String KEY_VISITS = "visits";
 
     //command table. Stores the id's for soldier and division
     private static final String KEY_SOLDIER_ID = "soldier_id";
@@ -45,10 +44,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Table Creation Statements
     // Soldier Table
     private static final String CREATE_TABLE_SOLDIER = "CREATE TABLE " + TABLE_SOLDIER
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + " TEXT," + KEY_LASTNAME + " TEXT," + KEY_SPECIALTY + " TEXT" + ")";
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + " TEXT," + KEY_LASTNAME + " TEXT" + ")";
     //Division Table
     private static final String CREATE_TABLE_DIVISION = "CREATE TABLE " + TABLE_DIVISION
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_LOCAL + " TEXT, "
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_VISITS + " INTEGER,"
             + "UNIQUE (" + KEY_NAME + "))";
     //Command Table
     private static final String CREATE_TABLE_COMMAND = "CREATE TABLE " + TABLE_COMMAND
@@ -80,9 +79,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_COMMAND);
 
         //insert into TABLE_DIVISION (_id, name, local) values(1, 'Hinogi', 'Japan')
-        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'Hinogi', 'North Japan')");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'SunSayer', 'South Japan')");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'HawkEye', 'East Japan')");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'Seattle', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'Sao Palo', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (4, 'London', 0)");
     }
 
     @Override
@@ -109,15 +109,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_FIRSTNAME, soldier.getfName());
         values.put(KEY_LASTNAME, soldier.getlName());
-        values.put(KEY_SPECIALTY, soldier.getSpecialty());
         //insert row
         long soldier_id = database.insert(TABLE_SOLDIER, null, values);
-        /**assigning division to soldier
-        //then putting the new ids into command DB
-        for(long d_id : division_ids){
-            assignSoldierToDivision(soldier_id, d_id);
-        }
-        **/
         soldier.setId(soldier_id);
         return soldier_id;
     }
@@ -144,32 +137,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
         soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
         soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
-        soldier.setSpecialty(cursor.getString(cursor.getColumnIndex(KEY_SPECIALTY)));
 
         return soldier;
     }
 
-/*
-    //TODO:
-    public int soldierBelongs2whcihDivision (Soldier soldier) {
-        SQLiteDatabase database = this.getReadableDatabase();
-        String[] allColumns = {KEY_ID, KEY_SOLDIER_ID, KEY_DIVISION_ID};
-
-        String selection = "SELECT * FROM " + TABLE_COMMAND + " WHERE "
-                + KEY_SOLDIER_ID + " = " + soldier.getId();
-
-        Cursor cursor = database.rawQuery(selection, null);
-        Log.e("soldierBelonging", String.valueOf(cursor));
-        Integer integer = cursor.getColumnIndex(KEY_DIVISION_ID);
-        Log.e("soldierBelonging", String.valueOf(integer));
-
-
-
-//this could be trouble. the problem is because we are rebuilding the adapter.
-// It thinks that there is only one at a time
-        return integer;
-    }
-*/
 
     /**
      * Fetching all soldiers involves reading all soldier rows and adding them to
@@ -193,7 +164,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
                 soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
                 soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
-                soldier.setSpecialty(cursor.getString(cursor.getColumnIndex(KEY_SPECIALTY)));
                 //adding
                 troops.add(soldier);
 
@@ -229,7 +199,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 soldier.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
                 soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
                 soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
-                soldier.setSpecialty(cursor.getString(cursor.getColumnIndex(KEY_SPECIALTY)));
                 //add
                 troops.add(soldier);
             } while(cursor.moveToNext());
@@ -245,7 +214,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_FIRSTNAME, soldier.getfName());
         values.put(KEY_LASTNAME, soldier.getlName());
-        values.put(KEY_SPECIALTY, soldier.getSpecialty());
         //updating
         Log.e("DBHupdateSoldier","Updated!" + TABLE_SOLDIER + " " + KEY_ID + " = " + String.valueOf(soldier.getId()));
 
@@ -272,7 +240,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, division.getName());
-        values.put(KEY_LOCAL, division.getLocation());
+        values.put(KEY_NAME, division.getVisits());
         //insert
         long division_id = database.insert(TABLE_DIVISION, null, values);
         division.setId(division_id);
@@ -295,7 +263,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Division div = new Division();
                 div.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
                 div.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
-                div.setLocation(cursor.getString(cursor.getColumnIndex(KEY_LOCAL)));
+                div.setVisits(cursor.getInt(cursor.getColumnIndex(KEY_VISITS)));
                 //add
                 battalion.add(div);
             } while (cursor.moveToNext());
@@ -309,7 +277,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, division.getName());
-        values.put(KEY_LOCAL, division.getLocation());
+        values.put(KEY_VISITS, division.getVisits());
         //updating row
         return database.update(TABLE_DIVISION, values,
                 KEY_ID + " = ?", new String[] { String.valueOf(division.getId()) });

@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -22,10 +21,19 @@ public class SecondActivity extends ActionBarActivity implements SecondInterface
     private FragmentTransaction fragTran;
     private AdderFragment adderFragment;
 
+    int divisionIndex;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
+
+        try {
+            Intent intent = getIntent();
+            divisionIndex = intent.getIntExtra("divIndex", -1);
+        } catch (NullPointerException e) {
+
+        }
 
         //onOrientationChange Block
         if(savedInstanceState != null) {
@@ -70,9 +78,7 @@ public class SecondActivity extends ActionBarActivity implements SecondInterface
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, MainActivity.class);
-        this.finish();
-        startActivity(intent);
+        divInteraction(divisionIndex);
     }
 
 
@@ -81,8 +87,6 @@ public class SecondActivity extends ActionBarActivity implements SecondInterface
     @Override
     public void divInteraction(int divSelected) {
         Intent intent = new Intent(this, MainActivity.class);
-        Log.e("SAdivInteractin", "landingDivision: " + divSelected);
-
         intent.putExtra("landingDivision", divSelected);
         startActivity(intent);
     }

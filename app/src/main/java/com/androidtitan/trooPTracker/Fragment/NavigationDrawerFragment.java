@@ -1,6 +1,7 @@
 package com.androidtitan.trooPTracker.Fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -15,9 +16,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooPTracker.Activity.LandingActivity;
+import com.androidtitan.trooPTracker.Data.DatabaseHelper;
+import com.androidtitan.trooPTracker.Data.Division;
 import com.androidtitan.trooPTracker.Interface.MainInterface;
+
+import java.util.ArrayList;
 
 public class NavigationDrawerFragment extends Fragment {
 /*
@@ -26,21 +33,36 @@ public class NavigationDrawerFragment extends Fragment {
       expands it. This shared preference tracks this.
 */
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
-
-    MainInterface mainInterface;
-
     private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
 
     private ActionBarDrawerToggle mDrawerToggle;
-
     private DrawerLayout drawerLayout;
-    private ListView divDrawerListView;
 
+    DatabaseHelper databaseHelper;
+    MainInterface mainInterface;
+
+    private TextView welcomeNav;
+    private TextView mapNav;
+    private TextView allSoldiersData;
+    private TextView savesData;
+
+    private ListView divListView;
     private View fragmentContainerView;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mainInterface = (MainInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
+        }
+    }
 
     public NavigationDrawerFragment() {
     }
@@ -52,7 +74,9 @@ public class NavigationDrawerFragment extends Fragment {
         // Read in the flag indicating whether or not the user has demonstrated awareness of the
         // drawer. See PREF_USER_LEARNED_DRAWER for details.
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
+        mUserLearnedDrawer = true;
+
+        databaseHelper = DatabaseHelper.getInstance(getActivity());
 
         if (savedInstanceState != null) {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
@@ -66,8 +90,6 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        // Indicate that this fragment would like to influence the set of actions in the action bar.
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -75,23 +97,58 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v= inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
 
-        divDrawerListView = (ListView) v.findViewById(R.id.navList);
+        welcomeNav = (TextView) v.findViewById(R.id.drawerWelcome);
+        mapNav = (TextView) v.findViewById(R.id.drawerMap);
+        allSoldiersData = (TextView) v.findViewById(R.id.drawerAllSoldiers);
+        savesData = (TextView) v.findViewById(R.id.drawerSaved);
 
-        divDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        welcomeNav.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectDivisionItem(position);
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), LandingActivity.class);
+                getActivity().finish();
+                startActivity(intent);
             }
         });
-        divDrawerListView.setAdapter(new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_activated_1,
+
+        mapNav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Functionality to come once we integrate the Google Maps API
+            }
+        });
+
+        allSoldiersData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.closeDrawers();
+                mainInterface.drawerListViewSelection(-1);
+            }
+        });
+
+        savesData.setOnClickListener(new TextView.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Functionality to come once we integrate Google Maps API
+            }
+        });
+
+        divListView = (ListView) v.findViewById(R.id.navDivList);
+        ArrayList<String> divisionAda = new ArrayList<String>();
+        for(Division division : databaseHelper.getAllDivisions()) {
+            divisionAda.add(division.getName());
+        }
+        divListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                drawerLayout.closeDrawers();
+                mainInterface.drawerListViewSelection(position);
+            }
+        });
+        divListView.setAdapter(new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_list_item_1,
                 android.R.id.text1,
-                new String[]{
-                        getString(R.string.opt_solo),
-                        getString(R.string.opt_map),
-                        getString(R.string.opt_saves),
-                }));
-        //divDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
+                divisionAda));
 
         return v;
     }
@@ -171,15 +228,6 @@ public class NavigationDrawerFragment extends Fragment {
         this.drawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mainInterface = (MainInterface) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
-        }
-    }
 
     @Override
     public void onDetach() {
@@ -199,37 +247,6 @@ public class NavigationDrawerFragment extends Fragment {
         // Forward the new configuration the drawer toggle component.
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
-
-    private void selectDivisionItem(int position) {
-        switch(position) {
-            case 0:
-                drawerLayout.closeDrawers();
-                mainInterface.drawerSelection(0);
-                break;
-            case 1:
-                mainInterface.drawerSelection(1);
-                break;
-            case 2:
-                mainInterface.drawerSelection(2);
-                break;
-        }
-    }
-
-    private void selectSoldierItem(int position) {
-        switch(position) {
-            case 0:
-                drawerLayout.closeDrawers();
-                mainInterface.drawerSelection(3);
-                break;
-            case 1:
-                mainInterface.drawerSelection(4);
-                break;
-            case 2:
-                mainInterface.drawerSelection(5);
-                break;
-        }
-    }
-
 
 
 }

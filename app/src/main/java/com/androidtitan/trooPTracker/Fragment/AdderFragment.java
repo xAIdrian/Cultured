@@ -166,7 +166,7 @@ public class AdderFragment extends Fragment {
 
                 } else {
                     //add to database. associate division
-                    Soldier temp = new Soldier(newFname, newLname, null);
+                    Soldier temp = new Soldier(newFname, newLname);
                     Division assignedToDiv = allDivisions.get(divSelected);
 
                     databaseHelper.createSoldier(temp);

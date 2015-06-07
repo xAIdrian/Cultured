@@ -12,7 +12,6 @@ import com.androidtitan.trooPTracker.Interface.LandingInterface;
 public class LandingActivity extends FragmentActivity implements LandingInterface{
 
     FragmentTransaction fragTran = getFragmentManager().beginTransaction();
-
     LandingFragment landingFrag;
 
     @Override
@@ -33,6 +32,11 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("landingDivision", groupPosition);
         startActivity(intent);
+    }
+
+    @Override
+    public void onBackPressed() {
+        //effectively disabling the back button
     }
 
 }

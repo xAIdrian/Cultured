@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.androidtitan.trooPTracker.Activity.MainActivity">
+    android:layout_height="match_parent">
 
     <!-- As the main content view, the view below consumes the entire
          space available using match_parent in both dimensions. -->
@@ -15,35 +14,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".MainActivity"
-        android:background="@drawable/bg_green">
+        android:background="@drawable/bg_green_left">
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="60dp"/>
+            android:layout_marginTop="56dp"/>
 
 
         <android.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:layout_marginLeft="-17dp"
-            android:background="#FFFFFF">
+            android:background="@drawable/bg_green_btm">
 
                 <LinearLayout
                     android:id="@+id/toolbar_tab_container"
                     android:layout_width="match_parent"
-                    android:layout_height="58dp"
+                    android:layout_height="52dp"
                     android:layout_alignParentTop="true"
-                    android:background="#4CAF50"
                     android:orientation="horizontal"
                     android:weightSum="3">
 
                     <TextView
                         android:id="@+id/tab_one"
                         android:layout_width="wrap_content"
-                        android:layout_height="50dp"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
                         android:background="#4CAF50"
                         android:gravity="center"
@@ -55,25 +53,23 @@
                     <TextView
                         android:id="@+id/tab_two"
                         android:layout_width="wrap_content"
-                        android:layout_height="50dp"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
-                        android:background="#448AFF"
                         android:gravity="center"
                         android:text="@string/locate"
                         android:textAllCaps="true"
-                        android:textColor="#FFFFFF"
+                        android:textColor="#448AFF"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tab_three"
                         android:layout_width="wrap_content"
-                        android:layout_height="50dp"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
-                        android:background="#727272"
                         android:gravity="center"
                         android:text="@string/places"
                         android:textAllCaps="true"
-                        android:textColor="#FFFFFF"
+                        android:textColor="#727272"
                         android:textStyle="bold" />
 
                 </LinearLayout>

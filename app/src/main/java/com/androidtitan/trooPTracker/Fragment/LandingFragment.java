@@ -121,5 +121,4 @@ public class LandingFragment extends Fragment {
         landingInterface = null;
     }
 
-
 }

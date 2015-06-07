@@ -108,6 +108,7 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 //Starting Main Activity. soldierListOpener will set the divisionIndex
+                addVisitTick(adapterData.get(groupPosition));
                 ((LandingActivity)context).soldierListOpener(groupPosition);
             }
         });
@@ -124,7 +125,8 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
-        childItems[0] = "Troop Count: " + databaseHelper.getAllSoldiersByDivision(adapterData.get(groupPosition)).size();
+        childItems[0] = "Troop Count:   " + databaseHelper.getAllSoldiersByDivision(adapterData.get(groupPosition)).size();
+        childItems[2] = "Times Viewd:   " + adapterData.get(groupPosition).getVisits();
 
         //index is used to step through our String array as a means to populate
         if(index > 2) {
@@ -179,5 +181,14 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
             viewBtn = (TextView) view.findViewById(R.id.viewDivBtn);
 
         }
+    }
+
+
+    //Get # of Visits Increment and set # of Visits
+    private void addVisitTick(Division division) {
+        int visitTick = division.getVisits();
+        visitTick++;
+        division.setVisits(visitTick);
+        databaseHelper.updateDivision(division);
     }
 }

@@ -9,22 +9,19 @@ public class Soldier {
     private long id;
     private String fName;
     private String lName;
-    private String specialty;
 
     public Soldier(){
     }
 
-    public Soldier(String first, String last, String spec) {
+    public Soldier(String first, String last) {
         this.fName = first;
         this.lName = last;
-        this.specialty = spec;
     }
 
     public Soldier(int iid, String first, String last, String spec){
         this.id = iid;
         this.fName = first;
         this.lName = last;
-        this.specialty = spec;
     }
 
     public long getId() {
@@ -51,12 +48,5 @@ public class Soldier {
         this.lName = lName;
     }
 
-    public String getSpecialty() {
-        return specialty;
-    }
-
-    public void setSpecialty(String specialty) {
-        this.specialty = specialty;
-    }
 
 }

@@ -7,21 +7,21 @@ public class Division {
 
     private long id;
     private String name;
-    private String location; // this could be GPS coords eventually
+    private Integer visits; // this could be GPS coords eventually
 
     public Division(){
 
     }
 
-    public Division(String naname, String local) {
+    public Division(String naname) {
         this.name = naname;
-        this.location = local;
+        this.visits = 0;
     }
 
-    public Division(long iid, String naname, String local) {
+    public Division(long iid, String naname) {
         this.id = iid;
         this.name = naname;
-        this.location = local;
+        this.visits = 0;
     }
 
     public long getId() {
@@ -40,11 +40,11 @@ public class Division {
         this.name = name;
     }
 
-    public String getLocation() {
-        return location;
+    public Integer getVisits() {
+        return visits;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setVisits(Integer visiter) {
+        this.visits = visiter;
     }
 }

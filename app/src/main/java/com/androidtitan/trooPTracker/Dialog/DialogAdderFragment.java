@@ -155,7 +155,6 @@ public class DialogAdderFragment extends DialogFragment {
 
                     soldier.setfName(d_newFname);
                     soldier.setlName(d_newLname);
-                    soldier.setSpecialty(d_newLname);
 
                     databaseHelper.updateSoldier(soldier);
 

@@ -62,9 +62,7 @@ public class MainActivity extends FragmentActivity implements MainInterface, Mai
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
         databaseHelper = new DatabaseHelper(this);
-
         List<Fragment> fragments = getFragments();
-
 
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), fragments);
         viewPager = (ViewPager) findViewById(R.id.pager);
@@ -96,11 +94,6 @@ public class MainActivity extends FragmentActivity implements MainInterface, Mai
 
         fragList.add(soldierFrag);
         return fragList;
-    }
-
-    //returns the index of the viewPager
-    public int getCurrentPage() {
-        return currentPage;
     }
 
     @Override
@@ -160,17 +153,25 @@ public class MainActivity extends FragmentActivity implements MainInterface, Mai
     }
 
     @Override
-    public void drawerSelection(int selection) {
-
+    public void drawerListViewSelection(int selection) {
+        divisionIndex = selection;
+        refreshViewPager(0);
     }
 
+    @Override
+    public void adderFragDivReference(int divIndex) {
+        Intent intent = new Intent(this, SecondActivity.class);
+        intent.putExtra("divIndex", divIndex);
+        //MainActivity.this.finish();
+        startActivity(intent);
+    }
 
-        /*fragTrans.addToBackStack(null).replace(R.id.drawer_container, adderFragment).commit();
-        // Set up the drawer.
-        navigationDrawerFragment.setUp(
-                R.id.drawer_container,
-                (DrawerLayout) findViewById(R.id.drawer_layout));*/
-
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, LandingActivity.class);
+        this.finish();
+        startActivity(intent);
+    }
 
     //changes the tab that is "selected"
     public int setToolbarHighlight(int item) {
@@ -197,12 +198,12 @@ public class MainActivity extends FragmentActivity implements MainInterface, Mai
         return divisionIndex;
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(this, LandingActivity.class);
-        this.finish();
-        startActivity(intent);
+    //returns the index of the viewPager
+    public int getCurrentPage() {
+        return currentPage;
     }
+
+
 
 
 }

@@ -55,7 +55,7 @@ public class DialogListFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 selection = position;
-                Soldier temp = new Soldier(fName, lName, sName);
+                Soldier temp = new Soldier(fName, lName);
                 Division assignerDiv = allDivisions.get(selection);
 
                 databaseHelper.createSoldier(temp);

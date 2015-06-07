@@ -1,31 +1,123 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.androidtitan.trooPTracker.Fragment.NavigationDrawerFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ccffffff"
-    android:padding="10dp">
+    android:padding="5dp">
+
 
     <TextView
-        android:id="@+id/navDivHeader"
+        android:id="@+id/navNavHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:padding="5dp"
-        android:paddingBottom="10dp"
-        android:text="@string/options"
+        android:paddingBottom="16dp"
+        android:text="@string/navigation"
+        android:textColor="#448AFF"
         android:textSize="@dimen/abc_text_size_headline_material"
-        android:textStyle="italic"
-        android:textColor="#33b5e5"/>
+        android:textStyle="italic" />
+
+    <LinearLayout
+        android:id="@+id/navNavItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/navNavHeader"
+        android:layout_marginLeft="20dp"
+        android:orientation="vertical"
+        android:paddingBottom="3dp">
+
+        <TextView
+            android:id="@+id/drawerWelcome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/landing_welcome"
+            android:textSize="@dimen/abc_text_size_medium_material" />
+
+        <TextView
+            android:id="@+id/drawerMap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="@string/opt_map"
+            android:textSize="@dimen/abc_text_size_medium_material" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/navDataHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/navNavItems"
+        android:layout_marginTop="11dp"
+        android:padding="5dp"
+        android:paddingBottom="16dp"
+        android:text="@string/data"
+        android:textColor="#448AFF"
+        android:textSize="@dimen/abc_text_size_headline_material"
+        android:textStyle="italic" />
+
+    <LinearLayout
+        android:id="@+id/navDataItems"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/navDataHeader"
+        android:layout_marginLeft="20dp"
+        android:orientation="vertical"
+        android:paddingBottom="3dp">
+
+        <TextView
+            android:id="@+id/drawerAllSoldiers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/opt_solo"
+            android:textSize="@dimen/abc_text_size_medium_material" />
+
+        <TextView
+            android:id="@+id/drawerSaved"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="@string/opt_saves"
+            android:textSize="@dimen/abc_text_size_medium_material" />
+
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/navDivisionHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/navDataItems"
+        android:layout_marginTop="11dp"
+        android:padding="5dp"
+        android:paddingBottom="16dp"
+        android:text="@string/quick_division"
+        android:textColor="#448AFF"
+        android:textSize="@dimen/abc_text_size_headline_material"
+        android:textStyle="italic" />
+
 
     <ListView
-        android:id="@+id/navList"
+        android:id="@+id/navDivList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/navDivHeader"
-        android:paddingBottom="8dp"/>
+        android:layout_above="@+id/deleteInfo"
+        android:layout_below="@+id/navDivisionHeader"
+        android:layout_marginLeft="18dp"
+        android:paddingBottom="8dp" />
 
-        <!-- android:divider="#33b5e5"
-        android:dividerHeight="2dp" -->
 
+    <TextView
+        android:id="@+id/deleteInfo"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:gravity="top"
+        android:padding="10dp"
+        android:text="@string/delete_info"
+        android:textColor="#F90101"
+        android:textSize="@dimen/abc_text_size_medium_material" />
 
 </RelativeLayout>

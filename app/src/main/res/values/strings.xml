@@ -33,7 +33,7 @@
     <string name="division">Division</string>
     <string name="soldier">Soldier</string>
 
-    <string name="find">Find</string>
+    <string name="find">Track</string>
     <string name="locate">Locate</string>
     <string name="places">Places</string>
 
@@ -46,9 +46,13 @@
     <string name="last_name">last name</string>
     <string name="mapit">Map It!</string>
 
-    <string name="options">Options</string>
-    <string name="opt_solo">All My Soldiers</string>
-    <string name="opt_map">View Entire Map</string>
-    <string name="opt_saves">What\'s Been Saved</string>
+    <string name="data">Data Items</string>
+    <string name="opt_solo">My Soldiers</string>
+    <string name="opt_saves">Saved Places</string>
+
+    <string name="navigation">Navigation</string>
+    <string name="opt_map">View Map</string>
+    <string name="delete_info">Long Click to Delete</string>
+    <string name="quick_division">Go To Division</string>
 
 </resources>

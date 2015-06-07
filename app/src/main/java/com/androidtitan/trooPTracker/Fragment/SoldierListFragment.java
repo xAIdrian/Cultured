@@ -1,7 +1,6 @@
 package com.androidtitan.trooPTracker.Fragment;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
@@ -9,19 +8,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooPTracker.Activity.MainActivity;
-import com.androidtitan.trooPTracker.Activity.SecondActivity;
 import com.androidtitan.trooPTracker.Adapter.ListViewAdapter;
 import com.androidtitan.trooPTracker.Data.DatabaseHelper;
+import com.androidtitan.trooPTracker.Data.Division;
 import com.androidtitan.trooPTracker.Data.Soldier;
 import com.androidtitan.trooPTracker.Interface.MainDataPullInterface;
 import com.androidtitan.trooPTracker.Interface.MainInterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,9 +58,8 @@ public class SoldierListFragment extends ListFragment {
 
     ImageView addBtn;
     ImageView editBtn;
-    ImageView deleteBtn;
 
-    private List<Soldier> troopsByDivision;
+    private int soldierSelected;
     private int receivedIndex;
 
     @Override
@@ -112,7 +113,6 @@ public class SoldierListFragment extends ListFragment {
             Log.e("LVFonCreateView", String.valueOf(temp));
             mainActivity.setToolbarHighlight(temp);
         }*/
-        int newReceiver = getArguments().getInt("num");
 
         Runnable run = new Runnable() {
             @Override
@@ -134,12 +134,7 @@ public class SoldierListFragment extends ListFragment {
 
         listView = (ListView) v.findViewById(android.R.id.list);
 
-        //if(receivedIndex == -1) {
-            adapter = new ListViewAdapter(getActivity(), initialGetMyListItems());
-        //}
-        //else {
-          //  adapter = new ListViewAdapter(getActivity(), initialGetMyListItems());
-        //}
+        adapter = new ListViewAdapter(getActivity(), initialGetMyListItems());
 
         adapter.notifyDataSetChanged();
         listView.setAdapter(adapter);
@@ -167,19 +162,48 @@ public class SoldierListFragment extends ListFragment {
             }
         });
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                soldierSelected = position;
+
+                for (int i = 0; i < adapter.getCount(); i++) {
+                    View item = listView.getChildAt(i);
+                    item.setBackgroundColor(0xFFFFFFFF);
+                }
+                Toast.makeText(getActivity(), "Pop! " + position, Toast.LENGTH_SHORT);
+
+                view.setBackgroundColor(0xCC448AFF);
+
+            }
+        });
+
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                Division tempDiv = databaseHelper.getAllDivisions().get(receivedIndex);
+                Soldier tempSolo = databaseHelper.getAllSoldiersByDivision(tempDiv).get(position);
+
+                databaseHelper.deleteSoldier(tempSolo);
+
+                adapter.remove(position);
+                adapter.notifyDataSetChanged();
+
+                mainActivity.refreshViewPager(0);
+
+                return true;
+            }
+        });
 
         addBtn = (ImageView) v.findViewById(R.id.toolbar_addBtn);
         editBtn = (ImageView) v.findViewById(R.id.toolbar_editBtn);
-        deleteBtn = (ImageView) v.findViewById(R.id.toolbar_deleteBtn);
 
         addBtn.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent intent = new Intent(getActivity(), SecondActivity.class);
-                intent.putExtra("isSoldier", true);
-                //MainActivity.this.finish();
-                startActivity(intent);
+                mainInterface.adderFragDivReference(receivedIndex);
             }
         });
 
@@ -197,7 +221,7 @@ public class SoldierListFragment extends ListFragment {
         //outState.putInt(ORIENT, tabTracker);
     }
 
-    //Receiving viewpager index from MainActivity. Determines which division to display.
+/*    //Receiving viewpager index from MainActivity. Determines which division to display.
     private List<Soldier> getMyListItems() {
         Bundle bundle = new Bundle();
 
@@ -212,10 +236,20 @@ public class SoldierListFragment extends ListFragment {
             troopsByDivision = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(0));
         }
         return troopsByDivision;
-    }
+    }*/
 
     private List<Soldier> initialGetMyListItems() {
-        return databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receivedIndex));
+        ArrayList<Soldier> soldierItems = new ArrayList<Soldier>();
+
+        if(receivedIndex == -1) {
+            soldierItems.addAll(databaseHelper.getAllSoldiers());
+
+        } else {
+            soldierItems.addAll(databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receivedIndex)));
+        }
+
+
+        return soldierItems;
     }
 
 
