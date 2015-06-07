@@ -1,0 +1,54 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.androidtitan.trooPTracker.Fragment.LandingFragment">
+
+    <RelativeLayout
+        android:id="@+id/landing_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:background="#388E3C">
+
+        <TextView
+            android:id="@+id/landing_welcome_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/landing_welcome"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:textColor="#FFFFFF"
+            android:gravity="center_horizontal"
+            android:paddingTop="15dp"/>
+
+        <TextView
+            android:id="@+id/landing_sub_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/landing_welcome_text"
+            android:text="@string/landing_subheader"
+            android:textSize="@dimen/abc_text_size_medium_material"
+            android:textColor="#FFFFFF"
+            android:gravity="center_horizontal"
+            android:padding="15dp"/>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/landing_header"
+        android:padding="5dp">
+
+        <ExpandableListView
+            android:id="@+id/divisionList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="10dp"
+            android:focusable="true"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
+

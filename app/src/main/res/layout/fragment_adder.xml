@@ -2,7 +2,7 @@
     android:id="@+id/left_layer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/customeThemePopup">
+    android:background="#FFFFFF">
 
     <LinearLayout
         android:id="@+id/header"
@@ -10,32 +10,23 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top|start"
         android:orientation="horizontal"
-        android:padding="5dp"
-        android:weightSum="10">
+        android:weightSum="10"
+        android:padding="10dp">
 
     <LinearLayout android:id="@+id/back_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="5dp"
-        android:layout_marginLeft="7dp"
-        android:background="#FFFFFF">
-
-        <ImageView
-            android:id="@+id/back_header"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_weight="2"
-            android:background="#FFFFFF"
-            android:src="@drawable/down_arrow" />
+        android:layout_marginLeft="7dp">
 
         <TextView android:id="@+id/adder_text"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:text="Quit"
-            android:textColor="#ee3124"
-            android:gravity="center"/>
+            android:text="@string/quit"
+            android:textColor="#727272"
+            android:gravity="center"
+            android:textSize="@dimen/abc_text_size_medium_material"/>
 
         </LinearLayout>
 
@@ -47,10 +38,9 @@
             android:layout_marginRight="15dp"
             android:layout_weight="8"
             android:gravity="end"
-            android:background="#FFFFFF"
-            android:text=" Who Would You\nLike to Add?"
+            android:text="@string/add_soldier"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#f16b0c"/>
+            android:textColor="#4CAF50"/>
 
     </LinearLayout>
 
@@ -62,8 +52,10 @@
         android:layout_marginTop="20dp"
         android:gravity="end|top"
         android:padding="15dp"
-        android:text="first name...    "
-        android:textStyle="bold" />
+        android:text="@string/first_name"
+        android:textStyle="bold"
+        android:textColor="#727272"
+        android:layout_marginRight="10dp" />
 
     <EditText
         android:id="@+id/firstName_edit"
@@ -72,7 +64,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/firstTitleText"
-        android:backgroundTint="#00AA00"
+        android:backgroundTint="#448AFF"
         android:gravity="center"
         android:imeOptions="actionNext"
         android:singleLine="true"
@@ -88,8 +80,10 @@
         android:layout_marginTop="30dp"
         android:gravity="end"
         android:padding="15dp"
-        android:text="last name...    "
-        android:textStyle="bold" />
+        android:text="@string/last_name"
+        android:textStyle="bold"
+        android:textColor="#727272"
+        android:layout_marginRight="10dp" />
 
     <EditText
         android:id="@+id/lastName_edit"
@@ -98,63 +92,54 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/lastTitleText"
-        android:backgroundTint="#00AA00"
-        android:gravity="center"
-        android:imeOptions="actionNext"
-        android:singleLine="true"
-        android:inputType="textCapSentences"/>
-
-    <TextView
-        android:id="@+id/specialtyTitleText"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/lastName_edit"
-        android:layout_marginTop="30dp"
-        android:gravity="end"
-        android:padding="15dp"
-        android:paddingTop="30dp"
-        android:text="specialty...    "
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/specialty_edit"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/specialtyTitleText"
-        android:layout_centerVertical="true"
-        android:backgroundTint="#00AA00"
+        android:backgroundTint="#448AFF"
         android:gravity="center"
         android:imeOptions="actionDone"
         android:singleLine="true"
         android:inputType="textCapSentences"/>
-    <!-- Only works in API 21-->
+
+    <ListView
+        android:id="@+id/adder_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lastName_edit"
+        android:layout_above="@+id/bottomConfirm"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"/>
+
+    <LinearLayout
+        android:id="@+id/bottomConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:weightSum="2"
+        android:paddingBottom="10dp">
 
     <TextView
         android:id="@+id/map_button"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@+id/submit_button"
+        android:layout_weight="1"
         android:layout_marginRight="10dp"
-        android:background="#33b5e5"
         android:gravity="center"
-        android:text="Map It!"
-        android:textColor="#FFFFFF" />
+        android:text="@string/mapit"
+        android:textColor="#448AFF" />
 
     <TextView
         android:id="@+id/submit_button"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#00AA00"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:gravity="center"
-        android:text="Search Divisions"
-        android:textColor="#FFFFFF"
+        android:text="@string/add"
+        android:textColor="#4CAF50"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    </LinearLayout>
 
 </RelativeLayout>
 
