@@ -22,7 +22,7 @@ import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooPTracker.Activity.LandingActivity;
 import com.androidtitan.trooPTracker.Data.DatabaseHelper;
 import com.androidtitan.trooPTracker.Data.Division;
-import com.androidtitan.trooPTracker.Interface.MainInterface;
+import com.androidtitan.trooPTracker.Interface.ChampionInterface;
 
 import java.util.ArrayList;
 
@@ -39,7 +39,7 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout drawerLayout;
 
     DatabaseHelper databaseHelper;
-    MainInterface mainInterface;
+    ChampionInterface championInterface;
 
     private TextView welcomeNav;
     private TextView mapNav;
@@ -58,7 +58,7 @@ public class NavigationDrawerFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mainInterface = (MainInterface) activity;
+            championInterface = (ChampionInterface) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }
@@ -122,7 +122,7 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 drawerLayout.closeDrawers();
-                mainInterface.drawerListViewSelection(-1);
+                championInterface.drawerListViewSelection(-1);
             }
         });
 
@@ -142,7 +142,7 @@ public class NavigationDrawerFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 drawerLayout.closeDrawers();
-                mainInterface.drawerListViewSelection(position);
+                championInterface.drawerListViewSelection(position);
             }
         });
         divListView.setAdapter(new ArrayAdapter<String>(getActivity(),
@@ -232,7 +232,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mainInterface = null;
+        championInterface = null;
     }
 
     @Override

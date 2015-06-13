@@ -14,9 +14,9 @@ package com.androidtitan.trooPTracker.Interface;
  * "http://developer.android.com/training/basics/fragments/communicating.html"
  * >Communicating with Other Fragments</a> for more information.
  */
-public interface MainInterface {
+public interface ChampionInterface {
     public void tabInteraction(int id);
-    public void dialogPasser(int soldierInt, int divisionInt, String first, String last, String spec);
+    public void soldierPasser(int soldierInt, int divisionInt, String first, String last);
     public void refreshViewPager(int index);
     public void drawerListViewSelection(int selection);
     public void adderFragDivReference(int divIndex);

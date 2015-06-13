@@ -2,37 +2,47 @@ package com.androidtitan.trooPTracker.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooPTracker.Fragment.AdderFragment;
-import com.androidtitan.trooPTracker.Interface.SecondInterface;
+import com.androidtitan.trooPTracker.Interface.AdderInterface;
 
 //ToDo: receive whether this is a SOLDIER or DIVISION
-public class SecondActivity extends ActionBarActivity implements SecondInterface {
+public class AdderActivity extends FragmentActivity implements AdderInterface {
     private final String ADD_FRAG_TAG = "adderTag";
 
     private FragmentManager fragMag;
     private FragmentTransaction fragTran;
     private AdderFragment adderFragment;
 
-    int divisionIndex;
+    private int divisionIndex;
+    private int soldierIndex;
+    private String soldierFname;
+    private String soldierLname;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second);
+        setContentView(R.layout.activity_adder);
 
         try {
             Intent intent = getIntent();
             divisionIndex = intent.getIntExtra("divIndex", -1);
         } catch (NullPointerException e) {
+            Log.e("AAonCreate", String.valueOf(e));
+        }
+        try {
+            getSoldierEditItems();
 
+        } catch(NullPointerException e) {
+            Log.e("AAonCreate", String.valueOf(e));
         }
 
         //onOrientationChange Block
@@ -49,9 +59,6 @@ public class SecondActivity extends ActionBarActivity implements SecondInterface
             fragTran.addToBackStack(null).replace(R.id.landingContainer, adderFragment, ADD_FRAG_TAG).commit();
         }
 
-        //hide actionbar.  will it ever return? maybe...
-        ActionBar actionbar = getSupportActionBar();
-        actionbar.hide();
     }
 
     @Override
@@ -78,16 +85,36 @@ public class SecondActivity extends ActionBarActivity implements SecondInterface
 
     @Override
     public void onBackPressed() {
-        divInteraction(divisionIndex);
-    }
 
+        Intent intent = new Intent(this, ChampionActivity.class);
+        startActivity(intent);
+    }
 
     //called from SecondF2AInterface.  Passes integer so main activity can page to
     //newly added soldier's division
     @Override
     public void divInteraction(int divSelected) {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ChampionActivity.class);
         intent.putExtra("landingDivision", divSelected);
         startActivity(intent);
+    }
+
+    public String getSoldierEditItems() {
+        Intent intent = getIntent();
+        divisionIndex = intent.getIntExtra("editSoloDivIndex", -1);
+        soldierIndex = intent.getIntExtra("editSoloIndex", -1);
+        soldierFname = intent.getStringExtra("editSoloFirst");
+        soldierLname = intent.getStringExtra("editSoloLast");
+
+        Bundle editArgs = new Bundle();
+        editArgs.putInt("editSoloDivIndex", divisionIndex);
+        editArgs.putInt("editSoloIndex", soldierIndex);
+        editArgs.putString("editSoloFirst", soldierFname);
+        editArgs.putString("editSoloLast", soldierLname);
+        adderFragment = new AdderFragment();
+        adderFragment.setArguments(editArgs);
+
+        return soldierFname; //this is simply a check to make sure we received
+        // for the purpose of the try/catch block
     }
 }

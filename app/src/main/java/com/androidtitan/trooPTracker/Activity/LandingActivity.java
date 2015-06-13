@@ -29,7 +29,7 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
     @Override
     public void soldierListOpener(int groupPosition) {
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ChampionActivity.class);
         intent.putExtra("landingDivision", groupPosition);
         startActivity(intent);
     }

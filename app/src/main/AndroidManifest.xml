@@ -17,16 +17,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.androidtitan.trooPTracker.Activity.SecondActivity"
+            android:name="com.androidtitan.trooPTracker.Activity.AdderActivity"
             android:configChanges="keyboardHidden|orientation"
             android:label="@string/title_activity_second"
             android:parentActivityName="com.androidtitan.trooPTracker.Activity.LandingActivity"
             android:windowSoftInputMode="adjustPan" >
         </activity>
         <activity
-            android:name="com.androidtitan.trooPTracker.Activity.MainActivity"
-            android:label="@string/title_activity_main"
-            android:parentActivityName="com.androidtitan.trooPTracker.Activity.LandingActivity" >
+            android:name="com.androidtitan.trooPTracker.Activity.ChampionActivity"
+            android:label="@string/title_activity_champion" >
         </activity>
     </application>
 

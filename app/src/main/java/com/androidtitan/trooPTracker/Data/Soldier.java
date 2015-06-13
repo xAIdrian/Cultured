@@ -48,5 +48,12 @@ public class Soldier {
         this.lName = lName;
     }
 
+    //we are overriding toString() so it's default implementation is to return a string
+    //not a memory address
+    //We're going to roll with both names together
+    @Override
+    public String toString() {
+        return fName + " " + lName;
+    }
 
 }

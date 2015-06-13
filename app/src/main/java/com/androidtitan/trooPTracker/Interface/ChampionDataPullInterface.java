@@ -7,6 +7,6 @@ package com.androidtitan.trooPTracker.Interface;
 //We are sending data from Activity to the Interface
     //then from the Interface to the fragment
 
-public interface MainDataPullInterface {
+public interface ChampionDataPullInterface {
     public int getDivisionIndex();
 }

@@ -7,30 +7,22 @@
     <RelativeLayout
         android:id="@+id/landing_header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
         android:layout_alignParentTop="true"
-        android:background="#388E3C">
+        android:background="#4CAF50">
 
         <TextView
             android:id="@+id/landing_welcome_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:text="@string/landing_welcome"
-            android:textSize="@dimen/abc_text_size_large_material"
+            android:textSize="30sp"
             android:textColor="#FFFFFF"
-            android:gravity="center_horizontal"
-            android:paddingTop="15dp"/>
-
-        <TextView
-            android:id="@+id/landing_sub_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/landing_welcome_text"
-            android:text="@string/landing_subheader"
-            android:textSize="@dimen/abc_text_size_medium_material"
-            android:textColor="#FFFFFF"
-            android:gravity="center_horizontal"
-            android:padding="15dp"/>
+            android:padding="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
 
     </RelativeLayout>
 

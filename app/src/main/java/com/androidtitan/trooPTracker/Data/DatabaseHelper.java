@@ -112,6 +112,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //insert row
         long soldier_id = database.insert(TABLE_SOLDIER, null, values);
         soldier.setId(soldier_id);
+
+        Log.e("DBHcreateSoldier", getSoldier(soldier_id).getId() + " " +
+                getSoldier(soldier_id).getfName() + " " + getSoldier(soldier_id).getlName());
+        //todo: if solution is elusive then we need to LOG what division that these are put into
+
         return soldier_id;
     }
 
@@ -205,6 +210,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return troops;
+    }
+
+    public void changeSoldierDivision() {
+
     }
 
     //Following function will update Soldier values only, not Division
@@ -319,7 +328,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Removing Division ID from Soldier
     //The DBitem will still exist but they will no longer be associated
-    public int updateSoldierToDivision(Soldier soldier, Division division) {
+    public int updateSoldierDivision(Soldier soldier, Division division) {
         SQLiteDatabase database = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
