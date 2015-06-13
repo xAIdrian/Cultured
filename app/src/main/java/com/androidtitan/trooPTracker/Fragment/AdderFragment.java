@@ -211,7 +211,7 @@ public class AdderFragment extends Fragment {
                     }
                     //if we are editing an existing user
                     else {
-                        Soldier updateSoldier = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(divSelected))
+                        /*Soldier updateSoldier = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(divSelected))
                                 .get(soldierIndex);
 
                         updateSoldier.setfName(newFname);
@@ -221,7 +221,7 @@ public class AdderFragment extends Fragment {
                         databaseHelper.updateSoldierDivision(updateSoldier, assignedToDiv);
 
                         adderInterface.divInteraction(divSelected);
-
+*/
 
                         //if the user is not in the Division selected. Assign and update division
 
