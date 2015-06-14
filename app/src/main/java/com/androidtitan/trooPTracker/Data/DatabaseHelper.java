@@ -131,7 +131,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String selectQuery = "SELECT * FROM " + TABLE_SOLDIER
                 + " WHERE " + KEY_ID + " = " + soldier_id;
 
-        Log.e(String_LOG, selectQuery);
+        Log.e("DBHgetSoldier", selectQuery);
 
         Cursor cursor = database.rawQuery(selectQuery, null);
 
@@ -157,7 +157,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Soldier> troops = new ArrayList<Soldier>();
         String selectQuery = "SELECT * FROM " + TABLE_SOLDIER;
 
-        Log.e(String_LOG, selectQuery);
+        Log.e("DBHgetAllSoldiers", selectQuery);
 
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
@@ -192,7 +192,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " = " + "tc." + KEY_DIVISION_ID + " AND ts." + KEY_ID + " = "
                 + "tc." + KEY_SOLDIER_ID;
 
-        Log.e(String_LOG, selectQuery);
+        Log.e("DBHsoldiersByDivision", selectQuery);
 
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
@@ -210,10 +210,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return troops;
-    }
-
-    public void changeSoldierDivision() {
-
     }
 
     //Following function will update Soldier values only, not Division
@@ -262,7 +258,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Division> battalion = new ArrayList<Division>();
         String selectQuery = "SELECT * FROM " + TABLE_DIVISION;
 
-        Log.e(String_LOG, selectQuery);
+        Log.e("DBHgetAllDivisions", selectQuery);
 
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
@@ -307,7 +303,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 deleteSoldier(soldier);
             }
         }
-        Log.e("insideDeleteDivision", TABLE_DIVISION + ": " +  KEY_ID + " = ? " +  division.getId());
+        Log.e("insideDeleteDivision", TABLE_DIVISION + ": " + KEY_ID + " = ? " + division.getId());
         database.delete(TABLE_DIVISION, KEY_ID + " = ?",
                 new String[]{String.valueOf(division.getId()) });
 
@@ -332,11 +328,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_SOLDIER_ID, soldier.getId());
         values.put(KEY_DIVISION_ID, division.getId());
         //update
+        Log.e("COMMAND_TABLE", TABLE_COMMAND + ": " + values + KEY_ID + " = ?" + new String[]{ String.valueOf(soldier.getId()) });
+
         return database.update(TABLE_COMMAND, values,
-                KEY_SOLDIER_ID + " = ?", new String[]{ String.valueOf(soldier.getId()) });
+                KEY_ID + " = ?", new String[]{ String.valueOf(soldier.getId()) });
     }
+
+    /*
+   return database.update(TABLE_SOLDIER, values,
+                KEY_ID + " = ?", new String[] { String.valueOf(soldier.getId()) });
+     */
 
     //Importantly dont forget to close the database connection once you done using it.
     //Call following method when you dont need access to db anymore.

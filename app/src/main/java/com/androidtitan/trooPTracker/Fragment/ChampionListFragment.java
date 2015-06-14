@@ -3,7 +3,6 @@ package com.androidtitan.trooPTracker.Fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +16,8 @@ import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooPTracker.Data.DatabaseHelper;
 import com.androidtitan.trooPTracker.Data.Division;
 import com.androidtitan.trooPTracker.Data.Soldier;
-import com.androidtitan.trooPTracker.Interface.ChampionInterface;
 import com.androidtitan.trooPTracker.Interface.ChampionDataPullInterface;
+import com.androidtitan.trooPTracker.Interface.ChampionInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +27,14 @@ public class ChampionListFragment extends Fragment {
     ChampionInterface championInterface;
     ChampionDataPullInterface pullInterface;
 
-    ChampionAdapter adapter;
-    ListView listView;
-
     ImageView deleter;
     ImageView editer;
     ImageView adder;
     TextView proceedBtn; //this will "slide" the fragment to
+
+    TextView championHeader;
+    ChampionAdapter adapter;
+    ListView listView;
 
     Division focusDivision;
     Soldier focusSoldier;
@@ -62,7 +62,6 @@ public class ChampionListFragment extends Fragment {
         }
 
         receivedIndex = pullInterface.getDivisionIndex();
-        Log.e("SLFonAttach", "receivedIndex: " + receivedIndex);
     }
 
     public ChampionListFragment() {
@@ -86,13 +85,16 @@ public class ChampionListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_listview_champion, container, false);
 
-        listView = (ListView) v.findViewById(R.id.championList);
-        adapter = new ChampionAdapter((ArrayList) getListItems());
-        listView.setAdapter(adapter);
-
         deleter = (ImageView) getActivity().findViewById(R.id.deleteBtn);
         editer = (ImageView)  getActivity().findViewById(R.id.editBtn);
         adder = (ImageView) getActivity().findViewById(R.id.addBtn);
+
+        championHeader = (TextView) v.findViewById(R.id.championHeader);
+        championHeader.setText(databaseHelper.getAllDivisions().get(receivedIndex).getName());
+
+        listView = (ListView) v.findViewById(R.id.championList);
+        adapter = new ChampionAdapter((ArrayList) getListItems());
+        listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -123,6 +125,8 @@ public class ChampionListFragment extends Fragment {
                     adapter.clear();
                     adapter.addAll(getListItems());
 
+                    selection = -1;
+
                 }
 
             }
@@ -145,7 +149,7 @@ public class ChampionListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 //when we receive our divIndex then that is what we will pass into this method
-                championInterface.adderFragDivReference(selection);
+                championInterface.soldierPasser(selection, receivedIndex, null, null);
             }
         });
 

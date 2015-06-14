@@ -6,4 +6,5 @@ package com.androidtitan.trooPTracker.Interface;
 public interface AdderInterface {
     //public void soldierInfo(String first, String last, String specialty);
     public void divInteraction(int divSelected);
+    //public void returnInteraction(int division);
 }

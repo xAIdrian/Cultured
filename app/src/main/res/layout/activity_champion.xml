@@ -22,7 +22,7 @@
             android:layout_alignParentStart="true"
             android:focusable="false"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="6dp"
             android:src="@drawable/delete_icon"/>
 
         <ImageView
@@ -32,7 +32,7 @@
             android:layout_toRightOf="@+id/deleteBtn"
             android:focusable="false"
             android:gravity="center"
-            android:padding="8dp"
+            android:padding="6dp"
             android:src="@drawable/edit_icon"/>
 
         <ImageView
@@ -42,8 +42,8 @@
             android:layout_toRightOf="@+id/editBtn"
             android:focusable="false"
             android:gravity="center"
-            android:paddingLeft="8dp"
-            android:paddingTop="4dp"
+            android:paddingLeft="6dp"
+            android:paddingTop="3dp"
             android:src="@drawable/add_icon"/>
 
         <TextView

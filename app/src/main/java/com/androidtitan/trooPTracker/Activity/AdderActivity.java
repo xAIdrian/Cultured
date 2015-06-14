@@ -33,12 +33,6 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
         setContentView(R.layout.activity_adder);
 
         try {
-            Intent intent = getIntent();
-            divisionIndex = intent.getIntExtra("divIndex", -1);
-        } catch (NullPointerException e) {
-            Log.e("AAonCreate", String.valueOf(e));
-        }
-        try {
             getSoldierEditItems();
 
         } catch(NullPointerException e) {
@@ -85,9 +79,7 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
 
     @Override
     public void onBackPressed() {
-
-        Intent intent = new Intent(this, ChampionActivity.class);
-        startActivity(intent);
+        divInteraction(divisionIndex);
     }
 
     //called from SecondF2AInterface.  Passes integer so main activity can page to
