@@ -23,7 +23,7 @@
 
     <string name="proceed">Proceed</string>
 
-    <string name="division">Division</string>
+    <string name="division">division</string>
     <string name="soldier">Soldier</string>
 
     <string name="find">Track</string>
@@ -34,6 +34,7 @@
     <string name="close_navigation_drawer">close navigation dra</string>
 
     <string name="add_soldier">Add to Track</string>
+    <string name="add_division">Add to Manage</string>
     <string name="quit">Quit</string>
     <string name="first_name">first name</string>
     <string name="last_name">last name</string>

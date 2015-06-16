@@ -6,25 +6,29 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooPTracker.Fragment.AdderFragment;
+import com.androidtitan.trooPTracker.Fragment.DivAdderFragment;
 import com.androidtitan.trooPTracker.Interface.AdderInterface;
 
 //ToDo: receive whether this is a SOLDIER or DIVISION
 public class AdderActivity extends FragmentActivity implements AdderInterface {
     private final String ADD_FRAG_TAG = "adderTag";
+    private final String ADD_FRAG_TAG_ZAP = "divAdderTag";
 
     private FragmentManager fragMag;
     private FragmentTransaction fragTran;
     private AdderFragment adderFragment;
+    private DivAdderFragment divAdderFragment;
 
     private int divisionIndex;
     private int soldierIndex;
     private String soldierFname;
     private String soldierLname;
+
+    private Boolean isDivisionAdder = false;
+    private int adderDivisionIndex = -1;
 
 
     @Override
@@ -32,29 +36,50 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_adder);
 
-        try {
-            getSoldierEditItems();
 
-        } catch(NullPointerException e) {
-            Log.e("AAonCreate", String.valueOf(e));
-        }
+        Intent intent = getIntent();
+        isDivisionAdder = intent.getBooleanExtra("landingBool", false);
+        adderDivisionIndex = intent.getIntExtra("landingDivision", -1);
+        //
+        if(isDivisionAdder == true) {
 
-        //onOrientationChange Block
-        if(savedInstanceState != null) {
-            //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
-            adderFragment = (AdderFragment) getSupportFragmentManager().findFragmentByTag(ADD_FRAG_TAG);
+            //onOrientationChange Block
+            if (savedInstanceState != null) {
+                //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
+                divAdderFragment = (DivAdderFragment) getSupportFragmentManager().findFragmentByTag(ADD_FRAG_TAG_ZAP);
+            } else if (divAdderFragment == null) {
+                divAdderFragment = new DivAdderFragment();
+            }
+            if (!divAdderFragment.isInLayout()) {
+                fragMag = getSupportFragmentManager();
+                fragTran = fragMag.beginTransaction();
+                fragTran.addToBackStack(null).replace(R.id.landingContainer, divAdderFragment, ADD_FRAG_TAG_ZAP).commit();
+            }
         }
-        else if(adderFragment == null) {
-            adderFragment = new AdderFragment();
-        }
-        if(!adderFragment.isInLayout()) {
-            fragMag = getSupportFragmentManager();
-            fragTran = fragMag.beginTransaction();
-            fragTran.addToBackStack(null).replace(R.id.landingContainer, adderFragment, ADD_FRAG_TAG).commit();
+        else {
+            try {
+                getSoldierEditItems();
+
+            } catch (NullPointerException e) {
+                Log.e("AAonCreate", String.valueOf(e));
+            }
+
+            //onOrientationChange Block
+            if (savedInstanceState != null) {
+                //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
+                adderFragment = (AdderFragment) getSupportFragmentManager().findFragmentByTag(ADD_FRAG_TAG);
+            } else if (adderFragment == null) {
+                adderFragment = new AdderFragment();
+            }
+            if (!adderFragment.isInLayout()) {
+                fragMag = getSupportFragmentManager();
+                fragTran = fragMag.beginTransaction();
+                fragTran.addToBackStack(null).replace(R.id.landingContainer, adderFragment, ADD_FRAG_TAG).commit();
+            }
         }
 
     }
-
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -75,11 +100,19 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
-        divInteraction(divisionIndex);
+
+        if(isDivisionAdder == true) {
+            isDivisionAdder = false;
+            Intent intent = new Intent(this, LandingActivity.class);
+            startActivity(intent);
+        }
+        else {
+            divInteraction(divisionIndex);
+        }
     }
 
     //called from SecondF2AInterface.  Passes integer so main activity can page to

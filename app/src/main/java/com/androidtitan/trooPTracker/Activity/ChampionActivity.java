@@ -15,7 +15,9 @@ import com.androidtitan.trooPTracker.Interface.ChampionDataPullInterface;
 public class ChampionActivity extends AppCompatActivity implements ChampionDataPullInterface, ChampionInterface{
 
     ChampionListFragment championFragment;
-    ChampionDataPullInterface push4frag2pull;
+    //ChampionDataPullInterface push4frag2pull;
+
+    Boolean isDualPane;
 
     int divisionIndex;
 

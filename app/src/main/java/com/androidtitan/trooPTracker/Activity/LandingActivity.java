@@ -4,12 +4,15 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooPTracker.Fragment.LandingFragment;
 import com.androidtitan.trooPTracker.Interface.LandingInterface;
 
 public class LandingActivity extends FragmentActivity implements LandingInterface{
+
+    Toolbar toolbar;
 
     FragmentTransaction fragTran = getFragmentManager().beginTransaction();
     LandingFragment landingFrag;
@@ -18,6 +21,9 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
+
+        //we are trying to hide our actionbar
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         landingFrag = new LandingFragment();
         fragTran.addToBackStack(null).add(R.id.landingContainer, landingFrag, "landingFrag")
@@ -31,6 +37,14 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
 
         Intent intent = new Intent(this, ChampionActivity.class);
         intent.putExtra("landingDivision", groupPosition);
+        startActivity(intent);
+    }
+
+    @Override
+    public void divPasser(boolean isDiv, int divPosition) {
+        Intent intent = new Intent(this, AdderActivity.class);
+        intent.putExtra("landingBool", isDiv);
+        intent.putExtra("landingDivision", divPosition);
         startActivity(intent);
     }
 
