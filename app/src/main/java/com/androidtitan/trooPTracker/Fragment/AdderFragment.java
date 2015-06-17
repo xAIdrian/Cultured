@@ -29,12 +29,14 @@ import java.util.List;
 
 
 public class AdderFragment extends Fragment {
-    public static final String SINFO = "soldierInformation";
+    //public static final String SINFO = "soldierInformation";
     private static final String SAVED_FIRST = "savedFirst";
     private static final String SAVED_LAST = "savedLast";
 
     DatabaseHelper databaseHelper;
     AdderInterface adderInterface;
+
+    ArrayAdapter<Division> adapter;
 
     private LinearLayout backLayout;
 
@@ -93,6 +95,14 @@ public class AdderFragment extends Fragment {
         Log.e("AFonCreate", "Are we editing? " + editPage);
 
         databaseHelper = new DatabaseHelper(getActivity());
+
+        Runnable run = new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+                addListView.invalidateViews();
+            }
+        };
     }
 
     @Override
@@ -155,10 +165,11 @@ public class AdderFragment extends Fragment {
         final ArrayList<String> divisionList = new ArrayList<String>();
         final List<Division> allDivisions = databaseHelper.getAllDivisions();
 
-        for (int i = 0; i < allDivisions.size(); i++) {
-            divisionList.add(allDivisions.get(i).getName());
+        for (Division div : allDivisions) {
+            Log.e("AFonCreate", div.getName());
+            divisionList.add(div.getName());
         }
-        final ArrayAdapter<Division> adapter = new AdderAdapter();
+        adapter = new AdderAdapter();
         addListView.setAdapter(adapter);
         //adapter = new ChampionAdapter((ArrayList) getListItems());
         //listView.setAdapter(adapter);
@@ -167,14 +178,19 @@ public class AdderFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                divSelected = position;
+                /*
+                listView.getChildAt(i) works where 0 is the very first visible row and (n-1)
+                is the last visible row (where n is the number of visible views you see).
+                 */
+                for (int i = 0; i <= addListView.getLastVisiblePosition() - addListView.getFirstVisiblePosition(); i++) {
 
-                for (int i = 0; i < adapter.getCount(); i++) {
                     View item = addListView.getChildAt(i);
                     item.setBackgroundColor(0xFFFFFFFF);
                 }
 
                 view.setBackgroundColor(0xCC448AFF);
+
+                divSelected = position;
             }
         });
 
@@ -245,8 +261,6 @@ public class AdderFragment extends Fragment {
     //ADAPTER CLASS
 
     private class AdderAdapter extends ArrayAdapter<Division> {
-
-        //ArrayList<Soldier> soldierItems = new ArrayList<Soldier>();
 
         public AdderAdapter() {
             super(getActivity(), 0, databaseHelper.getAllDivisions()); // 0 is our resource

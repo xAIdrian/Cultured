@@ -116,12 +116,6 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
         return v;
     }
 
-/*
-    public void onViewClick(View v) {
-        ExpandableListView parentRow = (ExpandableListView) v.getParent().getParent();
-    }
-
-*/
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
@@ -133,13 +127,6 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
             index = 0;
         }
 
-/*
-        if(index == 0) {
-            childItems[index] = "Troop Count: " + String.valueOf(soldierCount);
-            index ++;
-        }
-*/
-
         final String child = childItems[index];
         TextView text;
 
@@ -149,19 +136,6 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
         text = (TextView) convertView.findViewById(R.id.divListItem);
         text.setText(child);
         index++;
-
-        /** set the ClickListener to handle the click event on child item
-
-         We would use this method to quickly view the subfields
-
-         convertView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-        Toast.makeText(mContext, child,
-        Toast.LENGTH_SHORT).show();
-        }
-        });
-         **/
 
         return convertView;
     }
@@ -190,5 +164,12 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
         visitTick++;
         division.setVisits(visitTick);
         databaseHelper.updateDivision(division);
+    }
+
+    public void removeGroup(int group) {
+        //Remove the according group. Dont forget to remove the children aswell!
+
+        adapterData.remove(group);
+        notifyDataSetChanged();
     }
 }

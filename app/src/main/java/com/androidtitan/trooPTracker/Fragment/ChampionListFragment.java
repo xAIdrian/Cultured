@@ -100,14 +100,20 @@ public class ChampionListFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                selection = position;
-
                 for (int i = 0; i < adapter.getCount(); i++) {
                     View item = listView.getChildAt(i);
                     item.setBackgroundColor(0xFFFFFFFF);
                 }
+                if(selection == position) {
+                    view.setBackgroundColor(0xFFFFFFFF);
+                    selection = -1;
+                }
+                else {
+                    view.setBackgroundColor(0xCC448AFF);
+                    selection = position;
+                }
 
-                view.setBackgroundColor(0xCC448AFF);
+                selection = position;
             }
         });
 

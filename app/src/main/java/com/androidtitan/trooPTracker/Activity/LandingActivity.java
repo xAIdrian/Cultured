@@ -25,9 +25,12 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
         //we are trying to hide our actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        landingFrag = new LandingFragment();
-        fragTran.addToBackStack(null).add(R.id.landingContainer, landingFrag, "landingFrag")
-                .commit();
+        //we will only create this fragment if activity is rebuilt
+        if(savedInstanceState == null) {
+            landingFrag = new LandingFragment();
+            fragTran.addToBackStack(null).add(R.id.landingContainer, landingFrag, "landingFrag")
+                    .commit();
+        }
 
     }
 
@@ -41,9 +44,10 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
     }
 
     @Override
-    public void divPasser(boolean isDiv, int divPosition) {
+    public void divPasser(boolean isDiv, boolean isEdit, int divPosition) {
         Intent intent = new Intent(this, AdderActivity.class);
         intent.putExtra("landingBool", isDiv);
+        intent.putExtra("landingEdit", isEdit);
         intent.putExtra("landingDivision", divPosition);
         startActivity(intent);
     }

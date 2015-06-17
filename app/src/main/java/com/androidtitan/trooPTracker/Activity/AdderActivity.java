@@ -28,6 +28,7 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
     private String soldierLname;
 
     private Boolean isDivisionAdder = false;
+    private Boolean isEditAdder = false;
     private int adderDivisionIndex = -1;
 
 
@@ -39,6 +40,7 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
 
         Intent intent = getIntent();
         isDivisionAdder = intent.getBooleanExtra("landingBool", false);
+        isEditAdder = intent.getBooleanExtra("landingEdit", false);
         adderDivisionIndex = intent.getIntExtra("landingDivision", -1);
         //
         if(isDivisionAdder == true) {
@@ -47,10 +49,20 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
             if (savedInstanceState != null) {
                 //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
                 divAdderFragment = (DivAdderFragment) getSupportFragmentManager().findFragmentByTag(ADD_FRAG_TAG_ZAP);
-            } else if (divAdderFragment == null) {
-                divAdderFragment = new DivAdderFragment();
             }
+
+            else if (divAdderFragment == null) {
+                divAdderFragment = new DivAdderFragment();
+
+                Bundle args = new Bundle();
+                args.putInt("landingDivision", adderDivisionIndex);
+                args.putBoolean("landingEdit", isEditAdder);
+                args.putBoolean("landingBool", isDivisionAdder);
+                divAdderFragment.setArguments(args);
+            }
+
             if (!divAdderFragment.isInLayout()) {
+
                 fragMag = getSupportFragmentManager();
                 fragTran = fragMag.beginTransaction();
                 fragTran.addToBackStack(null).replace(R.id.landingContainer, divAdderFragment, ADD_FRAG_TAG_ZAP).commit();

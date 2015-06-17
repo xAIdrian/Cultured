@@ -115,7 +115,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Log.e("DBHcreateSoldier", getSoldier(soldier_id).getId() + " " +
                 getSoldier(soldier_id).getfName() + " " + getSoldier(soldier_id).getlName());
-        //todo: if solution is elusive then we need to LOG what division that these are put into
 
         return soldier_id;
     }
@@ -245,10 +244,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, division.getName());
-        values.put(KEY_NAME, division.getVisits());
+        values.put(KEY_VISITS, division.getVisits());
         //insert
         long division_id = database.insert(TABLE_DIVISION, null, values);
         division.setId(division_id);
+        Log.e("DBHcreateDivision", String.valueOf(values));
         return division_id;
     }
 
@@ -276,6 +276,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return battalion;
     }
 
+    public Division getDivision(long div_id) {
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_DIVISION
+                + " WHERE " + KEY_ID + " = " + div_id;
+
+        Log.e("DBHgetDivision", selectQuery);
+
+        Cursor cursor = database.rawQuery(selectQuery, null);
+
+        if(cursor != null) {
+            cursor.moveToFirst();
+        }
+        Division division = new Division();
+        division.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
+        division.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
+        division.setVisits(cursor.getInt(cursor.getColumnIndex(KEY_VISITS)));
+
+        return division;
+    }
+
     //Updating Division
     public int updateDivision(Division division) {
         SQLiteDatabase database = this.getWritableDatabase();
@@ -295,7 +316,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      **/
     public void deleteDivision(Division division, boolean should_delete_all_soldiers) {
         SQLiteDatabase database = this.getWritableDatabase();
-        //If we are told to Delete all associated soldiers
+        //If we are told to Delete all associated soldiers and they have soldiers
+
         if(should_delete_all_soldiers) {
             List<Soldier> troops = getAllSoldiersByDivision(division);
             //delete all soldiers

@@ -7,7 +7,8 @@ public class Division {
 
     private long id;
     private String name;
-    private Integer visits; // this could be GPS coords eventually
+    private Integer visits;
+     // this could be GPS coords eventually
 
     public Division(){
 
@@ -15,7 +16,7 @@ public class Division {
 
     public Division(String naname) {
         this.name = naname;
-        this.visits = 0;
+        //todo: previously we had 'this.visits = 0'
     }
 
     public Division(long iid, String naname) {

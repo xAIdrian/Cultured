@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 
@@ -32,7 +31,7 @@ public class LandingFragment extends Fragment {
     ImageView add;
 
     private ExpandableListView landingListView;
-    private ExpandableListAdapter landingAdapter;
+    private LandingExpandableListAdapter landingAdapter;
 
     private int selection = -1;
 
@@ -61,17 +60,22 @@ public class LandingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
+
         databaseHelper = databaseHelper.getInstance(getActivity());
+        landingAdapter = new LandingExpandableListAdapter(getActivity(), databaseHelper.getAllDivisions());
+
 
         Runnable run = new Runnable() {
             @Override
             public void run() {
-                //landingAdapter.notifDataSetChanged();
+                landingAdapter.notifyDataSetChanged();
                 landingListView.invalidateViews();
             }
         };
+
+        /*for(Division div : databaseHelper.getAllDivisions()) {
+            Log.e("database LOG", div.getId() + ": " + div.getName());
+        }*/
 
     }
 
@@ -87,7 +91,6 @@ public class LandingFragment extends Fragment {
         add = (ImageView) getActivity().findViewById(R.id.addBtn);
 
         landingListView = (ExpandableListView) v.findViewById(R.id.divisionList);
-        landingAdapter = new LandingExpandableListAdapter(getActivity(), databaseHelper.getAllDivisions());
         landingListView.setAdapter(landingAdapter);
         landingListView.invalidateViews();
 
@@ -95,7 +98,34 @@ public class LandingFragment extends Fragment {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                landingInterface.divPasser(true, selection);
+                landingInterface.divPasser(true, false, selection);
+            }
+        });
+
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                landingInterface.divPasser(true, true, selection);
+
+            }
+        });
+
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selection != -1) {
+                    //try to check for children...
+                    try {
+                        databaseHelper.deleteDivision(databaseHelper.getAllDivisions().get(selection), true);
+
+                    } catch (NullPointerException e) {
+
+                        databaseHelper.deleteDivision(databaseHelper.getAllDivisions().get(selection), false);
+
+                    }
+
+                    landingAdapter.removeGroup(selection);
+                }
             }
         });
 
@@ -113,6 +143,7 @@ public class LandingFragment extends Fragment {
             }
         });
 
+
         landingListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -129,7 +160,6 @@ public class LandingFragment extends Fragment {
                     view.setBackgroundColor(0xCC448AFF);
                     selection = position;
                 }
-
 
                 return true;
             }

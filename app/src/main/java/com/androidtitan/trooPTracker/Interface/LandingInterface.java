@@ -5,5 +5,5 @@ package com.androidtitan.trooPTracker.Interface;
  */
 public interface LandingInterface {
     public void soldierListOpener(int groupPosition);
-    public void divPasser(boolean isDiv, int divPosition);
+    public void divPasser(boolean isDiv, boolean isEdit, int divPosition);
 }
