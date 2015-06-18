@@ -55,9 +55,9 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
                 divAdderFragment = new DivAdderFragment();
 
                 Bundle args = new Bundle();
-                args.putInt("landingDivision", adderDivisionIndex);
-                args.putBoolean("landingEdit", isEditAdder);
-                args.putBoolean("landingBool", isDivisionAdder);
+                args.putInt("landingDivision", adderDivisionIndex); //onAdd -- -1
+                args.putBoolean("landingEdit", isEditAdder); //onAdd -- false
+                args.putBoolean("landingBool", isDivisionAdder);//onAdd -- true
                 divAdderFragment.setArguments(args);
             }
 

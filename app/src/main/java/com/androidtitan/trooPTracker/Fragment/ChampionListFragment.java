@@ -99,21 +99,31 @@ public class ChampionListFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                /*Handler handler = new Handler();
 
+                final Runnable r = new Runnable() {
+                    public void run() {
+                        tv.append("Hello World");
+                        handler.postDelayed(this, 1000);
+                    }
+                };
+
+                handler.postDelayed(r, 1000);
+                */
                 for (int i = 0; i < adapter.getCount(); i++) {
                     View item = listView.getChildAt(i);
                     item.setBackgroundColor(0xFFFFFFFF);
                 }
-                if(selection == position) {
-                    view.setBackgroundColor(0xFFFFFFFF);
-                    selection = -1;
+                if(selection != position) {
+                    //view.setBackgroundColor(0xCC448AFF);
+                    selection = position;
+
                 }
                 else {
-                    view.setBackgroundColor(0xCC448AFF);
-                    selection = position;
+                    //view.setBackgroundColor(0xFFFFFFFF);
+                    selection = -1;
                 }
 
-                selection = position;
             }
         });
 

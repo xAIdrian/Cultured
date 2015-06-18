@@ -98,14 +98,21 @@ public class LandingFragment extends Fragment {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                landingInterface.divPasser(true, false, selection);
+                //this is a division, a new division,  nothing to edit
+                landingInterface.divPasser(true, false, -1);
             }
         });
 
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                landingInterface.divPasser(true, true, selection);
+                if(selection != -1) {
+                    //this is a divison, we are editing, this is what we are editing.
+                    landingInterface.divPasser(true, true, selection);
+                }
+                else {
+
+                }
 
             }
         });

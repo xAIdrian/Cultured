@@ -71,13 +71,14 @@ public class DivAdderFragment extends Fragment {
 
         Bundle bundle = new Bundle();
         bundle = this.getArguments();
-        isEdit = bundle.getBoolean("landingEdit");
-        divSelected = bundle.getInt("landingDivision");
+        isEdit = bundle.getBoolean("landingEdit"); //false
+        divSelected = bundle.getInt("landingDivision"); // -1
 
+        //checking if we are editing a division
         if(divSelected != -1) {
             simpleEditDivision = databaseHelper.getAllDivisions().get(divSelected);
             newName = simpleEditDivision.getName();
-
+            addBtn.setText("Edit");
         }
     }
 
@@ -125,14 +126,12 @@ public class DivAdderFragment extends Fragment {
                 else {
 
                     if(isEdit == false) {
-                        Log.e("!!!!!", "Now we here");
+                        Log.e("DAFaddBtnClick", "Adding Division: " + newName);
                         Division tempDivision = new Division(newName);
                         //tempDivision.setName(newName);
                         databaseHelper.createDivision(tempDivision);
                     }
                     else {
-                        //long id = databaseHelper.getAllDivisions().get(divSelected).getId();
-                        //Division advEditDiv = databaseHelper.getDivision(id);
                         Division advEditDiv = databaseHelper.getAllDivisions().get(divSelected);
                         advEditDiv.setName(newName);
                         databaseHelper.updateDivision(advEditDiv);
