@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -53,6 +54,7 @@ public class AdderFragment extends Fragment {
 
     private int divSelected = -1;
     private int oldDivision = -1;
+    private boolean listViewItemSelected = false;
 
     @Override
     public void onAttach(Activity activity) {
@@ -111,6 +113,9 @@ public class AdderFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_adder, container, false);
         if(getResources().getConfiguration().orientation != getResources().getConfiguration().ORIENTATION_LANDSCAPE) {
         }
+
+        Log.e("AFonCreateView", "oldDivision: " + oldDivision + ", divSelected: " + divSelected);
+
         backLayout = (LinearLayout) v.findViewById(R.id.back_layout);
 
         firstEdit = (EditText) v.findViewById(R.id.firstName_edit);
@@ -129,6 +134,7 @@ public class AdderFragment extends Fragment {
 
             }
         });
+
         firstEdit.setText(newFname);
         firstEdit.addTextChangedListener(new TextWatcher() {
             @Override
@@ -160,19 +166,17 @@ public class AdderFragment extends Fragment {
             }
         });
 
+
         //ListView and adapter
         addListView = (ListView) v.findViewById(R.id.adder_listview);
         final ArrayList<String> divisionList = new ArrayList<String>();
         final List<Division> allDivisions = databaseHelper.getAllDivisions();
 
         for (Division div : allDivisions) {
-            Log.e("AFonCreate", div.getName());
             divisionList.add(div.getName());
         }
         adapter = new AdderAdapter();
         addListView.setAdapter(adapter);
-        //adapter = new ChampionAdapter((ArrayList) getListItems());
-        //listView.setAdapter(adapter);
 
         addListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -190,7 +194,36 @@ public class AdderFragment extends Fragment {
 
                 view.setBackgroundColor(0xCC448AFF);
 
+                //oldDivision = -1;
                 divSelected = position;
+                listViewItemSelected = true;
+            }
+        });
+
+        //we are going to use this in case we need to find a way for our highlighting to persist
+        addListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            //this is called only once the scroll is completed
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            //this is called before the next row is rendered, before getView()
+            //this is more fluid
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                /*for (int i = 0; i <= addListView.getLastVisiblePosition() - addListView.getFirstVisiblePosition(); i++) {
+
+                    View item = addListView.getChildAt(i);
+                    item.setBackgroundColor(0xFFFFFFFF);
+
+                    if(i == oldDivision) {
+                        //getItem(oldDivision).setBackgroundColor(0xCC448AFF);
+                    }
+                }
+                addListView.getAdapter().getView(oldDivision, null, view).setBackgroundColor(0xCC448AFF);
+*/
             }
         });
 
@@ -274,10 +307,26 @@ public class AdderFragment extends Fragment {
                 convertView = getActivity().getLayoutInflater()
                         .inflate(R.layout.listview_champion_item, null);
             }
-            if(position == oldDivision)
-            {
-                convertView.setBackgroundColor(0xCC448AFF);
+            //if no item has been selected and we are not reassigning divisions
+            if(editPage == true) {
+                if (position == oldDivision) {
+                    convertView.setBackgroundColor(0xCC448AFF);
+                }
+                else {
+                    convertView.setBackgroundColor(0xFFFFFFFF);
+                }
             }
+            //if an item is selected that would reassign the soldeir
+            else {
+                if (position == divSelected) {
+                    convertView.setBackgroundColor(0xCC448AFF);
+                }
+                else {
+                    convertView.setBackgroundColor(0xFFFFFFFF);
+                }
+            }
+
+
             Division division = databaseHelper.getAllDivisions().get(position);
             final TextView checkedText = (TextView) convertView.findViewById(R.id.champ_text);
             checkedText.setText(division.getName());

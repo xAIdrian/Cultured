@@ -12,7 +12,8 @@
         android:gravity="center"
         android:text="@string/placeholder"
         android:textSize="@dimen/abc_text_size_medium_material"
-        android:textColor="#FFFFFF"/>
+        android:textColor="#FFFFFF"
+        android:elevation="4dp"/>
 
 
     <ListView

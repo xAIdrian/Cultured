@@ -7,10 +7,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooPTracker.Data.DatabaseHelper;
+import com.androidtitan.trooPTracker.Data.Division;
 import com.androidtitan.trooPTracker.Fragment.LandingFragment;
 import com.androidtitan.trooPTracker.Interface.LandingInterface;
 
 public class LandingActivity extends FragmentActivity implements LandingInterface{
+
+    DatabaseHelper databaseHelper;
 
     Toolbar toolbar;
 
@@ -22,6 +26,7 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
 
+        databaseHelper = DatabaseHelper.getInstance(this);
         //we are trying to hide our actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
@@ -50,6 +55,14 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
         intent.putExtra("landingEdit", isEdit);
         intent.putExtra("landingDivision", divPosition);
         startActivity(intent);
+    }
+
+    //Get # of Visits Increment and set # of Visits
+    public void upTick(Division division) {
+        int visitTick = division.getVisits();
+        visitTick++;
+        division.setVisits(visitTick);
+        databaseHelper.updateDivision(division);
     }
 
     @Override

@@ -87,7 +87,7 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+    public View getGroupView(final int groupPosition, boolean isExpanded, final View convertView, ViewGroup parent) {
         View v = convertView;
         ExpandableListViewHolder viewHolder;
 
@@ -108,7 +108,7 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 //Starting Main Activity. soldierListOpener will set the divisionIndex
-                addVisitTick(adapterData.get(groupPosition));
+                ((LandingActivity)context).upTick(adapterData.get(groupPosition));
                 ((LandingActivity)context).soldierListOpener(groupPosition);
             }
         });
@@ -146,6 +146,7 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
+
     private class ExpandableListViewHolder {
         public TextView divisionTitle;
         public TextView viewBtn;
@@ -158,13 +159,6 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-    //Get # of Visits Increment and set # of Visits
-    private void addVisitTick(Division division) {
-        int visitTick = division.getVisits();
-        visitTick++;
-        division.setVisits(visitTick);
-        databaseHelper.updateDivision(division);
-    }
 
     public void removeGroup(int group) {
         //Remove the according group. Dont forget to remove the children aswell!

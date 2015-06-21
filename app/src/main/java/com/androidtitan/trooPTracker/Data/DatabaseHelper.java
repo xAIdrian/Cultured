@@ -79,10 +79,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_COMMAND);
 
         //insert into TABLE_DIVISION (_id, name, local) values(1, 'Hinogi', 'Japan')
-        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'Seattle', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'Sao Palo', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (4, 'London', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'Seattle, Washington', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego, California', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'London, England', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (4, 'Portland, Oregon', 0)");
     }
 
     @Override
@@ -276,9 +276,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return battalion;
     }
 
-    public Division getDivision(long div_id) {
+    //todo: STAY AWAY FROM THIS IT DOES NOT WORK
+    /*public Division getDivision(long div_id) {
         SQLiteDatabase database = this.getReadableDatabase();
 
+        div_id = div_id + 1; //incrementation to align divIndex with dbIndex
         String selectQuery = "SELECT * FROM " + TABLE_DIVISION
                 + " WHERE " + KEY_ID + " = " + div_id;
 
@@ -286,16 +288,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor cursor = database.rawQuery(selectQuery, null);
 
-        if(cursor != null) {
-            cursor.moveToFirst();
-        }
+        cursor.moveToFirst();
         Division division = new Division();
-        division.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
-        division.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
-        division.setVisits(cursor.getInt(cursor.getColumnIndex(KEY_VISITS)));
 
+        if(cursor.getCount() > 0 && cursor.moveToFirst()) {
+
+            division.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+            division.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
+            division.setVisits(cursor.getInt(cursor.getColumnIndex(KEY_VISITS)));
+        }
         return division;
-    }
+
+    }*/
 
     //Updating Division
     public int updateDivision(Division division) {

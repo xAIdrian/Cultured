@@ -3,6 +3,7 @@ package com.androidtitan.trooPTracker.Fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +76,8 @@ public class ChampionListFragment extends Fragment {
         databaseHelper = DatabaseHelper.getInstance(getActivity());
 
         soldierItems = new ArrayList<Soldier>();
+        //Log.e("CLFonCreate", String.valueOf(databaseHelper.
+                //getAllSoldiersByDivision(databaseHelper.getDivision(receivedIndex))));
         soldierItems.addAll(databaseHelper.
                 getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receivedIndex)));
 
@@ -99,28 +102,23 @@ public class ChampionListFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                /*Handler handler = new Handler();
 
-                final Runnable r = new Runnable() {
-                    public void run() {
-                        tv.append("Hello World");
-                        handler.postDelayed(this, 1000);
-                    }
-                };
+                //TransitionDrawable transition = (TransitionDrawable) view.getBackground();
+                Log.e("CLFonItemClick", String.valueOf(view.getBackground()));
 
-                handler.postDelayed(r, 1000);
-                */
                 for (int i = 0; i < adapter.getCount(); i++) {
                     View item = listView.getChildAt(i);
                     item.setBackgroundColor(0xFFFFFFFF);
                 }
                 if(selection != position) {
-                    //view.setBackgroundColor(0xCC448AFF);
+                    view.setBackgroundColor(0xCC448AFF);
+
+                    //transition.startTransition(500);
                     selection = position;
 
                 }
                 else {
-                    //view.setBackgroundColor(0xFFFFFFFF);
+                    view.setBackgroundColor(0xFFFFFFFF);
                     selection = -1;
                 }
 

@@ -78,7 +78,6 @@ public class DivAdderFragment extends Fragment {
         if(divSelected != -1) {
             simpleEditDivision = databaseHelper.getAllDivisions().get(divSelected);
             newName = simpleEditDivision.getName();
-            addBtn.setText("Edit");
         }
     }
 
@@ -91,7 +90,11 @@ public class DivAdderFragment extends Fragment {
         addBtn = (TextView) v.findViewById(R.id.submit_button);
         backLayout = (LinearLayout) v.findViewById(R.id.back_layout);
 
-        backLayout.setOnClickListener(new ImageView.OnClickListener() {
+        //changes to our view if we are editing an element.
+        if(divSelected != -1) {
+            addBtn.setText("Edit");
+        }
+            backLayout.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), LandingActivity.class);
