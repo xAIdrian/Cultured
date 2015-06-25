@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Fragment;
+package com.androidtitan.trooptracker.Fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -8,17 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooPTracker.Data.DatabaseHelper;
-import com.androidtitan.trooPTracker.Data.Division;
-import com.androidtitan.trooPTracker.Data.Soldier;
-import com.androidtitan.trooPTracker.Interface.ChampionDataPullInterface;
-import com.androidtitan.trooPTracker.Interface.ChampionInterface;
+import com.androidtitan.trooptracker.Adapter.ChampionAdapter;
+import com.androidtitan.trooptracker.Data.DatabaseHelper;
+import com.androidtitan.trooptracker.Data.Division;
+import com.androidtitan.trooptracker.Data.Soldier;
+import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
+import com.androidtitan.trooptracker.Interface.ChampionInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +40,7 @@ public class ChampionListFragment extends Fragment {
     Division focusDivision;
     Soldier focusSoldier;
     ArrayList<Soldier> soldierItems;
+    List<Soldier> troops;
 
     int selection = -1;
     public int receivedIndex = -1;
@@ -73,13 +74,24 @@ public class ChampionListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if(savedInstanceState != null) {
+        }
+
         databaseHelper = DatabaseHelper.getInstance(getActivity());
 
         soldierItems = new ArrayList<Soldier>();
-        //Log.e("CLFonCreate", String.valueOf(databaseHelper.
-                //getAllSoldiersByDivision(databaseHelper.getDivision(receivedIndex))));
-        soldierItems.addAll(databaseHelper.
-                getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receivedIndex)));
+
+        troops = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receivedIndex));
+        soldierItems.addAll(troops);
+
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+                listView.invalidateViews();
+            }
+        };
 
     }
 
@@ -96,31 +108,43 @@ public class ChampionListFragment extends Fragment {
         championHeader.setText(databaseHelper.getAllDivisions().get(receivedIndex).getName());
 
         listView = (ListView) v.findViewById(R.id.championList);
-        adapter = new ChampionAdapter((ArrayList) getListItems());
+        adapter = new ChampionAdapter(getActivity(), getListItems());
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                //TransitionDrawable transition = (TransitionDrawable) view.getBackground();
-                Log.e("CLFonItemClick", String.valueOf(view.getBackground()));
+                if (!troops.get(position).isSelected()) {
 
-                for (int i = 0; i < adapter.getCount(); i++) {
-                    View item = listView.getChildAt(i);
-                    item.setBackgroundColor(0xFFFFFFFF);
-                }
-                if(selection != position) {
-                    view.setBackgroundColor(0xCC448AFF);
+                    troops.get(position).setIsSelected(true);
 
-                    //transition.startTransition(500);
+                    if (selection != -1) {
+                        troops.get(selection).setIsSelected(false);
+                    }
+
                     selection = position;
+                    championInterface.setListViewSelection(selection);
 
                 }
                 else {
-                    view.setBackgroundColor(0xFFFFFFFF);
+
+                    troops.get(position).setIsSelected(false);
+
                     selection = -1;
+                    listView.invalidateViews();
+
+                    championInterface.setListViewSelection(-1);
                 }
+
+                for (int i = 0; i <= listView.getLastVisiblePosition() - listView.getFirstVisiblePosition(); i++) {
+
+                    View item = listView.getChildAt(i);
+                    item.setBackgroundColor(0xFFFFFFFF);
+                }
+                view.setBackgroundColor(0xCC448AFF);
+
+                Log.e("CLFonItemClick", troops.get(position).getfName() + " " + troops.get(position).isSelected());
 
             }
         });
@@ -128,18 +152,24 @@ public class ChampionListFragment extends Fragment {
         deleter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if(selection != -1) {
 
                     focusDivision = databaseHelper.getAllDivisions().get(receivedIndex);
                     focusSoldier = databaseHelper.getAllSoldiersByDivision(focusDivision).get(selection);
 
+                    for(Soldier s : troops) {
+                        s.setIsSelected(false);
+                    }
+
                     databaseHelper.deleteSoldier(focusSoldier);
 
-                    //The built in clear and add items automatically call notifyDataSetChanged();
-                    adapter.clear();
-                    adapter.addAll(getListItems());
+                    adapter.removeItem(selection);
 
                     selection = -1;
+                    Log.e("CLFdeleter", "selection: " + String.valueOf(selection));
+
+                    championInterface.setListViewSelection(-1);
 
                 }
 
@@ -149,9 +179,15 @@ public class ChampionListFragment extends Fragment {
         editer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("CFLediter", "selection: " + String.valueOf(selection));
+
                 if(selection != -1) {
                     //this will populate our Adder Fragment
                     focusSoldier = soldierItems.get(selection);
+
+                    for(Soldier s : troops) {
+                        s.setIsSelected(false);
+                    }
                     championInterface.soldierPasser(selection, receivedIndex,
                             focusSoldier.getfName(),
                             focusSoldier.getlName());
@@ -162,6 +198,12 @@ public class ChampionListFragment extends Fragment {
         adder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(selection != -1) {
+                    focusSoldier = soldierItems.get(selection);
+                    focusSoldier.setIsSelected(false);
+                }
+
                 //when we receive our divIndex then that is what we will pass into this method
                 championInterface.soldierPasser(selection, receivedIndex, null, null);
             }
@@ -188,33 +230,5 @@ public class ChampionListFragment extends Fragment {
         return soldierItems;
     }
 
-
-
-    //ADAPTER CLASS
-
-    private class ChampionAdapter extends ArrayAdapter<Soldier> {
-
-        ArrayList<Soldier> soldierItems = new ArrayList<Soldier>();
-
-        public ChampionAdapter(ArrayList<Soldier> troops) {
-            super(getActivity(), 0, troops); // 0 is our resource
-            soldierItems = troops;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            //if you weren't given a view inflate one
-            if(convertView == null) {
-                convertView = getActivity().getLayoutInflater()
-                        .inflate(R.layout.listview_champion_item, null);
-            }
-
-            Soldier soldier = soldierItems.get(position);
-            final TextView checkedText = (TextView) convertView.findViewById(R.id.champ_text);
-            checkedText.setText(soldier.getlName() + ", " + soldier.getfName());
-
-            return convertView;
-        }
-    }
 
 }

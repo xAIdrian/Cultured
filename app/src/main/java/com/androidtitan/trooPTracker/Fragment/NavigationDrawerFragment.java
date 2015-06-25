@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Fragment;
+package com.androidtitan.trooptracker.Fragment;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,10 +19,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooPTracker.Activity.LandingActivity;
-import com.androidtitan.trooPTracker.Data.DatabaseHelper;
-import com.androidtitan.trooPTracker.Data.Division;
-import com.androidtitan.trooPTracker.Interface.ChampionInterface;
+import com.androidtitan.trooptracker.Activity.LandingActivity;
+import com.androidtitan.trooptracker.Data.DatabaseHelper;
+import com.androidtitan.trooptracker.Data.Division;
+import com.androidtitan.trooptracker.Interface.ChampionInterface;
 
 import java.util.ArrayList;
 

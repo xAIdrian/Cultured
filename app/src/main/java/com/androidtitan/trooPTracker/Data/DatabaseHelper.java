@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Data;
+package com.androidtitan.trooptracker.Data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -68,9 +68,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
-    //Division div1 = new Division("Academy", "Honogi, Japan");
-    //Division div2 = new Division("Hawk", "North Carolina, USA");
-    //Division div3 = new Division("Boar", "Moscow, Russia");
     @Override
     public void onCreate(SQLiteDatabase db) {
         //creating the required tables
@@ -78,11 +75,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_DIVISION);
         db.execSQL(CREATE_TABLE_COMMAND);
 
+
         //insert into TABLE_DIVISION (_id, name, local) values(1, 'Hinogi', 'Japan')
         db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'Seattle, Washington', 0)");
         db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego, California', 0)");
         db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'London, England', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (4, 'Portland, Oregon', 0)");
     }
 
     @Override
@@ -233,6 +230,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
         database.delete(TABLE_SOLDIER,
                 KEY_ID + " = ?", new String[] { String.valueOf(soldier.getId())});
+
     }
 
     //DIVISION TABLE

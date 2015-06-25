@@ -1,6 +1,6 @@
-package com.androidtitan.trooPTracker.Interface;
+package com.androidtitan.trooptracker.Interface;
 
-import com.androidtitan.trooPTracker.Data.Division;
+import com.androidtitan.trooptracker.Data.Division;
 
 /**
  * Created by amohnacs on 6/5/15.

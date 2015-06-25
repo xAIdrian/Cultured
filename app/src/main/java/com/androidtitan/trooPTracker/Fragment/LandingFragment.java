@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Fragment;
+package com.androidtitan.trooptracker.Fragment;
 
 
 import android.app.Activity;
@@ -15,11 +15,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooPTracker.Adapter.LandingAdapter;
-import com.androidtitan.trooPTracker.Adapter.LandingExpandableListAdapter;
-import com.androidtitan.trooPTracker.Data.DatabaseHelper;
-import com.androidtitan.trooPTracker.Data.Division;
-import com.androidtitan.trooPTracker.Interface.LandingInterface;
+import com.androidtitan.trooptracker.Adapter.LandingAdapter;
+import com.androidtitan.trooptracker.Adapter.LandingExpandableListAdapter;
+import com.androidtitan.trooptracker.Data.DatabaseHelper;
+import com.androidtitan.trooptracker.Data.Division;
+import com.androidtitan.trooptracker.Interface.LandingInterface;
 
 import java.util.List;
 
@@ -239,12 +239,14 @@ public class LandingFragment extends Fragment {
                             View item = expandableListView.getChildAt(i);
                             item.setBackgroundColor(0xFFFFFFFF);
                         }
+                        selection = -1;
                     }
                     else {
                         for (int i = 0; i <= simpleListView.getLastVisiblePosition() - simpleListView.getFirstVisiblePosition(); i++) {
                             View item = simpleListView.getChildAt(i);
                             item.setBackgroundColor(0xFFFFFFFF);
                         }
+                        selection = -1;
                     }
                 }
             }

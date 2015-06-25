@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Activity;
+package com.androidtitan.trooptracker.Activity;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -7,10 +7,10 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooPTracker.Data.DatabaseHelper;
-import com.androidtitan.trooPTracker.Data.Division;
-import com.androidtitan.trooPTracker.Fragment.LandingFragment;
-import com.androidtitan.trooPTracker.Interface.LandingInterface;
+import com.androidtitan.trooptracker.Data.DatabaseHelper;
+import com.androidtitan.trooptracker.Data.Division;
+import com.androidtitan.trooptracker.Fragment.LandingFragment;
+import com.androidtitan.trooptracker.Interface.LandingInterface;
 
 public class LandingActivity extends FragmentActivity implements LandingInterface{
 

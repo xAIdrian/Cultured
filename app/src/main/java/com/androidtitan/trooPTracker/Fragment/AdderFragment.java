@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Fragment;
+package com.androidtitan.trooptracker.Fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -20,10 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooPTracker.Data.DatabaseHelper;
-import com.androidtitan.trooPTracker.Data.Division;
-import com.androidtitan.trooPTracker.Data.Soldier;
-import com.androidtitan.trooPTracker.Interface.AdderInterface;
+import com.androidtitan.trooptracker.Data.DatabaseHelper;
+import com.androidtitan.trooptracker.Data.Division;
+import com.androidtitan.trooptracker.Data.Soldier;
+import com.androidtitan.trooptracker.Interface.AdderInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,6 +84,9 @@ public class AdderFragment extends Fragment {
         soldierIndex = bundle.getInt("editSoloIndex");
         newFname = bundle.getString("editSoloFirst");
         newLname = bundle.getString("editSoloLast");
+
+        Log.e("AFonCreate", "selection: " + soldierIndex);
+
 
         if(newFname == null || newLname == null) {
             editPage = false;
@@ -197,33 +199,6 @@ public class AdderFragment extends Fragment {
                 //oldDivision = -1;
                 divSelected = position;
                 listViewItemSelected = true;
-            }
-        });
-
-        //we are going to use this in case we need to find a way for our highlighting to persist
-        addListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            //this is called only once the scroll is completed
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            //this is called before the next row is rendered, before getView()
-            //this is more fluid
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                /*for (int i = 0; i <= addListView.getLastVisiblePosition() - addListView.getFirstVisiblePosition(); i++) {
-
-                    View item = addListView.getChildAt(i);
-                    item.setBackgroundColor(0xFFFFFFFF);
-
-                    if(i == oldDivision) {
-                        //getItem(oldDivision).setBackgroundColor(0xCC448AFF);
-                    }
-                }
-                addListView.getAdapter().getView(oldDivision, null, view).setBackgroundColor(0xCC448AFF);
-*/
             }
         });
 

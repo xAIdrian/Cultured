@@ -2,17 +2,17 @@ package com.androidtitan.trooptracker.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooptracker.Activity.LandingActivity;
+import com.androidtitan.trooptracker.Activity.ChampionActivity;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
-import com.androidtitan.trooptracker.Data.Division;
+import com.androidtitan.trooptracker.Data.Soldier;
 
 import java.util.List;
 
@@ -26,17 +26,19 @@ todo:   and implement them in the getView here.
 todo:   We might have to deal with passing the 'oldDivision' and 'divSelected' variables
 todo:   maybe create some headers.
  */
-public class LandingAdapter extends BaseAdapter {
+public class ChampionAdapter extends BaseAdapter {
 
     private Activity context;
     DatabaseHelper databaseHelper;
 
-    private List<Division> adapterData;
+    private List<Soldier> adapterData;
     private LayoutInflater layoutInflater;
 
-    public LandingAdapter(Activity acontext, List<Division> divisions) {
+    private int selection = -1;
+
+    public ChampionAdapter(Activity acontext, List<Soldier> soldiers) {
         this.context = acontext;
-        this.adapterData = divisions;
+        this.adapterData = soldiers;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         databaseHelper = DatabaseHelper.getInstance(context);
@@ -60,48 +62,43 @@ public class LandingAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
         ListViewHolder viewHolder;
 
+        selection = ((ChampionActivity) context).getListViewSelection();
 
         if(convertView == null) {
             //inflate the listview_item_row.xml
-            //LayoutInflater li = (LayoutInflater) context
-              //      .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = layoutInflater.inflate(R.layout.expandablelistview_group_item, null);
+            LayoutInflater li = (LayoutInflater) context
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = li.inflate(R.layout.listview_champion_item, null);
 
-            viewHolder = new ListViewHolder(v);
-            v.setTag(viewHolder);
+            viewHolder = new ListViewHolder();
+            convertView.setTag(viewHolder);
+            viewHolder.firstItem = (TextView) convertView.findViewById(R.id.champ_text);
+
         }
         else {
-            viewHolder = (ListViewHolder) v.getTag();
+            viewHolder = (ListViewHolder) convertView.getTag();
         }
 
-        viewHolder.firstItem.setText(adapterData.get(position).getName());
+        //ListViewSelection
+        if (position == selection) {
+            convertView.setBackgroundColor(0xCC448AFF);
+        }
+        else {
+            convertView.setBackgroundColor(0xFFFFFFFF);
+        }
 
-        //here we are attaching the position to the TextView and passing it down to the click event
-        viewHolder.viewBtn.setTag(position);
+        viewHolder.firstItem.setText(adapterData.get(position).getfName() + " "
+                + adapterData.get(position).getlName());
 
-        viewHolder.viewBtn.setOnClickListener(new TextView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = (Integer) v.getTag();
-                ((LandingActivity) context).upTick(adapterData.get(position));
-                ((LandingActivity) context).soldierListOpener(position);
-            }
-        });
+        Log.e("CLFonItemClick", adapterData.get(position).getfName() + " " + adapterData.get(position).isSelected());
 
-        return v;
+        return convertView;
     }
 
     class ListViewHolder {
         public TextView firstItem;
-        public Button viewBtn;
-
-        public ListViewHolder(View view) {
-            firstItem = (TextView) view.findViewById(R.id.divGroupListItem);
-            viewBtn = (Button) view.findViewById(R.id.viewDivBtn);
-        }
     }
 
     public void removeItem(int itemPosition) {
@@ -110,5 +107,7 @@ public class LandingAdapter extends BaseAdapter {
         adapterData.remove(itemPosition);
         notifyDataSetChanged();
         notifyDataSetInvalidated();
+
     }
+
 }

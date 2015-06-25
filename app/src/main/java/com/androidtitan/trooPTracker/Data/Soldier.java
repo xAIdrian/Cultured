@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Data;
+package com.androidtitan.trooptracker.Data;
 
 /**
  * Created by A. Mohnacs on 5/11/2015.
@@ -9,6 +9,7 @@ public class Soldier {
     private long id;
     private String fName;
     private String lName;
+    private boolean isSelected;
 
     public Soldier(){
     }
@@ -18,7 +19,7 @@ public class Soldier {
         this.lName = last;
     }
 
-    public Soldier(int iid, String first, String last, String spec){
+    public Soldier(int iid, String first, String last){
         this.id = iid;
         this.fName = first;
         this.lName = last;
@@ -46,6 +47,14 @@ public class Soldier {
 
     public void setlName(String lName) {
         this.lName = lName;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setIsSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
 
     //we are overriding toString() so it's default implementation is to return a string

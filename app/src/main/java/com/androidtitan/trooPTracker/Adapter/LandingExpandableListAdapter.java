@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Adapter;
+package com.androidtitan.trooptracker.Adapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,9 +9,9 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooPTracker.Activity.LandingActivity;
-import com.androidtitan.trooPTracker.Data.DatabaseHelper;
-import com.androidtitan.trooPTracker.Data.Division;
+import com.androidtitan.trooptracker.Activity.LandingActivity;
+import com.androidtitan.trooptracker.Data.DatabaseHelper;
+import com.androidtitan.trooptracker.Data.Division;
 
 import java.util.List;
 
@@ -91,10 +91,10 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
         View v = convertView;
         ExpandableListViewHolder viewHolder;
 
-        if (convertView == null) {
+        if (convertView == null) {/*
             LayoutInflater li = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = li.inflate(R.layout.expandablelistview_group_item, null);
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);*/
+            v = Linflater.inflate(R.layout.expandablelistview_group_item, null);
             viewHolder = new ExpandableListViewHolder(v);
             v.setTag(viewHolder);
         }

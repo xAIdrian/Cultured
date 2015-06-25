@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Activity;
+package com.androidtitan.trooptracker.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,9 +8,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooPTracker.Fragment.AdderFragment;
-import com.androidtitan.trooPTracker.Fragment.DivAdderFragment;
-import com.androidtitan.trooPTracker.Interface.AdderInterface;
+import com.androidtitan.trooptracker.Fragment.AdderFragment;
+import com.androidtitan.trooptracker.Fragment.DivAdderFragment;
+import com.androidtitan.trooptracker.Interface.AdderInterface;
 
 //ToDo: receive whether this is a SOLDIER or DIVISION
 public class AdderActivity extends FragmentActivity implements AdderInterface {
@@ -42,7 +42,7 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
         isDivisionAdder = intent.getBooleanExtra("landingBool", false);
         isEditAdder = intent.getBooleanExtra("landingEdit", false);
         adderDivisionIndex = intent.getIntExtra("landingDivision", -1);
-        //
+
         if(isDivisionAdder == true) {
 
             //onOrientationChange Block
@@ -91,28 +91,6 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
         }
 
     }
-/*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_second, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 
     @Override
     public void onBackPressed() {
@@ -150,6 +128,9 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
         editArgs.putString("editSoloLast", soldierLname);
         adderFragment = new AdderFragment();
         adderFragment.setArguments(editArgs);
+
+        Log.e("AAgetSoldierEditItems", "selection: " + soldierIndex);
+
 
         return soldierFname; //this is simply a check to make sure we received
         // for the purpose of the try/catch block

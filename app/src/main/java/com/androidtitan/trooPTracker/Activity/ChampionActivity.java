@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Activity;
+package com.androidtitan.trooptracker.Activity;
 
 import android.app.FragmentTransaction;
 import android.content.Intent;
@@ -8,18 +8,17 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooPTracker.Fragment.ChampionListFragment;
-import com.androidtitan.trooPTracker.Interface.ChampionInterface;
-import com.androidtitan.trooPTracker.Interface.ChampionDataPullInterface;
+import com.androidtitan.trooptracker.Fragment.ChampionListFragment;
+import com.androidtitan.trooptracker.Interface.ChampionInterface;
+import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
 
 public class ChampionActivity extends AppCompatActivity implements ChampionDataPullInterface, ChampionInterface{
 
     ChampionListFragment championFragment;
     //ChampionDataPullInterface push4frag2pull;
 
-    Boolean isDualPane;
-
     int divisionIndex;
+    int selectionIndex = - 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +44,7 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
 
 
         FragmentTransaction fragTran = getFragmentManager().beginTransaction();
-        fragTran.add(R.id.championContainer, championFragment, "championFragment").commit();
+        fragTran.replace(R.id.championContainer, championFragment, "championFragment").commit();
 
     }
 
@@ -57,6 +56,8 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
 
     @Override
     public void soldierPasser(int soldierInt, int divisionInt, String first, String last) {
+        Log.e("CAdeleter", "selection " + String.valueOf(soldierInt));
+
 
         Intent intent = new Intent(this, AdderActivity.class);
         intent.putExtra("editSoloIndex", soldierInt);
@@ -66,11 +67,7 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
         startActivity(intent);
     }
 
-    @Override
-    public void refreshViewPager(int index) {
-
-    }
-
+    //this is going to be once we have more fragments such as maps and what's nearby
     @Override
     public void drawerListViewSelection(int selection) {
 
@@ -87,9 +84,21 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
     }
 
     @Override
+    public void setListViewSelection(int selection) {
+        selectionIndex = selection;
+    }
+
+    public int getListViewSelection() {
+        return selectionIndex;
+    }
+
+
+    @Override
     public int getDivisionIndex() {
         return divisionIndex;
     }
+
+
 
     @Override
     public void onBackPressed() {

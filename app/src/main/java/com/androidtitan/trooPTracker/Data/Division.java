@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Data;
+package com.androidtitan.trooptracker.Data;
 
 /**
  * Created by A. Mohnacs on 5/13/2015.

@@ -1,4 +1,4 @@
-package com.androidtitan.trooPTracker.Interface;
+package com.androidtitan.trooptracker.Interface;
 
 /**
  * Created by A. Mohnacs on 5/15/2015.
@@ -17,7 +17,7 @@ package com.androidtitan.trooPTracker.Interface;
 public interface ChampionInterface {
     public void tabInteraction(int id);
     public void soldierPasser(int soldierInt, int divisionInt, String first, String last);
-    public void refreshViewPager(int index);
     public void drawerListViewSelection(int selection);
     public void adderFragDivReference(int divIndex);
+    public void setListViewSelection(int selection);
 }
