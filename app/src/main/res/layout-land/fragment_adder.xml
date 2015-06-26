@@ -57,7 +57,9 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:descendantFocusability="beforeDescendants"
+            android:focusableInTouchMode="true">
 
             <TextView
                 android:id="@+id/firstTitleText"
@@ -83,7 +85,8 @@
                 android:gravity="center"
                 android:imeOptions="actionNext"
                 android:inputType="textCapSentences"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:selectAllOnFocus="true"/>
 
             <TextView
                 android:id="@+id/lastTitleText"
@@ -111,7 +114,8 @@
                 android:gravity="center"
                 android:imeOptions="actionDone"
                 android:inputType="textCapSentences"
-                android:singleLine="true" />
+                android:singleLine="true"
+                android:selectAllOnFocus="true"/>
 
         </RelativeLayout>
 
@@ -139,7 +143,16 @@
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
             android:paddingBottom="10dp"
-            android:weightSum="2">
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/deleteBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/delete"
+                android:textColor="#F90101" />
 
             <TextView
                 android:id="@+id/map_button"
@@ -162,7 +175,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/add"
-                android:textColor="#4CAF50" />
+                android:textColor="#4CAF50"
+                android:textStyle="bold"/>
 
         </LinearLayout>
 

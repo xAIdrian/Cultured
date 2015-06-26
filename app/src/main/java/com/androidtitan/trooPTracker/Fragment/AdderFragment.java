@@ -43,6 +43,7 @@ public class AdderFragment extends Fragment {
     private EditText firstEdit;
     private EditText lastEdit;
     private ListView addListView;
+    private TextView deleteBtn;
     //private mapBtn;
     private TextView addBtn;
 
@@ -53,7 +54,6 @@ public class AdderFragment extends Fragment {
 
     private int divSelected = -1;
     private int oldDivision = -1;
-    private boolean listViewItemSelected = false;
 
     @Override
     public void onAttach(Activity activity) {
@@ -123,6 +123,28 @@ public class AdderFragment extends Fragment {
         firstEdit = (EditText) v.findViewById(R.id.firstName_edit);
         lastEdit = (EditText) v.findViewById(R.id.lastName_edit);
 
+        deleteBtn = (TextView) v.findViewById(R.id.deleteBtn);
+        if(soldierIndex == -1) {
+            deleteBtn.setVisibility(View.GONE);
+        }
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(soldierIndex != -1) {
+                    Division focusDivision = databaseHelper.getAllDivisions().get(oldDivision);
+                    Soldier focusSoldier = databaseHelper.getAllSoldiersByDivision(focusDivision).get(soldierIndex);
+
+                    for (Soldier s : databaseHelper.getAllSoldiersByDivision(focusDivision)) {
+                        s.setIsSelected(false);
+                    }
+
+                    databaseHelper.deleteSoldier(focusSoldier);
+                    adderInterface.divInteraction(oldDivision);
+                }
+            }
+        });
+
         //mapBtn
         addBtn = (TextView) v.findViewById(R.id.submit_button);
         if(editPage == true) {
@@ -138,6 +160,13 @@ public class AdderFragment extends Fragment {
         });
 
         firstEdit.setText(newFname);
+        firstEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                firstEdit.setSelectAllOnFocus(true);
+
+            }
+        });
         firstEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -196,9 +225,7 @@ public class AdderFragment extends Fragment {
 
                 view.setBackgroundColor(0xCC448AFF);
 
-                //oldDivision = -1;
                 divSelected = position;
-                listViewItemSelected = true;
             }
         });
 
@@ -223,13 +250,8 @@ public class AdderFragment extends Fragment {
 
                         databaseHelper.updateSoldier(updateSoldier);
                         databaseHelper.updateSoldierDivision(updateSoldier, assignedToDiv);
-                        //databaseHelper.updateDivision(databaseHelper.getAllDivisions().get(oldDivision));
 
                         adderInterface.divInteraction(divSelected);
-
-
-                        //if the user is not in the Division selected. Assign and update division
-
                     }
 
                     //if we are adding a New user

@@ -229,8 +229,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void deleteSoldier(Soldier soldier) {
         SQLiteDatabase database = this.getWritableDatabase();
         database.delete(TABLE_SOLDIER,
-                KEY_ID + " = ?", new String[] { String.valueOf(soldier.getId())});
+                KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
 
+    }
+
+    //Update all of our Soldiers within the Soldiers Table
+    //we are going to iterate through the table and update each item
+    //todo: look up "how to recreate database on action"
+    public void updateSoldierTable() {
+        SQLiteDatabase database = this.getWritableDatabase();
+        List<Soldier> troops = getAllSoldiers();
+
+        for(Soldier soldier : troops) {
+            ContentValues values = new ContentValues();
+            values.put(KEY_FIRSTNAME, soldier.getfName());
+            values.put(KEY_LASTNAME, soldier.getlName());
+            //updating
+            database.update(TABLE_SOLDIER, values,
+                    KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
+        }
     }
 
     //DIVISION TABLE

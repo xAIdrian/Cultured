@@ -2,6 +2,8 @@ package com.androidtitan.trooptracker.Fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,7 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooptracker.Adapter.ChampionAdapter;
+import com.androidtitan.trooptracker.Adapter.ChampionCursorAdapter;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Division;
 import com.androidtitan.trooptracker.Data.Soldier;
@@ -28,13 +30,13 @@ public class ChampionListFragment extends Fragment {
     ChampionInterface championInterface;
     ChampionDataPullInterface pullInterface;
 
-    ImageView deleter;
     ImageView editer;
     ImageView adder;
     TextView proceedBtn; //this will "slide" the fragment to
 
     TextView championHeader;
-    ChampionAdapter adapter;
+    //ChampionAdapter adapter;
+    ChampionCursorAdapter adapter;
     ListView listView;
 
     Division focusDivision;
@@ -89,6 +91,7 @@ public class ChampionListFragment extends Fragment {
             @Override
             public void run() {
                 adapter.notifyDataSetChanged();
+                adapter.notifyDataSetInvalidated();
                 listView.invalidateViews();
             }
         };
@@ -100,15 +103,16 @@ public class ChampionListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_listview_champion, container, false);
 
-        deleter = (ImageView) getActivity().findViewById(R.id.deleteBtn);
+        //deleter = (ImageView) getActivity().findViewById(R.id.deleteBtn);
         editer = (ImageView)  getActivity().findViewById(R.id.editBtn);
         adder = (ImageView) getActivity().findViewById(R.id.addBtn);
+        proceedBtn = (TextView) getActivity().findViewById(R.id.proceedBtn);
 
         championHeader = (TextView) v.findViewById(R.id.championHeader);
         championHeader.setText(databaseHelper.getAllDivisions().get(receivedIndex).getName());
 
         listView = (ListView) v.findViewById(R.id.championList);
-        adapter = new ChampionAdapter(getActivity(), getListItems());
+        adapter = new ChampionCursorAdapter(getActivity(), getListItems());
         listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -126,8 +130,7 @@ public class ChampionListFragment extends Fragment {
                     selection = position;
                     championInterface.setListViewSelection(selection);
 
-                }
-                else {
+                } else {
 
                     troops.get(position).setIsSelected(false);
 
@@ -149,32 +152,6 @@ public class ChampionListFragment extends Fragment {
             }
         });
 
-        deleter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(selection != -1) {
-
-                    focusDivision = databaseHelper.getAllDivisions().get(receivedIndex);
-                    focusSoldier = databaseHelper.getAllSoldiersByDivision(focusDivision).get(selection);
-
-                    for(Soldier s : troops) {
-                        s.setIsSelected(false);
-                    }
-
-                    databaseHelper.deleteSoldier(focusSoldier);
-
-                    adapter.removeItem(selection);
-
-                    selection = -1;
-                    Log.e("CLFdeleter", "selection: " + String.valueOf(selection));
-
-                    championInterface.setListViewSelection(-1);
-
-                }
-
-            }
-        });
 
         editer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,6 +159,7 @@ public class ChampionListFragment extends Fragment {
                 Log.e("CFLediter", "selection: " + String.valueOf(selection));
 
                 if(selection != -1) {
+
                     //this will populate our Adder Fragment
                     focusSoldier = soldierItems.get(selection);
 
@@ -209,6 +187,15 @@ public class ChampionListFragment extends Fragment {
             }
         });
 
+        proceedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (Soldier s : troops) {
+                    Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
+                }
+            }
+        });
+
         return v;
     }
 
@@ -218,16 +205,27 @@ public class ChampionListFragment extends Fragment {
         championInterface = null;
     }
 
-    private List<Soldier> getListItems() {
-        ArrayList<Soldier> soldierItems = new ArrayList<Soldier>();
+    private Cursor getListItems() {
+        //ArrayList<Soldier> soldierItems = new ArrayList<Soldier>();
 
+        //DatabaseHandler is a SQLiteOpenHelper class connecting to SQLite
+        DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getActivity());
+        // Get access to the underlying writeable database
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        // Query for items from the database and get a cursor back
+        String selectQuery = "SELECT * FROM soldiers ts, divisions td, command tc WHERE td."
+                + "name = '" + databaseHelper.getAllDivisions().get(receivedIndex).getName() + "' AND td."
+                + "_id = tc.division_id AND ts._id = tc.soldier_id";
+
+        Cursor cursor;
         if (receivedIndex == -1) {
-            soldierItems.addAll(databaseHelper.getAllSoldiers());
-
+            //soldierItems.addAll(databaseHelper.getAllSoldiers());
+            cursor = db.rawQuery("SELECT * FROM soldiers", null);
         } else {
-            soldierItems.addAll(databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receivedIndex)));
+            //soldierItems.addAll(databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receivedIndex)));
+            cursor = db.rawQuery(selectQuery, null);
         }
-        return soldierItems;
+        return cursor;
     }
 
 
