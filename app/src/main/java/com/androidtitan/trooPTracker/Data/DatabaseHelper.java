@@ -106,8 +106,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_FIRSTNAME, soldier.getfName());
         values.put(KEY_LASTNAME, soldier.getlName());
-        //insert row
-        long soldier_id = database.insert(TABLE_SOLDIER, null, values);
+        //insert row. if there is a conflict the last parameter springs into action. Replacing entry.
+        //todo: I am uncertain if this will solve the Duplicates problem
+        long soldier_id = database.insertWithOnConflict(TABLE_SOLDIER, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         soldier.setId(soldier_id);
 
         Log.e("DBHcreateSoldier", getSoldier(soldier_id).getId() + " " +

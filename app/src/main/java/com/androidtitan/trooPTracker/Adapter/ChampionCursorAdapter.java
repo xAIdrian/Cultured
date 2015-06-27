@@ -9,12 +9,14 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooptracker.Activity.ChampionActivity;
 
 /**
  * Created by amohnacs on 6/25/15.
  */
 public class ChampionCursorAdapter extends CursorAdapter {
 
+    int selection;
 
     public ChampionCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
@@ -29,8 +31,11 @@ public class ChampionCursorAdapter extends CursorAdapter {
 
     // The bindView method is used to bind all data to a given view
     // such as setting the text on a TextView.
+    // bindView constructs each individual row. Similar to an adapter getView()
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
+
+        selection = ((ChampionActivity) context).getListViewSelection();
 
         TextView champTextView = (TextView) view.findViewById(R.id.champ_text);
 
@@ -40,6 +45,15 @@ public class ChampionCursorAdapter extends CursorAdapter {
 
         //populate fields
         champTextView.setText(firstText + " " + lastText);
+
+
+       //ListViewSelection
+        if (cursor.getPosition() == selection) {
+            view.setBackgroundColor(0xCC448AFF);
+        }
+        else {
+            view.setBackgroundColor(0xFFFFFFFF);
+        }
 
     }
 }

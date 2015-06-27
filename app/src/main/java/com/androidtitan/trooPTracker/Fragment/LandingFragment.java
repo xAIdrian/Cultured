@@ -32,7 +32,7 @@ public class LandingFragment extends Fragment {
 
     Toolbar toolbar;
 
-    private ImageView delete;
+    //private ImageView delete;
     private ImageView edit;
     private ImageView add;
 
@@ -71,7 +71,7 @@ public class LandingFragment extends Fragment {
 
         databaseHelper = databaseHelper.getInstance(getActivity());
 
-        Runnable run = new Runnable() {
+        /*Runnable run = new Runnable() {
             @Override
             public void run() {
 
@@ -82,7 +82,7 @@ public class LandingFragment extends Fragment {
                 simpleListView.invalidateViews();
 
             }
-        };
+        };*/
 
         /* this is to check our divisions that are in our database
         for(Division div : databaseHelper.getAllDivisions()) {
@@ -98,7 +98,7 @@ public class LandingFragment extends Fragment {
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 
-        delete = (ImageView) getActivity().findViewById(R.id.deleteBtn);
+        //delete = (ImageView) getActivity().findViewById(R.id.deleteBtn);
         edit = (ImageView) getActivity().findViewById(R.id.editBtn);
         add = (ImageView) getActivity().findViewById(R.id.addBtn);
 
@@ -106,12 +106,8 @@ public class LandingFragment extends Fragment {
             //listview when in LANDSCAPE
 
             simpleListView = (ListView) v.findViewById(R.id.divisionList);
-            //final ArrayList<String> divisionList = new ArrayList<String>();
             final List<Division> allDivisions = databaseHelper.getAllDivisions();
 
-            //for (Division div : allDivisions) {
-            //    divisionList.add(div.getName());
-            //}
             landingAdapter = new LandingAdapter(getActivity(), databaseHelper.getAllDivisions());
             simpleListView.setAdapter(landingAdapter);
 
@@ -209,20 +205,12 @@ public class LandingFragment extends Fragment {
             }
         });
 
-        delete.setOnClickListener(new View.OnClickListener() {
+        /*delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (selection != -1) {
                     //delete
-                    try {
-                        //try to delete the division and it's children
-                        databaseHelper.deleteDivision(databaseHelper.getAllDivisions().get(selection), true);
 
-                    } catch (NullPointerException e) {
-                        //if it doesn't have any children then delete just the division
-                        databaseHelper.deleteDivision(databaseHelper.getAllDivisions().get(selection), false);
-
-                    }
                     //update!
                     if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
                         landingAdapter.removeItem(selection);
@@ -250,7 +238,7 @@ public class LandingFragment extends Fragment {
                     }
                 }
             }
-        });
+        });*/
 
         return v;
     }

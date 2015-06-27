@@ -125,7 +125,7 @@ public class AdderFragment extends Fragment {
 
         deleteBtn = (TextView) v.findViewById(R.id.deleteBtn);
         if(soldierIndex == -1) {
-            deleteBtn.setVisibility(View.GONE);
+            deleteBtn.setTextColor(0xFFFFFFFF);
         }
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override

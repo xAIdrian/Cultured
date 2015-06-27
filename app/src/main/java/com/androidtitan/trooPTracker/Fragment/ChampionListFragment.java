@@ -22,7 +22,6 @@ import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
 import com.androidtitan.trooptracker.Interface.ChampionInterface;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ChampionListFragment extends Fragment {
@@ -41,7 +40,6 @@ public class ChampionListFragment extends Fragment {
 
     Division focusDivision;
     Soldier focusSoldier;
-    ArrayList<Soldier> soldierItems;
     List<Soldier> troops;
 
     int selection = -1;
@@ -81,20 +79,17 @@ public class ChampionListFragment extends Fragment {
 
         databaseHelper = DatabaseHelper.getInstance(getActivity());
 
-        soldierItems = new ArrayList<Soldier>();
+        troops = databaseHelper.getAllSoldiersByDivision(
+                databaseHelper.getAllDivisions().get(receivedIndex));
 
-        troops = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receivedIndex));
-        soldierItems.addAll(troops);
-
-
-        Runnable runnable = new Runnable() {
+        /*Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 adapter.notifyDataSetChanged();
                 adapter.notifyDataSetInvalidated();
                 listView.invalidateViews();
             }
-        };
+        };*/
 
     }
 
@@ -161,7 +156,7 @@ public class ChampionListFragment extends Fragment {
                 if(selection != -1) {
 
                     //this will populate our Adder Fragment
-                    focusSoldier = soldierItems.get(selection);
+                    focusSoldier = troops.get(selection);
 
                     for(Soldier s : troops) {
                         s.setIsSelected(false);
@@ -178,7 +173,7 @@ public class ChampionListFragment extends Fragment {
             public void onClick(View v) {
 
                 if(selection != -1) {
-                    focusSoldier = soldierItems.get(selection);
+                    focusSoldier = troops.get(selection);
                     focusSoldier.setIsSelected(false);
                 }
 
@@ -206,7 +201,6 @@ public class ChampionListFragment extends Fragment {
     }
 
     private Cursor getListItems() {
-        //ArrayList<Soldier> soldierItems = new ArrayList<Soldier>();
 
         //DatabaseHandler is a SQLiteOpenHelper class connecting to SQLite
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(getActivity());
@@ -219,10 +213,8 @@ public class ChampionListFragment extends Fragment {
 
         Cursor cursor;
         if (receivedIndex == -1) {
-            //soldierItems.addAll(databaseHelper.getAllSoldiers());
             cursor = db.rawQuery("SELECT * FROM soldiers", null);
         } else {
-            //soldierItems.addAll(databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(receivedIndex)));
             cursor = db.rawQuery(selectQuery, null);
         }
         return cursor;

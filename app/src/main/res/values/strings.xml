@@ -50,4 +50,6 @@
     <string name="quick_division">Go To Division</string>
     <string name="title_activity_champion">ChampionActivity</string>
 
+    <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->
+
 </resources>

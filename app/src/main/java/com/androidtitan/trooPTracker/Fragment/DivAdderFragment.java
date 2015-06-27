@@ -29,6 +29,7 @@ public class DivAdderFragment extends Fragment {
 
     LinearLayout backLayout;
     private EditText nameEdit;
+    private TextView deleteBtn;
     private TextView addBtn;
 
     private boolean isEdit = false;
@@ -88,6 +89,7 @@ public class DivAdderFragment extends Fragment {
 
         nameEdit = (EditText) v.findViewById(R.id.name_edit);
         addBtn = (TextView) v.findViewById(R.id.submit_button);
+        deleteBtn = (TextView) v.findViewById(R.id.deleteBtn);
         backLayout = (LinearLayout) v.findViewById(R.id.back_layout);
 
         //changes to our view if we are editing an element.
@@ -95,13 +97,13 @@ public class DivAdderFragment extends Fragment {
             addBtn.setText("Edit");
         }
             backLayout.setOnClickListener(new ImageView.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), LandingActivity.class);
-                getActivity().finish();
-                startActivity(intent);
-            }
-        });
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), LandingActivity.class);
+                    getActivity().finish();
+                    startActivity(intent);
+                }
+            });
 
         nameEdit.setText(newName);
         nameEdit.addTextChangedListener(new TextWatcher() {
@@ -116,6 +118,25 @@ public class DivAdderFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+            }
+        });
+
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    //try to delete the division and it's children
+                    databaseHelper.deleteDivision(databaseHelper.getAllDivisions().get(divSelected), true);
+
+                } catch (NullPointerException e) {
+                    //if it doesn't have any children then delete just the division
+                    databaseHelper.deleteDivision(databaseHelper.getAllDivisions().get(divSelected), false);
+
+                }
+
+                Intent intent = new Intent(getActivity(), LandingActivity.class);
+                getActivity().finish();
+                startActivity(intent);
             }
         });
 
