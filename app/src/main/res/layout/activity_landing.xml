@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/landingContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"/>
+
+    <!-- FrameLayour draws in the order things are listed
+        this will cause our toolbar to overlap the fragment's view-->
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:minHeight="?attr/actionBarSize">
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        app:contentInsetEnd="0dp"
+        app:contentInsetStart="0dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -20,10 +30,12 @@
                 android:id="@+id/editBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/deleteBtn"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:focusable="false"
                 android:gravity="center"
                 android:padding="4dp"
+                android:layout_marginLeft="4dp"
                 android:src="@drawable/edit_icon" />
 
             <ImageView
@@ -34,16 +46,14 @@
                 android:focusable="false"
                 android:gravity="center"
                 android:padding="4dp"
+                android:layout_marginLeft="4dp"
                 android:src="@drawable/add_icon" />
 
         </RelativeLayout>
 
     </android.support.v7.widget.Toolbar>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/landingContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"/>
 
-</RelativeLayout>
+
+
+</FrameLayout>

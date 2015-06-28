@@ -1,13 +1,20 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF">
+
+    <FrameLayout
+        android:id="@+id/championContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"/>
+
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#4CAF50"
+        android:background="@android:color/transparent"
         android:minHeight="?attr/actionBarSize">
 
         <RelativeLayout
@@ -54,13 +61,8 @@
 
     </android.support.v7.widget.Toolbar>
 
-    <FrameLayout
-        android:id="@+id/championContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"/>
 
-</RelativeLayout>
+</FrameLayout>
 
 
 

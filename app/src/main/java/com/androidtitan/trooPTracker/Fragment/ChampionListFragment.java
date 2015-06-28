@@ -140,7 +140,7 @@ public class ChampionListFragment extends Fragment {
                     View item = listView.getChildAt(i);
                     item.setBackgroundColor(0xFFFFFFFF);
                 }
-                view.setBackgroundColor(0xCC448AFF);
+                view.setBackgroundColor(0xCCFFCD38);
 
                 Log.e("CLFonItemClick", troops.get(position).getfName() + " " + troops.get(position).isSelected());
 

@@ -77,9 +77,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         //insert into TABLE_DIVISION (_id, name, local) values(1, 'Hinogi', 'Japan')
-        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'Seattle, Washington', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego, California', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'London, England', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'North West', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'EastBay                                                                                                                                                                                                                 ', 0)");
     }
 
     @Override

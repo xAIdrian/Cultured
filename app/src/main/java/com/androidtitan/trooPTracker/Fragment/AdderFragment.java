@@ -223,7 +223,7 @@ public class AdderFragment extends Fragment {
                     item.setBackgroundColor(0xFFFFFFFF);
                 }
 
-                view.setBackgroundColor(0xCC448AFF);
+                view.setBackgroundColor(0xCCFFCD38);
 
                 divSelected = position;
             }
@@ -307,7 +307,7 @@ public class AdderFragment extends Fragment {
             //if no item has been selected and we are not reassigning divisions
             if(editPage == true) {
                 if (position == oldDivision) {
-                    convertView.setBackgroundColor(0xCC448AFF);
+                    convertView.setBackgroundColor(0xCCFFCD38);
                 }
                 else {
                     convertView.setBackgroundColor(0xFFFFFFFF);
@@ -316,7 +316,7 @@ public class AdderFragment extends Fragment {
             //if an item is selected that would reassign the soldeir
             else {
                 if (position == divSelected) {
-                    convertView.setBackgroundColor(0xCC448AFF);
+                    convertView.setBackgroundColor(0xCCFFCD38);
                 }
                 else {
                     convertView.setBackgroundColor(0xFFFFFFFF);

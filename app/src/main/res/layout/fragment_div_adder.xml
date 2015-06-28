@@ -40,7 +40,7 @@
             android:gravity="end"
             android:text="@string/add_division"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#4CAF50"/>
+            android:textColor="@color/colorPrimaryText"/>
 
     </LinearLayout>
 
@@ -68,7 +68,8 @@
         android:gravity="center"
         android:imeOptions="actionDone"
         android:singleLine="true"
-        android:inputType="textCapSentences"/>
+        android:inputType="textCapSentences"
+        android:maxLength="18"/>
 
     <LinearLayout
         android:id="@+id/bottomConfirm"

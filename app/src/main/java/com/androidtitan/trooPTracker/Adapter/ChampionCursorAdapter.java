@@ -49,7 +49,7 @@ public class ChampionCursorAdapter extends CursorAdapter {
 
        //ListViewSelection
         if (cursor.getPosition() == selection) {
-            view.setBackgroundColor(0xCC448AFF);
+            view.setBackgroundColor(0xCCFFCD38);
         }
         else {
             view.setBackgroundColor(0xFFFFFFFF);
