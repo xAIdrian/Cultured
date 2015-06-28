@@ -5,14 +5,18 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Adapter.LandingAdapter;
@@ -32,7 +36,6 @@ public class LandingFragment extends Fragment {
 
     Toolbar toolbar;
 
-    private ImageView delete;
     private ImageView edit;
     private ImageView add;
 
@@ -42,6 +45,7 @@ public class LandingFragment extends Fragment {
     private LandingExpandableListAdapter expandableAdapter;
 
     private int selection = -1;
+    private boolean expanded = false;
 
     @Override
     public void onAttach(Activity activity) {
@@ -71,24 +75,6 @@ public class LandingFragment extends Fragment {
 
         databaseHelper = databaseHelper.getInstance(getActivity());
 
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-
-                expandableAdapter.notifyDataSetChanged();
-                landingAdapter.notifyDataSetChanged();
-
-                expandableListView.invalidateViews();
-                simpleListView.invalidateViews();
-
-            }
-        };
-
-        /* this is to check our divisions that are in our database
-        for(Division div : databaseHelper.getAllDivisions()) {
-            Log.e("database LOG", div.getId() + ": " + div.getName());
-        }*/
-
     }
 
     @Override
@@ -98,20 +84,17 @@ public class LandingFragment extends Fragment {
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 
-        delete = (ImageView) getActivity().findViewById(R.id.deleteBtn);
         edit = (ImageView) getActivity().findViewById(R.id.editBtn);
+        edit.setVisibility(View.GONE);
+
         add = (ImageView) getActivity().findViewById(R.id.addBtn);
 
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
             //listview when in LANDSCAPE
 
             simpleListView = (ListView) v.findViewById(R.id.divisionList);
-            //final ArrayList<String> divisionList = new ArrayList<String>();
             final List<Division> allDivisions = databaseHelper.getAllDivisions();
 
-            //for (Division div : allDivisions) {
-            //    divisionList.add(div.getName());
-            //}
             landingAdapter = new LandingAdapter(getActivity(), databaseHelper.getAllDivisions());
             simpleListView.setAdapter(landingAdapter);
 
@@ -129,7 +112,7 @@ public class LandingFragment extends Fragment {
                         item.setBackgroundColor(0xFFFFFFFF);
                     }
                     if (selection != position) {
-                        view.setBackgroundColor(0xCC448AFF);
+                        view.setBackgroundColor(0xCCFFCD38);
                         selection = position;
 
                     } else {
@@ -159,8 +142,14 @@ public class LandingFragment extends Fragment {
                         expandableListView.collapseGroup(previousItem);
                     }
                     previousItem = groupPosition;
+                    expanded = true;
+                }
+            });
 
-
+            expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+                @Override
+                public void onGroupCollapse(int groupPosition) {
+                    expanded = false;
                 }
             });
 
@@ -168,19 +157,47 @@ public class LandingFragment extends Fragment {
             expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
                 public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    int previousItem = -1;
 
-                    for (int i = 0; i < expandableAdapter.getGroupCount(); i++) {
-                        View item = expandableListView.getChildAt(i);
-                        item.setBackgroundColor(0xFFFFFFFF);
-                    }
-                    if (selection == position) {
-                        view.setBackgroundColor(0xFFFFFFFF);
-                        selection = -1;
-                    } else {
-                        view.setBackgroundColor(0xCC448AFF);
-                        selection = position;
-                    }
+                    Animation slideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.edit_icon_slidein);
+                    Animation slideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.edit_icon_slideout);
+                    Animation addSlideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.add_icon_slidein);
+                    Animation addSlideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.add_icon_slideout);
 
+                    final RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams
+                            (RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    int afterSlideInValue = (int) (47 * getActivity().getResources().getDisplayMetrics().density);
+
+                    lp.setMargins(afterSlideInValue, 0, 0, 0);
+
+                    Handler handler = new Handler();
+
+                    if (expanded == false) {
+                        //highlight item
+                        for (int i = 0; i < expandableAdapter.getGroupCount(); i++) {
+                            View item = expandableListView.getChildAt(i);
+                            item.setBackgroundColor(0xFFFFFFFF);
+                        }
+                        if (selection == position) {
+                            view.setBackgroundColor(0xFFFFFFFF);
+                            selection = -1;
+
+                            edit.startAnimation(slideOut);
+                            add.startAnimation(addSlideOut);
+                            edit.setVisibility(View.GONE);
+
+                        } else {
+                            view.setBackgroundColor(0xCCFFCD38);
+                            selection = position;
+
+                            //slidein
+                            edit.setVisibility(View.VISIBLE);
+                            edit.startAnimation(slideIn);
+                            add.startAnimation(addSlideIn);
+
+                        }
+
+                    }
                     return true;
                 }
             });
@@ -209,48 +226,6 @@ public class LandingFragment extends Fragment {
             }
         });
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selection != -1) {
-                    //delete
-                    try {
-                        //try to delete the division and it's children
-                        databaseHelper.deleteDivision(databaseHelper.getAllDivisions().get(selection), true);
-
-                    } catch (NullPointerException e) {
-                        //if it doesn't have any children then delete just the division
-                        databaseHelper.deleteDivision(databaseHelper.getAllDivisions().get(selection), false);
-
-                    }
-                    //update!
-                    if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-                        landingAdapter.removeItem(selection);
-                        simpleListView.invalidateViews();
-                    }
-                    else {
-                        expandableAdapter.removeGroup(selection);
-                        expandableListView.invalidateViews();
-                    }
-
-                    //removing risidual highlighting
-                    if(expandableAdapter != null) {
-                        for (int i = 0; i < expandableAdapter.getGroupCount(); i++) {
-                            View item = expandableListView.getChildAt(i);
-                            item.setBackgroundColor(0xFFFFFFFF);
-                        }
-                        selection = -1;
-                    }
-                    else {
-                        for (int i = 0; i <= simpleListView.getLastVisiblePosition() - simpleListView.getFirstVisiblePosition(); i++) {
-                            View item = simpleListView.getChildAt(i);
-                            item.setBackgroundColor(0xFFFFFFFF);
-                        }
-                        selection = -1;
-                    }
-                }
-            }
-        });
 
         return v;
     }

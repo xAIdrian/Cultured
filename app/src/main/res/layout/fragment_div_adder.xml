@@ -40,7 +40,7 @@
             android:gravity="end"
             android:text="@string/add_division"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#4CAF50"/>
+            android:textColor="@color/colorPrimaryText"/>
 
     </LinearLayout>
 
@@ -68,25 +68,39 @@
         android:gravity="center"
         android:imeOptions="actionDone"
         android:singleLine="true"
-        android:inputType="textCapSentences"/>
+        android:inputType="textCapSentences"
+        android:maxLength="18"/>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/bottomConfirm"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
-        android:paddingBottom="10dp">
+        android:orientation="horizontal"
+        android:paddingBottom="10dp"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/deleteBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/delete"
+            android:textColor="#F90101" />
 
         <TextView
             android:id="@+id/submit_button"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:gravity="center"
             android:layout_marginRight="10dp"
             android:text="@string/add"
-            android:textColor="#4CAF50" />
+            android:textColor="#4CAF50"
+            android:textStyle="bold"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </RelativeLayout>
 

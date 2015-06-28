@@ -77,9 +77,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
         //insert into TABLE_DIVISION (_id, name, local) values(1, 'Hinogi', 'Japan')
-        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'Seattle, Washington', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego, California', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'London, England', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'North West', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego', 0)");
+        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'EastBay                                                                                                                                                                                                                 ', 0)");
     }
 
     @Override
@@ -106,8 +106,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_FIRSTNAME, soldier.getfName());
         values.put(KEY_LASTNAME, soldier.getlName());
-        //insert row
-        long soldier_id = database.insert(TABLE_SOLDIER, null, values);
+        //insert row. if there is a conflict the last parameter springs into action. Replacing entry.
+        //todo: I am uncertain if this will solve the Duplicates problem
+        long soldier_id = database.insertWithOnConflict(TABLE_SOLDIER, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         soldier.setId(soldier_id);
 
         Log.e("DBHcreateSoldier", getSoldier(soldier_id).getId() + " " +
@@ -229,8 +230,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void deleteSoldier(Soldier soldier) {
         SQLiteDatabase database = this.getWritableDatabase();
         database.delete(TABLE_SOLDIER,
-                KEY_ID + " = ?", new String[] { String.valueOf(soldier.getId())});
+                KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
 
+    }
+
+    //Update all of our Soldiers within the Soldiers Table
+    //we are going to iterate through the table and update each item
+    //todo: look up "how to recreate database on action"
+    public void updateSoldierTable() {
+        SQLiteDatabase database = this.getWritableDatabase();
+        List<Soldier> troops = getAllSoldiers();
+
+        for(Soldier soldier : troops) {
+            ContentValues values = new ContentValues();
+            values.put(KEY_FIRSTNAME, soldier.getfName());
+            values.put(KEY_LASTNAME, soldier.getlName());
+            //updating
+            database.update(TABLE_SOLDIER, values,
+                    KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
+        }
     }
 
     //DIVISION TABLE
