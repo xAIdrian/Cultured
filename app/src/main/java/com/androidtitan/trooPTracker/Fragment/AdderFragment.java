@@ -123,6 +123,7 @@ public class AdderFragment extends Fragment {
         firstEdit = (EditText) v.findViewById(R.id.firstName_edit);
         lastEdit = (EditText) v.findViewById(R.id.lastName_edit);
 
+        //todo
         deleteBtn = (TextView) v.findViewById(R.id.deleteBtn);
         if(soldierIndex == -1) {
             deleteBtn.setTextColor(0xFFFFFFFF);

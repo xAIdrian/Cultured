@@ -12,7 +12,9 @@
         android:layout_below="@+id/toolbar"/>
 
     <!-- FrameLayour draws in the order things are listed
-        this will cause our toolbar to overlap the fragment's view-->
+        this will cause our toolbar to overlap the fragment's view -->
+
+    <!-- contentInsert is the automatic Margin that messes up displays -->
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"

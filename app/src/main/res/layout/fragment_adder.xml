@@ -130,7 +130,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/delete"
-            android:textColor="#F90101" />
+            android:textColor="@color/colorCrush" />
 
         <TextView
             android:id="@+id/map_button"

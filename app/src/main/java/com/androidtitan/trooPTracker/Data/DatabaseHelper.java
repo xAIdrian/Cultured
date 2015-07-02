@@ -126,11 +126,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getReadableDatabase();
 
         String selectQuery = "SELECT * FROM " + TABLE_SOLDIER
-                + " WHERE " + KEY_ID + " = " + soldier_id;
+                + " WHERE " + KEY_ID + " = " + String.valueOf(soldier_id);
 
-        Log.e("DBHgetSoldier", selectQuery);
 
-        Cursor cursor = database.rawQuery(selectQuery, null);
+        Cursor cursor = database.query(TABLE_SOLDIER, new String[]{KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME},
+                KEY_ID + "=?", new String[]{String.valueOf(soldier_id)}, null, null, null, null);
+
+        //Cursor cursor = database.rawQuery(selectQuery, null);
+        Log.e("DBHgetSoldier", String.valueOf(cursor));
+
+
+        /*
+        Cursor cursor = db.query(TABLE_CONTACTS, new String[] { KEY_ID,
+        KEY_NAME, KEY_PH_NO }, KEY_ID + "=?",
+        new String[] { String.valueOf(id) }, null, null, null, null);
+         */
 
         if(cursor != null) {
             cursor.moveToFirst();
@@ -139,6 +149,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
         soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
         soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+
+        Log.e("DBHgetSoldier", "We got him sir! " + soldier.getId() + "  "  + soldier.getfName());
 
         return soldier;
     }
@@ -183,8 +195,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.e("soldiersByDivision", division_name);
         List<Soldier> troops = new ArrayList<Soldier>();
 
-        String selectQuery = "SELECT * FROM " + TABLE_SOLDIER + " ts, "
-                + TABLE_DIVISION + " td, " + TABLE_COMMAND + " tc WHERE td."
+        String selectQuery = "SELECT * FROM "
+                + TABLE_SOLDIER + " ts, "
+                + TABLE_DIVISION + " td, "
+                + TABLE_COMMAND + " tc WHERE td."
                 + KEY_NAME + " = '" + division_name + "'" + " AND td." + KEY_ID
                 + " = " + "tc." + KEY_DIVISION_ID + " AND ts." + KEY_ID + " = "
                 + "tc." + KEY_SOLDIER_ID;
