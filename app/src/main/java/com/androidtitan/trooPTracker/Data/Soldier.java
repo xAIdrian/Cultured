@@ -9,7 +9,6 @@ public class Soldier {
     private long id;
     private String fName;
     private String lName;
-    private boolean isSelected;
 
     public Soldier(){
     }
@@ -49,13 +48,6 @@ public class Soldier {
         this.lName = lName;
     }
 
-    public boolean isSelected() {
-        return isSelected;
-    }
-
-    public void setIsSelected(boolean isSelected) {
-        this.isSelected = isSelected;
-    }
 
     //we are overriding toString() so it's default implementation is to return a string
     //not a memory address

@@ -132,17 +132,13 @@ public class AdderFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if(soldierIndex != -1) {
-                    Division focusDivision = databaseHelper.getAllDivisions().get(oldDivision);
-                    Soldier focusSoldier = databaseHelper.getAllSoldiersByDivision(focusDivision).get(soldierIndex);
+                Division focusDivision = databaseHelper.getAllDivisions().get(oldDivision);
+                Soldier focusSoldier = databaseHelper.getAllSoldiersByDivision(focusDivision).get(soldierIndex);
+                Log.e("AFdeleter", focusSoldier.getfName() + " " +focusSoldier.getId());
 
-                    for (Soldier s : databaseHelper.getAllSoldiersByDivision(focusDivision)) {
-                        s.setIsSelected(false);
-                    }
+                databaseHelper.deleteSoldier(focusSoldier);
+                adderInterface.divInteraction(oldDivision);
 
-                    databaseHelper.deleteSoldier(focusSoldier);
-                    adderInterface.divInteraction(oldDivision);
-                }
             }
         });
 

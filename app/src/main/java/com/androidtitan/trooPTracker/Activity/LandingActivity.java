@@ -21,6 +21,8 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
     FragmentTransaction fragTran = getFragmentManager().beginTransaction();
     LandingFragment landingFrag;
 
+    int divSelection = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +65,15 @@ public class LandingActivity extends FragmentActivity implements LandingInterfac
         visitTick++;
         division.setVisits(visitTick);
         databaseHelper.updateDivision(division);
+    }
+
+    @Override
+    public void divListViewSelection(int selection) {
+        divSelection = selection;
+    }
+
+    public int getdivSelection() {
+        return divSelection;
     }
 
     @Override

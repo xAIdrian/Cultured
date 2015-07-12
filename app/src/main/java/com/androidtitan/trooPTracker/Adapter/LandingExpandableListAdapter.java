@@ -29,6 +29,7 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
     private String[] childItems;
 
     private int soldierCount;
+    private int divSelected;
 
     /*
     Children titles, these will be pulls from the database
@@ -91,6 +92,8 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
         View v = convertView;
         ExpandableListViewHolder viewHolder;
 
+        divSelected = ((LandingActivity) context).getdivSelection();
+
         if (convertView == null) {/*
             LayoutInflater li = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);*/
@@ -110,8 +113,20 @@ public class LandingExpandableListAdapter extends BaseExpandableListAdapter {
                 //Starting Main Activity. soldierListOpener will set the divisionIndex
                 ((LandingActivity)context).upTick(adapterData.get(groupPosition));
                 ((LandingActivity)context).soldierListOpener(groupPosition);
+
             }
         });
+
+
+        //maintain selections
+        if(divSelected != -1) {
+
+            if(divSelected == groupPosition) {
+                convertView.setBackgroundColor(0xCCFFCD38);
+            } else {
+                convertView.setBackgroundColor(0xFFFFFFFF);
+            }
+        }
 
         return v;
     }

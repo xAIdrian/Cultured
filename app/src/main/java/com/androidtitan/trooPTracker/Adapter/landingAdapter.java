@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Activity.LandingActivity;
-import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Division;
 
 import java.util.List;
@@ -24,22 +23,21 @@ import java.util.List;
 todo:   we need to take the implementation of highlighting our listview items in the adapter form ADDERFRAGMENT
 todo:   and implement them in the getView here.
 todo:   We might have to deal with passing the 'oldDivision' and 'divSelected' variables
-todo:   maybe create some headers.
+todo:   maybe create some headers. (What do you even mean by headers?)
  */
 public class LandingAdapter extends BaseAdapter {
 
     private Activity context;
-    DatabaseHelper databaseHelper;
 
     private List<Division> adapterData;
     private LayoutInflater layoutInflater;
+
+    private int divSelected = -1;
 
     public LandingAdapter(Activity acontext, List<Division> divisions) {
         this.context = acontext;
         this.adapterData = divisions;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        databaseHelper = DatabaseHelper.getInstance(context);
 
     }
 
@@ -63,7 +61,7 @@ public class LandingAdapter extends BaseAdapter {
         View v = convertView;
         ListViewHolder viewHolder;
 
-
+        divSelected = ((LandingActivity) context).getdivSelection();
         if(convertView == null) {
             //inflate the listview_item_row.xml
             //LayoutInflater li = (LayoutInflater) context
@@ -81,7 +79,6 @@ public class LandingAdapter extends BaseAdapter {
 
         //here we are attaching the position to the TextView and passing it down to the click event
         viewHolder.viewBtn.setTag(position);
-
         viewHolder.viewBtn.setOnClickListener(new TextView.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +87,15 @@ public class LandingAdapter extends BaseAdapter {
                 ((LandingActivity) context).soldierListOpener(position);
             }
         });
+
+        if(divSelected != -1) {
+
+            if(divSelected == position) {
+                    v.setBackgroundColor(0xCCFFCD38);
+                } else {
+                    v.setBackgroundColor(0xFFFFFFFF);
+                }
+            }
 
         return v;
     }

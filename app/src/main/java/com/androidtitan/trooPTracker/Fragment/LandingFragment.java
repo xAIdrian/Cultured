@@ -43,12 +43,10 @@ public class LandingFragment extends Fragment {
     private ExpandableListView expandableListView;
     private LandingExpandableListAdapter expandableAdapter;
 
+    private List<Division> allDivisions;
+
     Animation slideIn;
     Animation slideOut;
-    Animation addSlideIn;
-    Animation addSlideOut;
-    Animation addSlideInLand;
-    Animation addSlideOutLand;
 
     private int selection = -1;
     private boolean expanded = false;
@@ -84,6 +82,9 @@ public class LandingFragment extends Fragment {
         slideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slidein);
         slideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slideout);
 
+        allDivisions = databaseHelper.getAllDivisions();
+
+
     }
 
     @Override
@@ -98,16 +99,17 @@ public class LandingFragment extends Fragment {
 
         add = (ImageView) getActivity().findViewById(R.id.addBtn);
 
+        //LANDSCAPE
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
             //listview when in LANDSCAPE
 
             simpleListView = (ListView) v.findViewById(R.id.divisionList);
-            final List<Division> allDivisions = databaseHelper.getAllDivisions();
 
             landingAdapter = new LandingAdapter(getActivity(), databaseHelper.getAllDivisions());
             simpleListView.setAdapter(landingAdapter);
 
 
+            //Landscape
             simpleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -121,6 +123,7 @@ public class LandingFragment extends Fragment {
                         View item = simpleListView.getChildAt(i);
                         item.setBackgroundColor(0xFFFFFFFF);
                     }
+
                     if (selection != position) {
 
                         view.setBackgroundColor(0xCCFFCD38);
@@ -137,12 +140,16 @@ public class LandingFragment extends Fragment {
                                     edit.startAnimation(slideIn);
                                 }
                             }, slideOut.getDuration());
-                            
-                            selection = position;
                         }
+
+                        selection = position;
+                        landingInterface.divListViewSelection(selection);
+
+
+
                     } else {
 
-                        view.setBackgroundColor(0xFFFFFFFF);
+                        //view.setBackgroundColor(0xFFFFFFFF);
 
                         edit.startAnimation(slideOut);
 
@@ -157,11 +164,16 @@ public class LandingFragment extends Fragment {
                         }, slideOut.getDuration());
 
                         selection = -1;
+                        landingInterface.divListViewSelection(selection);
 
                     }
+
                 }
             });
         }
+
+
+        //PORTRAIT with Expandable ListView
         else {
             //expandable listview when in PORTRAIT
             expandableAdapter = new LandingExpandableListAdapter(getActivity(), databaseHelper.getAllDivisions());
@@ -179,7 +191,9 @@ public class LandingFragment extends Fragment {
                 @Override
                 public void onGroupExpand(int groupPosition) {
 
-                    for (int i = 0; i < expandableAdapter.getGroupCount(); i++) {
+                    //for (int i = 0; i < expandableAdapter.getGroupCount(); i++) {
+                    for (int i = 0; i <= expandableListView.getLastVisiblePosition() - expandableListView.getFirstVisiblePosition(); i++) {
+
                         View item = expandableListView.getChildAt(i);
                         item.setBackgroundColor(0xFFFFFFFF);
                     }
@@ -209,6 +223,8 @@ public class LandingFragment extends Fragment {
                     selection = -1;
                     previousItem = groupPosition;
                     expanded = true;
+                    landingInterface.divListViewSelection(selection);
+
                 }
             });
 
@@ -227,7 +243,7 @@ public class LandingFragment extends Fragment {
 
                     Handler handler = new Handler();
 
-                    for (int i = 0; i < expandableAdapter.getGroupCount(); i++) {
+                    for (int i = 0; i <= expandableListView.getLastVisiblePosition() - expandableListView.getFirstVisiblePosition(); i++) {
                         View item = expandableListView.getChildAt(i);
                         item.setBackgroundColor(0xFFFFFFFF);
                     }
@@ -236,13 +252,11 @@ public class LandingFragment extends Fragment {
                         //highlight item
                         if (selection == position) {
                             view.setBackgroundColor(0xFFFFFFFF);
+
                             selection = -1;
+                            landingInterface.divListViewSelection(selection);
 
-                            /*edit.startAnimation(slideOut);
-                            add.startAnimation(addSlideOut);
-                            edit.setVisibility(View.GONE);*/
                             edit.startAnimation(slideOut);
-
                             handler.postDelayed(new Runnable() {
                                 public void run() {
                                     //Extra work goes here
@@ -258,9 +272,6 @@ public class LandingFragment extends Fragment {
 
                             //slidein
                             if (selection == -1) {
-                                /*edit.setVisibility(View.VISIBLE);
-                                edit.startAnimation(slideIn);
-                                add.startAnimation(addSlideIn);*/
 
                                 add.startAnimation(slideOut);
                                 handler.postDelayed(new Runnable() {
@@ -276,6 +287,7 @@ public class LandingFragment extends Fragment {
                             }
 
                             selection = position;
+                            landingInterface.divListViewSelection(selection);
 
                         }
 
@@ -284,7 +296,6 @@ public class LandingFragment extends Fragment {
                 }
             });
         }
-
 
 
         add.setOnClickListener(new View.OnClickListener() {
@@ -298,6 +309,7 @@ public class LandingFragment extends Fragment {
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (selection != -1) {
                     //this is a divison, we are editing, this is what we are editing.
                     landingInterface.divPasser(true, true, selection);

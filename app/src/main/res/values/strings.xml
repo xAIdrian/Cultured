@@ -49,6 +49,7 @@
     <string name="delete_info">Long Click to Delete</string>
     <string name="quick_division">Go To Division</string>
     <string name="title_activity_champion">ChampionActivity</string>
+    <string name="title_activity_maps">Map</string>
 
     <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->
 

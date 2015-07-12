@@ -3,13 +3,16 @@ package com.androidtitan.trooptracker.Fragment;
 import android.app.Activity;
 import android.app.Fragment;
 import android.database.Cursor;
-import android.database.CursorWrapper;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,28 +23,33 @@ import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
 import com.androidtitan.trooptracker.Interface.ChampionInterface;
-import com.wdullaer.swipeactionadapter.SwipeActionAdapter;
-import com.wdullaer.swipeactionadapter.SwipeDirections;
 
 import java.util.List;
 
 public class ChampionListFragment extends Fragment {
+
+    //MapFragment mapFrag;
+
     DatabaseHelper databaseHelper;
     ChampionInterface championInterface;
     ChampionDataPullInterface pullInterface;
 
+    ImageView editer;
     ImageView adder;
     TextView proceedBtn; //this will "slide" the fragment to
 
     TextView championHeader;
-    SwipeActionAdapter swipeAdapter;
     ChampionCursorAdapter adapter;
     ListView listView;
+
+    Animation slideIn;
+    Animation slideOut;
 
     Soldier focusSoldier;
     List<Soldier> troops;
 
     int position = -1;
+    int selection = -1;
     public int receivedIndex = -1;
 
     @Override
@@ -63,6 +71,7 @@ public class ChampionListFragment extends Fragment {
         }
 
         receivedIndex = pullInterface.getDivisionIndex();
+
     }
 
     public ChampionListFragment() {
@@ -81,16 +90,16 @@ public class ChampionListFragment extends Fragment {
         troops = databaseHelper.getAllSoldiersByDivision(
                 databaseHelper.getAllDivisions().get(receivedIndex));
 
-        /*
-        Runnable runnable = new Runnable() {
+        slideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slidein);
+        slideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slideout);
+
+        Runnable run = new Runnable() {
             @Override
             public void run() {
                 adapter.notifyDataSetChanged();
-                adapter.notifyDataSetInvalidated();
                 listView.invalidateViews();
             }
         };
-        */
 
     }
 
@@ -99,6 +108,8 @@ public class ChampionListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_listview_champion, container, false);
 
+        editer = (ImageView) getActivity().findViewById(R.id.editBtn);
+        editer.setVisibility(View.GONE);
         adder = (ImageView) getActivity().findViewById(R.id.addBtn);
         proceedBtn = (TextView) getActivity().findViewById(R.id.proceedBtn);
 
@@ -107,50 +118,74 @@ public class ChampionListFragment extends Fragment {
 
         listView = (ListView) v.findViewById(R.id.championList);
 
-        //implementation of swipe view adapter
         adapter = new ChampionCursorAdapter(getActivity(), getListItems());
-        swipeAdapter = new SwipeActionAdapter(adapter);
-        swipeAdapter.setListView(listView);
+        listView.setAdapter(adapter);
 
-        listView.setAdapter(swipeAdapter);
-
-        swipeAdapter.addBackground(SwipeDirections.DIRECTION_NORMAL_LEFT, R.layout.champion_swipe_left)
-                    .addBackground(SwipeDirections.DIRECTION_NORMAL_RIGHT, R.layout.champion_swipe_right)
-                    .addBackground(SwipeDirections.DIRECTION_NORMAL_LEFT, R.layout.champion_swipe_left)
-                    .addBackground(SwipeDirections.DIRECTION_FAR_RIGHT, R.layout.champion_swipe_right);
-
-        swipeAdapter.setFixedBackgrounds(true);
-        swipeAdapter.setNormalSwipeFraction(0); //every swipe will register
-        swipeAdapter.setFarSwipeFraction(1);    //setting to 1 should disable action
-
-        //todo
-        // Listen to swipes
-        swipeAdapter.setSwipeActionListener(new SwipeActionAdapter.SwipeActionListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean hasActions(int position) {
-                // All items can be swiped
-                return true;
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                Handler handler = new Handler();
+
+                for (int i = 0; i <= listView.getLastVisiblePosition() - listView.getFirstVisiblePosition(); i++) {
+                    View item = listView.getChildAt(i);
+                    item.setBackgroundColor(0xFFFFFFFF);
+                }
+
+                //ITEM HIGHLIGHT
+
+                //Deselection of an item
+                if (selection == position) {
+                    view.setBackgroundColor(0xFFFFFFFF);
+
+                    selection = -1;
+
+                    editer.startAnimation(slideOut);
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            //Extra work goes here
+                            editer.setVisibility(View.GONE);
+
+                            adder.setVisibility(View.VISIBLE);
+                            adder.startAnimation(slideIn);
+                        }
+                    }, slideOut.getDuration());
+
+                }
+                //Selection of an item
+                else {
+                    view.setBackgroundColor(0xCCFFCD38);
+
+                    //slidein animation
+                    if (selection == -1) {
+
+                        adder.startAnimation(slideOut);
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                //  .clearAnimation();
+                                //Extra work goes here
+                                adder.setVisibility(View.GONE);
+
+                                editer.setVisibility(View.VISIBLE);
+                                editer.startAnimation(slideIn);
+                            }
+                        }, slideOut.getDuration());
+                    }
+
+                    selection = position;
+
+                }
+
+                championInterface.setListViewSelection(position);
+
             }
-
-            @Override
-            public boolean shouldDismiss(int position, int direction) {
-                // Only dismiss an item when swiping normal left
-                //direction == SwipeDirections.DIRECTION_NORMAL_LEFT;
-                return true;
-            }
+        });
 
 
-            @Override
-            public void onSwipe(int[] positionList, int[] directionList) {
-                for (int i = 0; i < positionList.length; i++) {
-                    int direction = directionList[i];
-                    position = positionList[i];
-                    String dir = "";
 
-                    switch (direction) {
-
-                        case SwipeDirections.DIRECTION_NORMAL_LEFT:
 /*
+        DELETION
+
                             cursorUpdate REQUIRED
 
                             Division focusDivision = databaseHelper.getAllDivisions().get(receivedIndex);
@@ -158,9 +193,6 @@ public class ChampionListFragment extends Fragment {
                                     .get(position);
                             int focusId = (int)focusSoldier.getId();
 
-                            for (Soldier s : databaseHelper.getAllSoldiersByDivision(focusDivision)) {
-                                s.setIsSelected(false);
-                            }
 
                             Log.e("onSwipe", String.valueOf(position));
                             databaseHelper.deleteSoldier(focusSoldier); //positions
@@ -170,27 +202,25 @@ public class ChampionListFragment extends Fragment {
 
                             break;
                         */
-                        case SwipeDirections.DIRECTION_NORMAL_RIGHT:
 
                             //this will populate our Adder Fragment
-                            focusSoldier = troops.get(position);
 
-                            for (Soldier s : troops) {
-                                s.setIsSelected(false);
-                            }
-                            championInterface.soldierPasser(position, receivedIndex,
-                                    focusSoldier.getfName(),
-                                    focusSoldier.getlName());
 
-                            break;
-                    }
 
-                    //swipeAdapter.notifyDataSetChanged();
-                    //listView.invalidateViews();
-                }
+
+        editer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Log.e("CLFediter", "Position: " + position + " Selection: " + selection);
+
+                focusSoldier = troops.get(selection);
+
+                championInterface.soldierPasser(selection, receivedIndex,
+                        focusSoldier.getfName(),
+                        focusSoldier.getlName());
             }
         });
-
 
         adder.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,7 +228,6 @@ public class ChampionListFragment extends Fragment {
 
                 if(position != -1) {
                     focusSoldier = troops.get(position);
-                    focusSoldier.setIsSelected(false);
                 }
 
                 //when we receive our divIndex then that is what we will pass into this method
@@ -209,9 +238,15 @@ public class ChampionListFragment extends Fragment {
         proceedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (Soldier s : troops) {
+
+                /*for (Soldier s : troops) {
                     Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
-                }
+                }*/
+
+                //Intent intent = new Intent(getActivity(), MapsActivity.class);
+                //startActivity(intent);
+
+
             }
         });
 
@@ -244,128 +279,6 @@ public class ChampionListFragment extends Fragment {
         return cursor;
     }
 
-    public View getViewByPosition(int pos, ListView listView) {
-        final int firstListItemPosition = listView.getFirstVisiblePosition();
-        final int lastListItemPosition = firstListItemPosition + listView.getChildCount() - 1;
-
-        if (pos < firstListItemPosition || pos > lastListItemPosition ) {
-            return listView.getAdapter().getView(pos, null, listView);
-        } else {
-            final int childIndex = pos - firstListItemPosition;
-            return listView.getChildAt(childIndex);
-        }
-    }
-
-
-    public class FilterCursorWrapper extends CursorWrapper {
-        private int[] index;
-        private int count = 0;
-        private int pos = 0;
-
-        public boolean isHidden(String path) {
-
-            // the logic to check where this item should be hidden
-
-            //   if (some condintion)
-            //      return false;
-            //    else {
-            //       return true;
-            //   }
-
-            return false;
-
-        }
-
-        /*
-        CursorWrapper implements the Cursor interface, so you can pass your CursorWrapper to your
-        CursorAdapter in place of your Cursor.
-
-        CursorWrapper is a Wrapper class for Cursor that delegates all of its calls to the
-        actual cursor object. As the documentation states, the primary use for this class is to extend
-        a cursor while overriding only a subset of its methods.
-
-        'this' refers to the FilterCursorWrapper, thus the Cursor
-
-        for "column" parameter. we could pass a String[] and edit where a single column is referenced.
-
-        http://developer.xamarin.com/api/type/Android.Database.CursorWrapper/
-  h     http://stackoverflow.com/questions/5041499/how-to-hide-an-item-in-a-listview-in-android
-         */
-        public FilterCursorWrapper(Cursor cursor, boolean doFilter, int column) {
-            super(cursor);
-
-            if (doFilter) {
-
-                this.count = super.getCount();
-                this.index = new int[this.count];
-
-                for (int i = 0; i < this.count; i++) {
-                    super.moveToPosition(i);
-
-                    if (!isHidden(this.getString(column)))
-                        this.index[this.pos++] = i;
-                }
-
-                this.count = this.pos;
-                this.pos = 0;
-
-                super.moveToFirst();
-
-            } else {
-
-                this.count = super.getCount();
-                this.index = new int[this.count];
-
-                for (int i = 0; i < this.count; i++) {
-                    this.index[i] = i;
-                }
-            }
-        }
-
-        @Override
-        public boolean move(int offset) {
-            return this.moveToPosition(this.pos + offset);
-        }
-
-        @Override
-        public boolean moveToNext() {
-            return this.moveToPosition(this.pos + 1);
-        }
-
-        @Override
-        public boolean moveToPrevious() {
-            return this.moveToPosition(this.pos - 1);
-        }
-
-        @Override
-        public boolean moveToFirst() {
-            return this.moveToPosition(0);
-        }
-
-        @Override
-        public boolean moveToLast() {
-            return this.moveToPosition(this.count - 1);
-        }
-
-        @Override
-        public boolean moveToPosition(int position) {
-
-            if (position >= this.count || position < 0)
-                return false;
-
-            return super.moveToPosition(this.index[position]);
-        }
-
-        @Override
-        public int getCount() {
-            return this.count;
-        }
-
-        @Override
-        public int getPosition() {
-            return this.pos;
-        }
-    }
 
 }
 

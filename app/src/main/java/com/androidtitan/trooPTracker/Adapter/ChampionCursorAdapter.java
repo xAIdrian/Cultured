@@ -17,6 +17,7 @@ import com.androidtitan.trooptracker.Activity.ChampionActivity;
 public class ChampionCursorAdapter extends CursorAdapter {
 
     int selection;
+    int divSelection;
 
     public ChampionCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
@@ -36,6 +37,7 @@ public class ChampionCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         selection = ((ChampionActivity) context).getListViewSelection();
+        divSelection = ((ChampionActivity) context).getDivisionIndex();
 
         TextView champTextView = (TextView) view.findViewById(R.id.champ_text);
 
@@ -48,11 +50,17 @@ public class ChampionCursorAdapter extends CursorAdapter {
 
 
        //ListViewSelection
-        if (cursor.getPosition() == selection) {
-            view.setBackgroundColor(0xCCFFCD38);
-        }
-        else {
-            view.setBackgroundColor(0xFFFFFFFF);
+        //and establishing persistance of highlight when scrolled
+        if (selection != -1) {
+
+            for (int i = 0; i < cursor.getCount(); i++)
+
+                if (cursor.getPosition() == selection) {
+                    view.setBackgroundColor(0xCCFFCD38);
+                } else {
+
+                    view.setBackgroundColor(0xFFFFFFFF);
+                }
         }
 
     }

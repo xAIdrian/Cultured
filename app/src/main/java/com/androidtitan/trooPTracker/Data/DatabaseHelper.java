@@ -242,7 +242,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Pass Soldier_Id to delete Soldier
     **/
     public void deleteSoldier(Soldier soldier) {
+
         SQLiteDatabase database = this.getWritableDatabase();
+
+        Log.e("DBHdeleteSoldier", soldier.getfName() + " " + soldier.getId());
+
         database.delete(TABLE_SOLDIER,
                 KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
 

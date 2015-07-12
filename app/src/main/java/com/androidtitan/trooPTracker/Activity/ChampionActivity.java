@@ -5,17 +5,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Fragment.ChampionListFragment;
-import com.androidtitan.trooptracker.Interface.ChampionInterface;
 import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
+import com.androidtitan.trooptracker.Interface.ChampionInterface;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 
-public class ChampionActivity extends AppCompatActivity implements ChampionDataPullInterface, ChampionInterface{
+public class ChampionActivity extends AppCompatActivity implements ChampionDataPullInterface, ChampionInterface,
+        OnMapReadyCallback {
 
     ChampionListFragment championFragment;
-    //ChampionDataPullInterface push4frag2pull;
 
     int divisionIndex;
     int selectionIndex = - 1;
@@ -29,7 +30,6 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
 
         Intent intent = getIntent();
         divisionIndex = intent.getIntExtra("landingDivision", -1);
-        Log.e("ChampAonCreate", "divisionIndex: " + divisionIndex);
         Bundle args = new Bundle();
         args.putInt("num", divisionIndex);
 
@@ -56,8 +56,6 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
 
     @Override
     public void soldierPasser(int soldierInt, int divisionInt, String first, String last) {
-        Log.e("CAdeleter", "selection " + String.valueOf(soldierInt));
-
 
         Intent intent = new Intent(this, AdderActivity.class);
         intent.putExtra("editSoloIndex", soldierInt);
@@ -106,4 +104,10 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
         this.finish();
         startActivity(intent);
     }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+
+    }
+
 }

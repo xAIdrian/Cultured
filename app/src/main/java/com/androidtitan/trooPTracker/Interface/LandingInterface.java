@@ -9,4 +9,5 @@ public interface LandingInterface {
     public void soldierListOpener(int groupPosition);
     public void divPasser(boolean isDiv, boolean isEdit, int divPosition);
     public void upTick(Division div);
+    public void divListViewSelection(int selection);
 }
