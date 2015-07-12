@@ -2,6 +2,7 @@ package com.androidtitan.trooptracker.Fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooptracker.Activity.MapsActivity;
 import com.androidtitan.trooptracker.Adapter.ChampionCursorAdapter;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Soldier;
@@ -243,8 +245,21 @@ public class ChampionListFragment extends Fragment {
                     Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
                 }*/
 
-                //Intent intent = new Intent(getActivity(), MapsActivity.class);
-                //startActivity(intent);
+                if(selection != -1) {
+                    Intent intent = new Intent(getActivity(), MapsActivity.class);
+                    startActivity(intent);
+                }
+
+                /*
+                This is requesting an application that can handle the action.
+                In this case it is our Maps by Google app.
+
+                Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(mapIntent);
+                }*/
 
 
             }
