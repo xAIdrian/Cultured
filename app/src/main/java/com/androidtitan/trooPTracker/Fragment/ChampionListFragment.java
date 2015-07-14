@@ -186,7 +186,7 @@ public class ChampionListFragment extends Fragment {
 
 
 /*
-        DELETION
+        DYNAMIC DELETION
 
                             cursorUpdate REQUIRED
 
@@ -245,22 +245,14 @@ public class ChampionListFragment extends Fragment {
                     Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
                 }*/
 
-                if(selection != -1) {
+                //if no one is selected we will show all of the division's soldiers on the map
+                if(selection == -1) {
                     Intent intent = new Intent(getActivity(), MapsActivity.class);
                     startActivity(intent);
                 }
+                else {
 
-                /*
-                This is requesting an application that can handle the action.
-                In this case it is our Maps by Google app.
-
-                Uri gmmIntentUri = Uri.parse("geo:37.7749,-122.4194");
-                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                mapIntent.setPackage("com.google.android.apps.maps");
-                if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    startActivity(mapIntent);
-                }*/
-
+                }
 
             }
         });

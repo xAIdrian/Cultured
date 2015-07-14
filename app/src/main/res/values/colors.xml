@@ -23,4 +23,6 @@
 
     <color name="colorDivider">#B6B6B6</color>
 
+    <color name="colorMapToolbar">#CC4CAF50</color>
+
 </resources>

@@ -11,10 +11,10 @@ public class Soldier {
     private long id;
     private String fName;
     private String lName;
-    private double lat;
-    private double longi;
+    private double latitude;
+    private double longitude;
 
-    public Soldier(){
+    public Soldier() {
     }
 
     public Soldier(String first, String last) {
@@ -22,14 +22,14 @@ public class Soldier {
         this.lName = last;
     }
 
-    public Soldier(String first, String last, double latitude, double longitude) {
+    public Soldier(String first, String last, double mapLatitude, double mapLongitude) {
         this.fName = first;
         this.lName = last;
-        this.lat = latitude;
-        this.longi = longitude;
+        this.latitude = mapLatitude;
+        this.longitude = mapLongitude;
     }
 
-    public Soldier(int iid, String first, String last){
+    public Soldier(int iid, String first, String last) {
         this.id = iid;
         this.fName = first;
         this.lName = last;
@@ -61,14 +61,21 @@ public class Soldier {
 
     public LatLng getLatLang() {
 
-        LatLng soldierLocation = new LatLng(lat, longi);
+        LatLng soldierLocation = new LatLng(latitude, longitude);
         return soldierLocation;
     }
 
-    public void setLatLng(double latitude, double longitude) {
-        this.lat = latitude;
-        this.longi = longitude;
+    public void setLatLng(double mapLatitude, double mapLongitude) {
+        this.latitude = mapLatitude;
+        this.longitude = mapLongitude;
     }
+
+    //todo: we could have a setter here where they can enter a single LatLng Object
+    //todo: we will see how it goes depending on what we need in the app...
+    //public void setRealLatLang(LatLang latLangObject) {    }
+
+
+
 
     //we are overriding toString() so it's default implementation is to return a string
     //not a memory address

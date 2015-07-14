@@ -32,6 +32,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //soldier table
     private static final String KEY_FIRSTNAME = "first";
     private static final String KEY_LASTNAME = "last";
+    private static final String KEY_LATITUDE = "latitude";
+    private static final String KEY_LONGITUDE = "longitude";
 
     //division table
     private static final String KEY_NAME = "name";
@@ -44,14 +46,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Table Creation Statements
     // Soldier Table
     private static final String CREATE_TABLE_SOLDIER = "CREATE TABLE " + TABLE_SOLDIER
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + " TEXT," + KEY_LASTNAME + " TEXT" + ")";
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + " TEXT," + KEY_LASTNAME + " TEXT,"
+            + KEY_LATITUDE + " DOUBLE PRECISION," + KEY_LONGITUDE + " DOUBLE PRECISION" +")";
     //Division Table
     private static final String CREATE_TABLE_DIVISION = "CREATE TABLE " + TABLE_DIVISION
             + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_VISITS + " INTEGER,"
             + "UNIQUE (" + KEY_NAME + "))";
     //Command Table
     private static final String CREATE_TABLE_COMMAND = "CREATE TABLE " + TABLE_COMMAND
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_SOLDIER_ID + " INTEGER," + KEY_DIVISION_ID + " INTEGER" + ")";
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_SOLDIER_ID + " INTEGER," + KEY_DIVISION_ID
+            + " INTEGER" + ")";
 
     public static synchronized DatabaseHelper getInstance(Context context) {
 
@@ -76,10 +80,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_COMMAND);
 
 
-        //insert into TABLE_DIVISION (_id, name, local) values(1, 'Hinogi', 'Japan')
-        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'North West', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego', 0)");
-        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'EastBay                                                                                                                                                                                                                 ', 0)");
+        //insert into TABLE_DIVISION (_id, name) values(1, 'Hinogi', 'Japan')
+        db.execSQL("insert into " + TABLE_DIVISION + " values (1, 'Seattle', 0)");  //47.606210, -122.332070
+        db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego', 0)");    //32.715738, -117.161084
+        db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'Miami', 0)");    //25.761680, -80.191790
     }
 
     @Override
@@ -129,7 +133,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " WHERE " + KEY_ID + " = " + String.valueOf(soldier_id);
 
 
-        Cursor cursor = database.query(TABLE_SOLDIER, new String[]{KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME},
+        Cursor cursor = database.query(TABLE_SOLDIER, new String[]{ KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME,
+                KEY_LATITUDE, KEY_LONGITUDE },
                 KEY_ID + "=?", new String[]{String.valueOf(soldier_id)}, null, null, null, null);
 
         //Cursor cursor = database.rawQuery(selectQuery, null);
@@ -149,8 +154,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
         soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
         soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+        soldier.setLatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
+                cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE)));
 
-        Log.e("DBHgetSoldier", "We got him sir! " + soldier.getId() + "  "  + soldier.getfName());
+        if(soldier == null) {
+            Log.e("DBHgetSoldier", "SOLDIER IS NULL INSIDE OF getSoldier " + cursor);
+        }
+        else {
+            Log.e("DBHgetSoldier", "We got him sir! " + soldier.getId() + "  " + soldier.getfName());
+        }
 
         return soldier;
     }
@@ -178,6 +190,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
                 soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
                 soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+                soldier.setLatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
+                        cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE)));
                 //adding
                 troops.add(soldier);
 
@@ -203,6 +217,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " = " + "tc." + KEY_DIVISION_ID + " AND ts." + KEY_ID + " = "
                 + "tc." + KEY_SOLDIER_ID;
 
+                //todo: this is a table join ^
+
         Log.e("DBHsoldiersByDivision", selectQuery);
 
         SQLiteDatabase database = this.getReadableDatabase();
@@ -215,6 +231,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 soldier.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
                 soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
                 soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+                soldier.setLatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
+                        cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE)));
                 //add
                 troops.add(soldier);
             } while(cursor.moveToNext());
@@ -230,6 +248,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_FIRSTNAME, soldier.getfName());
         values.put(KEY_LASTNAME, soldier.getlName());
+        values.put(KEY_LATITUDE, soldier.getLatLang().latitude);
+        values.put(KEY_LONGITUDE, soldier.getLatLang().longitude);
         //updating
         Log.e("DBHupdateSoldier","Updated!" + TABLE_SOLDIER + " " + KEY_ID + " = " + String.valueOf(soldier.getId()));
 
@@ -254,7 +274,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Update all of our Soldiers within the Soldiers Table
     //we are going to iterate through the table and update each item
-    //todo: look up "how to recreate database on action"
     public void updateSoldierTable() {
         SQLiteDatabase database = this.getWritableDatabase();
         List<Soldier> troops = getAllSoldiers();
@@ -263,6 +282,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(KEY_FIRSTNAME, soldier.getfName());
             values.put(KEY_LASTNAME, soldier.getlName());
+            values.put(KEY_LATITUDE, soldier.getLatLang().latitude);
+            values.put(KEY_LONGITUDE, soldier.getLatLang().longitude);
             //updating
             database.update(TABLE_SOLDIER, values,
                     KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
@@ -310,7 +331,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return battalion;
     }
 
-    //todo: STAY AWAY FROM THIS IT DOES NOT WORK
+    //STAY AWAY FROM THIS IT DOES NOT WORK
     /*public Division getDivision(long div_id) {
         SQLiteDatabase database = this.getReadableDatabase();
 
