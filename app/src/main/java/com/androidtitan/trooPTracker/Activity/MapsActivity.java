@@ -103,11 +103,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         else {
             /* todo: If we end up here. Have camera focus on a famous location that the system
                todo: chooses from a constructed arrayList at random */
-            CameraUpdate center =
-                    CameraUpdateFactory.newLatLng(new LatLng(38.8951,
-                            -77.0367));
+            //CameraUpdate center =
+                    //CameraUpdateFactory.newLatLng(new LatLng(,));
             CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
-            map.moveCamera(center);
+            //map.moveCamera(center);
             map.animateCamera(zoom);
         }
 
