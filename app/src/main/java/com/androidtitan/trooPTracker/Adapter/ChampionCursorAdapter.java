@@ -2,6 +2,7 @@ package com.androidtitan.trooptracker.Adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,9 @@ public class ChampionCursorAdapter extends CursorAdapter {
                     view.setBackgroundColor(0xFFFFFFFF);
                 }
         }
+        Log.e("CCAbindView", "Selection: " + selection + ", Position: " + cursor.getPosition()
+            + ", " + cursor.getString(cursor.getColumnIndexOrThrow("first")) + " "
+                + cursor.getString(cursor.getColumnIndexOrThrow("last")));
 
     }
 }

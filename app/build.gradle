@@ -26,3 +26,13 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.google.android.gms:play-services:7.5.0'
 }
+
+/*
+If we wanted to be selective with our Google Play Services in order to limit the size of our application,
+we would use these compilers:
+
+Google Location, Activity Recognition, and Places	com.google.android.gms:play-services-location:7.5.0
+Google Maps	                                        com.google.android.gms:play-services-maps:7.5.0
+
+We will experiment with this later when we are sure what we need for this app
+ */

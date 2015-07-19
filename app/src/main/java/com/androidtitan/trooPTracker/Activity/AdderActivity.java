@@ -114,6 +114,7 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
         startActivity(intent);
     }
 
+
     public String getSoldierEditItems() {
         Intent intent = getIntent();
         divisionIndex = intent.getIntExtra("editSoloDivIndex", -1);

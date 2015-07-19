@@ -10,11 +10,9 @@ import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Fragment.ChampionListFragment;
 import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
 import com.androidtitan.trooptracker.Interface.ChampionInterface;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 
-public class ChampionActivity extends AppCompatActivity implements ChampionDataPullInterface, ChampionInterface,
-        OnMapReadyCallback {
+public class ChampionActivity extends AppCompatActivity implements ChampionDataPullInterface,
+        ChampionInterface {
 
     ChampionListFragment championFragment;
 
@@ -65,7 +63,8 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
         startActivity(intent);
     }
 
-    //this is going to be once we have more fragments such as maps and what's nearby
+    //this is going to be used for navigation once we have more pieces
+    //All soldiers and All map
     @Override
     public void drawerListViewSelection(int selection) {
 
@@ -86,16 +85,22 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
         selectionIndex = selection;
     }
 
+    @Override
+    public void selectionToMap(int selection) {
+
+        Intent intent = new Intent(this, MapsActivity.class);
+        intent.putExtra("selectionToMap", selection);
+        startActivity(intent);
+    }
+
     public int getListViewSelection() {
         return selectionIndex;
     }
-
 
     @Override
     public int getDivisionIndex() {
         return divisionIndex;
     }
-
 
 
     @Override
@@ -105,9 +110,5 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
         startActivity(intent);
     }
 
-    @Override
-    public void onMapReady(GoogleMap map) {
-
-    }
 
 }

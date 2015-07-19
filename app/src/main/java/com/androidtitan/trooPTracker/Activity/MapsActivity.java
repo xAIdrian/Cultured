@@ -1,13 +1,23 @@
 package com.androidtitan.trooptracker.Activity;
 
+import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooptracker.Data.DatabaseHelper;
+import com.androidtitan.trooptracker.Data.Soldier;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,26 +31,47 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 //todo: search for location
 // http://wptrafficanalyzer.in/blog/adding-google-places-autocomplete-api-as-custom-suggestions-in-android-search-dialog/
+//http://www.androidhive.info/2012/08/android-working-with-google-places-and-maps-tutorial/
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+    DatabaseHelper databaseHelper;
 
     private GoogleMap map; // Might be null if Google Play services APK is not available.
     private GoogleMapOptions options = new GoogleMapOptions();
+
+    private GoogleApiClient googleAPIclient;
+
+    private Handler handler;
 
     private ImageView editLoc;
     private ImageView addLoc;
     private ImageView locationGetter;
 
-    Animation slidein;
+    private Animation slidein;
 
-    private LatLng currentLocation;
+    private Location lastLocation;
+    private LatLng lastLatLang;
     private double currentLatitude;
     private double currentLongitude;
+
+    private int soldierIndex = -1;
+    private boolean locationClick = false; //true when getMyLocation or location search
+                                           //false when location is added
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        databaseHelper = DatabaseHelper.getInstance(this);
+
+        Intent intent = getIntent();
+        soldierIndex = intent.getIntExtra("selectionToMap", -1);
+
+        final Soldier tempSoldier = databaseHelper.getSoldier(soldierIndex);
+        Log.e("MAcoolSoldierChecker", String.valueOf(tempSoldier.getLatLang()));
+
         setUpMapIfNeeded();
 
         //our handle for our MapFragment
@@ -48,27 +79,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        // Sets the map type to be "hybrid"
-        //todo: reevaluate what is enabled and what is disabled
+        buildGoogleApiClient();
+        // Sets the map VIEW type to be "hybrid" and disables other UI features
         options.mapType(GoogleMap.MAP_TYPE_NORMAL)
                 .compassEnabled(false)
                 .rotateGesturesEnabled(false)
                 .tiltGesturesEnabled(false);
 
-        //38.8951, -77.0367
-        //Setting camera location and zoom
-        CameraUpdate center=
-                CameraUpdateFactory.newLatLng(new LatLng(38.8951,
-                        -77.0367));
-        CameraUpdate zoom= CameraUpdateFactory.zoomTo(10);
-
-        map.moveCamera(center);
-        map.animateCamera(zoom);
-
-        //additional settings for map
+        //additional settings for map FUNCTIONALITY
         map.getUiSettings().setZoomControlsEnabled(true);
-        map.getUiSettings().setMyLocationButtonEnabled(false);  //todo: https://developer.android.com/training/location/index.html
+        map.getUiSettings().setMyLocationButtonEnabled(false);
         map.setMyLocationEnabled(true);
+
+
+        //Focusing camera on Soldier's location or a random one
+        LatLng defaultLatLng = new LatLng(0, 0);
+        if(!tempSoldier.getLatLang().equals(defaultLatLng)) {
+            CameraUpdate center = CameraUpdateFactory.newLatLng(tempSoldier.getLatLang());
+            CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+            map.moveCamera(center);
+            map.animateCamera(zoom);
+        }
+        else {
+            /* todo: If we end up here. Have camera focus on a famous location that the system
+               todo: chooses from a constructed arrayList at random */
+            CameraUpdate center =
+                    CameraUpdateFactory.newLatLng(new LatLng(38.8951,
+                            -77.0367));
+            CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
+            map.moveCamera(center);
+            map.animateCamera(zoom);
+        }
+
+
+        //initializations
+        handler = new Handler();
 
         editLoc = (ImageView) findViewById(R.id.editBtn);
         addLoc = (ImageView) findViewById(R.id.addBtn);
@@ -88,31 +133,59 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
             @Override
             public void onMapLoaded() {
-                slidein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slidein_right);
-                locationGetter.setVisibility(View.VISIBLE);
-                locationGetter.startAnimation(slidein);
+                //placeholder
             }
         });
 
         locationGetter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                currentLocation = new LatLng(map.getMyLocation().getLatitude(), map.getMyLocation().getLongitude());
-                currentLatitude = currentLocation.latitude;
-                currentLongitude = currentLocation.longitude;
+                lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                        googleAPIclient);
 
-                //camera
-                CameraUpdate center=
-                        CameraUpdateFactory.newLatLng(currentLocation);
-                CameraUpdate zoom= CameraUpdateFactory.zoomTo(15);
-                map.moveCamera(center);
-                map.animateCamera(zoom);
+                if (lastLocation != null) {
 
-                //marker todo:change what will fill the text.
-                map.addMarker(new MarkerOptions().position(currentLocation).title("PlaceHolder"));
+                    currentLatitude = lastLocation.getLatitude();
+                    currentLongitude = lastLocation.getLongitude();
+                    lastLatLang = new LatLng(currentLatitude, currentLongitude);
 
+                    Log.e("MAlocationGetter", "Location Found! " + currentLatitude + ", " + currentLongitude);
+
+                    //camera
+                    CameraUpdate center =
+                            CameraUpdateFactory.newLatLng(lastLatLang);
+                    CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+                    map.moveCamera(center);
+                    map.animateCamera(zoom);
+
+                    //marker todo:change what will fill the text.
+                    map.addMarker(new MarkerOptions().position(lastLatLang).title("PlaceHolder"));
+
+                    locationClick = true;
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please wait while your location loads...",
+                            Toast.LENGTH_LONG);
+                }
             }
         });
+
+        addLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(locationClick) {
+                    tempSoldier.setLatLng(currentLatitude, currentLongitude);
+                    databaseHelper.updateSoldier(tempSoldier);
+                    Log.e("MAaddLoc", tempSoldier.getfName() + " location set! " + tempSoldier.getLatitude()
+                            + ", " + tempSoldier.getLongitude());
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please wait while your location loads...",
+                            Toast.LENGTH_LONG);
+                }
+            }
+        });
+
+
     }
 
     @Override
@@ -164,6 +237,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         //actions to take when the map is fully loaded...
+
+    }
+
+    //To connect to the API, you need to create an instance of the Google Play services API client
+    protected synchronized void buildGoogleApiClient() {
+        googleAPIclient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.e("APIclientConnected?", String.valueOf(googleAPIclient.isConnected()));
+
+        googleAPIclient.connect();
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.e("APIclientConnected?", "Connection Suspended!");
+        slidein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slidein_right);
+
+        handler.postDelayed(new Runnable() {
+                        public void run() {
+                            locationGetter.setVisibility(View.VISIBLE);
+                            locationGetter.startAnimation(slidein);
+                        }
+                    }, 500);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.e("APIclientConnected?", "Connection Suspended!");
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e("APIclientConnected?", "Connection Failed!!!");
 
     }
 }

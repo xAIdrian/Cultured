@@ -20,4 +20,6 @@ public interface ChampionInterface {
     public void drawerListViewSelection(int selection);
     public void adderFragDivReference(int divIndex);
     public void setListViewSelection(int selection);
+
+    public void selectionToMap(int selection);
 }

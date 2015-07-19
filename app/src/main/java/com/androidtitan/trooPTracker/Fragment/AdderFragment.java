@@ -1,6 +1,8 @@
 package com.androidtitan.trooptracker.Fragment;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -44,8 +46,9 @@ public class AdderFragment extends Fragment {
     private EditText lastEdit;
     private ListView addListView;
     private TextView deleteBtn;
-    //private mapBtn;
     private TextView addBtn;
+
+    Division assignedToDiv;
 
     private int soldierIndex = -1;
     private String newFname = "blank";
@@ -113,8 +116,6 @@ public class AdderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_adder, container, false);
-        if(getResources().getConfiguration().orientation != getResources().getConfiguration().ORIENTATION_LANDSCAPE) {
-        }
 
         Log.e("AFonCreateView", "oldDivision: " + oldDivision + ", divSelected: " + divSelected);
 
@@ -123,26 +124,52 @@ public class AdderFragment extends Fragment {
         firstEdit = (EditText) v.findViewById(R.id.firstName_edit);
         lastEdit = (EditText) v.findViewById(R.id.lastName_edit);
 
-        //todo
         deleteBtn = (TextView) v.findViewById(R.id.deleteBtn);
         if(soldierIndex == -1) {
             deleteBtn.setTextColor(0xFFFFFFFF);
         }
+
         deleteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Division focusDivision = databaseHelper.getAllDivisions().get(oldDivision);
-                Soldier focusSoldier = databaseHelper.getAllSoldiersByDivision(focusDivision).get(soldierIndex);
-                Log.e("AFdeleter", focusSoldier.getfName() + " " +focusSoldier.getId());
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                        getActivity());
 
-                databaseHelper.deleteSoldier(focusSoldier);
-                adderInterface.divInteraction(oldDivision);
+                // set title
+                alertDialogBuilder.setTitle("Delete?");
+
+                // set dialog message
+                alertDialogBuilder
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                Division focusDivision = databaseHelper.getAllDivisions().get(oldDivision);
+                                Soldier focusSoldier = databaseHelper.getAllSoldiersByDivision(focusDivision).get(soldierIndex);
+                                Log.e("AFdeleter", focusSoldier.getfName() + " " +focusSoldier.getId());
+
+                                databaseHelper.deleteSoldier(focusSoldier);
+                                adderInterface.divInteraction(oldDivision);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // if this button is clicked, just close
+                                // the dialog box and do nothing
+                                dialog.cancel();
+                            }
+                        });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+
+                // show it
+                alertDialog.show();
 
             }
         });
 
-        //mapBtn
         addBtn = (TextView) v.findViewById(R.id.submit_button);
         if(editPage == true) {
             addBtn.setText("Edit");
@@ -226,15 +253,17 @@ public class AdderFragment extends Fragment {
             }
         });
 
+
         addBtn.setOnClickListener(new TextView.OnClickListener() {
             @Override
             public void onClick(View v) {
+                assignedToDiv = databaseHelper.getAllDivisions().get(divSelected);
 
                 if (firstEdit.getText().toString().matches("") || lastEdit.getText().toString().matches("")
                         || divSelected == -1) {
                     Toast.makeText(getActivity(), "Please complete fields", Toast.LENGTH_LONG).show();
                 } else {
-                    Division assignedToDiv = assignedToDiv = databaseHelper.getAllDivisions().get(divSelected);
+
                     //if we are editing an existing user
                     if(editPage == true) {
                         Log.e("AFaddBtn", "MADE IT HERE");
@@ -284,6 +313,7 @@ public class AdderFragment extends Fragment {
         super.onDetach();
         //mListener = null;
     }
+
 
     //ADAPTER CLASS
 

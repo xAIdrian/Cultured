@@ -47,7 +47,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Soldier Table
     private static final String CREATE_TABLE_SOLDIER = "CREATE TABLE " + TABLE_SOLDIER
             + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + " TEXT," + KEY_LASTNAME + " TEXT,"
-            + KEY_LATITUDE + " DOUBLE PRECISION," + KEY_LONGITUDE + " DOUBLE PRECISION" +")";
+            + KEY_LATITUDE + " DOUBLE PRECISION," + KEY_LONGITUDE + " DOUBLE PRECISION" + ")";
     //Division Table
     private static final String CREATE_TABLE_DIVISION = "CREATE TABLE " + TABLE_DIVISION
             + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_VISITS + " INTEGER,"
@@ -99,11 +99,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //SOLDIER TABLE
 
+    public void printSoldierTable() {
+        String selectQuery = "SELECT * FROM " + TABLE_SOLDIER;
+
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(selectQuery, null);
+
+        //looping through all the rows to create objects to add to our list
+        if (cursor.moveToFirst()) {
+            do {
+                Soldier soldier = new Soldier();
+                soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
+                soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
+                soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+                soldier.setLatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
+                        cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE)));
+                //logging
+                Log.e("DBHprintAllSoldiers", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
+                        + cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)) + " "
+                        + cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+
+            } while (cursor.moveToNext());
+        }
+    }
+
+
     /**
      * The function will create a soldier item in soldiers table. In this same
      * function we are assigning the soldier to a division name which inserts a row in
      * command table.
-    **/
+     */
     public long createSoldier(Soldier soldier) { // , long[] division_ids <-- this is a parameter
         SQLiteDatabase database = this.getWritableDatabase();
 
@@ -111,12 +136,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_FIRSTNAME, soldier.getfName());
         values.put(KEY_LASTNAME, soldier.getlName());
         //insert row. if there is a conflict the last parameter springs into action. Replacing entry.
-        //todo: I am uncertain if this will solve the Duplicates problem
+
+        //this is a possible solution for the DUPLICATES PROBLEM
         long soldier_id = database.insertWithOnConflict(TABLE_SOLDIER, null, values, SQLiteDatabase.CONFLICT_REPLACE);
+        Log.e("DBHcreateSoldier", String.valueOf(soldier_id));
         soldier.setId(soldier_id);
 
-        Log.e("DBHcreateSoldier", getSoldier(soldier_id).getId() + " " +
-                getSoldier(soldier_id).getfName() + " " + getSoldier(soldier_id).getlName());
+        //Log.e("DBHcreateSoldier", "Created: " + getSoldier(soldier_id).getId() + " " +
+                //getSoldier(soldier_id).getfName() + " " + getSoldier(soldier_id).getlName());
 
         return soldier_id;
     }
@@ -124,45 +151,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     /**
      * We will fetch a soldier from the soldiers table
-     * SELECT * FROM soldiers WHERE id = 1
-    **/
+     */
+    //todo
     public Soldier getSoldier(long soldier_id) {
+        soldier_id = soldier_id + 1;
         SQLiteDatabase database = this.getReadableDatabase();
 
         String selectQuery = "SELECT * FROM " + TABLE_SOLDIER
                 + " WHERE " + KEY_ID + " = " + String.valueOf(soldier_id);
+        Log.e("DBHgetSoldier", selectQuery);
 
-
-        Cursor cursor = database.query(TABLE_SOLDIER, new String[]{ KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME,
-                KEY_LATITUDE, KEY_LONGITUDE },
+        Cursor cursor = database.query(TABLE_SOLDIER, new String[]{KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME,
+                        KEY_LATITUDE, KEY_LONGITUDE},
                 KEY_ID + "=?", new String[]{String.valueOf(soldier_id)}, null, null, null, null);
 
-        //Cursor cursor = database.rawQuery(selectQuery, null);
-        Log.e("DBHgetSoldier", String.valueOf(cursor));
-
-
-        /*
-        Cursor cursor = db.query(TABLE_CONTACTS, new String[] { KEY_ID,
-        KEY_NAME, KEY_PH_NO }, KEY_ID + "=?",
-        new String[] { String.valueOf(id) }, null, null, null, null);
-         */
-
-        if(cursor != null) {
+        if (cursor != null) {
             cursor.moveToFirst();
+            cursor.moveToNext();
         }
+
         Soldier soldier = new Soldier();
         soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
         soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
         soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
         soldier.setLatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
                 cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE)));
-
-        if(soldier == null) {
-            Log.e("DBHgetSoldier", "SOLDIER IS NULL INSIDE OF getSoldier " + cursor);
-        }
-        else {
-            Log.e("DBHgetSoldier", "We got him sir! " + soldier.getId() + "  " + soldier.getfName());
-        }
 
         return soldier;
     }
@@ -177,8 +190,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<Soldier> getAllSoldiers() {
         List<Soldier> troops = new ArrayList<Soldier>();
         String selectQuery = "SELECT * FROM " + TABLE_SOLDIER;
-
-        Log.e("DBHgetAllSoldiers", selectQuery);
 
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
@@ -217,7 +228,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " = " + "tc." + KEY_DIVISION_ID + " AND ts." + KEY_ID + " = "
                 + "tc." + KEY_SOLDIER_ID;
 
-                //todo: this is a table join ^
+                //This is a TABLE JOIN^
 
         Log.e("DBHsoldiersByDivision", selectQuery);
 
@@ -313,8 +324,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<Division> battalion = new ArrayList<Division>();
         String selectQuery = "SELECT * FROM " + TABLE_DIVISION;
 
-        Log.e("DBHgetAllDivisions", selectQuery);
-
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
 
@@ -331,30 +340,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return battalion;
     }
 
-    //STAY AWAY FROM THIS IT DOES NOT WORK
-    /*public Division getDivision(long div_id) {
+    //TODO
+
+    public Division getDivision(long div_id) {
+        div_id = div_id + 1; //incrementation to align divIndex with database key index
+
         SQLiteDatabase database = this.getReadableDatabase();
 
-        div_id = div_id + 1; //incrementation to align divIndex with dbIndex
         String selectQuery = "SELECT * FROM " + TABLE_DIVISION
                 + " WHERE " + KEY_ID + " = " + div_id;
-
         Log.e("DBHgetDivision", selectQuery);
 
-        Cursor cursor = database.rawQuery(selectQuery, null);
+        Cursor cursor = database.query(TABLE_DIVISION, new String[] { KEY_ID, KEY_NAME, KEY_VISITS },
+                KEY_ID + "=?", new String[] { String.valueOf(div_id) }, null, null, null, null);
 
-        cursor.moveToFirst();
+        if(cursor != null)
+            cursor.moveToFirst();
+
         Division division = new Division();
+        division.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+        division.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
+        division.setVisits(cursor.getInt(cursor.getColumnIndex(KEY_VISITS)));
 
-        if(cursor.getCount() > 0 && cursor.moveToFirst()) {
-
-            division.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-            division.setName(cursor.getString(cursor.getColumnIndex(KEY_NAME)));
-            division.setVisits(cursor.getInt(cursor.getColumnIndex(KEY_VISITS)));
-        }
         return division;
-
-    }*/
+    }
 
     //Updating Division
     public int updateDivision(Division division) {

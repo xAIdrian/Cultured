@@ -70,6 +70,22 @@ public class Soldier {
         this.longitude = mapLongitude;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
     //todo: we could have a setter here where they can enter a single LatLng Object
     //todo: we will see how it goes depending on what we need in the app...
     //public void setRealLatLang(LatLang latLangObject) {    }

@@ -2,7 +2,6 @@ package com.androidtitan.trooptracker.Fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -19,7 +18,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooptracker.Activity.MapsActivity;
 import com.androidtitan.trooptracker.Adapter.ChampionCursorAdapter;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Soldier;
@@ -46,6 +44,8 @@ public class ChampionListFragment extends Fragment {
 
     Animation slideIn;
     Animation slideOut;
+    Animation rightSlideIn;
+    Animation rightSlideOut;
 
     Soldier focusSoldier;
     List<Soldier> troops;
@@ -94,14 +94,22 @@ public class ChampionListFragment extends Fragment {
 
         slideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slidein);
         slideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slideout);
+        rightSlideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.slidein_right);
+        rightSlideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.slideout_right);
 
         Runnable run = new Runnable() {
             @Override
             public void run() {
+                if(adapter != null) {
+                    adapter.changeCursor(getListItems());
+                }
+
                 adapter.notifyDataSetChanged();
                 listView.invalidateViews();
             }
         };
+
+        Log.e("CLFonCreate", "First Adapter: " + adapter);
 
     }
 
@@ -114,6 +122,7 @@ public class ChampionListFragment extends Fragment {
         editer.setVisibility(View.GONE);
         adder = (ImageView) getActivity().findViewById(R.id.addBtn);
         proceedBtn = (TextView) getActivity().findViewById(R.id.proceedBtn);
+        proceedBtn.setVisibility(View.GONE);
 
         championHeader = (TextView) v.findViewById(R.id.championHeader);
         championHeader.setText(databaseHelper.getAllDivisions().get(receivedIndex).getName());
@@ -121,7 +130,10 @@ public class ChampionListFragment extends Fragment {
         listView = (ListView) v.findViewById(R.id.championList);
 
         adapter = new ChampionCursorAdapter(getActivity(), getListItems());
+        Log.e("CLFonCreateView", "Adapter Initialization " + adapter);
+
         listView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -143,15 +155,22 @@ public class ChampionListFragment extends Fragment {
                     selection = -1;
 
                     editer.startAnimation(slideOut);
+                    proceedBtn.startAnimation(rightSlideOut);
+                    listView.setEnabled(false); //todo
+
                     handler.postDelayed(new Runnable() {
                         public void run() {
-                            //Extra work goes here
                             editer.setVisibility(View.GONE);
+                            proceedBtn.setVisibility(View.GONE);
 
                             adder.setVisibility(View.VISIBLE);
                             adder.startAnimation(slideIn);
+
+                            listView.setEnabled(true); //todo
                         }
                     }, slideOut.getDuration());
+
+
 
                 }
                 //Selection of an item
@@ -162,18 +181,22 @@ public class ChampionListFragment extends Fragment {
                     if (selection == -1) {
 
                         adder.startAnimation(slideOut);
+                        listView.setEnabled(false);
+
                         handler.postDelayed(new Runnable() {
                             public void run() {
-                                //  .clearAnimation();
-                                //Extra work goes here
                                 adder.setVisibility(View.GONE);
 
                                 editer.setVisibility(View.VISIBLE);
                                 editer.startAnimation(slideIn);
+
+                                proceedBtn.setVisibility(View.VISIBLE);
+                                proceedBtn.startAnimation(rightSlideIn);
+
+                                listView.setEnabled(true); //todo
                             }
                         }, slideOut.getDuration());
                     }
-
                     selection = position;
 
                 }
@@ -183,32 +206,22 @@ public class ChampionListFragment extends Fragment {
             }
         });
 
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                if(selection == -1) {
+                    //focusSoldier = troops.get(position);
+                    for (Soldier s : troops) {
+                        Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
+                    }
 
-
-/*
-        DYNAMIC DELETION
-
-                            cursorUpdate REQUIRED
-
-                            Division focusDivision = databaseHelper.getAllDivisions().get(receivedIndex);
-                            Soldier focusSoldier = databaseHelper.getAllSoldiersByDivision(focusDivision)
-                                    .get(position);
-                            int focusId = (int)focusSoldier.getId();
-
-
-                            Log.e("onSwipe", String.valueOf(position));
-                            databaseHelper.deleteSoldier(focusSoldier); //positions
-
-                            swipeAdapter.notifyDataSetChanged();
-                            listView.invalidateViews();
-
-                            break;
-                        */
-
-                            //this will populate our Adder Fragment
-
-
-
+                    //todo: our duplicate problem is not in the database
+                    //todo:     the problem is in the adapter or what is populating our adapter
+                    databaseHelper.printSoldierTable();
+                }
+                return false;
+            }
+        });
 
         editer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,10 +241,6 @@ public class ChampionListFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if(position != -1) {
-                    focusSoldier = troops.get(position);
-                }
-
                 //when we receive our divIndex then that is what we will pass into this method
                 championInterface.soldierPasser(position, receivedIndex, null, null);
             }
@@ -241,19 +250,7 @@ public class ChampionListFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                /*for (Soldier s : troops) {
-                    Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
-                }*/
-
-                //if no one is selected we will show all of the division's soldiers on the map
-                if(selection == -1) {
-                    Intent intent = new Intent(getActivity(), MapsActivity.class);
-                    startActivity(intent);
-                }
-                else {
-
-                }
-
+                championInterface.selectionToMap(selection);
             }
         });
 
@@ -283,6 +280,9 @@ public class ChampionListFragment extends Fragment {
         } else {
             cursor = db.rawQuery(selectQuery, null);
         }
+
+        Log.e("CLFgetListItems()", "Initialized cursor: " + String.valueOf(cursor));
+
         return cursor;
     }
 
