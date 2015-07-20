@@ -1,7 +1,14 @@
 package com.androidtitan.trooptracker.Activity;
 
+import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
@@ -10,11 +17,13 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
+import com.androidtitan.trooptracker.Data.LocationBundle;
 import com.androidtitan.trooptracker.Data.Soldier;
+import com.androidtitan.trooptracker.Dialog.MapsAdderDialogFragment;
+import com.androidtitan.trooptracker.Interface.MapsInterface;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -28,12 +37,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Random;
+
 
 //todo: search for location
 // http://wptrafficanalyzer.in/blog/adding-google-places-autocomplete-api-as-custom-suggestions-in-android-search-dialog/
 //http://www.androidhive.info/2012/08/android-working-with-google-places-and-maps-tutorial/
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+public class MapsActivity extends FragmentActivity implements MapsInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     DatabaseHelper databaseHelper;
 
@@ -56,8 +68,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double currentLongitude;
 
     private int soldierIndex = -1;
-    private boolean locationClick = false; //true when getMyLocation or location search
-                                           //false when location is added
+    private boolean locationClick = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +81,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         soldierIndex = intent.getIntExtra("selectionToMap", -1);
 
         final Soldier tempSoldier = databaseHelper.getSoldier(soldierIndex);
-        Log.e("MAcoolSoldierChecker", String.valueOf(tempSoldier.getLatLang()));
 
         setUpMapIfNeeded();
 
@@ -93,93 +103,136 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         //Focusing camera on Soldier's location or a random one
-        LatLng defaultLatLng = new LatLng(0, 0);
-        if(!tempSoldier.getLatLang().equals(defaultLatLng)) {
-            CameraUpdate center = CameraUpdateFactory.newLatLng(tempSoldier.getLatLang());
+        //LatLng tempSoldierLatLng = databaseHelper.getAllLocationsBySoldier(tempSoldier).get(0).getLatlng();
+
+        if (databaseHelper.getAllLocationsBySoldier(tempSoldier).size() > 0) { //if there is something present
+            /*this currently gets the first location in their many saved locations...
+            eventually we want to be able to 'page' through all of them
+            */
+            //todo set pin/marker on location
+            CameraUpdate center = CameraUpdateFactory.newLatLng(databaseHelper.getAllLocationsBySoldier(tempSoldier).get(0).getLatlng());
             CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
             map.moveCamera(center);
             map.animateCamera(zoom);
-        }
-        else {
-            /* todo: If we end up here. Have camera focus on a famous location that the system
-               todo: chooses from a constructed arrayList at random */
-            //CameraUpdate center =
-                    //CameraUpdateFactory.newLatLng(new LatLng(,));
+
+        } else {
+
+            int rando = randInt(1, 5);
+            LatLng starterLocation = databaseHelper.getLocationBundle(rando).getLatlng();
+
+            CameraUpdate center =
+                    CameraUpdateFactory.newLatLng(starterLocation);
             CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
-            //map.moveCamera(center);
+            map.moveCamera(center);
             map.animateCamera(zoom);
+
+            map.addMarker(new MarkerOptions().position(starterLocation)
+                    .title(databaseHelper.getLocationBundle(rando).getLocalName()));
+
+            Log.e("MAonCreate", String.valueOf(databaseHelper.getAllLocations()));
+            //we are adding locations.  They are either not getting assigned to our Soldier
+            // or we are not querying for them properly
         }
 
+            //initializations
+            handler = new Handler();
 
-        //initializations
-        handler = new Handler();
+            editLoc = (ImageView) findViewById(R.id.editBtn);
+            addLoc = (ImageView) findViewById(R.id.addBtn);
+            locationGetter = (ImageView) findViewById(R.id.locBtn);
+            locationGetter.setVisibility(View.GONE);
 
-        editLoc = (ImageView) findViewById(R.id.editBtn);
-        addLoc = (ImageView) findViewById(R.id.addBtn);
-        locationGetter = (ImageView) findViewById(R.id.locBtn);
-        locationGetter.setVisibility(View.GONE);
 
-        /*LocationSource.OnLocationChangedListener(new LocationSource.OnLocationChangedListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-
-                slidein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slidein_right);
-                locationGetter.setVisibility(View.VISIBLE);
-                locationGetter.startAnimation(slidein);
-            }
-        });*/
-
-        map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-            @Override
-            public void onMapLoaded() {
-                //placeholder
-            }
-        });
-
-        locationGetter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                        googleAPIclient);
-
-                if (lastLocation != null) {
-
-                    currentLatitude = lastLocation.getLatitude();
-                    currentLongitude = lastLocation.getLongitude();
-                    lastLatLang = new LatLng(currentLatitude, currentLongitude);
-
-                    Log.e("MAlocationGetter", "Location Found! " + currentLatitude + ", " + currentLongitude);
-
-                    //camera
-                    CameraUpdate center =
-                            CameraUpdateFactory.newLatLng(lastLatLang);
-                    CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-                    map.moveCamera(center);
-                    map.animateCamera(zoom);
-
-                    //marker todo:change what will fill the text.
-                    map.addMarker(new MarkerOptions().position(lastLatLang).title("PlaceHolder"));
-
-                    locationClick = true;
-                } else {
-                    Toast.makeText(getApplicationContext(), "Please wait while your location loads...",
-                            Toast.LENGTH_LONG);
+            map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    //placeholder
                 }
-            }
-        });
+            });
 
-        addLoc.setOnClickListener(new View.OnClickListener() {
+            locationGetter.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    final LocationManager manager = (LocationManager)
+                            getSystemService(Context.LOCATION_SERVICE);
+
+                    if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        buildAlertMessageNoGps();
+                    } else {
+                        lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                                googleAPIclient);
+
+                        if (lastLocation != null) {
+
+                            currentLatitude = lastLocation.getLatitude();
+                            currentLongitude = lastLocation.getLongitude();
+                            lastLatLang = new LatLng(currentLatitude, currentLongitude);
+
+                            Log.e("MAlocationGetter", "Location Found! " + currentLatitude + ", " + currentLongitude);
+
+                            //camera
+                            CameraUpdate center =
+                                    CameraUpdateFactory.newLatLng(lastLatLang);
+                            CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+                            map.moveCamera(center);
+                            map.animateCamera(zoom);
+
+                            locationClick = true;
+
+                        }
+                    }
+                }
+            });
+
+            addLoc.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    final LocationManager manager = (LocationManager)
+                            getSystemService(Context.LOCATION_SERVICE);
+
+                    if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        buildAlertMessageNoGps();
+                    } else {
+                        if (locationClick) {
+                            LocationBundle tempBundle = new LocationBundle(new LatLng(currentLatitude, currentLongitude));
+                            databaseHelper.createLocation(tempBundle);
+
+                            databaseHelper.assignLocationToSolider(tempBundle, tempSoldier);
+
+                            //Dialog fragment to add a Title to our
+                            showAdderDialog(databaseHelper.getAllLocations().size());
+                            //or size -1
+                            //Log.e();
+                            //todo:create a custom marker where the user can input name into edittext
+
+                            map.addMarker(new MarkerOptions().position(tempBundle.getLatlng())
+                                    .title(tempBundle.getLocalName()));
+
+                            //this shit works!
+                            Log.e("MAaddLoc", tempSoldier.getfName() + " location set! "
+                                    + databaseHelper.getAllLocationsBySoldier(tempSoldier).get(0));
+
+                            locationClick = false;
+                        }
+                    }
+
+
+                }
+            });
+
+        editLoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(locationClick) {
-                    tempSoldier.setLatLng(currentLatitude, currentLongitude);
-                    databaseHelper.updateSoldier(tempSoldier);
-                    Log.e("MAaddLoc", tempSoldier.getfName() + " location set! " + tempSoldier.getLatitude()
-                            + ", " + tempSoldier.getLongitude());
+                final LocationManager manager = (LocationManager)
+                        getSystemService(Context.LOCATION_SERVICE);
+
+                if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    buildAlertMessageNoGps();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Please wait while your location loads...",
-                            Toast.LENGTH_LONG);
+
                 }
             }
         });
@@ -229,8 +282,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     private void setUpMap() {
 
-        map.addMarker(new MarkerOptions().position(new LatLng(38.8951,
-                -77.0367)).title("Marker"));
     }
 
     @Override
@@ -262,11 +313,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         slidein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slidein_right);
 
         handler.postDelayed(new Runnable() {
-                        public void run() {
-                            locationGetter.setVisibility(View.VISIBLE);
-                            locationGetter.startAnimation(slidein);
-                        }
-                    }, 500);
+            public void run() {
+                locationGetter.setVisibility(View.VISIBLE);
+                locationGetter.startAnimation(slidein);
+            }
+        }, 500);
     }
 
     @Override
@@ -280,4 +331,74 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.e("APIclientConnected?", "Connection Failed!!!");
 
     }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        buildAlertMessageNoGps();
+    }
+
+    //generates a random integer
+    public static int randInt(int min, int max) {
+
+        // NOTE: Usually this should be a field rather than a method
+        // variable so that it is not re-seeded every call.
+        Random rand = new Random();
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
+    }
+
+    private void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void showAdderDialog(int inter) {
+        //todo: title issue
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("locationBundleIndex", inter);
+        // Create and show the dialog.
+        DialogFragment newFragment = new MapsAdderDialogFragment();
+        newFragment.setArguments(bundle);
+
+        newFragment.show(ft, "dialog");
+
+    }
+
 }
+
+//if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))

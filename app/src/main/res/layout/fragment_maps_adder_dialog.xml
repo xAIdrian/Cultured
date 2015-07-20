@@ -1,0 +1,64 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context="com.androidtitan.trooptracker.Dialog.MapsAdderDialogFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="@string/setTitle"
+        android:textSize="@dimen/abc_text_size_small_material"
+        android:textStyle="bold"/>
+
+    <EditText
+        android:id="@+id/mapEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:backgroundTint="#448AFF"
+        android:gravity="center"
+        android:padding="10dp"
+        android:imeOptions="actionDone"
+        android:inputType="textCapSentences"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"/>
+
+    <LinearLayout
+        android:id="@+id/mapConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:layout_below="@+id/mapEditText"
+        android:paddingBottom="10dp"
+        android:weightSum="2">
+
+        <TextView
+            android:id="@+id/mapCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/cancel"
+            android:textColor="@color/colorCrush" />
+
+
+        <TextView
+            android:id="@+id/mapSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/add"
+            android:textColor="#4CAF50"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -19,6 +19,11 @@ public class LocationBundle {
         this.latlng = new LatLng(latitude, longitude);
     }
 
+    public LocationBundle(LatLng latlng) {
+        this.localName = "Random Location";
+        this.latlng = latlng;
+    }
+
     public LocationBundle(String name, LatLng latlng) {
         this.localName = name;
         this.latlng = latlng;

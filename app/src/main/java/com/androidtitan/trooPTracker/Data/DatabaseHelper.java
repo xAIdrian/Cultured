@@ -77,8 +77,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Map Table
     private static final String CREATE_TABLE_MAP = "CREATE TABLE " + TABLE_MAP
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_SOLDIER_ID + " INTEGER, "
-            + KEY_COORD_ID + " INTEGER" + ")";
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_COORD_ID + " INTEGER, "
+            + KEY_SOLDIER_ID + " INTEGER" + ")";
 
     public static synchronized DatabaseHelper getInstance(Context context) {
 
@@ -111,11 +111,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("insert into " + TABLE_DIVISION + " values (2, 'San Diego', 0)");
         db.execSQL("insert into " + TABLE_DIVISION + " values (3, 'Miami', 0)");    //25.761680, -80.191790
 
-        db.execSQL("insert into " + TABLE_COORDINATES + " values (1, 'Seattle, Washington', 47.606210, -117.161084)");
+        db.execSQL("insert into " + TABLE_COORDINATES + " values (1, 'Seattle, Washington', 47.6062095, -122.3320708)");
         db.execSQL("insert into " + TABLE_COORDINATES + " values (2, 'San Diego, California', 32.715738, -122.332070)");
         db.execSQL("insert into " + TABLE_COORDINATES + " values (3, 'Miami, Florida', 25.761680, -80.191790)");
-        db.execSQL("insert into " + TABLE_COORDINATES + " values (4, 'Washington, DC', 38.8951, -77.0367");
-        db.execSQL("insert into " + TABLE_COORDINATES + " values (5, 'Tokyo, Japan', 36, 138");
+        db.execSQL("insert into " + TABLE_COORDINATES + " values (4, 'Washington, DC', 38.8951, -77.0367)");
+        db.execSQL("insert into " + TABLE_COORDINATES + " values (5, 'Tokyo, Japan', 35.6894875, 139.69170639999993)");
     }
 
     @Override
@@ -194,10 +194,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = database.query(TABLE_SOLDIER, new String[]{KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME },
                 KEY_ID + "=?", new String[]{String.valueOf(soldier_id)}, null, null, null, null);
 
-        if (cursor != null) {
+        if (cursor != null)
             cursor.moveToFirst();
-            cursor.moveToNext();
-        }
 
         Soldier soldier = new Soldier();
         soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
@@ -421,7 +419,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //I did NOT include update or delete...
 
 
-    public long createCoordinate(LocationBundle locBun) {
+    public long createLocation(LocationBundle locBun) {
         SQLiteDatabase database = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -481,6 +479,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return locBundle;
     }
 
+    // SELECT * FROM soldiers s, division d, command c WHERE d.tag_name = Watchlist AND d.id = c.tag_id AND s.id = c.todo_id;
+    public List<LocationBundle> getAllLocationsBySoldier (Soldier soldier) {
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        ArrayList<LocationBundle> packs = new ArrayList<LocationBundle>();
+
+        String selectQuery = "SELECT * FROM "
+                + TABLE_COORDINATES + " ts, "
+                + TABLE_SOLDIER + " td, "
+                + TABLE_MAP + " tc WHERE td." + KEY_ID
+                + " = " + "tc." + KEY_SOLDIER_ID + " AND ts." + KEY_ID + " = "
+                + "tc." + KEY_COORD_ID;
+
+        Log.e("DBHlocationBySoldier", selectQuery);
+
+        Cursor cursor = database.rawQuery(selectQuery, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                LocationBundle locBundle = new LocationBundle();
+                locBundle.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                locBundle.setLocalName(cursor.getString(cursor.getColumnIndex(KEY_LOCAL)));
+                locBundle.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
+                        cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
+
+                packs.add(locBundle);
+
+            } while (cursor.moveToNext());
+        }
+        return packs;
+    }
+
+
 
     //todo: COMMAND TABLE
 
@@ -512,10 +543,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 KEY_ID + " = ?", new String[]{ String.valueOf(soldier.getId()) });
     }
 
-    /*
-   return database.update(TABLE_SOLDIER, values,
-                KEY_ID + " = ?", new String[] { String.valueOf(soldier.getId()) });
-     */
+
+    //todo: MAP TABLE
+
+
+    public long assignLocationToSolider(LocationBundle locBun, Soldier soldier) {
+        SQLiteDatabase databasae = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_COORD_ID, locBun.getId());
+        values.put(KEY_SOLDIER_ID, soldier.getId());
+
+        long id = databasae.insert(TABLE_MAP, null, values);
+        return id;
+    }
+
+    public int updateLocationSoldier(LocationBundle locBun, Soldier soldier) {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_COORD_ID, locBun.getId());
+        values.put(KEY_SOLDIER_ID, soldier.getId());
+
+        return database.update(TABLE_MAP, values,
+                KEY_ID + " = ?", new String[] { String.valueOf(locBun.getId()) });
+    }
+
+
+
+
 
     //Importantly dont forget to close the database connection once you done using it.
     //Call following method when you dont need access to db anymore.
@@ -526,5 +582,4 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Log.e("closeDatabase()", "3 Star DATABASE CLOSED SIR!");
     }
-
 }
