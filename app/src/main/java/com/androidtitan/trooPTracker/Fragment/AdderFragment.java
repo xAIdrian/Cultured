@@ -171,6 +171,7 @@ public class AdderFragment extends Fragment {
         });
 
         addBtn = (TextView) v.findViewById(R.id.submit_button);
+
         if(editPage == true) {
             addBtn.setText("Edit");
         }
@@ -184,6 +185,7 @@ public class AdderFragment extends Fragment {
         });
 
         firstEdit.setText(newFname);
+
         firstEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

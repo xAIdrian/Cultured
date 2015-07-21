@@ -295,7 +295,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase database = this.getWritableDatabase();
 
-        Log.e("DBHdeleteSoldier", soldier.getfName() + " " + soldier.getId());
+        Log.e("DBHdeleteSoldier", "Deleted! " + soldier.getfName() + " " + soldier.getId());
 
         database.delete(TABLE_SOLDIER,
                 KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
@@ -511,6 +511,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return packs;
     }
 
+
+    public void deleteLocation(LocationBundle locBun) {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        Log.e("DBHdeleteLocation", "Deleted! " + locBun.getLocalName() + ", " + locBun.getLatlng());
+
+        database.delete(TABLE_COORDINATES,
+                KEY_ID + " =?", new String[] { String.valueOf(locBun.getId()) });
+
+    }
 
 
     //todo: COMMAND TABLE

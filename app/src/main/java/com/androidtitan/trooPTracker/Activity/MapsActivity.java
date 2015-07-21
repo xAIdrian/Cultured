@@ -56,7 +56,6 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
     private Handler handler;
 
-    private ImageView editLoc;
     private ImageView addLoc;
     private ImageView locationGetter;
 
@@ -101,6 +100,11 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         map.getUiSettings().setMyLocationButtonEnabled(false);
         map.setMyLocationEnabled(true);
 
+        //place markers for every saved location
+        for(LocationBundle bund : databaseHelper.getAllLocations()) {
+            map.addMarker(new MarkerOptions().position(bund.getLatlng())
+                    .title(bund.getLocalName()));
+        }
 
         //Focusing camera on Soldier's location or a random one
         //LatLng tempSoldierLatLng = databaseHelper.getAllLocationsBySoldier(tempSoldier).get(0).getLatlng();
@@ -109,7 +113,6 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
             /*this currently gets the first location in their many saved locations...
             eventually we want to be able to 'page' through all of them
             */
-            //todo set pin/marker on location
             CameraUpdate center = CameraUpdateFactory.newLatLng(databaseHelper.getAllLocationsBySoldier(tempSoldier).get(0).getLatlng());
             CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
             map.moveCamera(center);
@@ -126,18 +129,12 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
             map.moveCamera(center);
             map.animateCamera(zoom);
 
-            map.addMarker(new MarkerOptions().position(starterLocation)
-                    .title(databaseHelper.getLocationBundle(rando).getLocalName()));
-
             Log.e("MAonCreate", String.valueOf(databaseHelper.getAllLocations()));
-            //we are adding locations.  They are either not getting assigned to our Soldier
-            // or we are not querying for them properly
         }
 
             //initializations
             handler = new Handler();
 
-            editLoc = (ImageView) findViewById(R.id.editBtn);
             addLoc = (ImageView) findViewById(R.id.addBtn);
             locationGetter = (ImageView) findViewById(R.id.locBtn);
             locationGetter.setVisibility(View.GONE);
@@ -196,23 +193,15 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
                         buildAlertMessageNoGps();
                     } else {
                         if (locationClick) {
-                            LocationBundle tempBundle = new LocationBundle(new LatLng(currentLatitude, currentLongitude));
-                            databaseHelper.createLocation(tempBundle);
 
-                            databaseHelper.assignLocationToSolider(tempBundle, tempSoldier);
+                            map.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)));
 
-                            //Dialog fragment to add a Title to our
-                            showAdderDialog(databaseHelper.getAllLocations().size());
-                            //or size -1
-                            //Log.e();
-                            //todo:create a custom marker where the user can input name into edittext
-
-                            map.addMarker(new MarkerOptions().position(tempBundle.getLatlng())
-                                    .title(tempBundle.getLocalName()));
-
-                            //this shit works!
-                            Log.e("MAaddLoc", tempSoldier.getfName() + " location set! "
-                                    + databaseHelper.getAllLocationsBySoldier(tempSoldier).get(0));
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    showAdderDialog(soldierIndex, databaseHelper.getAllLocations().size(),
+                                            currentLatitude, currentLongitude); //or size -1
+                                }
+                            }, 1000);
 
                             locationClick = false;
                         }
@@ -221,23 +210,6 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
                 }
             });
-
-        editLoc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final LocationManager manager = (LocationManager)
-                        getSystemService(Context.LOCATION_SERVICE);
-
-                if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    buildAlertMessageNoGps();
-                } else {
-
-                }
-            }
-        });
-
-
     }
 
     @Override
@@ -384,13 +356,16 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         alert.show();
     }
 
-    private void showAdderDialog(int inter) {
+    private void showAdderDialog(int soIndex, int index, double lat, double lng) {
         //todo: title issue
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         Bundle bundle = new Bundle();
-        bundle.putInt("locationBundleIndex", inter);
+        bundle.putInt("soldierIndex", soIndex);
+        bundle.putInt("locationBundleIndex", index);
+        bundle.putDouble("locationBundleLat", lat);
+        bundle.putDouble("locationBundleLng", lng);
         // Create and show the dialog.
         DialogFragment newFragment = new MapsAdderDialogFragment();
         newFragment.setArguments(bundle);

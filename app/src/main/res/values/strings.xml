@@ -52,7 +52,7 @@
     <string name="title_activity_maps">Map</string>
 
     <string name="cancel">Cancel</string>
-    <string name="setTitle">name it?</string>
+    <string name="dialogTitle">name it?</string>
 
     <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->
 

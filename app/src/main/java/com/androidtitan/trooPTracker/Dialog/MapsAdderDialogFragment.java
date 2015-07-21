@@ -3,6 +3,8 @@ package com.androidtitan.trooptracker.Dialog;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,9 @@ import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
+import com.androidtitan.trooptracker.Data.LocationBundle;
+import com.androidtitan.trooptracker.Data.Soldier;
+import com.google.android.gms.maps.model.LatLng;
 
 public class MapsAdderDialogFragment extends DialogFragment {
 
@@ -21,7 +26,12 @@ public class MapsAdderDialogFragment extends DialogFragment {
     private TextView mapAddCancel;
     private TextView mapAddSubmit;
 
+    private int soldierIndex = -1;
     private int locationBundleIndex = -1;
+    private double latitude = -1;
+    private double longitude = -1;
+
+    private String dialogString;
 
     public static MapsAdderDialogFragment newInstance() {
         //use this on rotate
@@ -44,8 +54,10 @@ public class MapsAdderDialogFragment extends DialogFragment {
         }
         databaseHelper = DatabaseHelper.getInstance(getActivity());
 
+        soldierIndex = getArguments().getInt("soldierIndex");
         locationBundleIndex = getArguments().getInt("locationBundleIndex");
-        Log.e("MADFonCreate", "location Index: " + locationBundleIndex);
+        latitude = getArguments().getDouble("locationBundleLat");
+        longitude = getArguments().getDouble("locationBundleLng");
     }
 
     @Override
@@ -53,13 +65,54 @@ public class MapsAdderDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_maps_adder_dialog, container, false);
 
+        getDialog().getWindow().setTitle(getResources().getString(R.string.dialogTitle));
+
         mapAddEditText = (EditText) v.findViewById(R.id.mapEditText);
         mapAddCancel = (TextView) v.findViewById(R.id.mapCancel);
         mapAddSubmit = (TextView) v.findViewById(R.id.mapSubmit);
 
-        //todo: set EDIT text listener
+        mapAddEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        //todo: on ADD use 'databaseHelper.getLocation(locationBundleIndex).setTitle("string")'
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                dialogString = s.toString();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        mapAddCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDialog().dismiss();
+            }
+        });
+
+        mapAddSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final Soldier tempSoldier = databaseHelper.getSoldier(soldierIndex);
+                LocationBundle tempBundle = new LocationBundle(new LatLng(latitude, longitude));
+                tempBundle.setLocalName(dialogString);
+
+                databaseHelper.createLocation(tempBundle);
+                databaseHelper.assignLocationToSolider(tempBundle, tempSoldier);
+
+                getDialog().dismiss();
+
+                Log.e("MADFonCreate", "SoldierIndex: " + soldierIndex
+                                + ", " + databaseHelper.getLocationBundle(locationBundleIndex + 1).getLocalName()
+                    + " " + databaseHelper.getLocationBundle(locationBundleIndex + 1).getLatlng());
+            }
+        });
 
         return v;
     }

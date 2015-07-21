@@ -4,14 +4,6 @@
     android:layout_height="wrap_content"
     tools:context="com.androidtitan.trooptracker.Dialog.MapsAdderDialogFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="@string/setTitle"
-        android:textSize="@dimen/abc_text_size_small_material"
-        android:textStyle="bold"/>
-
     <EditText
         android:id="@+id/mapEditText"
         android:layout_width="match_parent"
@@ -20,7 +12,6 @@
         android:layout_alignParentStart="true"
         android:backgroundTint="#448AFF"
         android:gravity="center"
-        android:padding="10dp"
         android:imeOptions="actionDone"
         android:inputType="textCapSentences"
         android:selectAllOnFocus="true"
@@ -32,6 +23,7 @@
         android:layout_height="50dp"
         android:orientation="horizontal"
         android:layout_below="@+id/mapEditText"
+        android:paddingTop="15dp"
         android:paddingBottom="10dp"
         android:weightSum="2">
 
