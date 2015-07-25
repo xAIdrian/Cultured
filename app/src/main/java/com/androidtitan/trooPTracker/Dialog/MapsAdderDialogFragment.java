@@ -16,11 +16,14 @@ import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.LocationBundle;
 import com.androidtitan.trooptracker.Data.Soldier;
+import com.androidtitan.trooptracker.Interface.MapsInterface;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MapsAdderDialogFragment extends DialogFragment {
+    public static final String TAG = "MAPADDERDIALOG";
 
     DatabaseHelper databaseHelper;
+    MapsInterface mapsInterface;
 
     private EditText mapAddEditText;
     private TextView mapAddCancel;
@@ -30,6 +33,9 @@ public class MapsAdderDialogFragment extends DialogFragment {
     private int locationBundleIndex = -1;
     private double latitude = -1;
     private double longitude = -1;
+
+    Soldier tempSoldier;
+    LocationBundle tempBundle;
 
     private String dialogString;
 
@@ -58,6 +64,10 @@ public class MapsAdderDialogFragment extends DialogFragment {
         locationBundleIndex = getArguments().getInt("locationBundleIndex");
         latitude = getArguments().getDouble("locationBundleLat");
         longitude = getArguments().getDouble("locationBundleLng");
+
+        tempSoldier = databaseHelper.getSoldier(soldierIndex);
+
+
     }
 
     @Override
@@ -98,8 +108,6 @@ public class MapsAdderDialogFragment extends DialogFragment {
         mapAddSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                final Soldier tempSoldier = databaseHelper.getSoldier(soldierIndex);
                 LocationBundle tempBundle = new LocationBundle(new LatLng(latitude, longitude));
                 tempBundle.setLocalName(dialogString);
 
@@ -107,6 +115,7 @@ public class MapsAdderDialogFragment extends DialogFragment {
                 databaseHelper.assignLocationToSolider(tempBundle, tempSoldier);
 
                 getDialog().dismiss();
+                mapsInterface.dialogMarkerAdd(tempBundle);
 
                 Log.e("MADFonCreate", "SoldierIndex: " + soldierIndex
                                 + ", " + databaseHelper.getLocationBundle(locationBundleIndex + 1).getLocalName()
@@ -121,7 +130,7 @@ public class MapsAdderDialogFragment extends DialogFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            //mListener = (OnFragmentInteractionListener) activity;
+            mapsInterface = (MapsInterface) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -131,7 +140,7 @@ public class MapsAdderDialogFragment extends DialogFragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        //mListener = null;
+        mapsInterface = null;
     }
 
 }

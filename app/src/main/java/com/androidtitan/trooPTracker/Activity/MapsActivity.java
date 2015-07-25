@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.CursorIndexOutOfBoundsException;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,6 +18,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
@@ -35,6 +38,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Random;
@@ -47,12 +51,15 @@ import java.util.Random;
 public class MapsActivity extends FragmentActivity implements MapsInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    private static final String SAVED_BOOL = "isSecondCreate";
     DatabaseHelper databaseHelper;
 
     private GoogleMap map; // Might be null if Google Play services APK is not available.
     private GoogleMapOptions options = new GoogleMapOptions();
 
     private GoogleApiClient googleAPIclient;
+
+    private Soldier tempSoldier;
 
     private Handler handler;
 
@@ -66,6 +73,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
     private double currentLatitude;
     private double currentLongitude;
 
+    private boolean isSecondCreate;
     private int soldierIndex = -1;
     private boolean locationClick = false;
 
@@ -74,12 +82,14 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
+
         databaseHelper = DatabaseHelper.getInstance(this);
 
         Intent intent = getIntent();
         soldierIndex = intent.getIntExtra("selectionToMap", -1);
 
-        final Soldier tempSoldier = databaseHelper.getSoldier(soldierIndex);
+        tempSoldier = databaseHelper.getSoldier(soldierIndex);
+        Log.e("MAonCreate","temp soldier: " + tempSoldier.getId() + ", " + tempSoldier.getfName());
 
         setUpMapIfNeeded();
 
@@ -102,34 +112,52 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
         //place markers for every saved location
         for(LocationBundle bund : databaseHelper.getAllLocations()) {
-            map.addMarker(new MarkerOptions().position(bund.getLatlng())
-                    .title(bund.getLocalName()));
+            try {
+
+                map.addMarker(new MarkerOptions()
+                        .position(bund.getLatlng())
+                        .title(bund.getLocalName())
+                        .snippet(databaseHelper.getLocationsSoldier(bund).getFullName()));
+            }
+            catch(CursorIndexOutOfBoundsException e) {
+
+                map.addMarker(new MarkerOptions()
+                        .position(bund.getLatlng())
+                        .title(bund.getLocalName()));
+            }
         }
 
         //Focusing camera on Soldier's location or a random one
         //LatLng tempSoldierLatLng = databaseHelper.getAllLocationsBySoldier(tempSoldier).get(0).getLatlng();
 
+
         if (databaseHelper.getAllLocationsBySoldier(tempSoldier).size() > 0) { //if there is something present
             /*this currently gets the first location in their many saved locations...
             eventually we want to be able to 'page' through all of them
             */
-            CameraUpdate center = CameraUpdateFactory.newLatLng(databaseHelper.getAllLocationsBySoldier(tempSoldier).get(0).getLatlng());
-            CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-            map.moveCamera(center);
-            map.animateCamera(zoom);
+            cameraLocation(false, 0, null);
 
         } else {
 
-            int rando = randInt(1, 5);
-            LatLng starterLocation = databaseHelper.getLocationBundle(rando).getLatlng();
+            cameraLocation(true, -1, null);
 
-            CameraUpdate center =
-                    CameraUpdateFactory.newLatLng(starterLocation);
-            CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
-            map.moveCamera(center);
-            map.animateCamera(zoom);
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("No locations set.  Sorry.")
+                    .setCancelable(false)
+                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog,
+                                            @SuppressWarnings("unused") final int id) {
+                            dialog.cancel();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
 
-            Log.e("MAonCreate", String.valueOf(databaseHelper.getAllLocations()));
+
+        //log printer
+        for(LocationBundle loc : databaseHelper.getAllLocationsBySoldier(tempSoldier)) {
+            Log.e("MAonCreate",loc.getId()+ " " + loc.getLocalName() + ", " + loc.getLatlng());
         }
 
             //initializations
@@ -169,14 +197,9 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
                             Log.e("MAlocationGetter", "Location Found! " + currentLatitude + ", " + currentLongitude);
 
                             //camera
-                            CameraUpdate center =
-                                    CameraUpdateFactory.newLatLng(lastLatLang);
-                            CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-                            map.moveCamera(center);
-                            map.animateCamera(zoom);
+                            cameraLocation(false, -1, lastLatLang);
 
                             locationClick = true;
-
                         }
                     }
                 }
@@ -194,7 +217,14 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
                     } else {
                         if (locationClick) {
 
-                            map.addMarker(new MarkerOptions().position(new LatLng(currentLatitude, currentLongitude)));
+                            Log.e("insideClicker", String.valueOf(locationClick));
+
+                            //for loop looking at every saved position
+                            //if one is close ... cancel
+
+                            Log.e("insideAddLoc", "large If");
+                            /*map.addMarker(new MarkerOptions()
+                                    .position(new LatLng(currentLatitude, currentLongitude)));*/
 
                             handler.postDelayed(new Runnable() {
                                 public void run() {
@@ -204,10 +234,12 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
                             }, 1000);
 
                             locationClick = false;
+
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "where are you?", Toast.LENGTH_LONG);
                         }
                     }
-
-
                 }
             });
     }
@@ -217,6 +249,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         super.onResume();
         setUpMapIfNeeded();
     }
+
 
     /**
      * Sets up the map if it is possible to do so (i.e., the Google Play services APK is correctly
@@ -244,6 +277,8 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
                 setUpMap();
             }
         }
+
+        map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
     }
 
     /**
@@ -253,7 +288,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
      * This should only be called once and when we are sure that {@link #map} is not null.
      */
     private void setUpMap() {
-
+        map.setInfoWindowAdapter(new CustomInfoWindowAdapter());
     }
 
     @Override
@@ -269,6 +304,13 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
+
+    //Saves data that is lost on rotation
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+        outState.putBoolean(SAVED_BOOL, true);
     }
 
     @Override
@@ -324,6 +366,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         buildAlertMessageNoGps();
     }
 
+
     //generates a random integer
     public static int randInt(int min, int max) {
 
@@ -336,6 +379,41 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         int randomNum = rand.nextInt((max - min) + 1) + min;
 
         return randomNum;
+    }
+
+    //directs the user to a location on the map
+    //eventually we will use tha parameter to navigate to SQL row item
+    //used for all of the Map Navigations
+    private void cameraLocation(boolean isRandom, int locationIndx, LatLng swingLocation) {
+
+        LatLng starterLocation;
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+
+        if(swingLocation != null) {
+            starterLocation = swingLocation;
+
+        }
+        else {
+
+            if (isRandom == true) {
+                int rando = randInt(1, 5);
+                starterLocation = databaseHelper.getLocationBundle(rando).getLatlng();
+
+                zoom = CameraUpdateFactory.zoomTo(10);
+            } else {
+                starterLocation = databaseHelper
+                        .getAllLocationsBySoldier(tempSoldier).get(0).getLatlng();
+
+            }
+        }
+
+        CameraUpdate center =
+                CameraUpdateFactory.newLatLng(starterLocation);
+
+        map.moveCamera(center);
+        map.animateCamera(zoom);
+
+        Log.e("MAonCreate", String.valueOf(databaseHelper.getAllLocations()));
     }
 
     private void buildAlertMessageNoGps() {
@@ -357,7 +435,6 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
     }
 
     private void showAdderDialog(int soIndex, int index, double lat, double lng) {
-        //todo: title issue
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
@@ -372,6 +449,84 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
         newFragment.show(ft, "dialog");
 
+    }
+
+    private void  cancellationAlertDialog () {
+
+    final AlertDialog.Builder aDawg = new AlertDialog.Builder(this)
+            .setTitle("location's taken bro.")
+            .setMessage("Someone is already at this Location")
+            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+        aDawg.show();
+
+    }
+
+    public void dialogMarkerAdd(LocationBundle locationBundle) {
+        map.addMarker(new MarkerOptions()
+                .title(locationBundle.getLocalName())
+                .position(locationBundle.getLatlng())
+                .snippet(databaseHelper.getLocationsSoldier(locationBundle).getFullName()));
+    }
+
+
+    private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        private View v;
+        private TextView infoHeader;
+        private TextView infoSecondary;
+
+        private String title;
+        private String secondary;
+
+        public CustomInfoWindowAdapter() {
+            v = getLayoutInflater().inflate(R.layout.info_window_custom,
+                    null);
+        }
+
+        //onCreate()
+        @Override
+        public View getInfoContents(Marker marker) {
+
+            if (marker != null && marker.isInfoWindowShown()) {
+                marker.hideInfoWindow();
+                marker.showInfoWindow();
+            }
+            return null;
+        }
+
+        //onCreateView()
+        @Override
+        public View getInfoWindow(final Marker marker) {
+
+            infoHeader = (TextView) v.findViewById(R.id.info_header);
+            infoSecondary = (TextView) v.findViewById(R.id.info_second);
+
+            title = marker.getTitle();
+            infoHeader.setText(title);
+
+            try {
+                secondary = marker.getSnippet();
+                infoSecondary.setText(secondary);
+            } catch(NullPointerException e) {
+                infoSecondary.setText("");
+            }
+
+            infoSecondary.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getApplicationContext(), "Delete!", Toast.LENGTH_LONG);
+                }
+            });
+
+            return v;
+        }
     }
 
 }

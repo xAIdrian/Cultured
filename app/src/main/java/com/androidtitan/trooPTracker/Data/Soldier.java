@@ -48,6 +48,10 @@ public class Soldier {
         this.lName = lName;
     }
 
+    public String getFullName() {
+        return fName + " " + lName;
+    }
+
     //we are overriding toString() so it's default implementation is to return a string
     //not a memory address
     //We're going to roll with both names together

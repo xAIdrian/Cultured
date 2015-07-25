@@ -178,6 +178,7 @@ public class DivAdderFragment extends Fragment {
 
         outState.putString(SAVED_NAME, nameEdit.getText().toString());
     }
+
     @Override
     public void onDetach() {
         super.onDetach();

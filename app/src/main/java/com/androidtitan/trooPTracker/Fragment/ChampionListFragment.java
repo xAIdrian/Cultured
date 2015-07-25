@@ -161,7 +161,7 @@ public class ChampionListFragment extends Fragment {
 
                     editer.startAnimation(slideOut);
                     proceedBtn.startAnimation(rightSlideOut);
-                    listView.setEnabled(false); //todo
+                    listView.setEnabled(false);
 
                     handler.postDelayed(new Runnable() {
                         public void run() {
@@ -171,7 +171,7 @@ public class ChampionListFragment extends Fragment {
                             adder.setVisibility(View.VISIBLE);
                             adder.startAnimation(slideIn);
 
-                            listView.setEnabled(true); //todo
+                            listView.setEnabled(true);
                         }
                     }, slideOut.getDuration());
 
@@ -198,7 +198,7 @@ public class ChampionListFragment extends Fragment {
                                 proceedBtn.setVisibility(View.VISIBLE);
                                 proceedBtn.startAnimation(rightSlideIn);
 
-                                listView.setEnabled(true); //todo
+                                listView.setEnabled(true);
                             }
                         }, slideOut.getDuration());
                     }
@@ -316,6 +316,7 @@ public class ChampionListFragment extends Fragment {
                     }
                 });
         final AlertDialog alert = builder.create();
+        alert.show();
         alert.show();
     }
 

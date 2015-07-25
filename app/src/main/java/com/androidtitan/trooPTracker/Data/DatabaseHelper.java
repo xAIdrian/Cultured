@@ -481,6 +481,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // SELECT * FROM soldiers s, division d, command c WHERE d.tag_name = Watchlist AND d.id = c.tag_id AND s.id = c.todo_id;
     public List<LocationBundle> getAllLocationsBySoldier (Soldier soldier) {
+        long soldierId = soldier.getId();
         SQLiteDatabase database = this.getReadableDatabase();
 
         ArrayList<LocationBundle> packs = new ArrayList<LocationBundle>();
@@ -488,7 +489,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String selectQuery = "SELECT * FROM "
                 + TABLE_COORDINATES + " ts, "
                 + TABLE_SOLDIER + " td, "
-                + TABLE_MAP + " tc WHERE td." + KEY_ID
+                + TABLE_MAP + " tc WHERE td."
+                + KEY_ID + " = " + soldierId + " AND td." + KEY_ID
                 + " = " + "tc." + KEY_SOLDIER_ID + " AND ts." + KEY_ID + " = "
                 + "tc." + KEY_COORD_ID;
 
@@ -509,6 +511,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } while (cursor.moveToNext());
         }
         return packs;
+    }
+
+    //this will query the MAP table and find a soldier that is in the same row as the locBun id
+    public Soldier getLocationsSoldier(LocationBundle locationBundle) {
+        String locId = locationBundle.getLocalName();
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        ArrayList<LocationBundle> packs = new ArrayList<LocationBundle>();
+
+        String selectQuery = "SELECT * FROM "
+                + TABLE_COORDINATES + " ts, "
+                + TABLE_SOLDIER + " td, "
+                + TABLE_MAP + " tc WHERE ts."
+                + KEY_LOCAL + " = '" + locId + "' AND td." + KEY_ID
+                + " = " + "tc." + KEY_SOLDIER_ID + " AND ts." + KEY_ID + " = "
+                + "tc." + KEY_COORD_ID;
+
+        Log.e("DBHsoldierByLocation", selectQuery);
+
+        Cursor cursor = database.rawQuery(selectQuery, null);
+
+        if(cursor != null)
+            cursor.moveToNext();
+
+        Soldier soldier = new Soldier();
+        soldier.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+        soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
+        soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+
+        return soldier;
+
     }
 
 
