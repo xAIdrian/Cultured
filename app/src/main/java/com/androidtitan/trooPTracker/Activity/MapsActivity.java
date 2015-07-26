@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.List;
 import java.util.Random;
 
 
@@ -56,15 +58,19 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
     private GoogleMap map; // Might be null if Google Play services APK is not available.
     private GoogleMapOptions options = new GoogleMapOptions();
-
     private GoogleApiClient googleAPIclient;
 
     private Soldier tempSoldier;
 
     private Handler handler;
 
+    private RelativeLayout topLayout;
     private ImageView addLoc;
     private ImageView locationGetter;
+    private RelativeLayout editView;
+    private ImageView prevArrow;
+    private ImageView nextArrow;
+    private ImageView deleteMark;
 
     private Animation slidein;
 
@@ -73,15 +79,17 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
     private double currentLatitude;
     private double currentLongitude;
 
-    private boolean isSecondCreate;
+    private List<LocationBundle> soldierLocations;
+
+    private boolean isEditOpen = false;
     private int soldierIndex = -1;
     private boolean locationClick = false;
+    private int locationIndex = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
 
         databaseHelper = DatabaseHelper.getInstance(this);
 
@@ -89,7 +97,8 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         soldierIndex = intent.getIntExtra("selectionToMap", -1);
 
         tempSoldier = databaseHelper.getSoldier(soldierIndex);
-        Log.e("MAonCreate","temp soldier: " + tempSoldier.getId() + ", " + tempSoldier.getfName());
+        soldierLocations = databaseHelper.getAllLocationsBySoldier(tempSoldier);
+        locationIndex = soldierLocations.size() - 1;
 
         setUpMapIfNeeded();
 
@@ -111,15 +120,14 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         map.setMyLocationEnabled(true);
 
         //place markers for every saved location
-        for(LocationBundle bund : databaseHelper.getAllLocations()) {
+        for (LocationBundle bund : databaseHelper.getAllLocations()) {
             try {
 
                 map.addMarker(new MarkerOptions()
                         .position(bund.getLatlng())
                         .title(bund.getLocalName())
                         .snippet(databaseHelper.getLocationsSoldier(bund).getFullName()));
-            }
-            catch(CursorIndexOutOfBoundsException e) {
+            } catch (CursorIndexOutOfBoundsException e) {
 
                 map.addMarker(new MarkerOptions()
                         .position(bund.getLatlng())
@@ -127,15 +135,11 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
             }
         }
 
-        //Focusing camera on Soldier's location or a random one
-        //LatLng tempSoldierLatLng = databaseHelper.getAllLocationsBySoldier(tempSoldier).get(0).getLatlng();
-
-
-        if (databaseHelper.getAllLocationsBySoldier(tempSoldier).size() > 0) { //if there is something present
+        if (soldierLocations.size() > 0) { //if there is something present
             /*this currently gets the first location in their many saved locations...
             eventually we want to be able to 'page' through all of them
             */
-            cameraLocation(false, 0, null);
+            cameraLocation(false, locationIndex, null);
 
         } else {
 
@@ -156,92 +160,152 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
 
         //log printer
-        for(LocationBundle loc : databaseHelper.getAllLocationsBySoldier(tempSoldier)) {
-            Log.e("MAonCreate",loc.getId()+ " " + loc.getLocalName() + ", " + loc.getLatlng());
+        for (LocationBundle loc : soldierLocations) {
+            Log.e("MAonCreate", loc.getId() + " " + loc.getLocalName() + ", " + loc.getLatlng());
         }
 
-            //initializations
-            handler = new Handler();
+        Toast.makeText(this, "touch bar to open edit options", Toast.LENGTH_LONG);
 
-            addLoc = (ImageView) findViewById(R.id.addBtn);
-            locationGetter = (ImageView) findViewById(R.id.locBtn);
-            locationGetter.setVisibility(View.GONE);
+        //initializations
+        handler = new Handler();
+
+        topLayout = (RelativeLayout) findViewById(R.id.topLayout);
+        prevArrow = (ImageView) findViewById(R.id.previousMark);
+        nextArrow = (ImageView) findViewById(R.id.nextMark);
+        deleteMark = (ImageView) findViewById(R.id.deleteMark);
+
+        addLoc = (ImageView) findViewById(R.id.addBtn);
+        locationGetter = (ImageView) findViewById(R.id.locBtn);
+        locationGetter.setVisibility(View.GONE);
+
+        editView = (RelativeLayout) findViewById(R.id.editViewLayout);
+        editView.setVisibility(View.GONE);
 
 
-            map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-                @Override
-                public void onMapLoaded() {
-                    //placeholder
+        map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                //placeholder
+            }
+        });
+
+        topLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isEditOpen) {
+                    editView.setVisibility(View.VISIBLE);
+                    isEditOpen = true;
+
+
+                } else {
+                    editView.setVisibility(View.GONE);
+                    isEditOpen = false;
                 }
-            });
+            }
+        });
 
-            locationGetter.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        locationGetter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                    final LocationManager manager = (LocationManager)
-                            getSystemService(Context.LOCATION_SERVICE);
+                final LocationManager manager = (LocationManager)
+                        getSystemService(Context.LOCATION_SERVICE);
 
-                    if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                        buildAlertMessageNoGps();
-                    } else {
-                        lastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                                googleAPIclient);
+                if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    buildAlertMessageNoGps();
+                } else {
+                    lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                            googleAPIclient);
 
-                        if (lastLocation != null) {
+                    if (lastLocation != null) {
 
-                            currentLatitude = lastLocation.getLatitude();
-                            currentLongitude = lastLocation.getLongitude();
-                            lastLatLang = new LatLng(currentLatitude, currentLongitude);
+                        currentLatitude = lastLocation.getLatitude();
+                        currentLongitude = lastLocation.getLongitude();
+                        lastLatLang = new LatLng(currentLatitude, currentLongitude);
 
-                            Log.e("MAlocationGetter", "Location Found! " + currentLatitude + ", " + currentLongitude);
+                        Log.e("MAlocationGetter", "Location Found! " + currentLatitude + ", " + currentLongitude);
 
-                            //camera
-                            cameraLocation(false, -1, lastLatLang);
+                        //camera
+                        cameraLocation(false, -1, lastLatLang);
 
-                            locationClick = true;
-                        }
+                        locationClick = true;
                     }
                 }
-            });
+            }
+        });
 
-            addLoc.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        addLoc.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-                    final LocationManager manager = (LocationManager)
-                            getSystemService(Context.LOCATION_SERVICE);
+                final LocationManager manager = (LocationManager)
+                        getSystemService(Context.LOCATION_SERVICE);
 
-                    if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                        buildAlertMessageNoGps();
+                if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    buildAlertMessageNoGps();
+                } else {
+                    if (locationClick) {
+
+                        Log.e("insideClicker", String.valueOf(locationClick));
+
+                        //for loop looking at every saved position
+                        //if one is close ... cancel
+
+                        Log.e("insideAddLoc", "large If");
+
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                showAdderDialog(soldierIndex, databaseHelper.getAllLocations().size(),
+                                        currentLatitude, currentLongitude); //or size -1
+                            }
+                        }, 1000);
+
+                        locationClick = false;
+
+
                     } else {
-                        if (locationClick) {
-
-                            Log.e("insideClicker", String.valueOf(locationClick));
-
-                            //for loop looking at every saved position
-                            //if one is close ... cancel
-
-                            Log.e("insideAddLoc", "large If");
-                            /*map.addMarker(new MarkerOptions()
-                                    .position(new LatLng(currentLatitude, currentLongitude)));*/
-
-                            handler.postDelayed(new Runnable() {
-                                public void run() {
-                                    showAdderDialog(soldierIndex, databaseHelper.getAllLocations().size(),
-                                            currentLatitude, currentLongitude); //or size -1
-                                }
-                            }, 1000);
-
-                            locationClick = false;
-
-
-                        } else {
-                            Toast.makeText(getApplicationContext(), "where are you?", Toast.LENGTH_LONG);
-                        }
+                        Toast.makeText(getApplicationContext(), "where are you?", Toast.LENGTH_LONG);
                     }
                 }
-            });
+            }
+        });
+
+        nextArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //what is our location index?
+                //don't forget to check for being the last Location!
+                locationIndex ++;
+                if(locationIndex >= soldierLocations.size()) {
+                    locationIndex = 0;
+                    cameraLocation(false, locationIndex, null);
+                }
+                else {
+                    cameraLocation(false, locationIndex, null);
+                }
+            }
+        });
+
+        prevArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                locationIndex --;
+                if(locationIndex <= -1) {
+                    locationIndex = soldierLocations.size() - 1;
+                    cameraLocation(false, locationIndex, null);
+                }
+                else {
+                    cameraLocation(false, locationIndex, null);
+                }
+            }
+        });
+
+        deleteMark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getDeleteAlertDialog();
+            }
+        });
     }
 
     @Override
@@ -366,7 +430,6 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         buildAlertMessageNoGps();
     }
 
-
     //generates a random integer
     public static int randInt(int min, int max) {
 
@@ -384,16 +447,15 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
     //directs the user to a location on the map
     //eventually we will use tha parameter to navigate to SQL row item
     //used for all of the Map Navigations
-    private void cameraLocation(boolean isRandom, int locationIndx, LatLng swingLocation) {
+    private void cameraLocation(boolean isRandom, int locationIndx, LatLng setLatLang) {
 
         LatLng starterLocation;
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
 
-        if(swingLocation != null) {
-            starterLocation = swingLocation;
+        if (setLatLang != null) {
+            starterLocation = setLatLang;
 
-        }
-        else {
+        } else {
 
             if (isRandom == true) {
                 int rando = randInt(1, 5);
@@ -402,7 +464,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
                 zoom = CameraUpdateFactory.zoomTo(10);
             } else {
                 starterLocation = databaseHelper
-                        .getAllLocationsBySoldier(tempSoldier).get(0).getLatlng();
+                        .getAllLocationsBySoldier(tempSoldier).get(locationIndx).getLatlng();
 
             }
         }
@@ -434,6 +496,26 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         alert.show();
     }
 
+    private void getDeleteAlertDialog() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Delete this location?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        //delete actions
+                        LocationBundle tempLoc = soldierLocations.get(locationIndex);
+                        databaseHelper.deleteLocation(tempLoc);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     private void showAdderDialog(int soIndex, int index, double lat, double lng) {
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -451,18 +533,18 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
     }
 
-    private void  cancellationAlertDialog () {
+    private void cancellationAlertDialog() {
 
-    final AlertDialog.Builder aDawg = new AlertDialog.Builder(this)
-            .setTitle("location's taken bro.")
-            .setMessage("Someone is already at this Location")
-            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        final AlertDialog.Builder aDawg = new AlertDialog.Builder(this)
+                .setTitle("location's taken bro.")
+                .setMessage("Someone is already at this Location")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
 
         aDawg.show();
 
@@ -472,7 +554,9 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         map.addMarker(new MarkerOptions()
                 .title(locationBundle.getLocalName())
                 .position(locationBundle.getLatlng())
-                .snippet(databaseHelper.getLocationsSoldier(locationBundle).getFullName()));
+                .snippet(databaseHelper.getLocationsSoldier(locationBundle).getFullName()))
+        .showInfoWindow();
+
     }
 
 
@@ -514,7 +598,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
             try {
                 secondary = marker.getSnippet();
                 infoSecondary.setText(secondary);
-            } catch(NullPointerException e) {
+            } catch (NullPointerException e) {
                 infoSecondary.setText("");
             }
 
