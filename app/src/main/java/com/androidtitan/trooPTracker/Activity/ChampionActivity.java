@@ -90,6 +90,7 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
 
         Intent intent = new Intent(this, MapsActivity.class);
         intent.putExtra("selectionToMap", selection);
+        intent.putExtra("selectionToMapDiv", divisionIndex);
         startActivity(intent);
     }
 

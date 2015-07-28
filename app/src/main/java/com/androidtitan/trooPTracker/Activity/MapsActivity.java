@@ -27,7 +27,7 @@ import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.LocationBundle;
 import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Dialog.MapsAdderDialogFragment;
-import com.androidtitan.trooptracker.Interface.MapsInterface;
+import com.androidtitan.trooptracker.Interface.MapsPullInterface;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -50,7 +50,7 @@ import java.util.Random;
 // http://wptrafficanalyzer.in/blog/adding-google-places-autocomplete-api-as-custom-suggestions-in-android-search-dialog/
 //http://www.androidhive.info/2012/08/android-working-with-google-places-and-maps-tutorial/
 
-public class MapsActivity extends FragmentActivity implements MapsInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+public class MapsActivity extends FragmentActivity implements MapsPullInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String SAVED_BOOL = "isSecondCreate";
@@ -61,6 +61,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
     private GoogleApiClient googleAPIclient;
 
     private Soldier tempSoldier;
+    private List<LocationBundle> soldierLocations;
 
     private Handler handler;
 
@@ -79,10 +80,10 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
     private double currentLatitude;
     private double currentLongitude;
 
-    private List<LocationBundle> soldierLocations;
 
     private boolean isEditOpen = false;
     private int soldierIndex = -1;
+    private int divisionIndex = -1;
     private boolean locationClick = false;
     private int locationIndex = -1;
 
@@ -95,10 +96,13 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
         Intent intent = getIntent();
         soldierIndex = intent.getIntExtra("selectionToMap", -1);
+        divisionIndex = intent.getIntExtra("selectionToMapDiv", -1);
 
-        tempSoldier = databaseHelper.getSoldier(soldierIndex);
+        tempSoldier = databaseHelper.getAllSoldiersByDivision(databaseHelper.getDivision(divisionIndex)).get(soldierIndex);
         soldierLocations = databaseHelper.getAllLocationsBySoldier(tempSoldier);
         locationIndex = soldierLocations.size() - 1;
+
+        Log.e("!!!!!!", "Soldier! " + tempSoldier.getFullName());
 
         setUpMapIfNeeded();
 
@@ -163,6 +167,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         for (LocationBundle loc : soldierLocations) {
             Log.e("MAonCreate", loc.getId() + " " + loc.getLocalName() + ", " + loc.getLatlng());
         }
+        databaseHelper.printCoordinatesTable();
 
         Toast.makeText(this, "touch bar to open edit options", Toast.LENGTH_LONG);
 
@@ -255,7 +260,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
                         handler.postDelayed(new Runnable() {
                             public void run() {
-                                showAdderDialog(soldierIndex, databaseHelper.getAllLocations().size(),
+                                showAdderDialog(soldierIndex, divisionIndex, databaseHelper.getAllLocations().size(),
                                         currentLatitude, currentLongitude); //or size -1
                             }
                         }, 1000);
@@ -273,15 +278,16 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         nextArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //what is our location index?
-                //don't forget to check for being the last Location!
-                locationIndex ++;
-                if(locationIndex >= soldierLocations.size()) {
-                    locationIndex = 0;
-                    cameraLocation(false, locationIndex, null);
-                }
-                else {
-                    cameraLocation(false, locationIndex, null);
+                if (soldierLocations.size() > 0) {
+                    locationIndex++;
+                    if (locationIndex >= soldierLocations.size()) {
+                        locationIndex = 0;
+                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        cameraLocation(false, locationIndex, null);
+                    } else {
+                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        cameraLocation(false, locationIndex, null);
+                    }
                 }
             }
         });
@@ -289,13 +295,16 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         prevArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                locationIndex --;
-                if(locationIndex <= -1) {
-                    locationIndex = soldierLocations.size() - 1;
-                    cameraLocation(false, locationIndex, null);
-                }
-                else {
-                    cameraLocation(false, locationIndex, null);
+                if (soldierLocations.size() > 0) {
+                    locationIndex--;
+                    if (locationIndex < 0) {
+                        locationIndex = soldierLocations.size() - 1;
+                        cameraLocation(false, locationIndex, null);
+                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                    } else {
+                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        cameraLocation(false, locationIndex, null);
+                    }
                 }
             }
         });
@@ -304,6 +313,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
             @Override
             public void onClick(View v) {
                 getDeleteAlertDialog();
+
             }
         });
     }
@@ -458,9 +468,12 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         } else {
 
             if (isRandom == true) {
-                int rando = randInt(1, 5);
-                starterLocation = databaseHelper.getLocationBundle(rando).getLatlng();
-
+                int rando = randInt(1, 4);
+                starterLocation = databaseHelper.getStarterLocationBundle(rando).getLatlng();
+                Log.e("MAcameraLocation", String.valueOf(starterLocation));
+                //add marker
+                map.addMarker(new MarkerOptions()
+                        .position(databaseHelper.getStarterLocationBundle(rando).getLatlng()));
                 zoom = CameraUpdateFactory.zoomTo(10);
             } else {
                 starterLocation = databaseHelper
@@ -475,7 +488,6 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         map.moveCamera(center);
         map.animateCamera(zoom);
 
-        Log.e("MAonCreate", String.valueOf(databaseHelper.getAllLocations()));
     }
 
     private void buildAlertMessageNoGps() {
@@ -496,32 +508,60 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
         alert.show();
     }
 
+    //todo
     private void getDeleteAlertDialog() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Delete this location?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        //delete actions
-                        LocationBundle tempLoc = soldierLocations.get(locationIndex);
-                        databaseHelper.deleteLocation(tempLoc);
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
-                        dialog.cancel();
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
+        if (soldierLocations.size() > 0) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Delete this location?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            //delete actions
+                            LocationBundle tempLoc = soldierLocations.get(locationIndex);
+                            Log.e("MAdeleteAlertDialog", tempLoc.getLocalName());
+                            databaseHelper.deleteLocation(tempLoc);
+
+                            soldierLocations = databaseHelper.getAllLocationsBySoldier(tempSoldier);
+                            locationIndex--;
+
+                            if (locationIndex > soldierLocations.size()
+                                    || locationIndex < soldierLocations.size()) {
+                                cameraLocation(true, -1, null);
+                            } else {
+                                cameraLocation(false, 0, null);
+                            }
+                        }
+
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            dialog.cancel();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
+        else {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("No locations to delete...")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog, @SuppressWarnings("unused") final int id) {
+                            dialog.cancel();
+                        }
+                    });
+            final AlertDialog alert = builder.create();
+            alert.show();
+        }
     }
 
-    private void showAdderDialog(int soIndex, int index, double lat, double lng) {
+    private void showAdderDialog(int soIndex, int divIndex, int index, double lat, double lng) {
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         Bundle bundle = new Bundle();
         bundle.putInt("soldierIndex", soIndex);
+        bundle.putInt("divisionIndex", divIndex);
         bundle.putInt("locationBundleIndex", index);
         bundle.putDouble("locationBundleLat", lat);
         bundle.putDouble("locationBundleLng", lng);
@@ -533,6 +573,7 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
     }
 
+    //todo: do we want to revisit the idea of saving a location that has already been "visited"?
     private void cancellationAlertDialog() {
 
         final AlertDialog.Builder aDawg = new AlertDialog.Builder(this)
@@ -550,12 +591,17 @@ public class MapsActivity extends FragmentActivity implements MapsInterface, OnM
 
     }
 
-    public void dialogMarkerAdd(LocationBundle locationBundle) {
+    public void onDialogCompletion(LocationBundle locationBundle, List<LocationBundle> daBundle2) {
+
         map.addMarker(new MarkerOptions()
                 .title(locationBundle.getLocalName())
                 .position(locationBundle.getLatlng())
                 .snippet(databaseHelper.getLocationsSoldier(locationBundle).getFullName()))
         .showInfoWindow();
+
+        if(daBundle2 != null) {
+            soldierLocations = daBundle2;
+        }
 
     }
 
