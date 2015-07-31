@@ -53,6 +53,15 @@
 
     <string name="cancel">Cancel</string>
     <string name="dialogTitle">name it...</string>
+    <string name="mark">Mark</string>
+
+    <string name="careful">Choose Carfully</string>
+    <string name="initial_instruction">
+        You will only get one chance to Lock-In your locations \n
+        \nTo Lock-In Locations. Tap the Green Bar at the top of the screen
+    </string>
+    <string name="mark_confirmation">Are you sure?</string>
+    <string name="youDone">You\'re Done</string>
 
     <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->
 

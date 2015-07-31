@@ -20,7 +20,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
@@ -54,6 +53,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String SAVED_BOOL = "isSecondCreate";
+    private static final String SAVED_INST_NUM = "savedInstructionNum";
     DatabaseHelper databaseHelper;
 
     private GoogleMap map; // Might be null if Google Play services APK is not available.
@@ -71,7 +71,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     private RelativeLayout editView;
     private ImageView prevArrow;
     private ImageView nextArrow;
-    private ImageView deleteMark;
+    private ImageView locker;
 
     private Animation slidein;
 
@@ -87,10 +87,17 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     private boolean locationClick = false;
     private int locationIndex = -1;
 
+    private int instructionNum = 0; //use this to control yo dialogs
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        if(savedInstanceState != null) {
+            instructionNum = savedInstanceState.getInt(SAVED_INST_NUM);
+        }
 
         databaseHelper = DatabaseHelper.getInstance(this);
 
@@ -98,11 +105,24 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         soldierIndex = intent.getIntExtra("selectionToMap", -1);
         divisionIndex = intent.getIntExtra("selectionToMapDiv", -1);
 
-        tempSoldier = databaseHelper.getAllSoldiersByDivision(databaseHelper.getDivision(divisionIndex)).get(soldierIndex);
+        tempSoldier = databaseHelper.getAllSoldiersByDivision(
+                databaseHelper.getDivision(divisionIndex)).get(soldierIndex);
         soldierLocations = databaseHelper.getAllLocationsBySoldier(tempSoldier);
+
         locationIndex = soldierLocations.size() - 1;
 
-        Log.e("!!!!!!", "Soldier! " + tempSoldier.getFullName());
+        //todo this does not work
+        if(instructionNum == 0) {
+            instructionDialog();
+        }
+        else {
+            instructionNum = soldierLocations.size();
+        }
+
+        if(soldierLocations.size() > 3) {
+            locker.setImageResource(R.drawable.lock_closed);
+            addLoc.setVisibility(View.GONE);
+        }
 
         setUpMapIfNeeded();
 
@@ -149,17 +169,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
             cameraLocation(true, -1, null);
 
-            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("No locations set.  Sorry.")
-                    .setCancelable(false)
-                    .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                        public void onClick(@SuppressWarnings("unused") final DialogInterface dialog,
-                                            @SuppressWarnings("unused") final int id) {
-                            dialog.cancel();
-                        }
-                    });
-            final AlertDialog alert = builder.create();
-            alert.show();
         }
 
 
@@ -169,15 +178,13 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         }
         databaseHelper.printCoordinatesTable();
 
-        Toast.makeText(this, "touch bar to open edit options", Toast.LENGTH_LONG);
-
         //initializations
         handler = new Handler();
 
         topLayout = (RelativeLayout) findViewById(R.id.topLayout);
         prevArrow = (ImageView) findViewById(R.id.previousMark);
         nextArrow = (ImageView) findViewById(R.id.nextMark);
-        deleteMark = (ImageView) findViewById(R.id.deleteMark);
+        locker = (ImageView) findViewById(R.id.locker);
 
         addLoc = (ImageView) findViewById(R.id.addBtn);
         locationGetter = (ImageView) findViewById(R.id.locBtn);
@@ -251,25 +258,11 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                 } else {
                     if (locationClick) {
 
-                        Log.e("insideClicker", String.valueOf(locationClick));
-
-                        //for loop looking at every saved position
-                        //if one is close ... cancel
-
-                        Log.e("insideAddLoc", "large If");
-
-                        handler.postDelayed(new Runnable() {
-                            public void run() {
-                                showAdderDialog(soldierIndex, divisionIndex, databaseHelper.getAllLocations().size(),
-                                        currentLatitude, currentLongitude); //or size -1
-                            }
-                        }, 1000);
-
+                        instructionDialog();
                         locationClick = false;
 
-
                     } else {
-                        Toast.makeText(getApplicationContext(), "where are you?", Toast.LENGTH_LONG);
+                        //Dialog saying "You need to get your location first!"
                     }
                 }
             }
@@ -309,10 +302,44 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
             }
         });
 
-        deleteMark.setOnClickListener(new View.OnClickListener() {
+        locker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getDeleteAlertDialog();
+                Log.e("LOCKER", "Click!");
+                if(instructionNum == 4) {
+
+                    new AlertDialog.Builder(MapsActivity.this)
+                            .setTitle("Locked-In")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    locker.setImageResource(R.drawable.lock_closed);
+                                    addLoc.setVisibility(View.GONE);
+                                    dialog.cancel();
+                                }
+                            });
+                }
+                else {
+                    new AlertDialog.Builder(MapsActivity.this)
+                            .setTitle("Are you sure?")
+                            .setMessage("You have not marked all of your spots")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    locker.setImageResource(R.drawable.lock_closed);
+                                    addLoc.setVisibility(View.GONE);
+                                    dialog.cancel();
+                                }
+                            })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                }
+
+                //locker.setSrc(R.drawable.lock_closed)
 
             }
         });
@@ -382,9 +409,9 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
     //Saves data that is lost on rotation
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle savedInstanceState) {
 
-        outState.putBoolean(SAVED_BOOL, true);
+        savedInstanceState.putInt(SAVED_INST_NUM, instructionNum);
     }
 
     @Override
@@ -394,6 +421,8 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
         googleAPIclient.connect();
     }
+
+
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -438,6 +467,56 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     @Override
     public void onProviderDisabled(String provider) {
         buildAlertMessageNoGps();
+    }
+
+
+    //todo: custom methods
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
+
+        private View v;
+        private TextView infoHeader;
+        private TextView infoSecondary;
+
+        private String title;
+        private String secondary;
+
+        public CustomInfoWindowAdapter() {
+            v = getLayoutInflater().inflate(R.layout.info_window_custom,
+                    null);
+        }
+
+        //onCreate()
+        @Override
+        public View getInfoContents(Marker marker) {
+
+            if (marker != null && marker.isInfoWindowShown()) {
+                marker.hideInfoWindow();
+                marker.showInfoWindow();
+            }
+            return null;
+        }
+
+        //onCreateView()
+        @Override
+        public View getInfoWindow(final Marker marker) {
+
+            infoHeader = (TextView) v.findViewById(R.id.info_header);
+            infoSecondary = (TextView) v.findViewById(R.id.info_second);
+
+            title = marker.getTitle();
+            infoHeader.setText(title);
+
+            try {
+                secondary = marker.getSnippet();
+                infoSecondary.setText(secondary);
+            } catch (NullPointerException e) {
+                infoSecondary.setText("");
+            }
+
+            return v;
+        }
     }
 
     //generates a random integer
@@ -508,7 +587,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         alert.show();
     }
 
-    //todo
+/*
     private void getDeleteAlertDialog() {
         if (soldierLocations.size() > 0) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -554,6 +633,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
             alert.show();
         }
     }
+    */
 
     private void showAdderDialog(int soIndex, int divIndex, int index, double lat, double lng) {
 
@@ -573,19 +653,105 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
     }
 
-    //todo: do we want to revisit the idea of saving a location that has already been "visited"?
-    private void cancellationAlertDialog() {
+    private void instructionDialog() {
 
-        final AlertDialog.Builder aDawg = new AlertDialog.Builder(this)
-                .setTitle("location's taken bro.")
-                .setMessage("Someone is already at this Location")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        final AlertDialog.Builder aDawg = new AlertDialog.Builder(this);
 
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+        switch (instructionNum) {
+            case 0:
+                aDawg.setTitle(R.string.careful)
+                    .setMessage(R.string.initial_instruction)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                break;
+
+            case 1:
+                aDawg.setTitle(R.string.mark_confirmation)
+                        .setMessage("This will be your First Spot")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                handler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        showAdderDialog(soldierIndex, divisionIndex, databaseHelper.getAllLocations().size(),
+                                                currentLatitude, currentLongitude); //or size -1
+                                    }
+                                }, 1000);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                break;
+
+            case 2:
+                aDawg.setTitle(R.string.mark_confirmation)
+                        .setMessage("This will be your Second Spot")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                handler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        showAdderDialog(soldierIndex, divisionIndex, databaseHelper.getAllLocations().size(),
+                                                currentLatitude, currentLongitude); //or size -1
+                                    }
+                                }, 1000);
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                break;
+
+            case 3:
+                aDawg.setTitle(R.string.mark_confirmation)
+                        .setMessage("This will be your Third and FINAL Spot")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                handler.postDelayed(new Runnable() {
+                                    public void run() {
+                                        showAdderDialog(soldierIndex, divisionIndex, databaseHelper.getAllLocations().size(),
+                                                currentLatitude, currentLongitude); //or size -1
+                                    }
+                                }, 1000);
+                            }
+                        });
+                break;
+
+            case 4:
+                aDawg.setTitle(R.string.youDone)
+                        .setMessage("You are out of Spots\nLock-In if you haven't")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                break;
+        }
+        instructionNum++;
 
         aDawg.show();
 
@@ -606,59 +772,4 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     }
 
 
-    private class CustomInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
-
-        private View v;
-        private TextView infoHeader;
-        private TextView infoSecondary;
-
-        private String title;
-        private String secondary;
-
-        public CustomInfoWindowAdapter() {
-            v = getLayoutInflater().inflate(R.layout.info_window_custom,
-                    null);
-        }
-
-        //onCreate()
-        @Override
-        public View getInfoContents(Marker marker) {
-
-            if (marker != null && marker.isInfoWindowShown()) {
-                marker.hideInfoWindow();
-                marker.showInfoWindow();
-            }
-            return null;
-        }
-
-        //onCreateView()
-        @Override
-        public View getInfoWindow(final Marker marker) {
-
-            infoHeader = (TextView) v.findViewById(R.id.info_header);
-            infoSecondary = (TextView) v.findViewById(R.id.info_second);
-
-            title = marker.getTitle();
-            infoHeader.setText(title);
-
-            try {
-                secondary = marker.getSnippet();
-                infoSecondary.setText(secondary);
-            } catch (NullPointerException e) {
-                infoSecondary.setText("");
-            }
-
-            infoSecondary.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(), "Delete!", Toast.LENGTH_LONG);
-                }
-            });
-
-            return v;
-        }
-    }
-
 }
-
-//if (!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
