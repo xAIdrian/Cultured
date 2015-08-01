@@ -44,10 +44,11 @@ public class ChampionCursorAdapter extends CursorAdapter {
 
         //extract the string from cursor
         String firstText = cursor.getString(cursor.getColumnIndexOrThrow("first"));
-        String lastText = cursor.getString(cursor.getColumnIndexOrThrow("last"));
+        String nextText = cursor.getString(cursor.getColumnIndexOrThrow("last"));
+
 
         //populate fields
-        champTextView.setText(firstText + " " + lastText);
+        champTextView.setText(firstText + " " + nextText);
 
 
        //ListViewSelection
@@ -63,6 +64,7 @@ public class ChampionCursorAdapter extends CursorAdapter {
                     view.setBackgroundColor(0xFFFFFFFF);
                 }
         }
+
         Log.e("CCAbindView", "Selection: " + selection + ", Position: " + cursor.getPosition()
             + ", " + cursor.getString(cursor.getColumnIndexOrThrow("first")) + " "
                 + cursor.getString(cursor.getColumnIndexOrThrow("last")));

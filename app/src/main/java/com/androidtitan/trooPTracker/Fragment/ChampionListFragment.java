@@ -106,11 +106,8 @@ public class ChampionListFragment extends Fragment {
             @Override
             public void run() {
                 if(adapter != null) {
-                    adapter.changeCursor(getListItems());
+                    adapter.swapCursor(getListItems());
                 }
-
-                adapter.notifyDataSetChanged();
-                listView.invalidateViews();
             }
         };
 
@@ -135,10 +132,8 @@ public class ChampionListFragment extends Fragment {
         listView = (ListView) v.findViewById(R.id.championList);
 
         adapter = new ChampionCursorAdapter(getActivity(), getListItems());
-        Log.e("CLFonCreateView", "Adapter Initialization " + adapter);
 
         listView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -289,13 +284,16 @@ public class ChampionListFragment extends Fragment {
                 + "_id = tc.division_id AND ts._id = tc.soldier_id";
 
         Cursor cursor;
+
         if (receivedIndex == -1) {
             cursor = db.rawQuery("SELECT * FROM soldiers", null);
         } else {
             cursor = db.rawQuery(selectQuery, null);
         }
 
-        Log.e("CLFgetListItems()", "Initialized cursor: " + String.valueOf(cursor));
+
+        //todo
+        databaseHelper.printSoldierTable();
 
         return cursor;
     }
