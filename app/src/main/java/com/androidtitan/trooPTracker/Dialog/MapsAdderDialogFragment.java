@@ -65,8 +65,8 @@ public class MapsAdderDialogFragment extends DialogFragment {
         locationBundleIndex = getArguments().getInt("locationBundleIndex");
         latitude = getArguments().getDouble("locationBundleLat");
         longitude = getArguments().getDouble("locationBundleLng");
-
-        tempSoldier = databaseHelper.getAllSoldiersByDivision(databaseHelper.getDivision(divisionIndex)).get(soldierIndex);
+//todo
+        tempSoldier = databaseHelper.getSoldier(soldierIndex);
 
     }
 

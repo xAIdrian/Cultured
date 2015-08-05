@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Fragment.AdderFragment;
-import com.androidtitan.trooptracker.Fragment.DivAdderFragment;
 import com.androidtitan.trooptracker.Interface.AdderInterface;
 
 //ToDo: receive whether this is a SOLDIER or DIVISION
@@ -20,7 +19,6 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
     private FragmentManager fragMag;
     private FragmentTransaction fragTran;
     private AdderFragment adderFragment;
-    private DivAdderFragment divAdderFragment;
 
     private int divisionIndex;
     private int soldierIndex;
@@ -43,52 +41,27 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
         isEditAdder = intent.getBooleanExtra("landingEdit", false);
         adderDivisionIndex = intent.getIntExtra("landingDivision", -1);
 
-        if(isDivisionAdder == true) {
 
-            //onOrientationChange Block
-            if (savedInstanceState != null) {
-                //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
-                divAdderFragment = (DivAdderFragment) getSupportFragmentManager().findFragmentByTag(ADD_FRAG_TAG_ZAP);
-            }
+        try {
+            getSoldierEditItems();
 
-            else if (divAdderFragment == null) {
-                divAdderFragment = new DivAdderFragment();
-
-                Bundle args = new Bundle();
-                args.putInt("landingDivision", adderDivisionIndex); //onAdd -- -1
-                args.putBoolean("landingEdit", isEditAdder); //onAdd -- false
-                args.putBoolean("landingBool", isDivisionAdder);//onAdd -- true
-                divAdderFragment.setArguments(args);
-            }
-
-            if (!divAdderFragment.isInLayout()) {
-
-                fragMag = getSupportFragmentManager();
-                fragTran = fragMag.beginTransaction();
-                fragTran.addToBackStack(null).replace(R.id.landingContainer, divAdderFragment, ADD_FRAG_TAG_ZAP).commit();
-            }
+        } catch (NullPointerException e) {
+            Log.e("AAonCreate", String.valueOf(e));
         }
-        else {
-            try {
-                getSoldierEditItems();
 
-            } catch (NullPointerException e) {
-                Log.e("AAonCreate", String.valueOf(e));
-            }
-
-            //onOrientationChange Block
-            if (savedInstanceState != null) {
-                //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
-                adderFragment = (AdderFragment) getSupportFragmentManager().findFragmentByTag(ADD_FRAG_TAG);
-            } else if (adderFragment == null) {
-                adderFragment = new AdderFragment();
-            }
-            if (!adderFragment.isInLayout()) {
-                fragMag = getSupportFragmentManager();
-                fragTran = fragMag.beginTransaction();
-                fragTran.addToBackStack(null).replace(R.id.landingContainer, adderFragment, ADD_FRAG_TAG).commit();
-            }
+        //onOrientationChange Block
+        if (savedInstanceState != null) {
+            //savedInstanceState, fragment may exist. Look up the instance that already exists by tag
+            adderFragment = (AdderFragment) getSupportFragmentManager().findFragmentByTag(ADD_FRAG_TAG);
+        } else if (adderFragment == null) {
+            adderFragment = new AdderFragment();
         }
+        if (!adderFragment.isInLayout()) {
+            fragMag = getSupportFragmentManager();
+            fragTran = fragMag.beginTransaction();
+            fragTran.addToBackStack(null).replace(R.id.landingContainer, adderFragment, ADD_FRAG_TAG).commit();
+        }
+
 
     }
 
@@ -97,7 +70,7 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
 
         if(isDivisionAdder == true) {
             isDivisionAdder = false;
-            Intent intent = new Intent(this, LandingActivity.class);
+            Intent intent = new Intent(this, ChampionActivity.class);
             startActivity(intent);
         }
         else {

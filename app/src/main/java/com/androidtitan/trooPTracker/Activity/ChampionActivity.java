@@ -106,9 +106,7 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, LandingActivity.class);
-        this.finish();
-        startActivity(intent);
+        //disable the back button
     }
 
 

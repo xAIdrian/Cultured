@@ -1,7 +1,6 @@
 package com.androidtitan.trooptracker.Fragment;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -13,18 +12,12 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooptracker.Activity.LandingActivity;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
-import com.androidtitan.trooptracker.Data.Division;
 import com.androidtitan.trooptracker.Interface.ChampionInterface;
-
-import java.util.ArrayList;
 
 public class NavigationDrawerFragment extends Fragment {
 /*
@@ -95,7 +88,7 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v= inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
+        View v = inflater.inflate(R.layout.fragment_navigation_drawer, container, false);
 
         welcomeNav = (TextView) v.findViewById(R.id.drawerWelcome);
         mapNav = (TextView) v.findViewById(R.id.drawerMap);
@@ -105,9 +98,9 @@ public class NavigationDrawerFragment extends Fragment {
         welcomeNav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), LandingActivity.class);
+//                Intent intent = new Intent(getActivity(), LandingActivity.class);
                 getActivity().finish();
-                startActivity(intent);
+//                startActivity(intent);
             }
         });
 
@@ -133,26 +126,30 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-        divListView = (ListView) v.findViewById(R.id.navDivList);
-        ArrayList<String> divisionAda = new ArrayList<String>();
-        for(Division division : databaseHelper.getAllDivisions()) {
-            divisionAda.add(division.getName());
-        }
-        divListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                drawerLayout.closeDrawers();
-                championInterface.drawerListViewSelection(position);
-            }
-        });
-        divListView.setAdapter(new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                divisionAda));
 
         return v;
     }
+    /*        divListView = (ListView) v.findViewById(R.id.navDivList);
+           ArrayList<String> divisionAda = new ArrayList<String>();
 
+         for(Division division : databaseHelper.getAllDivisions()) {
+               divisionAda.add(division.getName());
+           }
+           divListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+               @Override
+               public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                   drawerLayout.closeDrawers();
+                   championInterface.drawerListViewSelection(position);
+               }
+           });
+           divListView.setAdapter(new ArrayAdapter<String>(getActivity(),
+                   android.R.layout.simple_list_item_1,
+                   android.R.id.text1,
+                   divisionAda));
+
+           return v;
+       }
+   */
     public boolean isDrawerOpen() {
         return drawerLayout != null && drawerLayout.isDrawerOpen(fragmentContainerView);
     }

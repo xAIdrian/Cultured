@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">trooPTracker</string>
+    <string name="app_name">troopTracker</string>
 
     <string name="hello_world">Hello world! I think you are missing something…</string>
     <string name="action_settings">Settings</string>
@@ -62,6 +62,8 @@
     </string>
     <string name="mark_confirmation">Are you sure?</string>
     <string name="youDone">You\'re Done</string>
+
+    <string name="emptyListview">Add someone\nto play</string>
 
     <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->
 

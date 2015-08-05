@@ -104,15 +104,6 @@
         android:selectAllOnFocus="true"
         android:singleLine="true" />
 
-    <ListView
-        android:id="@+id/adder_listview"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/bottomConfirm"
-        android:layout_below="@+id/lastName_edit"
-        android:paddingBottom="10dp"
-        android:paddingTop="10dp" />
-
 
     <LinearLayout
         android:id="@+id/bottomConfirm"

@@ -106,8 +106,8 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         soldierIndex = intent.getIntExtra("selectionToMap", -1);
         divisionIndex = intent.getIntExtra("selectionToMapDiv", -1);
 
-        tempSoldier = databaseHelper.getAllSoldiersByDivision(
-                databaseHelper.getDivision(divisionIndex)).get(soldierIndex);
+        //todo
+        tempSoldier = databaseHelper.getSoldier(soldierIndex);
         soldierLocations = databaseHelper.getAllLocationsBySoldier(tempSoldier);
         soldierLocationsSize = soldierLocations.size();
 
@@ -120,7 +120,9 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         if(soldierLocationsSize == 0) {
             instructionDialog();
         }
-        instructionNum = soldierLocationsSize;// + 1;
+        if(soldierLocationsSize > 0) {
+            instructionNum = soldierLocationsSize + 1;
+        }
 
 
         setUpMapIfNeeded();
@@ -628,6 +630,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     private void instructionDialog() {
 
         final AlertDialog.Builder aDawg = new AlertDialog.Builder(this);
+        Log.e("MAinstructionDialog", "InstructionNum: " + instructionNum);
 
         switch (instructionNum) {
             case 0:
@@ -637,10 +640,10 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            instructionNum++;
                             dialog.dismiss();
                         }
                     });
-                instructionNum++;
                 break;
 
             case 1:
@@ -655,7 +658,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                                         showAdderDialog(soldierIndex, divisionIndex, databaseHelper.getAllLocations().size(),
                                                 currentLatitude, currentLongitude); //or size -1
                                     }
-                                }, 1000);
+                                }, 500);
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -724,7 +727,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                         });
                 break;
         }
-        Log.e("MAinstructionDialog", "InstructionNum: " + instructionNum);
+        Log.e("MAinstructionDialog", "InstructionNum++: " + instructionNum);
         aDawg.show();
 
     }

@@ -11,23 +11,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
-import com.androidtitan.trooptracker.Data.Division;
 import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Interface.AdderInterface;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class AdderFragment extends Fragment {
@@ -38,17 +31,13 @@ public class AdderFragment extends Fragment {
     DatabaseHelper databaseHelper;
     AdderInterface adderInterface;
 
-    ArrayAdapter<Division> adapter;
-
     private LinearLayout backLayout;
 
     private EditText firstEdit;
     private EditText lastEdit;
-    private ListView addListView;
     private TextView deleteBtn;
     private TextView addBtn;
 
-    Division assignedToDiv;
 
     private int soldierIndex = -1;
     private String newFname = "blank";
@@ -88,8 +77,6 @@ public class AdderFragment extends Fragment {
         newFname = bundle.getString("editSoloFirst");
         newLname = bundle.getString("editSoloLast");
 
-        Log.e("AFonCreate", "selection: " + soldierIndex);
-
 
         if(newFname == null || newLname == null) {
             editPage = false;
@@ -99,25 +86,14 @@ public class AdderFragment extends Fragment {
             editPage = true;
         }
 
-        Log.e("AFonCreate", "Are we editing? " + editPage);
-
         databaseHelper = new DatabaseHelper(getActivity());
 
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-                addListView.invalidateViews();
-            }
-        };
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_adder, container, false);
-
-        Log.e("AFonCreateView", "oldDivision: " + oldDivision + ", divSelected: " + divSelected);
 
         backLayout = (LinearLayout) v.findViewById(R.id.back_layout);
 
@@ -145,8 +121,8 @@ public class AdderFragment extends Fragment {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                Division focusDivision = databaseHelper.getAllDivisions().get(oldDivision);
-                                Soldier focusSoldier = databaseHelper.getAllSoldiersByDivision(focusDivision).get(soldierIndex);
+                                //todo
+                                Soldier focusSoldier = databaseHelper.getSoldier(soldierIndex);
                                 Log.e("AFdeleter", focusSoldier.getfName() + " " +focusSoldier.getId());
 
                                 databaseHelper.deleteSoldier(focusSoldier);
@@ -224,60 +200,24 @@ public class AdderFragment extends Fragment {
         });
 
 
-        //ListView and adapter
-        addListView = (ListView) v.findViewById(R.id.adder_listview);
-        final ArrayList<String> divisionList = new ArrayList<String>();
-        final List<Division> allDivisions = databaseHelper.getAllDivisions();
-
-        for (Division div : allDivisions) {
-            divisionList.add(div.getName());
-        }
-        adapter = new AdderAdapter();
-        addListView.setAdapter(adapter);
-
-        addListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                /*
-                listView.getChildAt(i) works where 0 is the very first visible row and (n-1)
-                is the last visible row (where n is the number of visible views you see).
-                 */
-                for (int i = 0; i <= addListView.getLastVisiblePosition() - addListView.getFirstVisiblePosition(); i++) {
-
-                    View item = addListView.getChildAt(i);
-                    item.setBackgroundColor(0xFFFFFFFF);
-                }
-
-                view.setBackgroundColor(0xCCFFCD38);
-
-                divSelected = position;
-            }
-        });
-
-
         addBtn.setOnClickListener(new TextView.OnClickListener() {
             @Override
             public void onClick(View v) {
-                assignedToDiv = databaseHelper.getAllDivisions().get(divSelected);
 
-                if (firstEdit.getText().toString().matches("") || lastEdit.getText().toString().matches("")
-                        || divSelected == -1) {
+                if (firstEdit.getText().toString().matches("") || lastEdit.getText().toString().matches("")) {
                     Toast.makeText(getActivity(), "Please complete fields", Toast.LENGTH_LONG).show();
                 } else {
 
                     //if we are editing an existing user
                     if(editPage == true) {
-                        Log.e("AFaddBtn", "MADE IT HERE");
 
-                        Soldier updateSoldier = databaseHelper.getAllSoldiersByDivision(databaseHelper.getAllDivisions().get(oldDivision))
-                                .get(soldierIndex);
+                        //todo
+                        Soldier updateSoldier = databaseHelper.getSoldier(soldierIndex);
 
                         updateSoldier.setfName(newFname);
                         updateSoldier.setlName(newLname);
 
                         databaseHelper.updateSoldier(updateSoldier);
-                        databaseHelper.updateSoldierDivision(updateSoldier, assignedToDiv);
 
                         adderInterface.divInteraction(divSelected);
                     }
@@ -289,7 +229,6 @@ public class AdderFragment extends Fragment {
                         Soldier temp = new Soldier(newFname, newLname);
 
                         databaseHelper.createSoldier(temp);
-                        databaseHelper.assignSoldierToDivision(temp, assignedToDiv);
 
                         adderInterface.divInteraction(divSelected);
                     }
@@ -304,7 +243,6 @@ public class AdderFragment extends Fragment {
     //Saves data that is lost on rotation
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        Log.e("AFonSaveInstanceState", firstEdit.getText().toString() + " " + lastEdit.getText().toString());
 
         outState.putString(SAVED_FIRST, firstEdit.getText().toString());
         outState.putString(SAVED_LAST, lastEdit.getText().toString());
@@ -315,51 +253,5 @@ public class AdderFragment extends Fragment {
         super.onDetach();
         //mListener = null;
     }
-
-
-    //ADAPTER CLASS
-
-    private class AdderAdapter extends ArrayAdapter<Division> {
-
-        public AdderAdapter() {
-            super(getActivity(), 0, databaseHelper.getAllDivisions()); // 0 is our resource
-            //soldierItems = troops;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            //if you weren't given a view inflate one
-            if(convertView == null) {
-                convertView = getActivity().getLayoutInflater()
-                        .inflate(R.layout.listview_champion_item, null);
-            }
-            //if no item has been selected and we are not reassigning divisions
-            if(editPage == true) {
-                if (position == oldDivision) {
-                    convertView.setBackgroundColor(0xCCFFCD38);
-                }
-                else {
-                    convertView.setBackgroundColor(0xFFFFFFFF);
-                }
-            }
-            //if an item is selected that would reassign the soldeir
-            else {
-                if (position == divSelected) {
-                    convertView.setBackgroundColor(0xCCFFCD38);
-                }
-                else {
-                    convertView.setBackgroundColor(0xFFFFFFFF);
-                }
-            }
-
-
-            Division division = databaseHelper.getAllDivisions().get(position);
-            final TextView checkedText = (TextView) convertView.findViewById(R.id.champ_text);
-            checkedText.setText(division.getName());
-
-            return convertView;
-        }
-    }
-
 
 }

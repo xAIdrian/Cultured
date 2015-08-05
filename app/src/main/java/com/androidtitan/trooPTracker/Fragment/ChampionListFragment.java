@@ -3,6 +3,7 @@ package com.androidtitan.trooptracker.Fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.LoaderManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,43 +21,44 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooptracker.Adapter.ChampionCursorAdapter;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
 import com.androidtitan.trooptracker.Interface.ChampionInterface;
 
-import java.util.List;
-
 public class ChampionListFragment extends Fragment {
+    private static final String TAG = "ChampionListFragment";
+            //we are using a 'LoaderCallback' because Loaders should always be called from the main thread...your Activity
+    private static final String[] PROJECTION = new String[] {"_id", "first", "last"};
+    private static final int LOADER_ID = 1;
+    private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks;
+    private SimpleCursorAdapter cursorAdapter;
 
-    //MapFragment mapFrag;
-
+    //we should find out whether these are PUBLIC, PRIVATE, STATIC
     DatabaseHelper databaseHelper;
     ChampionInterface championInterface;
     ChampionDataPullInterface pullInterface;
 
-    ImageView editer;
-    ImageView adder;
-    TextView proceedBtn; //this will "slide" the fragment to
+    private ImageView editer;
+    private ImageView adder;
+    private TextView proceedBtn;
 
-    TextView championHeader;
-    ChampionCursorAdapter adapter;
-    ListView listView;
+    private TextView welcomeHeader;
+    private ListView listView;
 
-    Animation slideIn;
-    Animation slideOut;
-    Animation rightSlideIn;
-    Animation rightSlideOut;
+    private Animation slideIn;
+    private Animation slideOut;
+    private Animation rightSlideIn;
+    private Animation rightSlideOut;
 
-    Soldier focusSoldier;
-    List<Soldier> troops;
+    private Soldier focusSoldier;
 
-    int position = -1;
-    int selection = -1;
+    private int position = -1;
+    private int selection = -1;
     public int receivedIndex = -1;
 
     @Override
@@ -94,24 +96,25 @@ public class ChampionListFragment extends Fragment {
 
         databaseHelper = DatabaseHelper.getInstance(getActivity());
 
-        troops = databaseHelper.getAllSoldiersByDivision(
-                databaseHelper.getAllDivisions().get(receivedIndex));
+        Cursor cursor = getListItems();
+        if (cursor != null)
+            cursor.moveToFirst();
 
+        getActivity().startManagingCursor(cursor);  //this is deprecated.  Do we want to eventually consider using a 'Content Provider' and 'CursorLoader'?
+        //Cursor Loader Implementation
+        String[] dataColumns = new String[] {"first", "last"};
+        int[] viewIDs = { R.id.champ_text };
+        cursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.listview_champion_item,
+                cursor, dataColumns, viewIDs, 0);
+
+
+        //Animations
         slideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slidein);
         slideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slideout);
         rightSlideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.slidein_right);
         rightSlideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.slideout_right);
 
-        Runnable run = new Runnable() {
-            @Override
-            public void run() {
-                if(adapter != null) {
-                    adapter.swapCursor(getListItems());
-                }
-            }
-        };
-
-        Log.e("CLFonCreate", "First Adapter: " + adapter);
+        //runnable placeholder
 
     }
 
@@ -126,14 +129,18 @@ public class ChampionListFragment extends Fragment {
         proceedBtn = (TextView) getActivity().findViewById(R.id.proceedBtn);
         proceedBtn.setVisibility(View.GONE);
 
-        championHeader = (TextView) v.findViewById(R.id.championHeader);
-        championHeader.setText(databaseHelper.getAllDivisions().get(receivedIndex).getName());
+        welcomeHeader = (TextView) v.findViewById(R.id.welcome_text);
+        //welcomeHeader.setText(databaseHelper.getAllDivisions().get(receivedIndex).getName());
 
-        listView = (ListView) v.findViewById(R.id.championList);
+        listView = (ListView) v.findViewById(R.id.champion_list);
+        listView.setAdapter(cursorAdapter);
+        View emptyView = v.findViewById(R.id.empty);
+        listView.setEmptyView(emptyView);
 
-        adapter = new ChampionCursorAdapter(getActivity(), getListItems());
-
-        listView.setAdapter(adapter);
+        //adapter = new ChampionCursorAdapter(getActivity(), getListItems());
+        //listView.setAdapter(adapter);
+        //adapter.notifyDataSetChanged();
+        //listView.invalidateViews();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -211,7 +218,7 @@ public class ChampionListFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if(selection == -1) {
                     //focusSoldier = troops.get(position);
-                    for (Soldier s : troops) {
+                    for (Soldier s : databaseHelper.getAllSoldiers()) {
                         Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
                     }
 
@@ -228,12 +235,10 @@ public class ChampionListFragment extends Fragment {
             public void onClick(View v) {
 
                 Log.e("CLFediter", "Position: " + position + " Selection: " + selection);
-
-                focusSoldier = troops.get(selection);
-
-                championInterface.soldierPasser(selection, receivedIndex,
+//todo
+/*                championInterface.soldierPasser(selection, receivedIndex,
                         focusSoldier.getfName(),
-                        focusSoldier.getlName());
+                        focusSoldier.getlName());*/
             }
         });
 
@@ -242,7 +247,8 @@ public class ChampionListFragment extends Fragment {
             public void onClick(View v) {
 
                 //when we receive our divIndex then that is what we will pass into this method
-                championInterface.soldierPasser(position, receivedIndex, null, null);
+//todo
+//                championInterface.soldierPasser(position, receivedIndex, null, null);
             }
         });
 
@@ -279,21 +285,23 @@ public class ChampionListFragment extends Fragment {
         // Get access to the underlying writeable database
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         // Query for items from the database and get a cursor back
-        String selectQuery = "SELECT * FROM soldiers ts, divisions td, command tc WHERE td."
+
+        /*String selectQuery = "SELECT * FROM soldiers ts, divisions td, command tc WHERE td."
                 + "name = '" + databaseHelper.getAllDivisions().get(receivedIndex).getName() + "' AND td."
-                + "_id = tc.division_id AND ts._id = tc.soldier_id";
+                + "_id = tc.division_id AND ts._id = tc.soldier_id";*/
 
         Cursor cursor;
 
         if (receivedIndex == -1) {
             cursor = db.rawQuery("SELECT * FROM soldiers", null);
         } else {
-            cursor = db.rawQuery(selectQuery, null);
+            cursor = db.rawQuery("SELECT * FROM soldiers", null);
         }
-
 
         //todo
         databaseHelper.printSoldierTable();
+
+        Log.e(TAG, String.valueOf(cursor));
 
         return cursor;
     }
@@ -314,7 +322,6 @@ public class ChampionListFragment extends Fragment {
                     }
                 });
         final AlertDialog alert = builder.create();
-        alert.show();
         alert.show();
     }
 
