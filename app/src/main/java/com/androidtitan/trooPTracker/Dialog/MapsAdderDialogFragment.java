@@ -5,18 +5,17 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.androidtitan.alphaarmyapp.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.LocationBundle;
 import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Interface.MapsPullInterface;
+import com.androidtitan.trooptracker.R;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MapsAdderDialogFragment extends DialogFragment {
@@ -30,7 +29,6 @@ public class MapsAdderDialogFragment extends DialogFragment {
     private TextView mapAddSubmit;
 
     private int soldierIndex = -1;
-    private int divisionIndex = -1;
     private int locationBundleIndex = -1;
     private double latitude = -1;
     private double longitude = -1;
@@ -61,12 +59,11 @@ public class MapsAdderDialogFragment extends DialogFragment {
         databaseHelper = DatabaseHelper.getInstance(getActivity());
 
         soldierIndex = getArguments().getInt("soldierIndex");
-        divisionIndex = getArguments().getInt("divisionIndex");
         locationBundleIndex = getArguments().getInt("locationBundleIndex");
         latitude = getArguments().getDouble("locationBundleLat");
         longitude = getArguments().getDouble("locationBundleLng");
 //todo
-        tempSoldier = databaseHelper.getSoldier(soldierIndex);
+        tempSoldier = databaseHelper.getAllSoldiers().get(soldierIndex);
 
     }
 
@@ -125,9 +122,6 @@ public class MapsAdderDialogFragment extends DialogFragment {
                 mapsPullInterface.onDialogCompletion(tempBundle,
                         databaseHelper.getAllLocationsBySoldier(tempSoldier));
 
-                Log.e("MADFonCreate", "SoldierIndex: " + soldierIndex
-                                + ", " + databaseHelper.getLocationBundle(locationBundleIndex + 1).getLocalName()
-                    + " " + databaseHelper.getLocationBundle(locationBundleIndex + 1).getLatlng());
             }
         });
 

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooptracker.R;
 import com.androidtitan.trooptracker.Fragment.ChampionListFragment;
 import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
 import com.androidtitan.trooptracker.Interface.ChampionInterface;
@@ -16,8 +16,9 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
 
     ChampionListFragment championFragment;
 
-    int divisionIndex;
     int selectionIndex = - 1;
+
+    boolean shouldCursorUpdate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +28,9 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
         //Data Section
 
         Intent intent = getIntent();
-        divisionIndex = intent.getIntExtra("landingDivision", -1);
+        shouldCursorUpdate = intent.getBooleanExtra(AdderActivity.CURSOR_UPDATE, false);
         Bundle args = new Bundle();
-        args.putInt("num", divisionIndex);
+        args.putBoolean(AdderActivity.CURSOR_UPDATE, shouldCursorUpdate);
 
         //View Section
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -77,9 +78,9 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
     @Override
     public void selectionToMap(int selection) {
 
-        Intent intent = new Intent(this, MapsActivity.class);
+        Intent intent = new Intent(this, LockInMapsActivity.class);
         intent.putExtra("selectionToMap", selection);
-        intent.putExtra("selectionToMapDiv", divisionIndex);
+        //intent.putExtra("selectionToMapDiv", divisionIndex);
         startActivity(intent);
     }
 
@@ -87,9 +88,10 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
         return selectionIndex;
     }
 
+    //todo: this needs to be deleted at some point
     @Override
     public int getDivisionIndex() {
-        return divisionIndex;
+        return -1;
     }
 
 

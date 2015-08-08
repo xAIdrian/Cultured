@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooptracker.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Interface.ChampionInterface;
 

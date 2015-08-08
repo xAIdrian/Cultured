@@ -3,7 +3,6 @@ package com.androidtitan.trooptracker.Fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -18,8 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidtitan.alphaarmyapp.R;
-import com.androidtitan.trooptracker.Activity.ChampionActivity;
+import com.androidtitan.trooptracker.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Interface.AdderInterface;
@@ -126,12 +124,7 @@ public class AdderFragment extends Fragment {
 
                                 databaseHelper.deleteSoldier(focusSoldier);
 
-                                Intent returnIntent = new Intent(getActivity(), ChampionActivity.class);
-                                startActivity(returnIntent);
-                                //getActivity().finish();  we don't need this. We override the onBackPressed
-                                    // in the next activity
-                                Log.e(TAG, "printSoldierTable()");
-                                databaseHelper.printSoldierTable();
+                                adderInterface.returnToChamp(true);
 
                             }
                         })
@@ -162,7 +155,7 @@ public class AdderFragment extends Fragment {
         backLayout.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View v) {
-                adderInterface.returnToChamp();
+                adderInterface.returnToChamp(false);
 
             }
         });
@@ -222,14 +215,14 @@ public class AdderFragment extends Fragment {
                     if(editPage == true) {
 
                         //todo
-                        Soldier updateSoldier = databaseHelper.getSoldier(soldierIndex);
+                        Soldier updateSoldier = databaseHelper.getAllSoldiers().get(soldierIndex);
 
                         updateSoldier.setfName(newFname);
                         updateSoldier.setlName(newLname);
 
                         databaseHelper.updateSoldier(updateSoldier);
 
-                        adderInterface.returnToChamp();
+                        adderInterface.returnToChamp(true);
                     }
 
                     //if we are adding a New user
@@ -240,7 +233,7 @@ public class AdderFragment extends Fragment {
 
                         databaseHelper.createSoldier(temp);
 
-                        adderInterface.returnToChamp();
+                        adderInterface.returnToChamp(true);
                     }
 
                 }

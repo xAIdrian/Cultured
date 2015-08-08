@@ -7,14 +7,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
-import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooptracker.R;
 import com.androidtitan.trooptracker.Fragment.AdderFragment;
 import com.androidtitan.trooptracker.Interface.AdderInterface;
 
 //ToDo: receive whether this is a SOLDIER or DIVISION
 public class AdderActivity extends FragmentActivity implements AdderInterface {
     private final String ADD_FRAG_TAG = "adderTag";
-    private final String ADD_FRAG_TAG_ZAP = "divAdderTag";
+
+    public static final String CURSOR_UPDATE = "cursorUpdateFromAdder";
 
     private FragmentManager fragMag;
     private FragmentTransaction fragTran;
@@ -77,10 +78,16 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
     //called from SecondF2AInterface.  Passes integer so main activity can page to
     //newly added soldier's division
     @Override
-    public void returnToChamp() {
+    public void returnToChamp(boolean shouldCursorUpdate) {
         Intent intent = new Intent(this, ChampionActivity.class);
-//        intent.putExtra("landingDivision", divSelected);
+
+        if(shouldCursorUpdate) {
+            intent.putExtra(CURSOR_UPDATE, shouldCursorUpdate);
+        }
+
         startActivity(intent);
+
+
     }
 
 

@@ -3,7 +3,6 @@ package com.androidtitan.trooptracker.Fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.LoaderManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,24 +23,25 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooptracker.Activity.AdderActivity;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
 import com.androidtitan.trooptracker.Interface.ChampionInterface;
+import com.androidtitan.trooptracker.R;
 
 public class ChampionListFragment extends Fragment {
     private static final String TAG = "ChampionListFragment";
             //we are using a 'LoaderCallback' because Loaders should always be called from the main thread...your Activity
     private static final String[] PROJECTION = new String[] {"_id", "first", "last"};
-    private static final int LOADER_ID = 1;
-    private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks;
     private SimpleCursorAdapter cursorAdapter;
 
     //we should find out whether these are PUBLIC, PRIVATE, STATIC
     DatabaseHelper databaseHelper;
     ChampionInterface championInterface;
     ChampionDataPullInterface pullInterface;
+
+    Cursor cursor;
 
     private ImageView editer;
     private ImageView adder;
@@ -59,6 +59,8 @@ public class ChampionListFragment extends Fragment {
     private int position = -1;
     private int selection = -1;
     public int receivedIndex = -1;
+
+    private boolean shouldCursorUpdate;
 
     @Override
     public void onAttach(Activity activity) {
@@ -93,6 +95,8 @@ public class ChampionListFragment extends Fragment {
         if(savedInstanceState != null) {
         }
 
+        //getActivity Extra
+
         databaseHelper = DatabaseHelper.getInstance(getActivity());
 
         //Cursor Adapter Implementation
@@ -106,6 +110,14 @@ public class ChampionListFragment extends Fragment {
         int[] viewIDs = { R.id.champ_text , R.id.primary_champ_text};
         cursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.listview_champion_item,
                 cursor, dataColumns, viewIDs, 0);
+
+        //getting Extras from Activity
+        Intent intent = getActivity().getIntent();
+       shouldCursorUpdate = intent.getBooleanExtra(AdderActivity.CURSOR_UPDATE, false);
+
+        if(shouldCursorUpdate) {
+            cursorAdapter.changeCursor(getListItems());
+        }
 
 
         //Animations
@@ -124,7 +136,13 @@ public class ChampionListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_listview_champion, container, false);
+////
+        for(Soldier s : databaseHelper.getAllSoldiers()) {
+            Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
+        }
 
+        databaseHelper.printSoldierTable();
+////
         editer = (ImageView) getActivity().findViewById(R.id.editBtn);
         editer.setVisibility(View.GONE);
         adder = (ImageView) getActivity().findViewById(R.id.addBtn);
@@ -200,23 +218,8 @@ public class ChampionListFragment extends Fragment {
                 }
 
                 championInterface.setListViewSelection(position);
-                focusSoldier = databaseHelper.getSoldier(position);
+                focusSoldier = databaseHelper.getAllSoldiers().get(position);
 
-            }
-        });
-
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if(selection == -1) {
-
-                    for (Soldier s : databaseHelper.getAllSoldiers()) {
-                        Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
-                    }
-
-                    databaseHelper.printSoldierTable();
-                }
-                return false;
             }
         });
 
@@ -241,6 +244,7 @@ public class ChampionListFragment extends Fragment {
             }
         });
 
+
         proceedBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -251,8 +255,10 @@ public class ChampionListFragment extends Fragment {
                 if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     buildAlertMessageNoGps();
                 } else {
-                    Log.e(TAG, String.valueOf(databaseHelper.getSoldier(selection).getId()));
-                    championInterface.selectionToMap((int)databaseHelper.getSoldier(selection).getId());
+                    Log.e(TAG, "Selection: " + String.valueOf(selection));
+
+                    //databaseHelper.getAllSoldiers().get(selection)
+                    championInterface.selectionToMap(selection);
                 }
 
 
@@ -268,6 +274,16 @@ public class ChampionListFragment extends Fragment {
         championInterface = null;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        cursorAdapter.changeCursor(getListItems());
+    }
+
+
+    /////////////// todo: custom methods //////////////////////////////////////////////////////////////
+
     private Cursor getListItems() {
 
         //DatabaseHandler is a SQLiteOpenHelper class connecting to SQLite
@@ -280,18 +296,13 @@ public class ChampionListFragment extends Fragment {
                 + "name = '" + databaseHelper.getAllDivisions().get(receivedIndex).getName() + "' AND td."
                 + "_id = tc.division_id AND ts._id = tc.soldier_id";*/
 
-        Cursor cursor;
+        //Cursor cursor;
 
         if (receivedIndex == -1) {
             cursor = db.rawQuery("SELECT * FROM soldiers", null);
         } else {
             cursor = db.rawQuery("SELECT * FROM soldiers", null);
         }
-
-        //todo
-        databaseHelper.printSoldierTable();
-
-        Log.e(TAG, String.valueOf(cursor));
 
         return cursor;
     }

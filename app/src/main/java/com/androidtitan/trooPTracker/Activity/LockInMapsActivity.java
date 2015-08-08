@@ -21,7 +21,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooptracker.R;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.LocationBundle;
 import com.androidtitan.trooptracker.Data.Soldier;
@@ -49,7 +49,7 @@ import java.util.Random;
 // http://wptrafficanalyzer.in/blog/adding-google-places-autocomplete-api-as-custom-suggestions-in-android-search-dialog/
 //http://www.androidhive.info/2012/08/android-working-with-google-places-and-maps-tutorial/
 
-public class MapsActivity extends FragmentActivity implements MapsPullInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+public class LockInMapsActivity extends FragmentActivity implements MapsPullInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private static final String TAG = "MapActivity";
 
@@ -62,7 +62,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     private GoogleMapOptions options = new GoogleMapOptions();
     private GoogleApiClient googleAPIclient;
 
-    private Soldier tempSoldier;
+    private Soldier focusSoldier;
     private List<LocationBundle> soldierLocations;
     private int soldierLocationsSize;
 
@@ -92,7 +92,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.layout.activity_maps_lockin);
 
         if(savedInstanceState != null) {
 
@@ -105,16 +105,16 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         Intent intent = getIntent();
         //todo: our indexing troubles
         soldierIndex = intent.getIntExtra("selectionToMap", -1);
-        soldierIndex--;
+
         Log.e(TAG, String.valueOf(soldierIndex));
 
         //todo
-        tempSoldier = databaseHelper.getSoldier(soldierIndex);
-        soldierLocations = databaseHelper.getAllLocationsBySoldier(tempSoldier);
+        focusSoldier = databaseHelper.getAllSoldiers().get(soldierIndex);
+        soldierLocations = databaseHelper.getAllLocationsBySoldier(focusSoldier);
         soldierLocationsSize = soldierLocations.size();
 
-        //setting up InstructionNumber so it works with our Dialogs
-        locationIndex = soldierLocationsSize - 1;
+        isLocked = focusSoldier.getIsLocationLocked();
+        Log.e(TAG, "is Locked " + String.valueOf(isLocked));
 
         setUpMapIfNeeded();
 
@@ -155,7 +155,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
             /*this currently gets the first location in their many saved locations...
             eventually we want to be able to 'page' through all of them
             */
-            cameraLocation(false, locationIndex, null);
+            cameraLocation(false, 0, null);
 
         } else {
 
@@ -183,7 +183,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         /*if(soldierLocationsSize == 0) {
             customDialogHandler();
         }*/
-        if(soldierLocationsSize > 0) {
+        if(isLocked) {
             isLocationAdded = true;
             //lockingAction();
             locker.setImageResource(R.drawable.lock_closed);
@@ -232,6 +232,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
             }
         });
 
+        //todo: maybe there is a simpler way to handle these 'if' statements
         addLoc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -242,15 +243,14 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                 if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     buildAlertMessageNoGps();
                 } else {
-                    if (locationClick) {
+                    if(soldierLocationsSize == 0) {
+                        if (locationClick) {
+                            customDialogHandler();
+                            locationClick = false;
 
-                        customDialogHandler();
-                        locationClick = false;
-
-                    } else {
-                        //Dialog saying "You need to get your location first!"
-                        final AlertDialog.Builder noLocationDialog = new AlertDialog.Builder(MapsActivity.this);
-
+                        } else {
+                            //Dialog saying "You need to get your location first!"
+                            final AlertDialog.Builder noLocationDialog = new AlertDialog.Builder(LockInMapsActivity.this);
 
 
                             noLocationDialog.setTitle("You need to get your location")
@@ -262,6 +262,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                                     });
                             noLocationDialog.show();
                         }
+                    }
 
                 }
             }
@@ -356,6 +357,13 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         googleAPIclient.connect();
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ChampionActivity.class);
+        startActivity(intent);
+        this.finish();
+    }
+
 
 
     @Override
@@ -410,6 +418,8 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     }
 
 
+
+
     //todo: custom methods
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -423,8 +433,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         private String secondary;
 
         public CustomInfoWindowAdapter() {
-            v = getLayoutInflater().inflate(R.layout.info_window_custom,
-                    null);
+            v = getLayoutInflater().inflate(R.layout.info_window_custom, null);
         }
 
         //onCreate()
@@ -496,7 +505,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                 zoom = CameraUpdateFactory.zoomTo(10);
             } else {
                 starterLocation = databaseHelper
-                        .getAllLocationsBySoldier(tempSoldier).get(locationIndx).getLatlng();
+                        .getAllLocationsBySoldier(focusSoldier).get(locationIndx).getLatlng();
 
             }
         }
@@ -534,7 +543,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
         Bundle bundle = new Bundle();
         bundle.putInt("soldierIndex", soIndex);
-        //bundle.putInt("locationBundleIndex", index);
+        bundle.putInt("locationBundleIndex", 1);
         bundle.putDouble("locationBundleLat", lat);
         bundle.putDouble("locationBundleLng", lng);
         // Create and show the dialog.
@@ -596,7 +605,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                 .title(locationBundle.getLocalName())
                 .position(locationBundle.getLatlng())
                 .snippet(databaseHelper.getLocationsSoldier(locationBundle).getFullName()))
-        .showInfoWindow();
+                .showInfoWindow();
 
         if(daBundle2 != null) {
             soldierLocations = daBundle2;
@@ -618,6 +627,9 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 locker.setImageResource(R.drawable.lock_closed);
+                                focusSoldier.setIsLocationLocked(true);
+                                databaseHelper.updateSoldier(focusSoldier);
+
                                 addLoc.setVisibility(View.GONE);
                                 dialog.cancel();
                             }
@@ -633,6 +645,9 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                                 isLocked = true;
 
                                 locker.setImageResource(R.drawable.lock_closed);
+                                focusSoldier.setIsLocationLocked(true);
+                                databaseHelper.updateSoldier(focusSoldier);
+
                                 addLoc.setVisibility(View.GONE);
                                 dialog.cancel();
                             }
@@ -649,11 +664,17 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
         } else {
             locker.setImageResource(R.drawable.lock_closed);
+            focusSoldier.setIsLocationLocked(true);
+            databaseHelper.updateSoldier(focusSoldier);
+
             addLoc.setVisibility(View.GONE);
         }
     }
 
 }
+
+
+
 
 //////////// METHOD BANK ///////////////////////////
 
@@ -729,7 +750,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                             Log.e("MAdeleteAlertDialog", tempLoc.getLocalName());
                             databaseHelper.deleteLocation(tempLoc);
 
-                            soldierLocations = databaseHelper.getAllLocationsBySoldier(tempSoldier);
+                            soldierLocations = databaseHelper.getAllLocationsBySoldier(focusSoldier);
                             locationIndex--;
 
                             if (locationIndex > soldierLocationsSize

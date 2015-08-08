@@ -9,7 +9,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_second">SecondActivity</string>
 
-    <string name="landing_welcome">So Who\'s Coolest?</string>
+    <string name="landing_welcome">Hot Spots</string>
     <string name="landing_subheader">who are we working with today?</string>
     <string name="landing_info">Thank you for using trooPTracker!</string>
 
@@ -62,6 +62,7 @@
     <string name="notallspots">You have not marked your spot</string>
 
     <string name="emptyListview">Add someone\nto play</string>
+    <string name="instruction">Add Avatar\nSet location\nBe judged\nCompete</string>
 
 
     <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->

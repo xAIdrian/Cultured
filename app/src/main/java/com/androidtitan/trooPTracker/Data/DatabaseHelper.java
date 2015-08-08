@@ -18,8 +18,6 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper instance;
 
-    private static final String String_LOG = "Database Helper";
-
     private static final String DATABASE_NAME = "troopTrackerDatabase";
     private static final int DATABASE_VERSION = 1;
 
@@ -35,6 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //soldier table
     private static final String KEY_FIRSTNAME = "first";
     private static final String KEY_LASTNAME = "last";
+    private static final String KEY_LOCKED = "locationlocked";
 
     //coordinates table
     private static final String KEY_LOCAL = "local";
@@ -56,16 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Soldier Table
     private static final String CREATE_TABLE_SOLDIER = "CREATE TABLE " + TABLE_SOLDIER
             + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + " TEXT," + KEY_LASTNAME
-            + " TEXT" + ")";
-
-   /* //Division Table
-
-   //are we going to change this to PAST ROUNDS
-        or are we going to create a new table???
-
-    private static final String CREATE_TABLE_DIVISION = "CREATE TABLE " + TABLE_DIVISION
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_VISITS + " INTEGER,"
-            + "UNIQUE (" + KEY_NAME + "))";*/
+            + " TEXT, " + KEY_LOCKED + " BIT" + ")";
 
     //Coordinates Table
     private static final String CREATE_TABLE_COORDINATES = "CREATE TABLE " + TABLE_COORDINATES
@@ -84,9 +74,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static synchronized DatabaseHelper getInstance(Context context) {
 
-        //Singleton Pattern
-        // Use the application context, which will ensure that you
-        // don't accidentally leak an Activity's context.
+        //Singleton Pattern. Use the application context, which will ensure that you
+            // don't accidentally leak an Activity's context.
         if (instance == null) {
             instance = new DatabaseHelper(context.getApplicationContext());
         }
@@ -140,10 +129,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
                 soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
                 soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+                soldier.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
                 //logging
-                Log.i("DBHprintAllSoldiers", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
+                Log.e("DBHprintAllSoldiers", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
                         + cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)) + " "
-                        + cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+                        + cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)) + " "
+                        + cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
 
             } while (cursor.moveToNext());
         }
@@ -161,6 +152,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_FIRSTNAME, soldier.getfName());
         values.put(KEY_LASTNAME, soldier.getlName());
+        values.put(KEY_LOCKED, soldier.getIsLocationLockedDatabase());
         //insert row. if there is a conflict the last parameter springs into action. Replacing entry.
 
         //this is a possible solution for the DUPLICATES PROBLEM
@@ -185,7 +177,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " WHERE " + KEY_ID + " = " + String.valueOf(soldier_id);
         Log.i("DBHgetSoldier", selectQuery);
 
-        Cursor cursor = database.query(TABLE_SOLDIER, new String[]{KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME},
+        Cursor cursor = database.query(TABLE_SOLDIER, new String[]{KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME, KEY_LOCKED},
                 KEY_ID + "=?", new String[]{String.valueOf(soldier_id)}, null, null, null, null);
 
         if (cursor != null)
@@ -195,6 +187,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
         soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
         soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+        soldier.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
 
         return soldier;
     }
@@ -220,6 +213,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
                 soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
                 soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
+                soldier.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
                 //adding
                 troops.add(soldier);
 
@@ -274,6 +268,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(KEY_FIRSTNAME, soldier.getfName());
         values.put(KEY_LASTNAME, soldier.getlName());
+        values.put(KEY_LOCKED, soldier.getIsLocationLockedDatabase());
         //updating
         Log.i("DBHupdateSoldier", "Updated!" + TABLE_SOLDIER + " " + KEY_ID + " = " + String.valueOf(soldier.getId()));
 
@@ -291,8 +286,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Log.i("DBHdeleteSoldier", "Deleted! " + soldier.getfName() + " " + soldier.getId());
 
+        List<LocationBundle> bundlesToDelete = getAllLocationsBySoldier(soldier);
+        for(LocationBundle bundle2delete : bundlesToDelete) {
+            deleteLocation(bundle2delete);
+        }
+
         database.delete(TABLE_SOLDIER,
                 KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
+
+        /*
+         if(should_delete_all_soldiers) {
+            List<Soldier> troops = getAllSoldiersByDivision(division);
+            //delete all soldiers
+            for(Soldier soldier : troops) {
+                deleteSoldier(soldier);
+            }
+        }
+        Log.e("insideDeleteDivision", TABLE_DIVISION + ": " + KEY_ID + " = ? " + division.getId());
+        database.delete(TABLE_DIVISION, KEY_ID + " = ?",
+                new String[]{String.valueOf(division.getId())});
+         */
 
     }
 
@@ -306,6 +319,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             ContentValues values = new ContentValues();
             values.put(KEY_FIRSTNAME, soldier.getfName());
             values.put(KEY_LASTNAME, soldier.getlName());
+            values.put(KEY_LOCKED, soldier.getIsLocationLockedDatabase());
             //updating
             database.update(TABLE_SOLDIER, values,
                     KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});

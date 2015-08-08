@@ -58,7 +58,8 @@
                 android:padding="8dp"
                 android:text="@string/proceed"
                 android:textColor="#FFFFFF"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textSize="@dimen/abc_text_size_medium_material"/>
 
         </RelativeLayout>
 

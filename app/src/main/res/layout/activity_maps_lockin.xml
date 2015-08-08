@@ -10,7 +10,7 @@
         android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.androidtitan.trooptracker.Activity.MapsActivity" />
+        tools:context="com.androidtitan.trooptracker.Activity.LockInMapsActivity" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
