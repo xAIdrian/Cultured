@@ -51,9 +51,11 @@ import java.util.Random;
 
 public class MapsActivity extends FragmentActivity implements MapsPullInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
+    private static final String TAG = "MapActivity";
 
-    private static final String SAVED_BOOL = "isSecondCreate";
-    private static final String SAVED_INST_NUM = "savedInstructionNum";
+    private static final String SAVED_INITIAL_BOOL = "isInitialOpening";
+    private static final String SAVED_DIALOG_BOOL = "savedDialogBool";
+
     DatabaseHelper databaseHelper;
 
     private GoogleMap map; // Might be null if Google Play services APK is not available.
@@ -62,15 +64,13 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
     private Soldier tempSoldier;
     private List<LocationBundle> soldierLocations;
+    private int soldierLocationsSize;
 
     private Handler handler;
 
-    private RelativeLayout topLayout;
     private ImageView addLoc;
     private ImageView locationGetter;
     private RelativeLayout editView;
-    private ImageView prevArrow;
-    private ImageView nextArrow;
     private ImageView locker;
 
     private Animation slidein;
@@ -80,15 +80,13 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     private double currentLatitude;
     private double currentLongitude;
 
-
-    private boolean isEditOpen = false;
     private int soldierIndex = -1;
-    private int divisionIndex = -1;
     private boolean locationClick = false;
     private int locationIndex = -1;
 
-    private int instructionNum; //use this to control yo dialogs
-    private int soldierLocationsSize;
+    private boolean isInitialOpening = true;
+    private boolean isLocationAdded = false; //use this to control yo dialogs
+    private boolean isLocked = false;
 
 
     @Override
@@ -97,33 +95,26 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         setContentView(R.layout.activity_maps);
 
         if(savedInstanceState != null) {
-            instructionNum = savedInstanceState.getInt(SAVED_INST_NUM);
+
+            isInitialOpening = savedInstanceState.getBoolean(SAVED_INITIAL_BOOL);
+            isLocationAdded = savedInstanceState.getBoolean(SAVED_DIALOG_BOOL);
         }
 
         databaseHelper = DatabaseHelper.getInstance(this);
 
         Intent intent = getIntent();
+        //todo: our indexing troubles
         soldierIndex = intent.getIntExtra("selectionToMap", -1);
-        divisionIndex = intent.getIntExtra("selectionToMapDiv", -1);
+        soldierIndex--;
+        Log.e(TAG, String.valueOf(soldierIndex));
 
         //todo
         tempSoldier = databaseHelper.getSoldier(soldierIndex);
         soldierLocations = databaseHelper.getAllLocationsBySoldier(tempSoldier);
         soldierLocationsSize = soldierLocations.size();
 
-
         //setting up InstructionNumber so it works with our Dialogs
         locationIndex = soldierLocationsSize - 1;
-        Log.e("MAonCreate", "soldierLocationSize: " + soldierLocationsSize);
-        Log.e("MAonCreate", "instructionNum: " + instructionNum);
-
-        if(soldierLocationsSize == 0) {
-            instructionDialog();
-        }
-        if(soldierLocationsSize > 0) {
-            instructionNum = soldierLocationsSize + 1;
-        }
-
 
         setUpMapIfNeeded();
 
@@ -180,24 +171,26 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         databaseHelper.printCoordinatesTable();
 
         //initializations
-        handler = new Handler();
 
-        topLayout = (RelativeLayout) findViewById(R.id.topLayout);
-        prevArrow = (ImageView) findViewById(R.id.previousMark);
-        nextArrow = (ImageView) findViewById(R.id.nextMark);
         locker = (ImageView) findViewById(R.id.locker);
 
         addLoc = (ImageView) findViewById(R.id.addBtn);
         locationGetter = (ImageView) findViewById(R.id.locBtn);
+        addLoc.setVisibility(View.GONE);
         locationGetter.setVisibility(View.GONE);
 
-        editView = (RelativeLayout) findViewById(R.id.editViewLayout);
-        editView.setVisibility(View.GONE);
-
         //if we've used all of our locations then we lock-it up
-        if(instructionNum >= 4) {
+        /*if(soldierLocationsSize == 0) {
+            customDialogHandler();
+        }*/
+        if(soldierLocationsSize > 0) {
+            isLocationAdded = true;
+            //lockingAction();
             locker.setImageResource(R.drawable.lock_closed);
-            addLoc.setVisibility(View.GONE);
+            addLoc.setVisibility(View.GONE); //this is not being called
+        }
+        else {
+            customDialogHandler();
         }
 
 
@@ -208,20 +201,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
             }
         });
 
-        topLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isEditOpen) {
-                    editView.setVisibility(View.VISIBLE);
-                    isEditOpen = true;
-
-
-                } else {
-                    editView.setVisibility(View.GONE);
-                    isEditOpen = false;
-                }
-            }
-        });
 
         locationGetter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -265,54 +244,34 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                 } else {
                     if (locationClick) {
 
-                        instructionDialog();
+                        customDialogHandler();
                         locationClick = false;
 
                     } else {
                         //Dialog saying "You need to get your location first!"
-                    }
+                        final AlertDialog.Builder noLocationDialog = new AlertDialog.Builder(MapsActivity.this);
+
+
+
+                            noLocationDialog.setTitle("You need to get your location")
+                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                            noLocationDialog.show();
+                        }
+
                 }
             }
         });
 
-        nextArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (soldierLocationsSize > 0) {
-                    locationIndex++;
-                    if (locationIndex >= soldierLocationsSize) {
-                        locationIndex = 0;
-                        onDialogCompletion(soldierLocations.get(locationIndex), null);
-                        cameraLocation(false, locationIndex, null);
-                    } else {
-                        onDialogCompletion(soldierLocations.get(locationIndex), null);
-                        cameraLocation(false, locationIndex, null);
-                    }
-                }
-            }
-        });
-
-        prevArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (soldierLocationsSize > 0) {
-                    locationIndex--;
-                    if (locationIndex < 0) {
-                        locationIndex = soldierLocationsSize - 1;
-                        cameraLocation(false, locationIndex, null);
-                        onDialogCompletion(soldierLocations.get(locationIndex), null);
-                    } else {
-                        onDialogCompletion(soldierLocations.get(locationIndex), null);
-                        cameraLocation(false, locationIndex, null);
-                    }
-                }
-            }
-        });
 
         locker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                lockerDialog();
+                lockingAction();
 
             }
         });
@@ -385,7 +344,8 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
 
-        savedInstanceState.putInt(SAVED_INST_NUM, instructionNum);
+        savedInstanceState.putBoolean(SAVED_INITIAL_BOOL, isInitialOpening);
+        savedInstanceState.putBoolean(SAVED_DIALOG_BOOL, isLocationAdded);
     }
 
     @Override
@@ -402,11 +362,17 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     public void onConnected(Bundle bundle) {
         Log.e("APIclientConnected?", "Connection Suspended!");
         slidein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slidein_right);
+        handler = new Handler();
 
         handler.postDelayed(new Runnable() {
             public void run() {
                 locationGetter.setVisibility(View.VISIBLE);
                 locationGetter.startAnimation(slidein);
+
+                if(!isLocationAdded) {
+                    addLoc.setVisibility(View.VISIBLE);
+                    addLoc.startAnimation(slidein);
+                }
             }
         }, 500);
     }
@@ -561,8 +527,197 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         alert.show();
     }
 
+
+    private void showAdderDialog(int soIndex, double lat, double lng) {
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+        Bundle bundle = new Bundle();
+        bundle.putInt("soldierIndex", soIndex);
+        //bundle.putInt("locationBundleIndex", index);
+        bundle.putDouble("locationBundleLat", lat);
+        bundle.putDouble("locationBundleLng", lng);
+        // Create and show the dialog.
+        DialogFragment newFragment = new MapsAdderDialogFragment();
+        newFragment.setArguments(bundle);
+
+        newFragment.show(ft, "dialog");
+
+    }
+
+    private void customDialogHandler() {
+
+        final AlertDialog.Builder aDawg = new AlertDialog.Builder(this);
+
+        if (isInitialOpening) {
+            isInitialOpening = false;
+
+            if(!isLocationAdded) {
+                aDawg.setTitle(R.string.careful)
+                        .setMessage(R.string.initial_instruction)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                aDawg.show();
+            } else {
+                aDawg.setTitle(R.string.youDone)
+                        .setMessage("You are out of Spots\nLock-In if you haven't")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                aDawg.show();
+            }
+        }
+        else {
+            showAdderDialog(soldierIndex, currentLatitude, currentLongitude);
+        }
+
+
+
+    }
+
+    public void onDialogCompletion(LocationBundle locationBundle, List<LocationBundle> daBundle2) {
+
+        map.addMarker(new MarkerOptions()
+                .title(locationBundle.getLocalName())
+                .position(locationBundle.getLatlng())
+                .snippet(databaseHelper.getLocationsSoldier(locationBundle).getFullName()))
+        .showInfoWindow();
+
+        if(daBundle2 != null) {
+            soldierLocations = daBundle2;
+            soldierLocationsSize = soldierLocations.size();
+        }
+        isLocationAdded = true;
+
+    }
+
+    public void lockingAction() {
+
+        final AlertDialog.Builder lockerD = new AlertDialog.Builder(this);
+
+        if(!isLocked) {
+            if(isLocationAdded) {
+
+                lockerD.setTitle("Locked-In")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                locker.setImageResource(R.drawable.lock_closed);
+                                addLoc.setVisibility(View.GONE);
+                                dialog.cancel();
+                            }
+                        });
+            }
+            else {
+                lockerD.setTitle("Are you sure?")
+                        .setMessage(getResources().getString(R.string.notallspots))
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                isLocked = true;
+
+                                locker.setImageResource(R.drawable.lock_closed);
+                                addLoc.setVisibility(View.GONE);
+                                dialog.cancel();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+            }
+
+            lockerD.show();
+
+        } else {
+            locker.setImageResource(R.drawable.lock_closed);
+            addLoc.setVisibility(View.GONE);
+        }
+    }
+
+}
+
+//////////// METHOD BANK ///////////////////////////
+
 /*
-    private void getDeleteAlertDialog() {
+        We're going to need these methods for:
+        VIEWING RESULTS and ROUND REVIEW
+
+        topLayout = (RelativeLayout) findViewById(R.id.topLayout);
+        prevArrow = (ImageView) findViewById(R.id.previousMark);
+        nextArrow = (ImageView) findViewById(R.id.nextMark);
+
+        topLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isEditOpen) {
+                    editView.setVisibility(View.VISIBLE);
+                    isEditOpen = true;
+
+
+                } else {
+                    editView.setVisibility(View.GONE);
+                    isEditOpen = false;
+                }
+            }
+        });
+
+                nextArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (soldierLocationsSize > 0) {
+                    locationIndex++;
+                    if (locationIndex >= soldierLocationsSize) {
+                        locationIndex = 0;
+                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        cameraLocation(false, locationIndex, null);
+                    } else {
+                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        cameraLocation(false, locationIndex, null);
+                    }
+                }
+            }
+        });
+
+        prevArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (soldierLocationsSize > 0) {
+                    locationIndex--;
+                    if (locationIndex < 0) {
+                        locationIndex = soldierLocationsSize - 1;
+                        cameraLocation(false, locationIndex, null);
+                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                    } else {
+                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        cameraLocation(false, locationIndex, null);
+                    }
+                }
+            }
+        });
+*/
+
+/*
+    DELETE FUNCTIONALITY
+
         if (soldierLocationsSize > 0) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Delete this location?")
@@ -606,185 +761,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
             final AlertDialog alert = builder.create();
             alert.show();
         }
-    }
+
     */
 
-    private void showAdderDialog(int soIndex, int divIndex, int index, double lat, double lng) {
-
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-        Bundle bundle = new Bundle();
-        bundle.putInt("soldierIndex", soIndex);
-        bundle.putInt("divisionIndex", divIndex);
-        bundle.putInt("locationBundleIndex", index);
-        bundle.putDouble("locationBundleLat", lat);
-        bundle.putDouble("locationBundleLng", lng);
-        // Create and show the dialog.
-        DialogFragment newFragment = new MapsAdderDialogFragment();
-        newFragment.setArguments(bundle);
-
-        newFragment.show(ft, "dialog");
-
-    }
-
-    private void instructionDialog() {
-
-        final AlertDialog.Builder aDawg = new AlertDialog.Builder(this);
-        Log.e("MAinstructionDialog", "InstructionNum: " + instructionNum);
-
-        switch (instructionNum) {
-            case 0:
-                aDawg.setTitle(R.string.careful)
-                    .setMessage(R.string.initial_instruction)
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            instructionNum++;
-                            dialog.dismiss();
-                        }
-                    });
-                break;
-
-            case 1:
-                aDawg.setTitle(R.string.mark_confirmation)
-                        .setMessage("This will be your First Spot")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                handler.postDelayed(new Runnable() {
-                                    public void run() {
-                                        showAdderDialog(soldierIndex, divisionIndex, databaseHelper.getAllLocations().size(),
-                                                currentLatitude, currentLongitude); //or size -1
-                                    }
-                                }, 500);
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                break;
-
-            case 2:
-                aDawg.setTitle(R.string.mark_confirmation)
-                        .setMessage("This will be your Second Spot")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                handler.postDelayed(new Runnable() {
-                                    public void run() {
-                                        showAdderDialog(soldierIndex, divisionIndex, databaseHelper.getAllLocations().size(),
-                                                currentLatitude, currentLongitude); //or size -1
-                                    }
-                                }, 1000);
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                break;
-
-            case 3:
-                aDawg.setTitle(R.string.mark_confirmation)
-                        .setMessage("This will be your Third and FINAL Spot")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                handler.postDelayed(new Runnable() {
-                                    public void run() {
-                                        showAdderDialog(soldierIndex, divisionIndex, databaseHelper.getAllLocations().size(),
-                                                currentLatitude, currentLongitude); //or size -1
-                                    }
-                                }, 1000);
-                            }
-                        });
-                break;
-
-            case 4:
-                aDawg.setTitle(R.string.youDone)
-                        .setMessage("You are out of Spots\nLock-In if you haven't")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                break;
-        }
-        Log.e("MAinstructionDialog", "InstructionNum++: " + instructionNum);
-        aDawg.show();
-
-    }
-
-    public void onDialogCompletion(LocationBundle locationBundle, List<LocationBundle> daBundle2) {
-
-        map.addMarker(new MarkerOptions()
-                .title(locationBundle.getLocalName())
-                .position(locationBundle.getLatlng())
-                .snippet(databaseHelper.getLocationsSoldier(locationBundle).getFullName()))
-        .showInfoWindow();
-
-        if(daBundle2 != null) {
-            soldierLocations = daBundle2;
-            soldierLocationsSize = soldierLocations.size();
-        }
-        instructionNum++;
-
-    }
-
-    private void lockerDialog() {
-
-        final AlertDialog.Builder lockerD = new AlertDialog.Builder(this);
-        if(instructionNum == 4) {
-
-            lockerD.setTitle("Locked-In")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            locker.setImageResource(R.drawable.lock_closed);
-                            addLoc.setVisibility(View.GONE);
-                            dialog.cancel();
-                        }
-                    });
-        }
-        else {
-            lockerD.setTitle("Are you sure?")
-                    .setMessage("You have not marked all of your spots")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            locker.setImageResource(R.drawable.lock_closed);
-                            addLoc.setVisibility(View.GONE);
-                            dialog.cancel();
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-        }
-        lockerD.show();
-
-    }
-
-
-
-}

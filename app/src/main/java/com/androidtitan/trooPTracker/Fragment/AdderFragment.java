@@ -3,6 +3,7 @@ package com.androidtitan.trooptracker.Fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -18,13 +19,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.androidtitan.alphaarmyapp.R;
+import com.androidtitan.trooptracker.Activity.ChampionActivity;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Interface.AdderInterface;
 
 
 public class AdderFragment extends Fragment {
-    //public static final String SINFO = "soldierInformation";
+    private static final String TAG = "AdderFragment";
+
     private static final String SAVED_FIRST = "savedFirst";
     private static final String SAVED_LAST = "savedLast";
 
@@ -44,8 +47,6 @@ public class AdderFragment extends Fragment {
     private String newLname = "blank";
     private Boolean editPage = false;
 
-    private int divSelected = -1;
-    private int oldDivision = -1;
 
     @Override
     public void onAttach(Activity activity) {
@@ -72,7 +73,6 @@ public class AdderFragment extends Fragment {
         }
         Bundle bundle = new Bundle();
         bundle = this.getArguments();
-        divSelected = bundle.getInt("editSoloDivIndex");
         soldierIndex = bundle.getInt("editSoloIndex");
         newFname = bundle.getString("editSoloFirst");
         newLname = bundle.getString("editSoloLast");
@@ -82,7 +82,6 @@ public class AdderFragment extends Fragment {
             editPage = false;
         }
         else {
-            oldDivision = divSelected;
             editPage = true;
         }
 
@@ -123,10 +122,17 @@ public class AdderFragment extends Fragment {
 
                                 //todo
                                 Soldier focusSoldier = databaseHelper.getSoldier(soldierIndex);
-                                Log.e("AFdeleter", focusSoldier.getfName() + " " +focusSoldier.getId());
+                                Log.e("AFdeleter", focusSoldier.getfName() + " " + focusSoldier.getId());
 
                                 databaseHelper.deleteSoldier(focusSoldier);
-                                adderInterface.divInteraction(oldDivision);
+
+                                Intent returnIntent = new Intent(getActivity(), ChampionActivity.class);
+                                startActivity(returnIntent);
+                                //getActivity().finish();  we don't need this. We override the onBackPressed
+                                    // in the next activity
+                                Log.e(TAG, "printSoldierTable()");
+                                databaseHelper.printSoldierTable();
+
                             }
                         })
                         .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -152,10 +158,11 @@ public class AdderFragment extends Fragment {
             addBtn.setText("Edit");
         }
 
+        //todo: we need to
         backLayout.setOnClickListener(new ImageView.OnClickListener() {
             @Override
             public void onClick(View v) {
-                adderInterface.divInteraction(divSelected);
+                adderInterface.returnToChamp();
 
             }
         });
@@ -177,6 +184,9 @@ public class AdderFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 newFname = s.toString();
+
+                //consider implementing this.  We would need to do it for all SPECIAL CHARS
+                //newFname = newFname.replace("'","\'");
             }
 
             @Override
@@ -219,7 +229,7 @@ public class AdderFragment extends Fragment {
 
                         databaseHelper.updateSoldier(updateSoldier);
 
-                        adderInterface.divInteraction(divSelected);
+                        adderInterface.returnToChamp();
                     }
 
                     //if we are adding a New user
@@ -230,7 +240,7 @@ public class AdderFragment extends Fragment {
 
                         databaseHelper.createSoldier(temp);
 
-                        adderInterface.divInteraction(divSelected);
+                        adderInterface.returnToChamp();
                     }
 
                 }

@@ -53,11 +53,10 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
     }
 
     @Override
-    public void soldierPasser(int soldierInt, int divisionInt, String first, String last) {
+    public void soldierPasser(int soldierInt, String first, String last) {
 
         Intent intent = new Intent(this, AdderActivity.class);
         intent.putExtra("editSoloIndex", soldierInt);
-        intent.putExtra("editSoloDivIndex", divisionInt);
         intent.putExtra("editSoloFirst", first);
         intent.putExtra("editSoloLast", last);
         startActivity(intent);
@@ -67,16 +66,6 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
     //All soldiers and All map
     @Override
     public void drawerListViewSelection(int selection) {
-
-    }
-
-    @Override
-    public void adderFragDivReference(int divIndex) {
-
-        Intent intent = new Intent(this, AdderActivity.class);
-        intent.putExtra("divIndex", divIndex);
-        ChampionActivity.this.finish();
-        startActivity(intent);
 
     }
 

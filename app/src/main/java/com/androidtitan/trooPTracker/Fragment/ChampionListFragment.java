@@ -47,7 +47,6 @@ public class ChampionListFragment extends Fragment {
     private ImageView adder;
     private TextView proceedBtn;
 
-    private TextView welcomeHeader;
     private ListView listView;
 
     private Animation slideIn;
@@ -96,14 +95,15 @@ public class ChampionListFragment extends Fragment {
 
         databaseHelper = DatabaseHelper.getInstance(getActivity());
 
+        //Cursor Adapter Implementation
         Cursor cursor = getListItems();
         if (cursor != null)
             cursor.moveToFirst();
 
-        getActivity().startManagingCursor(cursor);  //this is deprecated.  Do we want to eventually consider using a 'Content Provider' and 'CursorLoader'?
-        //Cursor Loader Implementation
+        getActivity().startManagingCursor(cursor);  //todo: this is deprecated.
+                                                    //todo: Do we want to eventually consider using a 'Content Provider' and 'CursorLoader'?
         String[] dataColumns = new String[] {"first", "last"};
-        int[] viewIDs = { R.id.champ_text };
+        int[] viewIDs = { R.id.champ_text , R.id.primary_champ_text};
         cursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.listview_champion_item,
                 cursor, dataColumns, viewIDs, 0);
 
@@ -115,6 +115,8 @@ public class ChampionListFragment extends Fragment {
         rightSlideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.slideout_right);
 
         //runnable placeholder
+
+        //variables
 
     }
 
@@ -129,18 +131,10 @@ public class ChampionListFragment extends Fragment {
         proceedBtn = (TextView) getActivity().findViewById(R.id.proceedBtn);
         proceedBtn.setVisibility(View.GONE);
 
-        welcomeHeader = (TextView) v.findViewById(R.id.welcome_text);
-        //welcomeHeader.setText(databaseHelper.getAllDivisions().get(receivedIndex).getName());
-
         listView = (ListView) v.findViewById(R.id.champion_list);
         listView.setAdapter(cursorAdapter);
         View emptyView = v.findViewById(R.id.empty);
         listView.setEmptyView(emptyView);
-
-        //adapter = new ChampionCursorAdapter(getActivity(), getListItems());
-        //listView.setAdapter(adapter);
-        //adapter.notifyDataSetChanged();
-        //listView.invalidateViews();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -176,9 +170,6 @@ public class ChampionListFragment extends Fragment {
                             listView.setEnabled(true);
                         }
                     }, slideOut.getDuration());
-
-
-
                 }
                 //Selection of an item
                 else {
@@ -209,6 +200,7 @@ public class ChampionListFragment extends Fragment {
                 }
 
                 championInterface.setListViewSelection(position);
+                focusSoldier = databaseHelper.getSoldier(position);
 
             }
         });
@@ -217,13 +209,11 @@ public class ChampionListFragment extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if(selection == -1) {
-                    //focusSoldier = troops.get(position);
+
                     for (Soldier s : databaseHelper.getAllSoldiers()) {
                         Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
                     }
 
-                    //todo: our duplicate problem is not in the database
-                    //todo:     the problem is in the adapter or what is populating our adapter
                     databaseHelper.printSoldierTable();
                 }
                 return false;
@@ -235,10 +225,9 @@ public class ChampionListFragment extends Fragment {
             public void onClick(View v) {
 
                 Log.e("CLFediter", "Position: " + position + " Selection: " + selection);
-//todo
-/*                championInterface.soldierPasser(selection, receivedIndex,
+                championInterface.soldierPasser(selection,
                         focusSoldier.getfName(),
-                        focusSoldier.getlName());*/
+                        focusSoldier.getlName());
             }
         });
 
@@ -247,8 +236,8 @@ public class ChampionListFragment extends Fragment {
             public void onClick(View v) {
 
                 //when we receive our divIndex then that is what we will pass into this method
-//todo
-//                championInterface.soldierPasser(position, receivedIndex, null, null);
+
+                championInterface.soldierPasser(position, null, null);
             }
         });
 
@@ -262,7 +251,8 @@ public class ChampionListFragment extends Fragment {
                 if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     buildAlertMessageNoGps();
                 } else {
-                    championInterface.selectionToMap(selection);
+                    Log.e(TAG, String.valueOf(databaseHelper.getSoldier(selection).getId()));
+                    championInterface.selectionToMap((int)databaseHelper.getSoldier(selection).getId());
                 }
 
 

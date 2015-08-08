@@ -59,6 +59,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + " TEXT" + ")";
 
    /* //Division Table
+
+   //are we going to change this to PAST ROUNDS
+        or are we going to create a new table???
+
     private static final String CREATE_TABLE_DIVISION = "CREATE TABLE " + TABLE_DIVISION
             + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," + KEY_VISITS + " INTEGER,"
             + "UNIQUE (" + KEY_NAME + "))";*/
@@ -137,7 +141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
                 soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
                 //logging
-                Log.e("DBHprintAllSoldiers", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
+                Log.i("DBHprintAllSoldiers", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
                         + cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)) + " "
                         + cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
 
@@ -163,7 +167,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long soldier_id = database.insertWithOnConflict(TABLE_SOLDIER, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         soldier.setId(soldier_id);
 
-        //Log.e("DBHcreateSoldier", "Created: " + getSoldier(soldier_id).getId() + " " +
+        //Log.i("DBHcreateSoldier", "Created: " + getSoldier(soldier_id).getId() + " " +
         //getSoldier(soldier_id).getfName() + " " + getSoldier(soldier_id).getlName());
 
         return soldier_id;
@@ -179,7 +183,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT * FROM " + TABLE_SOLDIER
                 + " WHERE " + KEY_ID + " = " + String.valueOf(soldier_id);
-        Log.e("DBHgetSoldier", selectQuery);
+        Log.i("DBHgetSoldier", selectQuery);
 
         Cursor cursor = database.query(TABLE_SOLDIER, new String[]{KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME},
                 KEY_ID + "=?", new String[]{String.valueOf(soldier_id)}, null, null, null, null);
@@ -230,7 +234,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      **//*
     public List<Soldier> getAllSoldiersByDivision(Division division) {
         String division_name = division.getName();
-        Log.e("soldiersByDivision", division_name);
+        Log.i("soldiersByDivision", division_name);
         List<Soldier> troops = new ArrayList<Soldier>();
 
         String selectQuery = "SELECT * FROM "
@@ -243,7 +247,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         //This is a TABLE JOIN^
 
-        Log.e("DBHsoldiersByDivision", selectQuery);
+        Log.i("DBHsoldiersByDivision", selectQuery);
 
         SQLiteDatabase database = this.getReadableDatabase();
         Cursor cursor = database.rawQuery(selectQuery, null);
@@ -271,7 +275,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_FIRSTNAME, soldier.getfName());
         values.put(KEY_LASTNAME, soldier.getlName());
         //updating
-        Log.e("DBHupdateSoldier", "Updated!" + TABLE_SOLDIER + " " + KEY_ID + " = " + String.valueOf(soldier.getId()));
+        Log.i("DBHupdateSoldier", "Updated!" + TABLE_SOLDIER + " " + KEY_ID + " = " + String.valueOf(soldier.getId()));
 
         return database.update(TABLE_SOLDIER, values,
                 KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
@@ -285,7 +289,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase database = this.getWritableDatabase();
 
-        Log.e("DBHdeleteSoldier", "Deleted! " + soldier.getfName() + " " + soldier.getId());
+        Log.i("DBHdeleteSoldier", "Deleted! " + soldier.getfName() + " " + soldier.getId());
 
         database.delete(TABLE_SOLDIER,
                 KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
@@ -356,7 +360,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT * FROM " + TABLE_COORDINATES
                 + " WHERE " + KEY_ID + " = " + coord_id;
-        Log.e("DBHgetCoordinate", selectQuery);
+        Log.i("DBHgetCoordinate", selectQuery);
 
         Cursor cursor = database.query(TABLE_COORDINATES, new String[]{KEY_ID, KEY_LOCAL, KEY_LATITUDE, KEY_LONGITUDE},
                 KEY_ID + " =?", new String[]{String.valueOf(coord_id)}, null, null, null, null);
@@ -388,7 +392,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " = " + "tc." + KEY_SOLDIER_ID + " AND ts." + KEY_ID + " = "
                 + "tc." + KEY_COORD_ID;
 
-        Log.e("DBHlocationBySoldier", selectQuery);
+        Log.i("DBHlocationBySoldier", selectQuery);
 
         Cursor cursor = database.rawQuery(selectQuery, null);
 
@@ -422,7 +426,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + " = " + "tc." + KEY_SOLDIER_ID + " AND ts." + KEY_ID + " = "
                 + "tc." + KEY_COORD_ID;
 
-        Log.e("DBHsoldierByLocation", selectQuery);
+        Log.i("DBHsoldierByLocation", selectQuery);
 
         Cursor cursor = database.rawQuery(selectQuery, null);
 
@@ -442,13 +446,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void deleteLocation(LocationBundle locBun) {
         SQLiteDatabase database = this.getWritableDatabase();
 
-        Log.e("DBHdeleteLocation", "Deleted! " + TABLE_COORDINATES + ": " + KEY_ID + " = " + locBun.getId());
+        Log.i("DBHdeleteLocation", "Deleted! " + TABLE_COORDINATES + ": " + KEY_ID + " = " + locBun.getId());
 
         database.delete(TABLE_COORDINATES,
                 KEY_ID + " =?", new String[]{String.valueOf(locBun.getId())});
 
         /*
-        Log.e("insideDeleteDivision", TABLE_DIVISION + ": " + KEY_ID + " = ? " + division.getId());
+        Log.i("insideDeleteDivision", TABLE_DIVISION + ": " + KEY_ID + " = ? " + division.getId());
         database.delete(TABLE_DIVISION, KEY_ID + " = ?",
                 new String[]{String.valueOf(division.getId())});
          */
@@ -470,7 +474,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 locker.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
                         cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
                 //logging
-                Log.e("DBHprintAllCoordinates", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
+                Log.i("DBHprintAllCoordinates", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
                         + cursor.getString(cursor.getColumnIndex(KEY_LOCAL)) + ": "
                         + cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)) + ", "
                         + cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE)));
@@ -488,7 +492,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT * FROM " + TABLE_STARTER_COORDS
                 + " WHERE " + KEY_ID + " = " + coord_id;
-        Log.e("DBHgetCoordinate", selectQuery);
+        Log.i("DBHgetCoordinate", selectQuery);
 
         Cursor cursor = database.query(TABLE_STARTER_COORDS, new String[]{KEY_ID, KEY_STARTER_LOCAL,
                         KEY_STARTER_LATITUDE, KEY_STARTER_LONGITUDE},
@@ -540,6 +544,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (database != null && database.isOpen())
             database.close();
 
-        Log.e("closeDatabase()", "3 Star DATABASE CLOSED SIR!");
+        Log.i("closeDatabase()", "3 Star DATABASE CLOSED SIR!");
     }
 }

@@ -16,9 +16,8 @@ package com.androidtitan.trooptracker.Interface;
  */
 public interface ChampionInterface {
     public void tabInteraction(int id);
-    public void soldierPasser(int soldierInt, int divisionInt, String first, String last);
+    public void soldierPasser(int soldierInt, String first, String last);
     public void drawerListViewSelection(int selection);
-    public void adderFragDivReference(int divIndex);
     public void setListViewSelection(int selection);
 
     public void selectionToMap(int selection);

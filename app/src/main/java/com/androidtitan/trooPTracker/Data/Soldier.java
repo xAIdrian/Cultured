@@ -9,6 +9,7 @@ public class Soldier {
     private long id;
     private String fName;
     private String lName;
+    private Boolean isLocationLocked;
 
     public Soldier() {
     }
@@ -18,10 +19,18 @@ public class Soldier {
         this.lName = last;
     }
 
-    public Soldier(int iid, String first, String last) {
+    public Soldier(String first, String last, Boolean isLocLocked) {
+
+        this.fName = first;
+        this.lName = last;
+        this.isLocationLocked = isLocLocked;
+    }
+
+    public Soldier(int iid, String first, String last, Boolean isLocLocked) {
         this.id = iid;
         this.fName = first;
         this.lName = last;
+        this.isLocationLocked = isLocLocked;
     }
 
     public long getId() {

@@ -6,12 +6,10 @@
     <string name="placeholder">PlaceHolder</string>
 
 <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_second">SecondActivity</string>
-    <string name="title_activity_landing">LandingActivity</string>
 
-    <string name="landing_welcome">Welcome</string>
+    <string name="landing_welcome">So Who\'s Coolest?</string>
     <string name="landing_subheader">who are we working with today?</string>
     <string name="landing_info">Thank you for using trooPTracker!</string>
 
@@ -34,7 +32,6 @@
     <string name="close_navigation_drawer">close navigation dra</string>
 
     <string name="add_soldier">Add to Track</string>
-    <string name="add_division">Add to Manage</string>
     <string name="quit">Quit</string>
     <string name="first_name">first name</string>
     <string name="last_name">last name</string>
@@ -57,13 +54,15 @@
 
     <string name="careful">Choose Carfully</string>
     <string name="initial_instruction">
-        You will only get one chance to Lock-In your locations \n
-        \nTo Lock-In Locations. Tap the Green Bar at the top of the screen
+        You will only get one chance to Lock-In your location \n
+        \nTo Lock-In Locations. Tap the Lock at the top of your screen
     </string>
     <string name="mark_confirmation">Are you sure?</string>
     <string name="youDone">You\'re Done</string>
+    <string name="notallspots">You have not marked your spot</string>
 
     <string name="emptyListview">Add someone\nto play</string>
+
 
     <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->
 

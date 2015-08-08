@@ -90,6 +90,13 @@ public class MapsAdderDialogFragment extends DialogFragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 dialogString = s.toString();
+
+                try {
+                    //consider adding new special characters
+                    dialogString = dialogString.replace("'", "\'");
+                } catch(NullPointerException e) {
+                    //there were no special characters
+                }
             }
 
             @Override

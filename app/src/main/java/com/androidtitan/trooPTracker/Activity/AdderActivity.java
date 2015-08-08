@@ -20,14 +20,11 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
     private FragmentTransaction fragTran;
     private AdderFragment adderFragment;
 
-    private int divisionIndex;
     private int soldierIndex;
     private String soldierFname;
     private String soldierLname;
 
-    private Boolean isDivisionAdder = false;
     private Boolean isEditAdder = false;
-    private int adderDivisionIndex = -1;
 
 
     @Override
@@ -37,9 +34,8 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
 
 
         Intent intent = getIntent();
-        isDivisionAdder = intent.getBooleanExtra("landingBool", false);
         isEditAdder = intent.getBooleanExtra("landingEdit", false);
-        adderDivisionIndex = intent.getIntExtra("landingDivision", -1);
+
 
 
         try {
@@ -67,36 +63,36 @@ public class AdderActivity extends FragmentActivity implements AdderInterface {
 
     @Override
     public void onBackPressed() {
-
+/*
         if(isDivisionAdder == true) {
-            isDivisionAdder = false;
+            isDivisionAdder = false;*/
             Intent intent = new Intent(this, ChampionActivity.class);
             startActivity(intent);
-        }
+        /*
         else {
-            divInteraction(divisionIndex);
-        }
+            returnToChamp(divisionIndex);
+        }*/
     }
 
     //called from SecondF2AInterface.  Passes integer so main activity can page to
     //newly added soldier's division
     @Override
-    public void divInteraction(int divSelected) {
+    public void returnToChamp() {
         Intent intent = new Intent(this, ChampionActivity.class);
-        intent.putExtra("landingDivision", divSelected);
+//        intent.putExtra("landingDivision", divSelected);
         startActivity(intent);
     }
 
 
     public String getSoldierEditItems() {
         Intent intent = getIntent();
-        divisionIndex = intent.getIntExtra("editSoloDivIndex", -1);
+//        divisionIndex = intent.getIntExtra("editSoloDivIndex", -1);
         soldierIndex = intent.getIntExtra("editSoloIndex", -1);
         soldierFname = intent.getStringExtra("editSoloFirst");
         soldierLname = intent.getStringExtra("editSoloLast");
 
         Bundle editArgs = new Bundle();
-        editArgs.putInt("editSoloDivIndex", divisionIndex);
+//        editArgs.putInt("editSoloDivIndex", divisionIndex);
         editArgs.putInt("editSoloIndex", soldierIndex);
         editArgs.putString("editSoloFirst", soldierFname);
         editArgs.putString("editSoloLast", soldierLname);

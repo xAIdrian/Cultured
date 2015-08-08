@@ -22,98 +22,57 @@
         app:contentInsetStart="0dp">
         <!-- contentInsert is the initial padding that is added by the system at the start -->
 
+
         <RelativeLayout
+            android:id="@+id/topLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="?attr/actionBarSize">
 
-            <RelativeLayout
-                android:id="@+id/topLayout"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize">
+            <ImageView
+                android:id="@+id/locker"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="6dp"
+                android:layout_marginStart="6dp"
+                android:focusable="false"
+                android:gravity="center_vertical"
+                android:padding="4dp"
+                android:src="@drawable/lock_open" />
 
-                <ImageView
-                    android:id="@+id/addBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginLeft="4dp"
-                    android:focusable="false"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:src="@drawable/add_icon" />
+            <ImageView
+                android:id="@+id/addBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_toLeftOf="@+id/locBtn"
+                android:focusable="false"
+                android:gravity="center_vertical"
+                android:padding="6dp"
+                android:src="@drawable/add_icon" />
 
-                <ImageView
-                    android:id="@+id/locBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginRight="4dp"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:src="@drawable/location_icon" />
 
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/editViewLayout"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_below="@+id/topLayout"
-                android:gravity="center">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:weightSum="3"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:id="@+id/previousMark"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:layout_weight="1"
-                        android:src="@drawable/action_arrow_left" />
-
-                    <ImageView
-                        android:id="@+id/locker"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:layout_weight="1"
-                        android:src="@drawable/lock_open" />
-
-                    <ImageView
-                        android:id="@+id/nextMark"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:focusable="false"
-                        android:gravity="center"
-                        android:padding="4dp"
-                        android:src="@drawable/action_arrow_right"
-                        android:layout_weight="1"/>
-
-                </LinearLayout>
-
-            </RelativeLayout>
+            <ImageView
+                android:id="@+id/locBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginEnd="6dp"
+                android:layout_marginRight="6dp"
+                android:gravity="center_vertical"
+                android:padding="6dp"
+                android:src="@drawable/location_icon" />
 
         </RelativeLayout>
 
     </android.support.v7.widget.Toolbar>
 
-   <!-- <View
+    <View
         android:id="@+id/dropshadow"
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:layout_marginTop="?attr/actionBarSize"
-        android:background="@drawable/dark_dropshadow" /> -->
+        android:background="@drawable/dark_dropshadow" />
 
 </FrameLayout>
