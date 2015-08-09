@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+
+    WE NEED TO DO SOMETHING HERE THAT IS JUST A REGULAR CIRCLE AND NOT
+    PART OF LOLLIPOP AND MATERIAL DESIGN (API 21)
+
+    -->
+
+
+</selector>

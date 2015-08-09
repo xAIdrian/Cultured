@@ -18,12 +18,13 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.androidtitan.trooptracker.Activity.AdderActivity;
+import com.androidtitan.trooptracker.Adapter.ChampionCursorAdapter;
 import com.androidtitan.trooptracker.Data.DatabaseHelper;
 import com.androidtitan.trooptracker.Data.Soldier;
 import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
@@ -34,7 +35,7 @@ public class ChampionListFragment extends Fragment {
     private static final String TAG = "ChampionListFragment";
             //we are using a 'LoaderCallback' because Loaders should always be called from the main thread...your Activity
     private static final String[] PROJECTION = new String[] {"_id", "first", "last"};
-    private SimpleCursorAdapter cursorAdapter;
+    private ChampionCursorAdapter cursorAdapter;
 
     //we should find out whether these are PUBLIC, PRIVATE, STATIC
     DatabaseHelper databaseHelper;
@@ -48,6 +49,7 @@ public class ChampionListFragment extends Fragment {
     private TextView proceedBtn;
 
     private ListView listView;
+    private ImageButton submitFAB;
 
     private Animation slideIn;
     private Animation slideOut;
@@ -108,7 +110,7 @@ public class ChampionListFragment extends Fragment {
                                                     //todo: Do we want to eventually consider using a 'Content Provider' and 'CursorLoader'?
         String[] dataColumns = new String[] {"first", "last"};
         int[] viewIDs = { R.id.champ_text , R.id.primary_champ_text};
-        cursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.listview_champion_item,
+        cursorAdapter = new ChampionCursorAdapter(getActivity(), R.layout.listview_champion_item,
                 cursor, dataColumns, viewIDs, 0);
 
         //getting Extras from Activity
@@ -148,6 +150,8 @@ public class ChampionListFragment extends Fragment {
         adder = (ImageView) getActivity().findViewById(R.id.addBtn);
         proceedBtn = (TextView) getActivity().findViewById(R.id.proceedBtn);
         proceedBtn.setVisibility(View.GONE);
+
+        submitFAB = (ImageButton) v.findViewById(R.id.submitImageButton);
 
         listView = (ListView) v.findViewById(R.id.champion_list);
         listView.setAdapter(cursorAdapter);
@@ -262,6 +266,13 @@ public class ChampionListFragment extends Fragment {
                 }
 
 
+            }
+        });
+
+        submitFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(TAG, "pop!");
             }
         });
 

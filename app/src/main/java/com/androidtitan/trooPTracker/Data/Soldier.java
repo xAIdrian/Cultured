@@ -1,7 +1,5 @@
 package com.androidtitan.trooptracker.Data;
 
-import android.util.Log;
-
 /**
  * Created by A. Mohnacs on 5/11/2015.
  */
@@ -85,12 +83,10 @@ public class Soldier {
         else {
             setIsLocationLockedDatabase(0);
         }
-        Log.e("SOLDIER", "isLocationLocked: " + isLocationLocked);
     }
 
     public void setIsLocationLockedDatabase(int isLocationLockedInt) {
         this.isLocationLocked = isLocationLockedInt;
-        Log.e("SOLDIER", "isLocationLockedInt: " + isLocationLockedInt);
     }
 
     //we are overriding toString() so it's default implementation is to return a string

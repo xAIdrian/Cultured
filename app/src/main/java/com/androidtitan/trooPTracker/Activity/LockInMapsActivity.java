@@ -103,12 +103,8 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
         databaseHelper = DatabaseHelper.getInstance(this);
 
         Intent intent = getIntent();
-        //todo: our indexing troubles
         soldierIndex = intent.getIntExtra("selectionToMap", -1);
 
-        Log.e(TAG, String.valueOf(soldierIndex));
-
-        //todo
         focusSoldier = databaseHelper.getAllSoldiers().get(soldierIndex);
         soldierLocations = databaseHelper.getAllLocationsBySoldier(focusSoldier);
         soldierLocationsSize = soldierLocations.size();
@@ -190,7 +186,12 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
             addLoc.setVisibility(View.GONE); //this is not being called
         }
         else {
-            customDialogHandler();
+            //they've already been here
+            if(soldierLocationsSize > 0) {
+
+            } else {
+                customDialogHandler();
+            }
         }
 
 

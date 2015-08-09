@@ -50,7 +50,7 @@
             android:layout_alignParentStart="true"
             android:gravity="center"
             android:text="@string/instruction"
-            android:textColor="@color/colorHighlight"
+            android:textColor="@android:color/white"
             android:textStyle="bold"
             android:textSize="@dimen/abc_text_size_medium_material" />
 
@@ -83,6 +83,17 @@
         android:layout_height="10dp"
         android:layout_below="@id/landing_header"
         android:background="@drawable/dropshadow" />
+
+    <ImageButton
+        android:id="@+id/submitImageButton"
+        android:layout_margin="15dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/icon_submit"
+        android:background="@drawable/circle"/>
 
 
 </RelativeLayout>

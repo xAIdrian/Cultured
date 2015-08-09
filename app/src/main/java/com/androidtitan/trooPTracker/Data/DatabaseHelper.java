@@ -31,9 +31,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_ID = "_id";
 
     //soldier table
-    private static final String KEY_FIRSTNAME = "first";
-    private static final String KEY_LASTNAME = "last";
-    private static final String KEY_LOCKED = "locationlocked";
+    public static final String KEY_FIRSTNAME = "first";
+    public static final String KEY_LASTNAME = "last";
+    public static final String KEY_LOCKED = "locationlocked";
 
     //coordinates table
     private static final String KEY_LOCAL = "local";
