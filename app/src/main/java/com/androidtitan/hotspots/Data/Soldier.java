@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Data;
+package com.androidtitan.hotspots.Data;
 
 /**
  * Created by A. Mohnacs on 5/11/2015.

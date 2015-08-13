@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Fragment;
+package com.androidtitan.hotspots.Fragment;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -15,9 +15,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.androidtitan.trooptracker.R;
-import com.androidtitan.trooptracker.Data.DatabaseHelper;
-import com.androidtitan.trooptracker.Interface.ChampionInterface;
+import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.Data.DatabaseHelper;
+import com.androidtitan.hotspots.Interface.ChampionInterface;
 
 public class NavigationDrawerFragment extends Fragment {
 /*

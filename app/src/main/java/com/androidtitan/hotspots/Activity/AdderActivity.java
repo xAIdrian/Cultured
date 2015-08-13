@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Activity;
+package com.androidtitan.hotspots.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,9 +7,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
-import com.androidtitan.trooptracker.R;
-import com.androidtitan.trooptracker.Fragment.AdderFragment;
-import com.androidtitan.trooptracker.Interface.AdderInterface;
+import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.Fragment.AdderFragment;
+import com.androidtitan.hotspots.Interface.AdderInterface;
 
 //ToDo: receive whether this is a SOLDIER or DIVISION
 public class AdderActivity extends FragmentActivity implements AdderInterface {

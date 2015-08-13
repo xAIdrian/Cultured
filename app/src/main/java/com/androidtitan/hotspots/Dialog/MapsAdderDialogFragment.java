@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Dialog;
+package com.androidtitan.hotspots.Dialog;
 
 import android.app.Activity;
 import android.app.DialogFragment;
@@ -11,11 +11,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.androidtitan.trooptracker.Data.DatabaseHelper;
-import com.androidtitan.trooptracker.Data.LocationBundle;
-import com.androidtitan.trooptracker.Data.Soldier;
-import com.androidtitan.trooptracker.Interface.MapsPullInterface;
-import com.androidtitan.trooptracker.R;
+import com.androidtitan.hotspots.Data.DatabaseHelper;
+import com.androidtitan.hotspots.Data.LocationBundle;
+import com.androidtitan.hotspots.Data.Soldier;
+import com.androidtitan.hotspots.Interface.MapsPullInterface;
+import com.androidtitan.hotspots.R;
 import com.google.android.gms.maps.model.LatLng;
 
 public class MapsAdderDialogFragment extends DialogFragment {

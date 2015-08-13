@@ -1,6 +1,6 @@
-package com.androidtitan.trooptracker.Interface;
+package com.androidtitan.hotspots.Interface;
 
-import com.androidtitan.trooptracker.Data.LocationBundle;
+import com.androidtitan.hotspots.Data.LocationBundle;
 
 import java.util.List;
 

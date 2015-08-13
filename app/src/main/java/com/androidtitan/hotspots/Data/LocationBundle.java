@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Data;
+package com.androidtitan.hotspots.Data;
 
 import com.google.android.gms.maps.model.LatLng;
 

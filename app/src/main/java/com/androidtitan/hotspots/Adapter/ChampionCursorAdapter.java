@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Adapter;
+package com.androidtitan.hotspots.Adapter;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -6,12 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.SimpleCursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.androidtitan.trooptracker.Activity.ChampionActivity;
-import com.androidtitan.trooptracker.Data.DatabaseHelper;
-import com.androidtitan.trooptracker.R;
+import com.androidtitan.hotspots.Activity.ChampionActivity;
+import com.androidtitan.hotspots.Data.DatabaseHelper;
+import com.androidtitan.hotspots.R;
 
 /**
  * Created by amohnacs on 8/8/15.

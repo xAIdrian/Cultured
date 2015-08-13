@@ -1,15 +1,15 @@
-package com.androidtitan.trooptracker.Activity;
+package com.androidtitan.hotspots.Activity;
 
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.androidtitan.trooptracker.R;
-import com.androidtitan.trooptracker.Fragment.ChampionListFragment;
-import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
-import com.androidtitan.trooptracker.Interface.ChampionInterface;
+import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.Fragment.ChampionListFragment;
+import com.androidtitan.hotspots.Interface.ChampionDataPullInterface;
+import com.androidtitan.hotspots.Interface.ChampionInterface;
 
 public class ChampionActivity extends AppCompatActivity implements ChampionDataPullInterface,
         ChampionInterface {
@@ -26,11 +26,13 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
         setContentView(R.layout.activity_champion);
 
         //Data Section
+/*
+    This code is coming from AdderActivity
 
         Intent intent = getIntent();
         shouldCursorUpdate = intent.getBooleanExtra(AdderActivity.CURSOR_UPDATE, false);
         Bundle args = new Bundle();
-        args.putBoolean(AdderActivity.CURSOR_UPDATE, shouldCursorUpdate);
+        args.putBoolean(AdderActivity.CURSOR_UPDATE, shouldCursorUpdate);*/
 
         //View Section
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -39,14 +41,13 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
 
 
         championFragment = new ChampionListFragment();
-        championFragment.setArguments(args);
+        //championFragment.setArguments(args);
 
 
-        FragmentTransaction fragTran = getFragmentManager().beginTransaction();
+        FragmentTransaction fragTran = getSupportFragmentManager().beginTransaction();
         fragTran.replace(R.id.championContainer, championFragment, "championFragment").commit();
 
     }
-
 
     @Override
     public void tabInteraction(int id) {

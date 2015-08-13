@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">troopTracker</string>
+    <string name="app_name">Hot Spots</string>
 
     <string name="hello_world">Hello world! I think you are missing something…</string>
     <string name="action_settings">Settings</string>
@@ -9,7 +9,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_second">SecondActivity</string>
 
-    <string name="landing_welcome">Hot Spots</string>
+    <string name="landing_welcome">Welcome</string>
     <string name="landing_subheader">who are we working with today?</string>
     <string name="landing_info">Thank you for using trooPTracker!</string>
 

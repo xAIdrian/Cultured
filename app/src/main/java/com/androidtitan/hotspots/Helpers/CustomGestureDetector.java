@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Helpers;
+package com.androidtitan.hotspots.Helpers;
 
 import android.util.Log;
 import android.view.GestureDetector;

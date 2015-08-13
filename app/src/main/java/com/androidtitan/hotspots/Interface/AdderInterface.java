@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Interface;
+package com.androidtitan.hotspots.Interface;
 
 /**
  * Created by A. Mohnacs on 5/24/2015.

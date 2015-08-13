@@ -1,8 +1,7 @@
-package com.androidtitan.trooptracker.Fragment;
+package com.androidtitan.hotspots.Fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +10,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,40 +22,41 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.androidtitan.trooptracker.Activity.AdderActivity;
-import com.androidtitan.trooptracker.Adapter.ChampionCursorAdapter;
-import com.androidtitan.trooptracker.Data.DatabaseHelper;
-import com.androidtitan.trooptracker.Data.Soldier;
-import com.androidtitan.trooptracker.Interface.ChampionDataPullInterface;
-import com.androidtitan.trooptracker.Interface.ChampionInterface;
-import com.androidtitan.trooptracker.R;
+import com.androidtitan.hotspots.Adapter.ChampionCursorAdapter;
+import com.androidtitan.hotspots.Data.DatabaseHelper;
+import com.androidtitan.hotspots.Data.Soldier;
+import com.androidtitan.hotspots.Interface.ChampionDataPullInterface;
+import com.androidtitan.hotspots.Interface.ChampionInterface;
+import com.androidtitan.hotspots.R;
 
+
+
+//todo:we need to create a CONTENT_PROVIDER before we can use a CurosrLoader
 public class ChampionListFragment extends Fragment {
     private static final String TAG = "ChampionListFragment";
-            //we are using a 'LoaderCallback' because Loaders should always be called from the main thread...your Activity
+    private static final int URL_LOADER = 0;
+
+    public DatabaseHelper databaseHelper;
+    public ChampionInterface championInterface;
+    public ChampionDataPullInterface pullInterface;
+
+    LoaderManager loaderManager;
+    //we are using a 'LoaderCallback' because Loaders should always be called from the main thread...your Activity
     private static final String[] PROJECTION = new String[] {"_id", "first", "last"};
-    private ChampionCursorAdapter cursorAdapter;
-
-    //we should find out whether these are PUBLIC, PRIVATE, STATIC
-    DatabaseHelper databaseHelper;
-    ChampionInterface championInterface;
-    ChampionDataPullInterface pullInterface;
-
+    public ChampionCursorAdapter cursorAdapter;
     Cursor cursor;
 
     private ImageView editer;
     private ImageView adder;
-    private TextView proceedBtn;
 
     private ListView listView;
     private ImageButton submitFAB;
 
-    private Animation slideIn;
-    private Animation slideOut;
-    private Animation rightSlideIn;
-    private Animation rightSlideOut;
+    private Animation leftSlideIn;
+    private Animation leftSlideOut;
+    private Animation bottomSlideIn;
+    private Animation bottomSlideOut;
 
     private Soldier focusSoldier;
 
@@ -62,7 +64,6 @@ public class ChampionListFragment extends Fragment {
     private int selection = -1;
     public int receivedIndex = -1;
 
-    private boolean shouldCursorUpdate;
 
     @Override
     public void onAttach(Activity activity) {
@@ -113,20 +114,21 @@ public class ChampionListFragment extends Fragment {
         cursorAdapter = new ChampionCursorAdapter(getActivity(), R.layout.listview_champion_item,
                 cursor, dataColumns, viewIDs, 0);
 
-        //getting Extras from Activity
+
+/*        //getting Extras from Activity
         Intent intent = getActivity().getIntent();
        shouldCursorUpdate = intent.getBooleanExtra(AdderActivity.CURSOR_UPDATE, false);
 
         if(shouldCursorUpdate) {
             cursorAdapter.changeCursor(getListItems());
-        }
+        }*/
 
 
         //Animations
-        slideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slidein);
-        slideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slideout);
-        rightSlideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.slidein_right);
-        rightSlideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.slideout_right);
+        leftSlideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slidein_left);
+        leftSlideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slideout_left);
+        bottomSlideIn = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slidin_bottom);
+        bottomSlideOut = AnimationUtils.loadAnimation(getActivity(), R.anim.icon_slideout_bottom);
 
         //runnable placeholder
 
@@ -138,7 +140,7 @@ public class ChampionListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_listview_champion, container, false);
-////
+////these are not necessary
         for(Soldier s : databaseHelper.getAllSoldiers()) {
             Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
         }
@@ -148,15 +150,15 @@ public class ChampionListFragment extends Fragment {
         editer = (ImageView) getActivity().findViewById(R.id.editBtn);
         editer.setVisibility(View.GONE);
         adder = (ImageView) getActivity().findViewById(R.id.addBtn);
-        proceedBtn = (TextView) getActivity().findViewById(R.id.proceedBtn);
-        proceedBtn.setVisibility(View.GONE);
-
         submitFAB = (ImageButton) v.findViewById(R.id.submitImageButton);
+        submitFAB.setVisibility(View.GONE);
+
 
         listView = (ListView) v.findViewById(R.id.champion_list);
         listView.setAdapter(cursorAdapter);
         View emptyView = v.findViewById(R.id.empty);
         listView.setEmptyView(emptyView);
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -177,21 +179,21 @@ public class ChampionListFragment extends Fragment {
 
                     selection = -1;
 
-                    editer.startAnimation(slideOut);
-                    proceedBtn.startAnimation(rightSlideOut);
+                    editer.startAnimation(leftSlideOut);
+                    submitFAB.startAnimation(bottomSlideOut);
                     listView.setEnabled(false);
 
                     handler.postDelayed(new Runnable() {
                         public void run() {
                             editer.setVisibility(View.GONE);
-                            proceedBtn.setVisibility(View.GONE);
+                            submitFAB.setVisibility(View.GONE);
 
                             adder.setVisibility(View.VISIBLE);
-                            adder.startAnimation(slideIn);
+                            adder.startAnimation(leftSlideIn);
 
                             listView.setEnabled(true);
                         }
-                    }, slideOut.getDuration());
+                    }, leftSlideOut.getDuration());
                 }
                 //Selection of an item
                 else {
@@ -200,7 +202,7 @@ public class ChampionListFragment extends Fragment {
                     //slidein animation
                     if (selection == -1) {
 
-                        adder.startAnimation(slideOut);
+                        adder.startAnimation(leftSlideOut);
                         listView.setEnabled(false);
 
                         handler.postDelayed(new Runnable() {
@@ -208,14 +210,14 @@ public class ChampionListFragment extends Fragment {
                                 adder.setVisibility(View.GONE);
 
                                 editer.setVisibility(View.VISIBLE);
-                                editer.startAnimation(slideIn);
+                                editer.startAnimation(leftSlideIn);
 
-                                proceedBtn.setVisibility(View.VISIBLE);
-                                proceedBtn.startAnimation(rightSlideIn);
+                                submitFAB.setVisibility(View.VISIBLE);
+                                submitFAB.startAnimation(bottomSlideIn);
 
                                 listView.setEnabled(true);
                             }
-                        }, slideOut.getDuration());
+                        }, leftSlideOut.getDuration());
                     }
                     selection = position;
 
@@ -249,7 +251,7 @@ public class ChampionListFragment extends Fragment {
         });
 
 
-        proceedBtn.setOnClickListener(new View.OnClickListener() {
+        submitFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -269,12 +271,6 @@ public class ChampionListFragment extends Fragment {
             }
         });
 
-        submitFAB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e(TAG, "pop!");
-            }
-        });
 
         return v;
     }
@@ -289,9 +285,9 @@ public class ChampionListFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        cursorAdapter.changeCursor(getListItems());
+        //cursor.requery();
+        getListItems();
     }
-
 
     /////////////// todo: custom methods //////////////////////////////////////////////////////////////
 
@@ -335,8 +331,10 @@ public class ChampionListFragment extends Fragment {
                 });
         final AlertDialog alert = builder.create();
         alert.show();
-    }
 
+        //this should stop processes when navigating away to open Location
+        super.onStop();
+    }
 
 }
 

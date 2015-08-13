@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Fragment;
+package com.androidtitan.hotspots.Fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,10 +17,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidtitan.trooptracker.R;
-import com.androidtitan.trooptracker.Data.DatabaseHelper;
-import com.androidtitan.trooptracker.Data.Soldier;
-import com.androidtitan.trooptracker.Interface.AdderInterface;
+import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.Data.DatabaseHelper;
+import com.androidtitan.hotspots.Data.Soldier;
+import com.androidtitan.hotspots.Interface.AdderInterface;
 
 
 public class AdderFragment extends Fragment {

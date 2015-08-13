@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Data;
+package com.androidtitan.hotspots.Data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,7 +22,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     //tables
-    private static final String TABLE_SOLDIER = "soldiers";
+    public static final String TABLE_SOLDIER = "soldiers";
     private static final String TABLE_COORDINATES = "coordinates";
     private static final String TABLE_STARTER_COORDS = "randocoordinates";
     private static final String TABLE_MAP = "map";

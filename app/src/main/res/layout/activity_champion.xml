@@ -34,32 +34,22 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:layout_marginLeft="4dp"
+                android:layout_marginStart="4dp"
                 android:src="@drawable/edit_icon" />
 
             <ImageView
                 android:id="@+id/addBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/editBtn"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:focusable="false"
                 android:gravity="center"
                 android:padding="4dp"
-                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginEnd="4dp"
                 android:src="@drawable/add_icon"/>
 
-            <TextView
-                android:id="@+id/proceedBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="8dp"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="@string/proceed"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:textSize="@dimen/abc_text_size_medium_material"/>
 
         </RelativeLayout>
 

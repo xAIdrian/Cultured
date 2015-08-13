@@ -1,4 +1,4 @@
-package com.androidtitan.trooptracker.Activity;
+package com.androidtitan.hotspots.Activity;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
@@ -21,12 +21,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.androidtitan.trooptracker.R;
-import com.androidtitan.trooptracker.Data.DatabaseHelper;
-import com.androidtitan.trooptracker.Data.LocationBundle;
-import com.androidtitan.trooptracker.Data.Soldier;
-import com.androidtitan.trooptracker.Dialog.MapsAdderDialogFragment;
-import com.androidtitan.trooptracker.Interface.MapsPullInterface;
+import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.Data.DatabaseHelper;
+import com.androidtitan.hotspots.Data.LocationBundle;
+import com.androidtitan.hotspots.Data.Soldier;
+import com.androidtitan.hotspots.Dialog.MapsAdderDialogFragment;
+import com.androidtitan.hotspots.Interface.MapsPullInterface;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -176,9 +176,6 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
         locationGetter.setVisibility(View.GONE);
 
         //if we've used all of our locations then we lock-it up
-        /*if(soldierLocationsSize == 0) {
-            customDialogHandler();
-        }*/
         if(isLocked) {
             isLocationAdded = true;
             //lockingAction();
@@ -253,8 +250,7 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
                             //Dialog saying "You need to get your location first!"
                             final AlertDialog.Builder noLocationDialog = new AlertDialog.Builder(LockInMapsActivity.this);
 
-
-                            noLocationDialog.setTitle("You need to get your location")
+                            noLocationDialog.setTitle("Get your location")
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -370,7 +366,7 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
     @Override
     public void onConnected(Bundle bundle) {
         Log.e("APIclientConnected?", "Connection Suspended!");
-        slidein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slidein_right);
+        slidein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.icon_slidein_right);
         handler = new Handler();
 
         handler.postDelayed(new Runnable() {

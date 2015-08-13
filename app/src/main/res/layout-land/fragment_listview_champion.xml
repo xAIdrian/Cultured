@@ -61,6 +61,17 @@
         android:layout_below="@id/landing_header"
         android:background="@drawable/dropshadow" />
 
+    <ImageButton
+        android:id="@+id/submitImageButton"
+        android:layout_margin="15dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/icon_submit"
+        android:background="@drawable/circle"
+        android:focusable="true"/>
+
 
 </RelativeLayout>
 
