@@ -17,16 +17,16 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.Data.DatabaseHelper;
 import com.androidtitan.hotspots.Data.LocationBundle;
 import com.androidtitan.hotspots.Data.Soldier;
 import com.androidtitan.hotspots.Dialog.MapsAdderDialogFragment;
 import com.androidtitan.hotspots.Interface.MapsPullInterface;
+import com.androidtitan.hotspots.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -45,11 +45,7 @@ import java.util.List;
 import java.util.Random;
 
 
-//todo: search for location
-// http://wptrafficanalyzer.in/blog/adding-google-places-autocomplete-api-as-custom-suggestions-in-android-search-dialog/
-//http://www.androidhive.info/2012/08/android-working-with-google-places-and-maps-tutorial/
-
-public class LockInMapsActivity extends FragmentActivity implements MapsPullInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+public class MapsActivity extends FragmentActivity implements MapsPullInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private static final String TAG = "MapActivity";
 
@@ -68,12 +64,14 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
 
     private Handler handler;
 
-    private ImageView addLoc;
-    private ImageView locationGetter;
-    private RelativeLayout editView;
+    private ImageButton actionButton;
+    private ImageView backer;
     private ImageView locker;
 
     private Animation slidein;
+    private Animation slideOut;
+    private Animation leftSlideIn;
+    private Animation leftSlideOut;
 
     private Location lastLocation;
     private LatLng lastLatLang;
@@ -81,8 +79,8 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
     private double currentLongitude;
 
     private int soldierIndex = -1;
-    private boolean locationClick = false;
-    private int locationIndex = -1;
+
+    private int FABstatus = -1; //0=location 1=add   2=submit
 
     private boolean isInitialOpening = true;
     private boolean isLocationAdded = false; //use this to control yo dialogs
@@ -92,9 +90,9 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps_lockin);
+        setContentView(R.layout.activity_maps);
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
 
             isInitialOpening = savedInstanceState.getBoolean(SAVED_INITIAL_BOOL);
             isLocationAdded = savedInstanceState.getBoolean(SAVED_DIALOG_BOOL);
@@ -110,7 +108,6 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
         soldierLocationsSize = soldierLocations.size();
 
         isLocked = focusSoldier.getIsLocationLocked();
-        Log.e(TAG, "is Locked " + String.valueOf(isLocked));
 
         setUpMapIfNeeded();
 
@@ -120,13 +117,11 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
         mapFragment.getMapAsync(this);
 
         buildGoogleApiClient();
-        // Sets the map VIEW type to be "hybrid" and disables other UI features
         options.mapType(GoogleMap.MAP_TYPE_NORMAL)
                 .compassEnabled(false)
                 .rotateGesturesEnabled(false)
                 .tiltGesturesEnabled(false);
 
-        //additional settings for map FUNCTIONALITY
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
         map.setMyLocationEnabled(true);
@@ -152,13 +147,9 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
             eventually we want to be able to 'page' through all of them
             */
             cameraLocation(false, 0, null);
-
         } else {
-
             cameraLocation(true, -1, null);
-
         }
-
 
         //log printer
         for (LocationBundle loc : soldierLocations) {
@@ -168,26 +159,42 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
 
         //initializations
 
+        backer = (ImageView) findViewById(R.id.back_action);
+        backer.setVisibility(View.GONE);
         locker = (ImageView) findViewById(R.id.locker);
 
-        addLoc = (ImageView) findViewById(R.id.addBtn);
-        locationGetter = (ImageView) findViewById(R.id.locBtn);
-        addLoc.setVisibility(View.GONE);
-        locationGetter.setVisibility(View.GONE);
+        actionButton = (ImageButton) findViewById(R.id.floatingActionImageButton);
+        actionButton.setVisibility(View.GONE);
 
         //if we've used all of our locations then we lock-it up
-        if(isLocked) {
+        //this is our Critical Logic
+        if (isLocked) {
             isLocationAdded = true;
             //lockingAction();
             locker.setImageResource(R.drawable.lock_closed);
-            addLoc.setVisibility(View.GONE); //this is not being called
-        }
-        else {
+            actionButton.setImageResource(R.drawable.icon_submit);
+
+            FABstatus = 2;
+            //todo: LATER we need to include for if we are Locked AND Scored
+        } else {
             //they've already been here
-            if(soldierLocationsSize > 0) {
+            if (soldierLocationsSize > 0) {
 
             } else {
-                customDialogHandler();
+                final AlertDialog.Builder aDawg = new AlertDialog.Builder(MapsActivity.this);
+
+                aDawg.setTitle(R.string.careful)
+                        .setMessage(R.string.initial_instruction)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                aDawg.show();
+
+                FABstatus++;
             }
         }
 
@@ -200,67 +207,93 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
         });
 
 
-        locationGetter.setOnClickListener(new View.OnClickListener() {
+        //using existing variables we are going to check which state it is already in
+        //on changing state 'actionButton' is going to slide out and then slide back in
+        //new sourceImage and newColor (newColor will require 2 new circle backgrounds)
+
+        //maybe we can use a SWITCH statement
+        actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 final LocationManager manager = (LocationManager)
                         getSystemService(Context.LOCATION_SERVICE);
+                lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                        googleAPIclient);
+
+                final AlertDialog.Builder aDawg = new AlertDialog.Builder(MapsActivity.this);
 
                 if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                     buildAlertMessageNoGps();
                 } else {
-                    lastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                            googleAPIclient);
 
-                    if (lastLocation != null) {
+                    switch (FABstatus) {
 
-                        currentLatitude = lastLocation.getLatitude();
-                        currentLongitude = lastLocation.getLongitude();
-                        lastLatLang = new LatLng(currentLatitude, currentLongitude);
+                        case -1:
 
-                        Log.e("MAlocationGetter", "Location Found! " + currentLatitude + ", " + currentLongitude);
-
-                        //camera
-                        cameraLocation(false, -1, lastLatLang);
-
-                        locationClick = true;
-                    }
-                }
-            }
-        });
-
-        //todo: maybe there is a simpler way to handle these 'if' statements
-        addLoc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final LocationManager manager = (LocationManager)
-                        getSystemService(Context.LOCATION_SERVICE);
-
-                if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    buildAlertMessageNoGps();
-                } else {
-                    if(soldierLocationsSize == 0) {
-                        if (locationClick) {
-                            customDialogHandler();
-                            locationClick = false;
-
-                        } else {
-                            //Dialog saying "You need to get your location first!"
-                            final AlertDialog.Builder noLocationDialog = new AlertDialog.Builder(LockInMapsActivity.this);
-
-                            noLocationDialog.setTitle("Get your location")
+                            aDawg.setTitle(R.string.careful)
+                                    .setMessage(R.string.initial_instruction)
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            dialog.cancel();
+                                            dialog.dismiss();
                                         }
                                     });
-                            noLocationDialog.show();
-                        }
-                    }
+                            aDawg.show();
 
+                            FABstatus++;
+
+                            break;
+
+                        case 0: //LOCATION fab
+
+                        if (lastLocation != null) {
+
+                            currentLatitude = lastLocation.getLatitude();
+                            currentLongitude = lastLocation.getLongitude();
+                            lastLatLang = new LatLng(currentLatitude, currentLongitude);
+
+                            Log.e("MAlocationGetter", "Location Found! " + currentLatitude + ", " + currentLongitude);
+
+                            //camera
+                            cameraLocation(false, -1, lastLatLang);
+
+                            FABstatus ++;
+
+                            actionButton.startAnimation(slideOut);
+                            actionButton.setVisibility(View.GONE);
+
+                            //handler is being used for the return action
+                            handler.postDelayed(new Runnable() {
+                                public void run() {
+                                    actionButton.setImageResource(R.drawable.icon_add);
+                                    actionButton.setVisibility(View.VISIBLE);
+                                    actionButton.startAnimation(slidein);
+
+                                    backer.startAnimation(leftSlideIn);
+                                    backer.setVisibility(View.VISIBLE);
+
+                                //listView.setEnabled(true);
+                                }
+                            }, slideOut.getDuration());
+
+                        }
+                            break;
+
+                        case 1: //ADD fab
+                            showAdderDialog(soldierIndex, currentLatitude, currentLongitude);
+
+                            break;
+
+                        case 2:
+
+                            break;
+
+                        default:
+                            Log.e("hotspots", "SOMETHING WENT WRONG IN OUR SWITCH");
+                            break;
+                    }
                 }
             }
         });
@@ -273,8 +306,31 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
 
             }
         });
-    }
 
+        backer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(FABstatus == 1) {
+                    actionButton.startAnimation(slideOut);
+                    actionButton.setVisibility(View.GONE);
+
+                    //handler is being used for the return action
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            actionButton.setImageResource(R.drawable.icon_location);
+                            actionButton.setVisibility(View.VISIBLE);
+                            actionButton.startAnimation(slidein);
+
+                            backer.startAnimation(leftSlideOut);
+                            backer.setVisibility(View.GONE);
+
+                            FABstatus--;
+                        }
+                    }, slideOut.getDuration());
+                }
+            }
+        });
+    }
 
     @Override
     protected void onResume() {
@@ -366,20 +422,31 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
     @Override
     public void onConnected(Bundle bundle) {
         Log.e("APIclientConnected?", "Connection Suspended!");
-        slidein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.icon_slidein_right);
+        slidein = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.icon_slidin_bottom);
+        slideOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.icon_slideout_bottom);
+        leftSlideIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.icon_slidein_left);
+        leftSlideOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.icon_slideout_left);
+
         handler = new Handler();
 
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                locationGetter.setVisibility(View.VISIBLE);
-                locationGetter.startAnimation(slidein);
+        if (soldierLocationsSize > 0 && !isLocked) {
+            actionButton.setVisibility(View.GONE);
+            FABstatus = 2;
+        } else {
 
-                if(!isLocationAdded) {
+            handler.postDelayed(new Runnable() {
+                public void run() {
+
+                    actionButton.setVisibility(View.VISIBLE);
+                    actionButton.startAnimation(slidein);
+
+                /*if(!isLocationAdded) {
                     addLoc.setVisibility(View.VISIBLE);
                     addLoc.startAnimation(slidein);
+                }*/
                 }
-            }
-        }, 500);
+            }, 500);
+        }
     }
 
     @Override
@@ -553,22 +620,12 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
 
     private void customDialogHandler() {
 
-        final AlertDialog.Builder aDawg = new AlertDialog.Builder(this);
-
+/*
         if (isInitialOpening) {
             isInitialOpening = false;
 
             if(!isLocationAdded) {
-                aDawg.setTitle(R.string.careful)
-                        .setMessage(R.string.initial_instruction)
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                aDawg.show();
             } else {
                 aDawg.setTitle(R.string.youDone)
                         .setMessage("You are out of Spots\nLock-In if you haven't")
@@ -589,13 +646,14 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
             }
         }
         else {
-            showAdderDialog(soldierIndex, currentLatitude, currentLongitude);
-        }
+
+        }*/
 
 
 
     }
 
+    //this will be removed eventually...the dialog at least
     public void onDialogCompletion(LocationBundle locationBundle, List<LocationBundle> daBundle2) {
 
         map.addMarker(new MarkerOptions()
@@ -609,6 +667,14 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
             soldierLocationsSize = soldierLocations.size();
         }
         isLocationAdded = true;
+
+        FABstatus++;
+
+        actionButton.startAnimation(slideOut);
+        actionButton.setVisibility(View.GONE);
+
+        backer.startAnimation(leftSlideOut);
+        backer.setVisibility(View.GONE);
 
     }
 
@@ -627,7 +693,12 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
                                 focusSoldier.setIsLocationLocked(true);
                                 databaseHelper.updateSoldier(focusSoldier);
 
-                                addLoc.setVisibility(View.GONE);
+                                actionButton.setImageResource(R.drawable.icon_submit);
+                                actionButton.setVisibility(View.VISIBLE);
+                                actionButton.startAnimation(slidein);
+
+                                FABstatus++;
+                                //addLoc.setVisibility(View.GONE);
                                 dialog.cancel();
                             }
                         });
@@ -645,7 +716,13 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
                                 focusSoldier.setIsLocationLocked(true);
                                 databaseHelper.updateSoldier(focusSoldier);
 
-                                addLoc.setVisibility(View.GONE);
+                                actionButton.setImageResource(R.drawable.icon_submit);
+                                actionButton.setVisibility(View.VISIBLE);
+                                actionButton.startAnimation(slidein);
+
+                                FABstatus++;
+
+                                //addLoc.setVisibility(View.GONE);
                                 dialog.cancel();
                             }
                         })
@@ -664,7 +741,7 @@ public class LockInMapsActivity extends FragmentActivity implements MapsPullInte
             focusSoldier.setIsLocationLocked(true);
             databaseHelper.updateSoldier(focusSoldier);
 
-            addLoc.setVisibility(View.GONE);
+            //addLoc.setVisibility(View.GONE);
         }
     }
 

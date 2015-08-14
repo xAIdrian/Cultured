@@ -209,8 +209,10 @@ public class ChampionListFragment extends Fragment {
                             public void run() {
                                 adder.setVisibility(View.GONE);
 
-                                editer.setVisibility(View.VISIBLE);
-                                editer.startAnimation(leftSlideIn);
+                                if(!focusSoldier.getIsLocationLocked()) {
+                                    editer.setVisibility(View.VISIBLE);
+                                    editer.startAnimation(leftSlideIn);
+                                }
 
                                 submitFAB.setVisibility(View.VISIBLE);
                                 submitFAB.startAnimation(bottomSlideIn);

@@ -79,7 +79,7 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
     @Override
     public void selectionToMap(int selection) {
 
-        Intent intent = new Intent(this, LockInMapsActivity.class);
+        Intent intent = new Intent(this, MapsActivity.class);
         intent.putExtra("selectionToMap", selection);
         //intent.putExtra("selectionToMapDiv", divisionIndex);
         startActivity(intent);
