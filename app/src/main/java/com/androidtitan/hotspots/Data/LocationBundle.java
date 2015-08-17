@@ -10,15 +10,25 @@ public class LocationBundle {
     private long id;
     private String localName;
     private LatLng latlng;
-    //private int mySoldiersIndex;
+    private int isLocationLocked; //we translate this into a boolean for easier programmatic use
 
     public LocationBundle () {
 
     }
 
+    public LocationBundle(String name) {
+        this.localName = name;
+    }
+
     public LocationBundle(String name, double latitude, double longitude) {
         this.localName = name;
         this.latlng = new LatLng(latitude, longitude);
+    }
+
+    public LocationBundle (String name, double latitude, double longitude, int isLocked) {
+        this.localName = name;
+        this.latlng = new LatLng(latitude, longitude);
+        this.isLocationLocked = isLocked;
     }
 
     public LocationBundle(LatLng latlng) {
@@ -55,11 +65,30 @@ public class LocationBundle {
         this.latlng = latlng;
     }
 
- /*   public int getMySoldiersIndex() {
-        return mySoldiersIndex;
+    public Boolean getIsLocationLocked() {
+
+        if (isLocationLocked == 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
-    public void setMySoldiersIndex(int mySoldiersIndex) {
-        this.mySoldiersIndex = mySoldiersIndex;
-    }*/
+    public int getIsLocationLockedDatabase() {
+        return isLocationLocked;
+    }
+
+    public void setIsLocationLocked(boolean isLocationLockeded) {
+        if(isLocationLockeded) {
+            setIsLocationLockedDatabase(1);
+        }
+        else {
+            setIsLocationLockedDatabase(0);
+        }
+    }
+
+    public void setIsLocationLockedDatabase(int isLocationLockedInt) {
+        this.isLocationLocked = isLocationLockedInt;
+    }
 }

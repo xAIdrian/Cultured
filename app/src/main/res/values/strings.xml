@@ -62,10 +62,14 @@
     <string name="notallspots">You have not marked your spot</string>
 
     <string name="emptyListview">Add someone\nto play</string>
-    <string name="instruction">Add Avatar\nSet location\nBe judged\nCompete</string>
+    <string name="instruction">Set location\nBe judged\nCompete</string>
+    <string name="touchtocontinue">Touch.  Continue.</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_splash">SplashActivity</string>
+
+    <string name="name">name location</string>
 
 
     <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->

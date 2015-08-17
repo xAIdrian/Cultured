@@ -9,7 +9,7 @@ public class Soldier {
     private long id;
     private String fName;
     private String lName;
-    private int isLocationLocked; //we translate this into a boolean for easier programmatic use
+    //private int isLocationLocked; //we translate this into a boolean for easier programmatic use
 
     public Soldier() {
     }
@@ -17,21 +17,21 @@ public class Soldier {
     public Soldier(String first, String last) {
         this.fName = first;
         this.lName = last;
-        this.isLocationLocked = 0;
+        //this.isLocationLocked = 0;
     }
 
     public Soldier(String first, String last, int isLocLocked) {
 
         this.fName = first;
         this.lName = last;
-        this.isLocationLocked = isLocLocked;
+        //this.isLocationLocked = isLocLocked;
     }
 
     public Soldier(int iid, String first, String last, int isLocLocked) {
         this.id = iid;
         this.fName = first;
         this.lName = last;
-        this.isLocationLocked = isLocLocked;
+        //this.isLocationLocked = isLocLocked;
     }
 
     public long getId() {
@@ -62,7 +62,7 @@ public class Soldier {
         return fName + " " + lName;
     }
 
-    public Boolean getIsLocationLocked() {
+    /*public Boolean getIsLocationLocked() {
 
         if (isLocationLocked == 0) {
             return false;
@@ -87,7 +87,7 @@ public class Soldier {
 
     public void setIsLocationLockedDatabase(int isLocationLockedInt) {
         this.isLocationLocked = isLocationLockedInt;
-    }
+    }*/
 
     //we are overriding toString() so it's default implementation is to return a string
     //not a memory address

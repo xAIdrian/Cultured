@@ -22,23 +22,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
 
     //tables
-    public static final String TABLE_SOLDIER = "soldiers";
+    //public static final String TABLE_SOLDIER = "soldiers";    SOLDIERS TABLE WILL BE CONVERTED TO
+    //                                                             USER TABLE
     private static final String TABLE_COORDINATES = "coordinates";
     private static final String TABLE_STARTER_COORDS = "randocoordinates";
-    private static final String TABLE_MAP = "map";
+    //private static final String TABLE_MAP = "map";
 
     //Common columns
     private static final String KEY_ID = "_id";
 
-    //soldier table
+    /*soldier table
     public static final String KEY_FIRSTNAME = "first";
     public static final String KEY_LASTNAME = "last";
     public static final String KEY_LOCKED = "locationlocked";
+    */
 
     //coordinates table
-    private static final String KEY_LOCAL = "local";
-    private static final String KEY_LATITUDE = "latitude";
-    private static final String KEY_LONGITUDE = "longitude";
+    public static final String KEY_LOCAL = "local";
+    public static final String KEY_LATITUDE = "latitude";
+    public static final String KEY_LONGITUDE = "longitude";
+    public static final String KEY_LOCKED = "locationLocked";
 
     //random coordinates table
     private static final String KEY_STARTER_LOCAL = "randolocal";
@@ -46,21 +49,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_STARTER_LONGITUDE = "randolongitude";
 
     //map table. soldier / coordinates table
-    //private static final String KEY_SOLDIER_ID = "soldier_id"; //already included above
+    /*private static final String KEY_SOLDIER_ID = "soldier_id"; //already included above
     private static final String KEY_COORD_ID = "coordinate_id";
     private static final String KEY_SOLDIER_ID = "soldier_id";
+    */
 
 
     // Table Creation Statements
-    // Soldier Table
+    /* Soldier Table
     private static final String CREATE_TABLE_SOLDIER = "CREATE TABLE " + TABLE_SOLDIER
             + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + " TEXT," + KEY_LASTNAME
             + " TEXT, " + KEY_LOCKED + " BIT" + ")";
+    */
 
     //Coordinates Table
     private static final String CREATE_TABLE_COORDINATES = "CREATE TABLE " + TABLE_COORDINATES
             + "(" + KEY_ID + " INTEGER PRIMARY KEY, " + KEY_LOCAL + " TEXT,"
-            + KEY_LATITUDE + " DOUBLE PRECISION," + KEY_LONGITUDE + " DOUBLE PRECISION" + ")";
+            + KEY_LATITUDE + " DOUBLE PRECISION," + KEY_LONGITUDE + " DOUBLE PRECISION, "
+            + KEY_LOCKED + " BIT" + ")";
 
     //Random Coordinates Table
     private static final String CREATE_TABLE_STARTER_COORDS = "CREATE TABLE " + TABLE_STARTER_COORDS
@@ -68,9 +74,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_STARTER_LATITUDE + " DOUBLE PRECISION," + KEY_STARTER_LONGITUDE + " DOUBLE PRECISION" + ")";
 
     //Map Table
+    /*
     private static final String CREATE_TABLE_MAP = "CREATE TABLE " + TABLE_MAP
             + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_COORD_ID + " INTEGER, "
             + KEY_SOLDIER_ID + " INTEGER" + ")";
+    */
 
     public static synchronized DatabaseHelper getInstance(Context context) {
 
@@ -89,11 +97,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         //creating the required tables
-        db.execSQL(CREATE_TABLE_SOLDIER);
+        //db.execSQL(CREATE_TABLE_SOLDIER);
         db.execSQL(CREATE_TABLE_COORDINATES);
         db.execSQL(CREATE_TABLE_STARTER_COORDS);
 
-        db.execSQL(CREATE_TABLE_MAP);
+        //db.execSQL(CREATE_TABLE_MAP);
 
         //maybe we can insert a sample user
 
@@ -106,16 +114,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SOLDIER);
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_SOLDIER);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COORDINATES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MAP);
+        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_MAP);
 
         // create new tables
         onCreate(db);
     }
 
     //todo: SOLDIER TABLE
-
+/*
     public void printSoldierTable() {
         String selectQuery = "SELECT * FROM " + TABLE_SOLDIER;
 
@@ -141,11 +149,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    /**
+
      * The function will create a soldier item in soldiers table. In this same
      * function we are assigning the soldier to a division name which inserts a row in
      * command table.
-     */
+
     public long createSoldier(Soldier soldier) { // , long[] division_ids <-- this is a parameter
         SQLiteDatabase database = this.getWritableDatabase();
 
@@ -166,9 +174,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    /**
+
      * We will fetch a soldier from the soldiers table
-     */
+
     public Soldier getSoldier(long soldier_id) {
         soldier_id = soldier_id + 1;
         SQLiteDatabase database = this.getReadableDatabase();
@@ -193,11 +201,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    /**
+
      * Fetching all soldiers involves reading all soldier rows and adding them to
      * a List Array (not arraylist)     *
      * SELECT * FROM soldiers
-     **/
+
 
     public List<Soldier> getAllSoldiers() {
         List<Soldier> troops = new ArrayList<Soldier>();
@@ -222,10 +230,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return troops;
     }
 
-    /**
+
      * Filtered getAllSoldiers.  We only want Soldiers in a specified Division
      * SELECT * FROM soldiers s, division d, command c WHERE d.tag_name = Watchlist AND d.id = c.tag_id AND s.id = c.todo_id;
-     **//*
+
     public List<Soldier> getAllSoldiersByDivision(Division division) {
         String division_name = division.getName();
         Log.i("soldiersByDivision", division_name);
@@ -260,7 +268,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return troops;
     }
-*/
+
     //Following function will update Soldier values only, not Division
     public int updateSoldier(Soldier soldier) {
         SQLiteDatabase database = this.getWritableDatabase();
@@ -277,9 +285,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    /**
+
      * Pass Soldier_Id to delete Soldier
-     **/
+
     public void deleteSoldier(Soldier soldier) {
 
         SQLiteDatabase database = this.getWritableDatabase();
@@ -305,7 +313,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.e("insideDeleteDivision", TABLE_DIVISION + ": " + KEY_ID + " = ? " + division.getId());
         database.delete(TABLE_DIVISION, KEY_ID + " = ?",
                 new String[]{String.valueOf(division.getId())});
-         */
+
 
     }
 
@@ -325,73 +333,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
         }
     }
-
-
-    //todo: COORDINATES TABLE
-    //I did NOT include update or delete...
-
-
-    public long createLocation(LocationBundle locBun) {
-        SQLiteDatabase database = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(KEY_LOCAL, locBun.getLocalName());
-        values.put(KEY_LATITUDE, locBun.getLatlng().latitude);
-        values.put(KEY_LONGITUDE, locBun.getLatlng().longitude);
-
-        long coordinate_id = database.insert(TABLE_COORDINATES, null, values);
-        locBun.setId(coordinate_id);
-
-        return coordinate_id;
-    }
-
-    public List<LocationBundle> getAllLocations() {
-        List<LocationBundle> geoPoints = new ArrayList<LocationBundle>();
-        String selectQuery = "SELECT * FROM " + TABLE_COORDINATES;
-
-        SQLiteDatabase database = this.getReadableDatabase();
-
-        Cursor cursor = database.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                LocationBundle locBun = new LocationBundle();
-                locBun.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-                locBun.setLocalName(cursor.getString(cursor.getColumnIndex(KEY_LOCAL)));
-                locBun.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
-                        cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
-
-                geoPoints.add(locBun);
-            } while (cursor.moveToNext());
-        }
-        return geoPoints;
-    }
-
-    public LocationBundle getLocationBundle(long coord_id) {
-        //coord_id = coord_id + 1;  IDK if we will actually need this as this method might not even be used
-
-        SQLiteDatabase database = this.getReadableDatabase();
-
-        String selectQuery = "SELECT * FROM " + TABLE_COORDINATES
-                + " WHERE " + KEY_ID + " = " + coord_id;
-        Log.i("DBHgetCoordinate", selectQuery);
-
-        Cursor cursor = database.query(TABLE_COORDINATES, new String[]{KEY_ID, KEY_LOCAL, KEY_LATITUDE, KEY_LONGITUDE},
-                KEY_ID + " =?", new String[]{String.valueOf(coord_id)}, null, null, null, null);
-
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        LocationBundle locBundle = new LocationBundle();
-        locBundle.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-        locBundle.setLocalName(cursor.getString(cursor.getColumnIndex(KEY_LOCAL)));
-        locBundle.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
-                cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
-
-        return locBundle;
-    }
-
-    // SELECT * FROM soldiers s, division d, command c WHERE d.tag_name = Watchlist AND d.id = c.tag_id AND s.id = c.todo_id;
+*/
+    /* SELECT * FROM soldiers s, division d, command c WHERE d.tag_name = Watchlist AND d.id = c.tag_id AND s.id = c.todo_id;
     public List<LocationBundle> getAllLocationsBySoldier(Soldier soldier) {
         long soldierId = soldier.getId();
         SQLiteDatabase database = this.getReadableDatabase();
@@ -455,7 +398,96 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return soldier;
 
     }
+*/
 
+    //todo: COORDINATES TABLE
+    //I did NOT include update or delete...
+
+
+    public long createLocation(LocationBundle locBun) {
+        SQLiteDatabase database = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_LOCAL, locBun.getLocalName());
+        try {
+            values.put(KEY_LATITUDE, locBun.getLatlng().latitude);
+            values.put(KEY_LONGITUDE, locBun.getLatlng().longitude);
+            values.put(KEY_LOCKED, locBun.getIsLocationLockedDatabase());
+        } catch(NullPointerException e) {
+            Log.e("createLocation", "location created without coordinates!");
+        }
+
+        long coordinate_id = database.insert(TABLE_COORDINATES, null, values);
+        locBun.setId(coordinate_id);
+
+        return coordinate_id;
+    }
+
+    public List<LocationBundle> getAllLocations() {
+        List<LocationBundle> geoPoints = new ArrayList<LocationBundle>();
+        String selectQuery = "SELECT * FROM " + TABLE_COORDINATES;
+
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        Cursor cursor = database.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                LocationBundle locBun = new LocationBundle();
+                locBun.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                locBun.setLocalName(cursor.getString(cursor.getColumnIndex(KEY_LOCAL)));
+                locBun.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
+                        cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
+                locBun.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
+
+                geoPoints.add(locBun);
+            } while (cursor.moveToNext());
+        }
+        return geoPoints;
+    }
+
+    public LocationBundle getLocationBundle(long coord_id) {
+        //coord_id = coord_id + 1;  IDK if we will actually need this as this method might not even be used
+
+        SQLiteDatabase database = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_COORDINATES
+                + " WHERE " + KEY_ID + " = " + coord_id;
+        Log.i("DBHgetCoordinate", selectQuery);
+
+        Cursor cursor = database.query(TABLE_COORDINATES, new String[]{KEY_ID, KEY_LOCAL, KEY_LATITUDE, KEY_LONGITUDE},
+                KEY_ID + " =?", new String[]{String.valueOf(coord_id)}, null, null, null, null);
+
+        if (cursor != null)
+            cursor.moveToFirst();
+
+        LocationBundle locBundle = new LocationBundle();
+        locBundle.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+        locBundle.setLocalName(cursor.getString(cursor.getColumnIndex(KEY_LOCAL)));
+        locBundle.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
+                cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
+        locBundle.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
+
+        return locBundle;
+    }
+
+
+    //Following function will update Soldier values only, not Division
+    public int updateLocationBundle(LocationBundle locBun) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        //prepping/formatting data for update(replace) row
+        ContentValues values = new ContentValues();
+        values.put(KEY_LOCAL, locBun.getLocalName());
+        values.put(KEY_LATITUDE, locBun.getLatlng().latitude);
+        values.put(KEY_LONGITUDE, locBun.getLatlng().longitude);
+        values.put(KEY_LOCKED, locBun.getIsLocationLockedDatabase());
+        //updating
+        Log.i("DBHupdateSoldier", "Updated!" + TABLE_COORDINATES + " " + KEY_ID + " = " + String.valueOf(locBun.getId()));
+
+        return database.update(TABLE_COORDINATES, values,
+                KEY_ID + " = ?", new String[]{String.valueOf(locBun.getId())});
+
+    }
 
     public void deleteLocation(LocationBundle locBun) {
         SQLiteDatabase database = this.getWritableDatabase();
@@ -482,11 +514,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //looping through all the rows to create objects to add to our list
         if (cursor.moveToFirst()) {
             do {
-                LocationBundle locker = new LocationBundle();
-                locker.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
-                locker.setLocalName(cursor.getString(cursor.getColumnIndex(KEY_LOCAL)));
-                locker.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
+                LocationBundle locationBundle = new LocationBundle();
+                locationBundle.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
+                locationBundle.setLocalName(cursor.getString(cursor.getColumnIndex(KEY_LOCAL)));
+                locationBundle.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
                         cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
+                locationBundle.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
                 //logging
                 Log.i("DBHprintAllCoordinates", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
                         + cursor.getString(cursor.getColumnIndex(KEY_LOCAL)) + ": "
@@ -526,6 +559,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     //todo: MAP TABLE
+    //MAP TABLE WILL NEED TO BE REPURPOSED FOR "USERS" AND "LOCATIONS"
+    /*
 
 
     public long assignLocationToSolider(LocationBundle locBun, Soldier soldier) {
@@ -560,4 +595,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Log.i("closeDatabase()", "3 Star DATABASE CLOSED SIR!");
     }
+    */
 }

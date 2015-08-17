@@ -1,28 +1,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="50dp"
+    android:layout_height="50dp"
     tools:context="com.androidtitan.hotspots.Dialog.MapsAdderDialogFragment">
-
-    <EditText
-        android:id="@+id/mapEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:backgroundTint="#448AFF"
-        android:gravity="center"
-        android:imeOptions="actionDone"
-        android:inputType="textCapSentences"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"/>
 
     <LinearLayout
         android:id="@+id/mapConfirm"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal"
-        android:layout_below="@+id/mapEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:paddingTop="15dp"
         android:paddingBottom="10dp"
         android:weightSum="2">
@@ -30,8 +16,9 @@
         <TextView
             android:id="@+id/mapCancel"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1"
+            android:padding="8dp"
             android:gravity="center"
             android:text="@string/cancel"
             android:textColor="@color/colorCrush" />
@@ -40,11 +27,9 @@
         <TextView
             android:id="@+id/mapSubmit"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
+            android:layout_height="0dp"
             android:layout_weight="1"
+            android:padding="8dp"
             android:gravity="center"
             android:text="@string/mark"
             android:textColor="#4CAF50"

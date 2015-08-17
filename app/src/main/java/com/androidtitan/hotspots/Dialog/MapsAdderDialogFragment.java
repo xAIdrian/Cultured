@@ -3,17 +3,14 @@ package com.androidtitan.hotspots.Dialog;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.view.Window;
 import android.widget.TextView;
 
 import com.androidtitan.hotspots.Data.DatabaseHelper;
 import com.androidtitan.hotspots.Data.LocationBundle;
-import com.androidtitan.hotspots.Data.Soldier;
 import com.androidtitan.hotspots.Interface.MapsPullInterface;
 import com.androidtitan.hotspots.R;
 import com.google.android.gms.maps.model.LatLng;
@@ -24,16 +21,14 @@ public class MapsAdderDialogFragment extends DialogFragment {
     DatabaseHelper databaseHelper;
     MapsPullInterface mapsPullInterface;
 
-    private EditText mapAddEditText;
     private TextView mapAddCancel;
     private TextView mapAddSubmit;
 
-    private int soldierIndex = -1;
     private int locationBundleIndex = -1;
     private double latitude = -1;
     private double longitude = -1;
 
-    Soldier tempSoldier;
+    LocationBundle tempLocation;
 
     private String dialogString;
 
@@ -58,12 +53,11 @@ public class MapsAdderDialogFragment extends DialogFragment {
         }
         databaseHelper = DatabaseHelper.getInstance(getActivity());
 
-        soldierIndex = getArguments().getInt("soldierIndex");
         locationBundleIndex = getArguments().getInt("locationBundleIndex");
         latitude = getArguments().getDouble("locationBundleLat");
         longitude = getArguments().getDouble("locationBundleLng");
 //todo
-        tempSoldier = databaseHelper.getAllSoldiers().get(soldierIndex);
+        tempLocation = databaseHelper.getAllLocations().get(locationBundleIndex);
 
     }
 
@@ -72,35 +66,11 @@ public class MapsAdderDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_maps_adder_dialog, container, false);
 
-        getDialog().getWindow().setTitle(getResources().getString(R.string.dialogTitle));
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        mapAddEditText = (EditText) v.findViewById(R.id.mapEditText);
         mapAddCancel = (TextView) v.findViewById(R.id.mapCancel);
         mapAddSubmit = (TextView) v.findViewById(R.id.mapSubmit);
 
-        mapAddEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                dialogString = s.toString();
-
-                try {
-                    //consider adding new special characters
-                    dialogString = dialogString.replace("'", "\'");
-                } catch(NullPointerException e) {
-                    //there were no special characters
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
 
         mapAddCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,15 +82,14 @@ public class MapsAdderDialogFragment extends DialogFragment {
         mapAddSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LocationBundle tempBundle = new LocationBundle(new LatLng(latitude, longitude));
-                tempBundle.setLocalName(dialogString);
+                //LocationBundle tempBundle = new LocationBundle(new LatLng(latitude, longitude));
+                tempLocation.setLatlng(new LatLng(latitude, longitude));
 
-                databaseHelper.createLocation(tempBundle);
-                databaseHelper.assignLocationToSolider(tempBundle, tempSoldier);
+                databaseHelper.updateLocationBundle(tempLocation);
+                //TODO
 
                 getDialog().dismiss();
-                mapsPullInterface.onDialogCompletion(tempBundle,
-                        databaseHelper.getAllLocationsBySoldier(tempSoldier));
+                mapsPullInterface.onDialogCompletion(tempLocation);
 
             }
         });

@@ -23,7 +23,6 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.Data.DatabaseHelper;
 import com.androidtitan.hotspots.Data.LocationBundle;
-import com.androidtitan.hotspots.Data.Soldier;
 import com.androidtitan.hotspots.Dialog.MapsAdderDialogFragment;
 import com.androidtitan.hotspots.Interface.MapsPullInterface;
 import com.androidtitan.hotspots.R;
@@ -41,7 +40,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.util.List;
 import java.util.Random;
 
 
@@ -58,9 +56,10 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     private GoogleMapOptions options = new GoogleMapOptions();
     private GoogleApiClient googleAPIclient;
 
-    private Soldier focusSoldier;
-    private List<LocationBundle> soldierLocations;
-    private int soldierLocationsSize;
+    private LocationBundle focusLocation;
+    private Location tempLocation;
+//    private List<LocationBundle> soldierLocations;
+//    private int soldierLocationsSize;
 
     private Handler handler;
 
@@ -78,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     private double currentLatitude;
     private double currentLongitude;
 
-    private int soldierIndex = -1;
+    private int locationIndex = -1;
 
     private int FABstatus = -1; //0=location 1=add   2=submit
 
@@ -101,13 +100,21 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         databaseHelper = DatabaseHelper.getInstance(this);
 
         Intent intent = getIntent();
-        soldierIndex = intent.getIntExtra("selectionToMap", -1);
+        locationIndex = intent.getIntExtra("selectionToMap", -1);
 
-        focusSoldier = databaseHelper.getAllSoldiers().get(soldierIndex);
-        soldierLocations = databaseHelper.getAllLocationsBySoldier(focusSoldier);
-        soldierLocationsSize = soldierLocations.size();
+        //TODO
 
-        isLocked = focusSoldier.getIsLocationLocked();
+        focusLocation = databaseHelper.getAllLocations().get(locationIndex);
+
+        tempLocation = new Location("tempLocation");
+        try {
+            tempLocation.setLatitude(focusLocation.getLatlng().latitude);
+            tempLocation.setLongitude(focusLocation.getLatlng().longitude);
+        } catch (NullPointerException e) {
+            Log.e(TAG, String.valueOf(e));
+        }
+
+        isLocked = focusLocation.getIsLocationLocked();
 
         setUpMapIfNeeded();
 
@@ -129,11 +136,11 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         //place markers for every saved location
         for (LocationBundle bund : databaseHelper.getAllLocations()) {
             try {
-
+//TODO
                 map.addMarker(new MarkerOptions()
                         .position(bund.getLatlng())
                         .title(bund.getLocalName())
-                        .snippet(databaseHelper.getLocationsSoldier(bund).getFullName()));
+                        .snippet(bund.getLocalName()));
             } catch (CursorIndexOutOfBoundsException e) {
 
                 map.addMarker(new MarkerOptions()
@@ -142,19 +149,18 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
             }
         }
 
-        if (soldierLocationsSize > 0) { //if there is something present
+        //Location.distanceBetween(focusLocation.getLatlng().latitude, focusLocation.getLatlng().longitude,
+        //tempLocation.getLatitude(), tempLocation.getLongitude(), );
+        if (!focusLocation.getLatlng().equals(new LatLng(0.0, 0.0))) { //if there is something present
             /*this currently gets the first location in their many saved locations...
             eventually we want to be able to 'page' through all of them
             */
-            cameraLocation(false, 0, null);
+            cameraLocation(false, -1, null);
         } else {
             cameraLocation(true, -1, null);
         }
 
-        //log printer
-        for (LocationBundle loc : soldierLocations) {
-            Log.e("MAonCreate", loc.getId() + " " + loc.getLocalName() + ", " + loc.getLatlng());
-        }
+
         databaseHelper.printCoordinatesTable();
 
         //initializations
@@ -162,7 +168,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         backer = (ImageView) findViewById(R.id.back_action);
         backer.setVisibility(View.GONE);
         locker = (ImageView) findViewById(R.id.locker);
-
         actionButton = (ImageButton) findViewById(R.id.floatingActionImageButton);
         actionButton.setVisibility(View.GONE);
 
@@ -177,8 +182,9 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
             FABstatus = 2;
             //todo: LATER we need to include for if we are Locked AND Scored
         } else {
+            //todo
             //they've already been here
-            if (soldierLocationsSize > 0) {
+            if (focusLocation.getLatlng() != null) {
 
             } else {
                 final AlertDialog.Builder aDawg = new AlertDialog.Builder(MapsActivity.this);
@@ -282,7 +288,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                             break;
 
                         case 1: //ADD fab
-                            showAdderDialog(soldierIndex, currentLatitude, currentLongitude);
+                            showAdderDialog(locationIndex, currentLatitude, currentLongitude);
 
                             break;
 
@@ -429,7 +435,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
         handler = new Handler();
 
-        if (soldierLocationsSize > 0 && !isLocked) {
+        if (!focusLocation.getLatlng().equals(new LatLng(0.0, 0.0)) && !isLocked) {
             actionButton.setVisibility(View.GONE);
             FABstatus = 2;
         } else {
@@ -440,10 +446,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                     actionButton.setVisibility(View.VISIBLE);
                     actionButton.startAnimation(slidein);
 
-                /*if(!isLocationAdded) {
-                    addLoc.setVisibility(View.VISIBLE);
-                    addLoc.startAnimation(slidein);
-                }*/
                 }
             }, 500);
         }
@@ -549,31 +551,36 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     //directs the user to a location on the map
     //eventually we will use tha parameter to navigate to SQL row item
     //used for all of the Map Navigations
+
+    //the int will be used in the future if we need to view a number of locations
     private void cameraLocation(boolean isRandom, int locationIndx, LatLng setLatLang) {
+
 
         LatLng starterLocation;
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
 
         if (setLatLang != null) {
             starterLocation = setLatLang;
+            Log.e(TAG, "setLatLang !- null:" + starterLocation);
 
         } else {
 
             if (isRandom == true) {
                 int rando = randInt(1, 4);
                 starterLocation = databaseHelper.getStarterLocationBundle(rando).getLatlng();
-                Log.e("MAcameraLocation", String.valueOf(starterLocation));
                 //add marker
                 map.addMarker(new MarkerOptions()
                         .position(databaseHelper.getStarterLocationBundle(rando).getLatlng()));
                 zoom = CameraUpdateFactory.zoomTo(10);
             } else {
-                starterLocation = databaseHelper
-                        .getAllLocationsBySoldier(focusSoldier).get(locationIndx).getLatlng();
+                //TODO
+                starterLocation = focusLocation.getLatlng();
+                Log.e(TAG, "setLatLng == null" + starterLocation);
 
             }
         }
 
+        //TODO
         CameraUpdate center =
                 CameraUpdateFactory.newLatLng(starterLocation);
 
@@ -606,8 +613,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
         Bundle bundle = new Bundle();
-        bundle.putInt("soldierIndex", soIndex);
-        bundle.putInt("locationBundleIndex", 1);
+        bundle.putInt("locationBundleIndex", soIndex);
         bundle.putDouble("locationBundleLat", lat);
         bundle.putDouble("locationBundleLng", lng);
         // Create and show the dialog.
@@ -618,54 +624,20 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
     }
 
-    private void customDialogHandler() {
-
-/*
-        if (isInitialOpening) {
-            isInitialOpening = false;
-
-            if(!isLocationAdded) {
-
-            } else {
-                aDawg.setTitle(R.string.youDone)
-                        .setMessage("You are out of Spots\nLock-In if you haven't")
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
-                aDawg.show();
-            }
-        }
-        else {
-
-        }*/
-
-
-
-    }
 
     //this will be removed eventually...the dialog at least
-    public void onDialogCompletion(LocationBundle locationBundle, List<LocationBundle> daBundle2) {
-
+    public void onDialogCompletion(LocationBundle locationBundle) {
+//TODO
         map.addMarker(new MarkerOptions()
                 .title(locationBundle.getLocalName())
-                .position(locationBundle.getLatlng())
-                .snippet(databaseHelper.getLocationsSoldier(locationBundle).getFullName()))
+                .position(locationBundle.getLatlng()))
                 .showInfoWindow();
 
-        if(daBundle2 != null) {
+        /*if(daBundle2 != null) {
             soldierLocations = daBundle2;
             soldierLocationsSize = soldierLocations.size();
-        }
+        }*/
+
         isLocationAdded = true;
 
         FABstatus++;
@@ -685,20 +657,20 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         if(!isLocked) {
             if(isLocationAdded) {
 
+                //TODO
                 lockerD.setTitle("Locked-In")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 locker.setImageResource(R.drawable.lock_closed);
-                                focusSoldier.setIsLocationLocked(true);
-                                databaseHelper.updateSoldier(focusSoldier);
+                                focusLocation.setIsLocationLocked(true);
+                                databaseHelper.updateLocationBundle(focusLocation);
 
                                 actionButton.setImageResource(R.drawable.icon_submit);
                                 actionButton.setVisibility(View.VISIBLE);
                                 actionButton.startAnimation(slidein);
 
                                 FABstatus++;
-                                //addLoc.setVisibility(View.GONE);
                                 dialog.cancel();
                             }
                         });
@@ -713,8 +685,9 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                                 isLocked = true;
 
                                 locker.setImageResource(R.drawable.lock_closed);
-                                focusSoldier.setIsLocationLocked(true);
-                                databaseHelper.updateSoldier(focusSoldier);
+                                //todo
+                                focusLocation.setIsLocationLocked(true);
+                                databaseHelper.updateLocationBundle(focusLocation);
 
                                 actionButton.setImageResource(R.drawable.icon_submit);
                                 actionButton.setVisibility(View.VISIBLE);
@@ -722,7 +695,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
                                 FABstatus++;
 
-                                //addLoc.setVisibility(View.GONE);
                                 dialog.cancel();
                             }
                         })
@@ -738,10 +710,10 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
         } else {
             locker.setImageResource(R.drawable.lock_closed);
-            focusSoldier.setIsLocationLocked(true);
-            databaseHelper.updateSoldier(focusSoldier);
+            //TODO
+            focusLocation.setIsLocationLocked(true);
+            databaseHelper.updateLocationBundle(focusLocation);
 
-            //addLoc.setVisibility(View.GONE);
         }
     }
 

@@ -57,7 +57,7 @@
         android:layout_marginTop="20dp"
         android:gravity="end|top"
         android:padding="15dp"
-        android:text="@string/first_name"
+        android:text="@string/name"
         android:textColor="#727272"
         android:textStyle="bold" />
 
@@ -68,35 +68,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/firstTitleText"
-        android:backgroundTint="#448AFF"
-        android:gravity="center"
-        android:imeOptions="actionNext"
-        android:inputType="textCapSentences"
-        android:selectAllOnFocus="true"
-        android:singleLine="true" />
-
-    <TextView
-        android:id="@+id/lastTitleText"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/firstName_edit"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="30dp"
-        android:gravity="end"
-        android:padding="15dp"
-        android:text="@string/last_name"
-        android:textColor="#727272"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/lastName_edit"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/lastTitleText"
         android:backgroundTint="#448AFF"
         android:gravity="center"
         android:imeOptions="actionDone"

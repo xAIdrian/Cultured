@@ -17,17 +17,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.Data.DatabaseHelper;
-import com.androidtitan.hotspots.Data.Soldier;
+import com.androidtitan.hotspots.Data.LocationBundle;
 import com.androidtitan.hotspots.Interface.AdderInterface;
+import com.androidtitan.hotspots.R;
 
 
 public class AdderFragment extends Fragment {
     private static final String TAG = "AdderFragment";
 
     private static final String SAVED_FIRST = "savedFirst";
-    private static final String SAVED_LAST = "savedLast";
 
     DatabaseHelper databaseHelper;
     AdderInterface adderInterface;
@@ -35,14 +34,12 @@ public class AdderFragment extends Fragment {
     private LinearLayout backLayout;
 
     private EditText firstEdit;
-    private EditText lastEdit;
     private TextView deleteBtn;
     private TextView addBtn;
 
 
-    private int soldierIndex = -1;
+    private int locationIndex = -1;
     private String newFname = "blank";
-    private String newLname = "blank";
     private Boolean editPage = false;
 
 
@@ -67,16 +64,14 @@ public class AdderFragment extends Fragment {
         setRetainInstance(true); //retains our data object when activity is desroyed
         if(savedInstanceState != null) {
             newFname = savedInstanceState.getString(SAVED_FIRST);
-            newLname = savedInstanceState.getString(SAVED_LAST);
         }
         Bundle bundle = new Bundle();
         bundle = this.getArguments();
-        soldierIndex = bundle.getInt("editSoloIndex");
+        locationIndex = bundle.getInt("editSoloIndex");
         newFname = bundle.getString("editSoloFirst");
-        newLname = bundle.getString("editSoloLast");
 
 
-        if(newFname == null || newLname == null) {
+        if(newFname == null) {
             editPage = false;
         }
         else {
@@ -95,10 +90,9 @@ public class AdderFragment extends Fragment {
         backLayout = (LinearLayout) v.findViewById(R.id.back_layout);
 
         firstEdit = (EditText) v.findViewById(R.id.firstName_edit);
-        lastEdit = (EditText) v.findViewById(R.id.lastName_edit);
 
         deleteBtn = (TextView) v.findViewById(R.id.deleteBtn);
-        if(soldierIndex == -1) {
+        if(locationIndex == -1) {
             deleteBtn.setTextColor(0xFFFFFFFF);
         }
 
@@ -119,10 +113,10 @@ public class AdderFragment extends Fragment {
                             public void onClick(DialogInterface dialog, int id) {
 
                                 //todo
-                                Soldier focusSoldier = databaseHelper.getSoldier(soldierIndex);
-                                Log.e("AFdeleter", focusSoldier.getfName() + " " + focusSoldier.getId());
+                                LocationBundle focusBundle = databaseHelper.getLocationBundle(locationIndex);
+                                Log.e("AFdeleter", focusBundle.getLocalName() + " " + focusBundle.getId());
 
-                                databaseHelper.deleteSoldier(focusSoldier);
+                                databaseHelper.deleteLocation(focusBundle);
 
                                 adderInterface.returnToChamp(true);
 
@@ -186,28 +180,14 @@ public class AdderFragment extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
-        lastEdit.setText(newLname);
-        lastEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                newLname = s.toString();
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
 
 
         addBtn.setOnClickListener(new TextView.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (firstEdit.getText().toString().matches("") || lastEdit.getText().toString().matches("")) {
+                if (firstEdit.getText().toString().matches("")) {
                     Toast.makeText(getActivity(), "Please complete fields", Toast.LENGTH_LONG).show();
                 } else {
 
@@ -215,12 +195,11 @@ public class AdderFragment extends Fragment {
                     if(editPage == true) {
 
                         //todo
-                        Soldier updateSoldier = databaseHelper.getAllSoldiers().get(soldierIndex);
+                        LocationBundle updateBundle = databaseHelper.getAllLocations().get(locationIndex);
 
-                        updateSoldier.setfName(newFname);
-                        updateSoldier.setlName(newLname);
+                        updateBundle.setLocalName(newFname);
 
-                        databaseHelper.updateSoldier(updateSoldier);
+                        databaseHelper.updateLocationBundle(updateBundle);
 
                         adderInterface.returnToChamp(true);
                     }
@@ -229,9 +208,9 @@ public class AdderFragment extends Fragment {
                     //if (editPage == false)
                     else {
                         //add to database. associate division
-                        Soldier temp = new Soldier(newFname, newLname);
+                        LocationBundle temp = new LocationBundle(newFname);
 
-                        databaseHelper.createSoldier(temp);
+                        databaseHelper.createLocation(temp);
 
                         adderInterface.returnToChamp(true);
                     }
@@ -248,7 +227,6 @@ public class AdderFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
 
         outState.putString(SAVED_FIRST, firstEdit.getText().toString());
-        outState.putString(SAVED_LAST, lastEdit.getText().toString());
     }
 
     @Override

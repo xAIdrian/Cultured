@@ -15,8 +15,7 @@ package com.androidtitan.hotspots.Interface;
  * >Communicating with Other Fragments</a> for more information.
  */
 public interface ChampionInterface {
-    public void tabInteraction(int id);
-    public void soldierPasser(int soldierInt, String first, String last);
+    public void soldierPasser(int locationInt, String localName);
     public void drawerListViewSelection(int selection);
     public void setListViewSelection(int selection);
 

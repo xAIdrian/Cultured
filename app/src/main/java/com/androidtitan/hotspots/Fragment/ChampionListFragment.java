@@ -25,8 +25,7 @@ import android.widget.ListView;
 
 import com.androidtitan.hotspots.Adapter.ChampionCursorAdapter;
 import com.androidtitan.hotspots.Data.DatabaseHelper;
-import com.androidtitan.hotspots.Data.Soldier;
-import com.androidtitan.hotspots.Interface.ChampionDataPullInterface;
+import com.androidtitan.hotspots.Data.LocationBundle;
 import com.androidtitan.hotspots.Interface.ChampionInterface;
 import com.androidtitan.hotspots.R;
 
@@ -39,7 +38,6 @@ public class ChampionListFragment extends Fragment {
 
     public DatabaseHelper databaseHelper;
     public ChampionInterface championInterface;
-    public ChampionDataPullInterface pullInterface;
 
     LoaderManager loaderManager;
     //we are using a 'LoaderCallback' because Loaders should always be called from the main thread...your Activity
@@ -58,7 +56,7 @@ public class ChampionListFragment extends Fragment {
     private Animation bottomSlideIn;
     private Animation bottomSlideOut;
 
-    private Soldier focusSoldier;
+    private LocationBundle focusBundle;
 
     private int position = -1;
     private int selection = -1;
@@ -74,16 +72,6 @@ public class ChampionListFragment extends Fragment {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-
-        try {
-            pullInterface = (ChampionDataPullInterface) activity;
-        } catch(ClassCastException e) {
-
-            throw new ClassCastException(activity.toString()
-                    + " must implement MainDataPullInterface");
-        }
-
-        receivedIndex = pullInterface.getDivisionIndex();
 
     }
 
@@ -109,8 +97,8 @@ public class ChampionListFragment extends Fragment {
 
         getActivity().startManagingCursor(cursor);  //todo: this is deprecated.
                                                     //todo: Do we want to eventually consider using a 'Content Provider' and 'CursorLoader'?
-        String[] dataColumns = new String[] {"first", "last"};
-        int[] viewIDs = { R.id.champ_text , R.id.primary_champ_text};
+        String[] dataColumns = new String[] {"local"};
+        int[] viewIDs = {R.id.primary_champ_text};
         cursorAdapter = new ChampionCursorAdapter(getActivity(), R.layout.listview_champion_item,
                 cursor, dataColumns, viewIDs, 0);
 
@@ -140,13 +128,13 @@ public class ChampionListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_listview_champion, container, false);
-////these are not necessary
+/*these are not necessary
         for(Soldier s : databaseHelper.getAllSoldiers()) {
             Log.e("troopChecker", "ID: " + s.getId() + "  Name: " + s.getfName() + " " + s.getlName());
         }
 
         databaseHelper.printSoldierTable();
-////
+*/
         editer = (ImageView) getActivity().findViewById(R.id.editBtn);
         editer.setVisibility(View.GONE);
         adder = (ImageView) getActivity().findViewById(R.id.addBtn);
@@ -209,7 +197,7 @@ public class ChampionListFragment extends Fragment {
                             public void run() {
                                 adder.setVisibility(View.GONE);
 
-                                if(!focusSoldier.getIsLocationLocked()) {
+                                if(!focusBundle.getIsLocationLocked()) {
                                     editer.setVisibility(View.VISIBLE);
                                     editer.startAnimation(leftSlideIn);
                                 }
@@ -226,7 +214,7 @@ public class ChampionListFragment extends Fragment {
                 }
 
                 championInterface.setListViewSelection(position);
-                focusSoldier = databaseHelper.getAllSoldiers().get(position);
+                focusBundle = databaseHelper.getAllLocations().get(position);
 
             }
         });
@@ -237,8 +225,7 @@ public class ChampionListFragment extends Fragment {
 
                 Log.e("CLFediter", "Position: " + position + " Selection: " + selection);
                 championInterface.soldierPasser(selection,
-                        focusSoldier.getfName(),
-                        focusSoldier.getlName());
+                        focusBundle.getLocalName());
             }
         });
 
@@ -248,7 +235,7 @@ public class ChampionListFragment extends Fragment {
 
                 //when we receive our divIndex then that is what we will pass into this method
 
-                championInterface.soldierPasser(position, null, null);
+                championInterface.soldierPasser(position, null);
             }
         });
 
@@ -308,9 +295,9 @@ public class ChampionListFragment extends Fragment {
         //Cursor cursor;
 
         if (receivedIndex == -1) {
-            cursor = db.rawQuery("SELECT * FROM soldiers", null);
+            cursor = db.rawQuery("SELECT * FROM coordinates", null);
         } else {
-            cursor = db.rawQuery("SELECT * FROM soldiers", null);
+            cursor = db.rawQuery("SELECT * FROM coordinates", null);
         }
 
         return cursor;

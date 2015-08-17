@@ -1,18 +1,16 @@
 package com.androidtitan.hotspots.Activity;
 
-import android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.Fragment.ChampionListFragment;
-import com.androidtitan.hotspots.Interface.ChampionDataPullInterface;
 import com.androidtitan.hotspots.Interface.ChampionInterface;
+import com.androidtitan.hotspots.R;
 
-public class ChampionActivity extends AppCompatActivity implements ChampionDataPullInterface,
-        ChampionInterface {
+public class ChampionActivity extends AppCompatActivity implements ChampionInterface {
 
     ChampionListFragment championFragment;
 
@@ -50,17 +48,11 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
     }
 
     @Override
-    public void tabInteraction(int id) {
-
-    }
-
-    @Override
-    public void soldierPasser(int soldierInt, String first, String last) {
+    public void soldierPasser(int locationInt, String localName) {
 
         Intent intent = new Intent(this, AdderActivity.class);
-        intent.putExtra("editSoloIndex", soldierInt);
-        intent.putExtra("editSoloFirst", first);
-        intent.putExtra("editSoloLast", last);
+        intent.putExtra("editSoloIndex", locationInt);
+        intent.putExtra("editSoloFirst", localName);
         startActivity(intent);
     }
 
@@ -87,12 +79,6 @@ public class ChampionActivity extends AppCompatActivity implements ChampionDataP
 
     public int getListViewSelection() {
         return selectionIndex;
-    }
-
-    //todo: this needs to be deleted at some point
-    @Override
-    public int getDivisionIndex() {
-        return -1;
     }
 
 

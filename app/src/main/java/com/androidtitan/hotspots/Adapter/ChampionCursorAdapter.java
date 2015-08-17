@@ -51,27 +51,25 @@ public class ChampionCursorAdapter extends SimpleCursorAdapter {
 
         Cursor myCursor = c;
 
-        int firstNameColumn = myCursor.getColumnIndex(DatabaseHelper.KEY_FIRSTNAME);
-        int lastNameColumn = myCursor.getColumnIndex(DatabaseHelper.KEY_LASTNAME);
+        int nameColumn = myCursor.getColumnIndex(DatabaseHelper.KEY_LOCAL);
+        int latColumn = myCursor.getColumnIndex(DatabaseHelper.KEY_LATITUDE);
+        int longColumn = myCursor.getColumnIndex(DatabaseHelper.KEY_LONGITUDE);
         int lockedColumn = myCursor.getColumnIndex(DatabaseHelper.KEY_LOCKED);
 
-        String firstName = myCursor.getString(firstNameColumn);
-        String lastName = myCursor.getString(lastNameColumn);
+        String firstName = myCursor.getString(nameColumn);
         int lockedStatus = myCursor.getInt(lockedColumn); //0 is Opem aka Unlocked
 
-        TextView firstTextVeiw = (TextView) v.findViewById(R.id.champ_text);
-        TextView lastTextView = (TextView) v.findViewById(R.id.primary_champ_text);
+        TextView textView = (TextView) v.findViewById(R.id.primary_champ_text);
 
         ImageView lockIcon = (ImageView) v.findViewById(R.id.lockImageView);
         lockIcon.setVisibility(View.GONE);
 
-        if(firstTextVeiw != null) {
-            firstTextVeiw.setText(firstName);
-            lastTextView.setText(lastName);
+        if(textView != null) {
+            textView.setText(firstName);
         }
 
         //locked location notifier
-        if(databaseHelper.getAllSoldiers().get(position).getIsLocationLocked()) {
+        if(databaseHelper.getAllLocations().get(position).getIsLocationLocked()) {
             lockIcon.setVisibility(View.VISIBLE);
         }
 
