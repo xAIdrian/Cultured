@@ -1,8 +1,6 @@
 package com.androidtitan.hotspots.Activity;
 
 import android.app.AlertDialog;
-import android.app.DialogFragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,12 +17,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.androidtitan.hotspots.Data.DatabaseHelper;
 import com.androidtitan.hotspots.Data.LocationBundle;
-import com.androidtitan.hotspots.Dialog.MapsAdderDialogFragment;
-import com.androidtitan.hotspots.Interface.MapsPullInterface;
 import com.androidtitan.hotspots.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -43,12 +40,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.Random;
 
 
-public class MapsActivity extends FragmentActivity implements MapsPullInterface, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private static final String TAG = "MapActivity";
 
-    private static final String SAVED_INITIAL_BOOL = "isInitialOpening";
-    private static final String SAVED_DIALOG_BOOL = "savedDialogBool";
+    public static final String SAVED_INITIAL_BOOL = "isInitialOpening";
+    public static final String SAVED_DIALOG_BOOL = "savedDialogBool";
 
     DatabaseHelper databaseHelper;
 
@@ -58,14 +55,16 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
     private LocationBundle focusLocation;
     private Location tempLocation;
-//    private List<LocationBundle> soldierLocations;
-//    private int soldierLocationsSize;
 
     private Handler handler;
 
     private ImageButton actionButton;
     private ImageView backer;
     private ImageView locker;
+
+    private LinearLayout markConfirmLayout;
+    private TextView markConfirmCancel;
+    private TextView markConfirmMark;
 
     private Animation slidein;
     private Animation slideOut;
@@ -78,10 +77,10 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     private double currentLongitude;
 
     private int locationIndex = -1;
+    private boolean isInitialOpening;
 
-    private int FABstatus = -1; //0=location 1=add   2=submit
+    private int FABstatus = 0; //0=location 1=add   2=submit
 
-    private boolean isInitialOpening = true;
     private boolean isLocationAdded = false; //use this to control yo dialogs
     private boolean isLocked = false;
 
@@ -100,9 +99,9 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         databaseHelper = DatabaseHelper.getInstance(this);
 
         Intent intent = getIntent();
-        locationIndex = intent.getIntExtra("selectionToMap", -1);
-
-        //TODO
+        locationIndex = intent.getIntExtra(ChampionActivity.SELECTION_TO_MAP, -1);
+        isInitialOpening = intent.getBooleanExtra(ChampionActivity.FIRST_VISIT_BOOL, false);
+        Log.e(TAG, "isInitialOpening: " + isInitialOpening);
 
         focusLocation = databaseHelper.getAllLocations().get(locationIndex);
 
@@ -113,8 +112,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         } catch (NullPointerException e) {
             Log.e(TAG, String.valueOf(e));
         }
-
-        isLocked = focusLocation.getIsLocationLocked();
 
         setUpMapIfNeeded();
 
@@ -136,7 +133,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         //place markers for every saved location
         for (LocationBundle bund : databaseHelper.getAllLocations()) {
             try {
-//TODO
+
                 map.addMarker(new MarkerOptions()
                         .position(bund.getLatlng())
                         .title(bund.getLocalName())
@@ -171,20 +168,21 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         actionButton = (ImageButton) findViewById(R.id.floatingActionImageButton);
         actionButton.setVisibility(View.GONE);
 
+        markConfirmLayout = (LinearLayout) findViewById(R.id.markerLayout);
+        markConfirmCancel = (TextView) findViewById(R.id.markerCancel);
+        markConfirmMark = (TextView) findViewById(R.id.markerMark);
+        markConfirmLayout.setVisibility(View.GONE);
+        markConfirmCancel.setVisibility(View.GONE);
+        markConfirmMark.setVisibility(View.GONE);
+
         //if we've used all of our locations then we lock-it up
         //this is our Critical Logic
-        if (isLocked) {
-            isLocationAdded = true;
-            //lockingAction();
-            locker.setImageResource(R.drawable.lock_closed);
-            actionButton.setImageResource(R.drawable.icon_submit);
+        isLocked = focusLocation.getIsLocationLocked();
 
-            FABstatus = 2;
-            //todo: LATER we need to include for if we are Locked AND Scored
-        } else {
-            //todo
+        if (!isLocked) {
+
             //they've already been here
-            if (focusLocation.getLatlng() != null) {
+            if (isInitialOpening == false) {
 
             } else {
                 final AlertDialog.Builder aDawg = new AlertDialog.Builder(MapsActivity.this);
@@ -200,8 +198,17 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                         });
                 aDawg.show();
 
-                FABstatus++;
             }
+
+        } else {
+            isLocationAdded = true;
+            //lockingAction();
+            locker.setImageResource(R.drawable.lock_closed);
+            actionButton.setImageResource(R.drawable.icon_submit);
+
+            FABstatus = 2;
+            //todo: LATER we need to include for if we are Locked AND Scored
+
         }
 
 
@@ -222,6 +229,8 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
             @Override
             public void onClick(View v) {
 
+                Log.e(TAG, "initial FABstatus: " + FABstatus);
+
                 final LocationManager manager = (LocationManager)
                         getSystemService(Context.LOCATION_SERVICE);
                 lastLocation = LocationServices.FusedLocationApi.getLastLocation(
@@ -234,23 +243,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                 } else {
 
                     switch (FABstatus) {
-
-                        case -1:
-
-                            aDawg.setTitle(R.string.careful)
-                                    .setMessage(R.string.initial_instruction)
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dialog.dismiss();
-                                        }
-                                    });
-                            aDawg.show();
-
-                            FABstatus++;
-
-                            break;
 
                         case 0: //LOCATION fab
 
@@ -288,16 +280,67 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                             break;
 
                         case 1: //ADD fab
-                            showAdderDialog(locationIndex, currentLatitude, currentLongitude);
+
+                            markConfirmLayout.setVisibility(View.VISIBLE);
+                            markConfirmCancel.setVisibility(View.VISIBLE);
+                            markConfirmMark.setVisibility(View.VISIBLE);
+                            markConfirmLayout.startAnimation(slidein);
+                            markConfirmCancel.startAnimation(slidein);
+                            markConfirmMark.startAnimation(slidein);
+
+                            markConfirmCancel.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    markConfirmLayout.startAnimation(slideOut);
+                                    markConfirmCancel.startAnimation(slideOut);
+                                    markConfirmMark.startAnimation(slideOut);
+                                    markConfirmLayout.setVisibility(View.GONE);
+                                    markConfirmCancel.setVisibility(View.GONE);
+                                    markConfirmMark.setVisibility(View.GONE);
+                                }
+                            });
+
+                            markConfirmMark.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    focusLocation.setLatlng(new LatLng(currentLatitude, currentLongitude));
+                                    databaseHelper.updateLocationBundle(focusLocation);
+
+                                    postAdditionActivities(focusLocation);
+                                }
+                            });
 
                             break;
 
                         case 2:
+                            //navigate to Yelp/Foursquare API or display dialog
+                            final AlertDialog.Builder fourSquareDialog = new AlertDialog.Builder(MapsActivity.this);
+
+                            aDawg.setTitle("You are Super Cool!")
+                                    .setMessage("There are 37 locations nearby with an" +
+                                            "average rating of 7.6.\nGreat Job!")
+                                    .setPositiveButton("See more results!", new DialogInterface.OnClickListener() {
+
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    })
+                                    .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    });
+                            aDawg.show();
+                            Log.e(TAG, "POP");
+                            //Toast.makeText(MapsActivity.this, "Yelp! Foursquare!",
+                              //      Toast.LENGTH_LONG).show();
 
                             break;
 
                         default:
-                            Log.e("hotspots", "SOMETHING WENT WRONG IN OUR SWITCH");
+                            Log.e(TAG, "something went wrong in our FAB switch statement");
                             break;
                     }
                 }
@@ -418,9 +461,10 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(this, ChampionActivity.class);
-        startActivity(intent);
-        this.finish();
+        Intent intent = new Intent();
+        intent.putExtra(SAVED_INITIAL_BOOL, false);
+        setResult(RESULT_OK, intent);
+        finish();
     }
 
 
@@ -573,14 +617,12 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                         .position(databaseHelper.getStarterLocationBundle(rando).getLatlng()));
                 zoom = CameraUpdateFactory.zoomTo(10);
             } else {
-                //TODO
                 starterLocation = focusLocation.getLatlng();
                 Log.e(TAG, "setLatLng == null" + starterLocation);
 
             }
         }
 
-        //TODO
         CameraUpdate center =
                 CameraUpdateFactory.newLatLng(starterLocation);
 
@@ -608,35 +650,17 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
     }
 
 
-    private void showAdderDialog(int soIndex, double lat, double lng) {
 
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-        Bundle bundle = new Bundle();
-        bundle.putInt("locationBundleIndex", soIndex);
-        bundle.putDouble("locationBundleLat", lat);
-        bundle.putDouble("locationBundleLng", lng);
-        // Create and show the dialog.
-        DialogFragment newFragment = new MapsAdderDialogFragment();
-        newFragment.setArguments(bundle);
-
-        newFragment.show(ft, "dialog");
-
-    }
 
 
     //this will be removed eventually...the dialog at least
-    public void onDialogCompletion(LocationBundle locationBundle) {
-//TODO
+    public void postAdditionActivities(LocationBundle locationBundle) {
+
+
         map.addMarker(new MarkerOptions()
                 .title(locationBundle.getLocalName())
                 .position(locationBundle.getLatlng()))
                 .showInfoWindow();
-
-        /*if(daBundle2 != null) {
-            soldierLocations = daBundle2;
-            soldierLocationsSize = soldierLocations.size();
-        }*/
 
         isLocationAdded = true;
 
@@ -648,6 +672,12 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         backer.startAnimation(leftSlideOut);
         backer.setVisibility(View.GONE);
 
+        markConfirmLayout.startAnimation(slideOut);
+        markConfirmCancel.startAnimation(slideOut);
+        markConfirmMark.startAnimation(slideOut);
+        markConfirmLayout.setVisibility(View.GONE);
+        markConfirmCancel.setVisibility(View.GONE);
+        markConfirmMark.setVisibility(View.GONE);
     }
 
     public void lockingAction() {
@@ -657,7 +687,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
         if(!isLocked) {
             if(isLocationAdded) {
 
-                //TODO
                 lockerD.setTitle("Locked-In")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
@@ -685,7 +714,7 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                                 isLocked = true;
 
                                 locker.setImageResource(R.drawable.lock_closed);
-                                //todo
+
                                 focusLocation.setIsLocationLocked(true);
                                 databaseHelper.updateLocationBundle(focusLocation);
 
@@ -710,7 +739,6 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
 
         } else {
             locker.setImageResource(R.drawable.lock_closed);
-            //TODO
             focusLocation.setIsLocationLocked(true);
             databaseHelper.updateLocationBundle(focusLocation);
 
@@ -754,10 +782,10 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                     locationIndex++;
                     if (locationIndex >= soldierLocationsSize) {
                         locationIndex = 0;
-                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        postAdditionActivities(soldierLocations.get(locationIndex), null);
                         cameraLocation(false, locationIndex, null);
                     } else {
-                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        postAdditionActivities(soldierLocations.get(locationIndex), null);
                         cameraLocation(false, locationIndex, null);
                     }
                 }
@@ -772,9 +800,9 @@ public class MapsActivity extends FragmentActivity implements MapsPullInterface,
                     if (locationIndex < 0) {
                         locationIndex = soldierLocationsSize - 1;
                         cameraLocation(false, locationIndex, null);
-                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        postAdditionActivities(soldierLocations.get(locationIndex), null);
                     } else {
-                        onDialogCompletion(soldierLocations.get(locationIndex), null);
+                        postAdditionActivities(soldierLocations.get(locationIndex), null);
                         cameraLocation(false, locationIndex, null);
                     }
                 }
