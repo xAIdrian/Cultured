@@ -42,6 +42,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_LATITUDE = "latitude";
     public static final String KEY_LONGITUDE = "longitude";
     public static final String KEY_LOCKED = "locationLocked";
+    public static final String KEY_VISITED = "visistedMap";
+
 
     //random coordinates table
     private static final String KEY_STARTER_LOCAL = "randolocal";
@@ -66,7 +68,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_COORDINATES = "CREATE TABLE " + TABLE_COORDINATES
             + "(" + KEY_ID + " INTEGER PRIMARY KEY, " + KEY_LOCAL + " TEXT,"
             + KEY_LATITUDE + " DOUBLE PRECISION," + KEY_LONGITUDE + " DOUBLE PRECISION, "
-            + KEY_LOCKED + " BIT" + ")";
+            + KEY_LOCKED + " BIT, " + KEY_VISITED + " BIT" + ")";
 
     //Random Coordinates Table
     private static final String CREATE_TABLE_STARTER_COORDS = "CREATE TABLE " + TABLE_STARTER_COORDS
@@ -413,6 +415,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             values.put(KEY_LATITUDE, locBun.getLatlng().latitude);
             values.put(KEY_LONGITUDE, locBun.getLatlng().longitude);
             values.put(KEY_LOCKED, locBun.getIsLocationLockedDatabase());
+            values.put(KEY_VISITED, locBun.getVisitedMapDatabase());
         } catch(NullPointerException e) {
             Log.e("createLocation", "location created without coordinates!");
         }
@@ -439,6 +442,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 locBun.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
                         cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
                 locBun.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
+                locBun.setVisitedMapDatabase(cursor.getInt(cursor.getColumnIndex(KEY_VISITED)));
 
                 geoPoints.add(locBun);
             } while (cursor.moveToNext());
@@ -467,6 +471,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         locBundle.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
                 cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
         locBundle.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
+        locBundle.setVisitedMapDatabase(cursor.getInt(cursor.getColumnIndex(KEY_VISITED)));
+
 
         return locBundle;
     }
@@ -481,6 +487,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_LATITUDE, locBun.getLatlng().latitude);
         values.put(KEY_LONGITUDE, locBun.getLatlng().longitude);
         values.put(KEY_LOCKED, locBun.getIsLocationLockedDatabase());
+        values.put(KEY_VISITED, locBun.getVisitedMapDatabase());
         //updating
         Log.i("DBHupdateSoldier", "Updated!" + TABLE_COORDINATES + " " + KEY_ID + " = " + String.valueOf(locBun.getId()));
 
@@ -520,6 +527,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 locationBundle.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
                         cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
                 locationBundle.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
+                locationBundle.setVisitedMapDatabase(cursor.getInt(cursor.getColumnIndex(KEY_VISITED)));
                 //logging
                 Log.i("DBHprintAllCoordinates", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
                         + cursor.getString(cursor.getColumnIndex(KEY_LOCAL)) + ": "

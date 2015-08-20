@@ -44,7 +44,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private static final String TAG = "MapActivity";
 
-    public static final String SAVED_INITIAL_BOOL = "isInitialOpening";
+    public static final String SAVED_INITIAL_BOOL = "hasVisitedMaps";
     public static final String SAVED_DIALOG_BOOL = "savedDialogBool";
 
     DatabaseHelper databaseHelper;
@@ -77,7 +77,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private double currentLongitude;
 
     private int locationIndex = -1;
-    private boolean isInitialOpening;
+    private boolean hasVisitedMaps;
 
     private int FABstatus = 0; //0=location 1=add   2=submit
 
@@ -92,7 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (savedInstanceState != null) {
 
-            isInitialOpening = savedInstanceState.getBoolean(SAVED_INITIAL_BOOL);
+            hasVisitedMaps = savedInstanceState.getBoolean(SAVED_INITIAL_BOOL);
             isLocationAdded = savedInstanceState.getBoolean(SAVED_DIALOG_BOOL);
         }
 
@@ -100,8 +100,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         Intent intent = getIntent();
         locationIndex = intent.getIntExtra(ChampionActivity.SELECTION_TO_MAP, -1);
-        isInitialOpening = intent.getBooleanExtra(ChampionActivity.FIRST_VISIT_BOOL, false);
-        Log.e(TAG, "isInitialOpening: " + isInitialOpening);
 
         focusLocation = databaseHelper.getAllLocations().get(locationIndex);
 
@@ -178,13 +176,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //if we've used all of our locations then we lock-it up
         //this is our Critical Logic
         isLocked = focusLocation.getIsLocationLocked();
+        hasVisitedMaps = focusLocation.getVisistedMap();
+                Log.e(TAG, "hasVisitedMaps: " + hasVisitedMaps);
 
         if (!isLocked) {
-
             //they've already been here
-            if (isInitialOpening == false) {
-
-            } else {
+            if (!hasVisitedMaps) {
                 final AlertDialog.Builder aDawg = new AlertDialog.Builder(MapsActivity.this);
 
                 aDawg.setTitle(R.string.careful)
@@ -193,10 +190,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                focusLocation.setVisitedMap(true);
+                                databaseHelper.updateLocationBundle(focusLocation);
+
                                 dialog.dismiss();
                             }
                         });
                 aDawg.show();
+            } else {
+
 
             }
 
@@ -348,13 +350,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
 
 
-        locker.setOnClickListener(new View.OnClickListener() {
+        /*locker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 lockingAction();
 
             }
-        });
+        });*/
 
         backer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -447,7 +449,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
 
-        savedInstanceState.putBoolean(SAVED_INITIAL_BOOL, isInitialOpening);
+        savedInstanceState.putBoolean(SAVED_INITIAL_BOOL, hasVisitedMaps);
         savedInstanceState.putBoolean(SAVED_DIALOG_BOOL, isLocationAdded);
     }
 
@@ -461,10 +463,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent();
-        intent.putExtra(SAVED_INITIAL_BOOL, false);
-        setResult(RESULT_OK, intent);
-        finish();
+        Intent intent = new Intent(MapsActivity.this, ChampionActivity.class);
+        startActivity(intent);
     }
 
 
@@ -651,7 +651,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-
+//todo
 
     //this will be removed eventually...the dialog at least
     public void postAdditionActivities(LocationBundle locationBundle) {
@@ -678,6 +678,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         markConfirmLayout.setVisibility(View.GONE);
         markConfirmCancel.setVisibility(View.GONE);
         markConfirmMark.setVisibility(View.GONE);
+
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                lockingAction();
+
+            }
+        }, slideOut.getDuration());
     }
 
     public void lockingAction() {
@@ -705,34 +712,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         });
             }
             else {
-                lockerD.setTitle("Are you sure?")
-                        .setMessage(getResources().getString(R.string.notallspots))
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                isLocked = true;
-
-                                locker.setImageResource(R.drawable.lock_closed);
-
-                                focusLocation.setIsLocationLocked(true);
-                                databaseHelper.updateLocationBundle(focusLocation);
-
-                                actionButton.setImageResource(R.drawable.icon_submit);
-                                actionButton.setVisibility(View.VISIBLE);
-                                actionButton.startAnimation(slidein);
-
-                                FABstatus++;
-
-                                dialog.cancel();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
+                Log.e(TAG, "lockeractivityelsestatemeny");
             }
 
             lockerD.show();
