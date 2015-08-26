@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.Data.DatabaseHelper;
 import com.androidtitan.hotspots.Data.LocationBundle;
+import com.androidtitan.hotspots.Provider.FoursquareHandler;
 import com.androidtitan.hotspots.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -321,23 +322,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             aDawg.setTitle("You are Super Cool!")
                                     .setMessage("There are 37 locations nearby with an" +
                                             "average rating of 7.6.\nGreat Job!")
-                                    .setPositiveButton("See more results!", new DialogInterface.OnClickListener() {
+                                    .setPositiveButton("All Venues", new DialogInterface.OnClickListener() {
 
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
+                                            databaseHelper.printVenuesTable(-1);
                                             dialog.dismiss();
                                         }
                                     })
-                                    .setNegativeButton("No thanks", new DialogInterface.OnClickListener() {
+                                    .setNegativeButton("Your Venues", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
+                                            databaseHelper.printVenuesTable(focusLocation.getId());
+                                            //databaseHelper.printLinkingTable();
                                             dialog.dismiss();
                                         }
                                     });
                             aDawg.show();
-                            Log.e(TAG, "POP");
-                            //Toast.makeText(MapsActivity.this, "Yelp! Foursquare!",
-                              //      Toast.LENGTH_LONG).show();
+
+                            if(!isLocked) {
+                                new FoursquareHandler(MapsActivity.this, focusLocation.getLatlng().latitude,
+                                        focusLocation.getLatlng().longitude, focusLocation.getId());
+
+                            }
+
+                            //todo: launch fragment
 
                             break;
 
@@ -650,9 +659,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-
-//todo
-
     //this will be removed eventually...the dialog at least
     public void postAdditionActivities(LocationBundle locationBundle) {
 
@@ -706,7 +712,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 actionButton.setVisibility(View.VISIBLE);
                                 actionButton.startAnimation(slidein);
 
-                                FABstatus++;
                                 dialog.cancel();
                             }
                         });

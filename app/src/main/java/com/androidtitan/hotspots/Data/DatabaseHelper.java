@@ -309,14 +309,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 
     //TODO:     VENUES table
-    /*
-
-     print?
-
-     */
 
     //venue added to the database and the location that it is going to be assigned to at creation time
-    public long createVenue(Venue venue, int locationBundleId) {
+    public long createVenue(Venue venue, long locationBundleId) {
         SQLiteDatabase database = getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -334,6 +329,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         //assign venue to LocationBundle
         assignVenueToLocation(venue.getId(), locationBundleId);
+        Log.e(TAG, "createVenue: " + venue.getName());
 
         return venue_id;
     }
@@ -464,5 +460,69 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         database.delete(TABLE_VENUES, KEY_ID + " = ?", new String[] { String.valueOf(venue_id) });
     }
 
+    //takes a parameter that can be used to get a set of venues by location.
+    //to get all input a negative number
+    public void printVenuesTable(long location_id) {
+        SQLiteDatabase database = getReadableDatabase();
+        String selectionQuery;
+        if(location_id < 0) {
+            selectionQuery = "SELECT * FROM " +TABLE_VENUES;
+        } else {
+            //getAllCoordinatesBySoldier
+            selectionQuery = "SELECT * FROM "
+                    + TABLE_VENUES + " tv, " //ts
+                    + TABLE_COORDINATES + " tc, " //td
+                    + TABLE_COORDINATES_VENUES + " tt WHERE tc." //tc
+                    + KEY_ID + " = " + location_id + " AND tc." + KEY_ID
+                    + " = " + "tt." + KEY_COORDS_ID + " AND tv." + KEY_ID + " = "
+                    + "tt." + KEY_VENUES_ID;
+            //select * from venues tv, coordinates tc, coordinates_venues tt where tc._id = location_id
+            //  and tc._id = tt.coords_id and tv._id = tt.venues_id
+        }
+        Log.e(TAG, selectionQuery);
+
+        Cursor cursor = database.rawQuery(selectionQuery, null);
+
+//        Log.e(TAG, String.valueOf(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)).isEmpty()));
+
+        if(cursor.moveToFirst()) {
+            do {
+                Venue v = new Venue();
+                v.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
+                v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
+                v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+                Log.e("DBHprintVenues",
+                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)) + ", " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY))+ ", " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY))+ ", " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)) + ", " +
+                    cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+            } while (cursor.moveToNext()); //so long as the cursor is not at the end keep adding Venues
+        }
+    }
+
+    public void printLinkingTable() {
+        SQLiteDatabase database = getReadableDatabase();
+        String selectionQuery = "SELECT * FROM " + TABLE_COORDINATES_VENUES;
+        Cursor cursor = database.rawQuery(selectionQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Venue v = new Venue();
+                v.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                v.setName(String.valueOf(cursor.getInt(cursor.getColumnIndex(KEY_COORDS_ID))));
+                v.setCity(String.valueOf(cursor.getInt(cursor.getColumnIndex(KEY_VENUES_ID))));
+
+                Log.e("printCoordsVenueTable", cursor.getInt(cursor.getColumnIndex(KEY_ID)) + ", " +
+                        String.valueOf(cursor.getInt(cursor.getColumnIndex(KEY_COORDS_ID))) + ", " +
+                        String.valueOf(cursor.getInt(cursor.getColumnIndex(KEY_VENUES_ID))));
+            } while (cursor.moveToNext());
+        }
+    }
 
 }
