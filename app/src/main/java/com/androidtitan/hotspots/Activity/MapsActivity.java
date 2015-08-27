@@ -326,14 +326,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            databaseHelper.printVenuesTable(-1);
+                                            databaseHelper.printVenuesTable();
                                             dialog.dismiss();
                                         }
                                     })
                                     .setNegativeButton("Your Venues", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            databaseHelper.printVenuesTable(focusLocation.getId());
+                                            databaseHelper.printVenuesByLocation(focusLocation.getId());
                                             //databaseHelper.printLinkingTable();
                                             dialog.dismiss();
                                         }

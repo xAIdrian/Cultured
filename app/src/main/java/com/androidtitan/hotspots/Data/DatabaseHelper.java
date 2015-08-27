@@ -462,14 +462,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //takes a parameter that can be used to get a set of venues by location.
     //to get all input a negative number
-    public void printVenuesTable(long location_id) {
+    public void printVenuesByLocation(long location_id) {
         SQLiteDatabase database = getReadableDatabase();
-        String selectionQuery;
-        if(location_id < 0) {
-            selectionQuery = "SELECT * FROM " +TABLE_VENUES;
-        } else {
-            //getAllCoordinatesBySoldier
-            selectionQuery = "SELECT * FROM "
+
+        //getAllCoordinatesBySoldier
+            String selectionQuery = "SELECT * FROM "
                     + TABLE_VENUES + " tv, " //ts
                     + TABLE_COORDINATES + " tc, " //td
                     + TABLE_COORDINATES_VENUES + " tt WHERE tc." //tc
@@ -478,7 +475,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     + "tt." + KEY_VENUES_ID;
             //select * from venues tv, coordinates tc, coordinates_venues tt where tc._id = location_id
             //  and tc._id = tt.coords_id and tv._id = tt.venues_id
-        }
+
         Log.e(TAG, selectionQuery);
 
         Cursor cursor = database.rawQuery(selectionQuery, null);
@@ -495,12 +492,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
                 v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
 
-                Log.e("DBHprintVenues",
-                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)) + ", " +
-                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY))+ ", " +
-                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY))+ ", " +
-                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)) + ", " +
+                Log.e("DBHprintVenuesLocation", cursor.getInt(cursor.getColumnIndex(KEY_ID)) +
+                        " name: " + cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)) + ", city: " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY))+ ", cat: " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY))+ ", venueID: " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)) + ", rating: " +
                     cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+            } while (cursor.moveToNext()); //so long as the cursor is not at the end keep adding Venues
+        }
+    }
+
+    public void printVenuesTable() {
+        SQLiteDatabase database = getReadableDatabase();
+        String selectionQuery;
+        selectionQuery = "SELECT * FROM " + TABLE_VENUES;
+        Cursor cursor = database.rawQuery(selectionQuery, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                Venue v = new Venue();
+                v.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
+                v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
+                v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+                Log.e("DBHprintALLvenues", cursor.getInt(cursor.getColumnIndex(KEY_ID)) +
+                        " name: " + cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)) + ", city: " +
+                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)) + ", cat: " +
+                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)) + ", venueID: " +
+                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)) + ", rating: " +
+                        cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
 
             } while (cursor.moveToNext()); //so long as the cursor is not at the end keep adding Venues
         }

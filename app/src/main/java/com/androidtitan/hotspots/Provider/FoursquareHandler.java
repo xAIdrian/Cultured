@@ -78,8 +78,9 @@ public class FoursquareHandler {
                 // all things went right
                 parseFoursquare(tempString);
 
+                Log.e(TAG, "size: " + databaseHelper.getAllVenues().size());
                 //now we are getting the rating for each...
-                for(Venue freshVenue : databaseHelper.getAllVenuesFromLocation(location_id)) {
+                for(Venue freshVenue : databaseHelper.getAllVenues()) {
                     new FoursquareVenueHandler(context, freshVenue.getId());
                 }
             }

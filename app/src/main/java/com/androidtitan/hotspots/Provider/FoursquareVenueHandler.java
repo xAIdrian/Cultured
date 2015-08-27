@@ -13,11 +13,11 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.ByteArrayBuffer;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.util.Iterator;
 
 /**
  * Created by amohnacs on 8/25/15.
@@ -32,15 +32,15 @@ public class FoursquareVenueHandler {
 
     //private long venueDBid;
     private String venue_id;
+    private long venueDBid;
 
     Venue focusVenue;
 
-    public FoursquareVenueHandler(Context context, long venueDBid){
-        this.context=context;
+    public FoursquareVenueHandler(Context context, long venueDBid) {
+        this.context = context;
         databaseHelper = DatabaseHelper.getInstance(context);
-        focusVenue = databaseHelper.getVenue(venueDBid);
+        this.venueDBid = venueDBid;
         //this.venueDBid = venueDBid;
-        this.venue_id = focusVenue.getVenueId();
 
         new fourquareVenue().execute();
     }
@@ -50,13 +50,14 @@ public class FoursquareVenueHandler {
         String tempString;
 
 
-
         @Override
         protected String doInBackground(View... urls) {
             // make Call to the url
-            tempString = makeCall("https://api.foursquare.com/v2/venues/" + venue_id +"?client_id="
+            tempString = makeCall("https://api.foursquare.com/v2/venues/" + venue_id + "?client_id="
                     + FoursquareHandler.CLIENT_ID + "&client_secret=" + FoursquareHandler.CLIENT_SECRET
                     + "&v=20130815");
+
+            Log.e(TAG, tempString);
 
             return "";
         }
@@ -64,6 +65,8 @@ public class FoursquareVenueHandler {
         @Override
         protected void onPreExecute() {
             // we can start a progress bar here
+            focusVenue = databaseHelper.getVenue(venueDBid);
+            venue_id = focusVenue.getVenueId();
         }
 
         @Override
@@ -117,43 +120,26 @@ public class FoursquareVenueHandler {
         try {
 
             // make an jsonObject in order to parse the response
-            JSONObject jsonObject = new JSONObject(response);
+            JSONObject initialObject = new JSONObject(response);
+            if (initialObject.has("response")) {
 
-            // make an jsonObject in order to parse the response
-            if (jsonObject.has("response")) {
-                if (jsonObject.getJSONObject("response").has("venues")) {
-                    JSONArray jsonArray = jsonObject.getJSONObject("response").getJSONArray("venues");
+                JSONObject jsonObject = new JSONObject(response).getJSONObject("response");
 
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        //Venue poi = new Venue();
-                        if (jsonArray.getJSONObject(i).has("name")) {
+                Iterator<String> keys = jsonObject.keys();
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    Log.v("**********", "**********");
+                    Log.v("resonse key", key);
 
-                            if (jsonArray.getJSONObject(i).has("location")) {
-                                if (jsonArray.getJSONObject(i).getJSONObject("location").has("address")) {
-                                    if (jsonArray.getJSONObject(i).getJSONObject("location").has("city")) {
-                                    }
-
-                                    ////////////////////////////
-                                    //TODO:
-                                    //VENUE_RATING
-                                    //we will use this for another URI query and get more detailed information on the venue!!!
-                                    if (jsonArray.getJSONObject(i).has("id")) {
-                                        //poi.setVenueId(jsonArray.getJSONObject(i).getString("id"));
-                                    }
-                                    if(jsonArray.getJSONObject(i).has("rating")) {
-                                        focusVenue.setRating(Integer.valueOf(jsonArray.getJSONObject(i).getString("rating")));
-
-                                        Log.e(TAG, jsonArray.getJSONObject(i).getString("rating"));
-                                        databaseHelper.updateVenue(focusVenue);
-                                    }
-                                    else {
-                                        Log.e(TAG, "No rating");
-                                    }
-                                }
-                            }
-                        }
+                    JSONObject innerJObject = jsonObject.getJSONObject(key);
+                    if(innerJObject.has("rating")) {
+                        String rating = innerJObject.getString("rating");
+                        Log.e(TAG, "rating: " + rating);
+                        focusVenue.setRating(Integer.valueOf(rating));
+                        databaseHelper.updateVenue(focusVenue);
                     }
                 }
+
             }
 
         } catch (Exception e) {
