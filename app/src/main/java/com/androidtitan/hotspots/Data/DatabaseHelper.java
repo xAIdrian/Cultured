@@ -16,26 +16,21 @@ import java.util.List;
  * Created by A. Mohnacs on 5/13/2015.
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
+    public static final String TAG = "DatabaseHelper";
+
     private static DatabaseHelper instance;
 
     private static final String DATABASE_NAME = "troopTrackerDatabase";
     private static final int DATABASE_VERSION = 1;
 
     //tables
-    //public static final String TABLE_SOLDIER = "soldiers";    SOLDIERS TABLE WILL BE CONVERTED TO
-    //                                                             USER TABLE
     private static final String TABLE_COORDINATES = "coordinates";
     private static final String TABLE_STARTER_COORDS = "randocoordinates";
-    //private static final String TABLE_MAP = "map";
+    private static final String TABLE_VENUES = "venues";
+    private static final String TABLE_COORDINATES_VENUES = "coordinates_venues";
 
-    //Common columns
+    //Shared columns
     private static final String KEY_ID = "_id";
-
-    /*soldier table
-    public static final String KEY_FIRSTNAME = "first";
-    public static final String KEY_LASTNAME = "last";
-    public static final String KEY_LOCKED = "locationlocked";
-    */
 
     //coordinates table
     public static final String KEY_LOCAL = "local";
@@ -44,43 +39,57 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String KEY_LOCKED = "locationLocked";
     public static final String KEY_VISITED = "visistedMap";
 
-
     //random coordinates table
     private static final String KEY_STARTER_LOCAL = "randolocal";
     private static final String KEY_STARTER_LATITUDE = "randolatitude";
     private static final String KEY_STARTER_LONGITUDE = "randolongitude";
 
-    //map table. soldier / coordinates table
-    /*private static final String KEY_SOLDIER_ID = "soldier_id"; //already included above
-    private static final String KEY_COORD_ID = "coordinate_id";
-    private static final String KEY_SOLDIER_ID = "soldier_id";
-    */
+   //venues table
+    private static final String KEY_VENUE_NAME = "venue_name";
+    private static final String KEY_VENUE_CITY = "venue_city";
+    private static final String KEY_VENUE_CATEGORY = "venue_category";
+    private static final String KEY_VENUE_ID = "venue_id";
+    private static final String KEY_VENUE_RATING = "venue_rating";
+
+    //coordinates_venues table
+    private static final String KEY_COORDS_ID = "coords_id";
+    private static final String KEY_VENUES_ID = "venue_id";
 
 
     // Table Creation Statements
-    /* Soldier Table
-    private static final String CREATE_TABLE_SOLDIER = "CREATE TABLE " + TABLE_SOLDIER
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_FIRSTNAME + " TEXT," + KEY_LASTNAME
-            + " TEXT, " + KEY_LOCKED + " BIT" + ")";
-    */
 
     //Coordinates Table
     private static final String CREATE_TABLE_COORDINATES = "CREATE TABLE " + TABLE_COORDINATES
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY, " + KEY_LOCAL + " TEXT,"
-            + KEY_LATITUDE + " DOUBLE PRECISION," + KEY_LONGITUDE + " DOUBLE PRECISION, "
-            + KEY_LOCKED + " BIT, " + KEY_VISITED + " BIT" + ")";
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY, "
+            + KEY_LOCAL + " TEXT,"
+            + KEY_LATITUDE + " DOUBLE PRECISION,"
+            + KEY_LONGITUDE + " DOUBLE PRECISION, "
+            + KEY_LOCKED + " BIT, "
+            + KEY_VISITED + " BIT" + ")";
 
     //Random Coordinates Table
     private static final String CREATE_TABLE_STARTER_COORDS = "CREATE TABLE " + TABLE_STARTER_COORDS
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY, " + KEY_STARTER_LOCAL + " TEXT,"
-            + KEY_STARTER_LATITUDE + " DOUBLE PRECISION," + KEY_STARTER_LONGITUDE + " DOUBLE PRECISION" + ")";
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY, "
+            + KEY_STARTER_LOCAL + " TEXT,"
+            + KEY_STARTER_LATITUDE + " DOUBLE PRECISION,"
+            + KEY_STARTER_LONGITUDE + " DOUBLE PRECISION" + ")";
 
-    //Map Table
-    /*
-    private static final String CREATE_TABLE_MAP = "CREATE TABLE " + TABLE_MAP
-            + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_COORD_ID + " INTEGER, "
-            + KEY_SOLDIER_ID + " INTEGER" + ")";
-    */
+    //Venues Table
+    private static final String CREATE_TABLE_VENUES = "CREATE TABLE " + TABLE_VENUES
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY, "
+            + KEY_VENUE_NAME + " TEXT,"
+            + KEY_VENUE_CITY + " TEXT,"
+            + KEY_VENUE_CATEGORY + " TEXT, "
+            + KEY_VENUE_ID + " TEXT,"
+            + KEY_VENUE_RATING + " REAL" + ")";
+
+
+    //Venue-Location Table
+    private static final String CREATE_TABLE_COORDINATES_VENUES = "CREATE TABLE " + TABLE_COORDINATES_VENUES
+            + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
+            + KEY_COORDS_ID + " INTEGER, "
+            + KEY_VENUES_ID + " INTEGER" + ")";
+
 
     public static synchronized DatabaseHelper getInstance(Context context) {
 
@@ -99,11 +108,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         //creating the required tables
-        //db.execSQL(CREATE_TABLE_SOLDIER);
+
         db.execSQL(CREATE_TABLE_COORDINATES);
         db.execSQL(CREATE_TABLE_STARTER_COORDS);
-
-        //db.execSQL(CREATE_TABLE_MAP);
+        db.execSQL(CREATE_TABLE_VENUES);
+        db.execSQL(CREATE_TABLE_COORDINATES_VENUES);
 
         //maybe we can insert a sample user
 
@@ -111,296 +120,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("insert into " + TABLE_STARTER_COORDS + " values (2, 'Miami, Florida', 25.761680, -80.191790)");
         db.execSQL("insert into " + TABLE_STARTER_COORDS + " values (3, 'Washington, DC', 38.8951, -77.0367)");
         db.execSQL("insert into " + TABLE_STARTER_COORDS + " values (4, 'Tokyo, Japan', 35.6894875, 139.69170639999993)");
+
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_SOLDIER);
+
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COORDINATES);
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_MAP);
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_STARTER_COORDS);
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_VENUES);
+        db.execSQL("DROP TABLE IF EXISTS " + CREATE_TABLE_COORDINATES_VENUES);
 
         // create new tables
         onCreate(db);
     }
-
-    //todo: SOLDIER TABLE
-/*
-    public void printSoldierTable() {
-        String selectQuery = "SELECT * FROM " + TABLE_SOLDIER;
-
-        SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-
-        //looping through all the rows to create objects to add to our list
-        if (cursor.moveToFirst()) {
-            do {
-                Soldier soldier = new Soldier();
-                soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
-                soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
-                soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
-                soldier.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
-                //logging
-                Log.e("DBHprintAllSoldiers", cursor.getLong(cursor.getColumnIndex(KEY_ID)) + " "
-                        + cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)) + " "
-                        + cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)) + " "
-                        + cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
-
-            } while (cursor.moveToNext());
-        }
-    }
-
-
-
-     * The function will create a soldier item in soldiers table. In this same
-     * function we are assigning the soldier to a division name which inserts a row in
-     * command table.
-
-    public long createSoldier(Soldier soldier) { // , long[] division_ids <-- this is a parameter
-        SQLiteDatabase database = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(KEY_FIRSTNAME, soldier.getfName());
-        values.put(KEY_LASTNAME, soldier.getlName());
-        values.put(KEY_LOCKED, soldier.getIsLocationLockedDatabase());
-        //insert row. if there is a conflict the last parameter springs into action. Replacing entry.
-
-        //this is a possible solution for the DUPLICATES PROBLEM
-        long soldier_id = database.insertWithOnConflict(TABLE_SOLDIER, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-        soldier.setId(soldier_id);
-
-        //Log.i("DBHcreateSoldier", "Created: " + getSoldier(soldier_id).getId() + " " +
-        //getSoldier(soldier_id).getfName() + " " + getSoldier(soldier_id).getlName());
-
-        return soldier_id;
-    }
-
-
-
-     * We will fetch a soldier from the soldiers table
-
-    public Soldier getSoldier(long soldier_id) {
-        soldier_id = soldier_id + 1;
-        SQLiteDatabase database = this.getReadableDatabase();
-
-        String selectQuery = "SELECT * FROM " + TABLE_SOLDIER
-                + " WHERE " + KEY_ID + " = " + String.valueOf(soldier_id);
-        Log.i("DBHgetSoldier", selectQuery);
-
-        Cursor cursor = database.query(TABLE_SOLDIER, new String[]{KEY_ID, KEY_FIRSTNAME, KEY_LASTNAME, KEY_LOCKED},
-                KEY_ID + "=?", new String[]{String.valueOf(soldier_id)}, null, null, null, null);
-
-        if (cursor != null)
-            cursor.moveToFirst();
-
-        Soldier soldier = new Soldier();
-        soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
-        soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
-        soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
-        soldier.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
-
-        return soldier;
-    }
-
-
-
-     * Fetching all soldiers involves reading all soldier rows and adding them to
-     * a List Array (not arraylist)     *
-     * SELECT * FROM soldiers
-
-
-    public List<Soldier> getAllSoldiers() {
-        List<Soldier> troops = new ArrayList<Soldier>();
-        String selectQuery = "SELECT * FROM " + TABLE_SOLDIER;
-
-        SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-
-        //looping through all the rows to create objects to add to our list
-        if (cursor.moveToFirst()) {
-            do {
-                Soldier soldier = new Soldier();
-                soldier.setId(cursor.getLong(cursor.getColumnIndex(KEY_ID)));
-                soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
-                soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
-                soldier.setIsLocationLockedDatabase(cursor.getInt(cursor.getColumnIndex(KEY_LOCKED)));
-                //adding
-                troops.add(soldier);
-
-            } while (cursor.moveToNext());
-        }
-        return troops;
-    }
-
-
-     * Filtered getAllSoldiers.  We only want Soldiers in a specified Division
-     * SELECT * FROM soldiers s, division d, command c WHERE d.tag_name = Watchlist AND d.id = c.tag_id AND s.id = c.todo_id;
-
-    public List<Soldier> getAllSoldiersByDivision(Division division) {
-        String division_name = division.getName();
-        Log.i("soldiersByDivision", division_name);
-        List<Soldier> troops = new ArrayList<Soldier>();
-
-        String selectQuery = "SELECT * FROM "
-                + TABLE_SOLDIER + " ts, "
-                + TABLE_DIVISION + " td, "
-                + TABLE_COMMAND + " tc WHERE td."
-                + KEY_NAME + " = '" + division_name + "'" + " AND td." + KEY_ID
-                + " = " + "tc." + KEY_DIVISION_ID + " AND ts." + KEY_ID + " = "
-                + "tc." + KEY_SOLDIER_ID;
-
-        //This is a TABLE JOIN^
-
-        Log.i("DBHsoldiersByDivision", selectQuery);
-
-        SQLiteDatabase database = this.getReadableDatabase();
-        Cursor cursor = database.rawQuery(selectQuery, null);
-
-        //loop through and add to list
-        if (cursor.moveToFirst()) {
-            do {
-                Soldier soldier = new Soldier();
-                soldier.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-                soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
-                soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
-                //add
-                troops.add(soldier);
-            } while (cursor.moveToNext());
-        }
-
-        return troops;
-    }
-
-    //Following function will update Soldier values only, not Division
-    public int updateSoldier(Soldier soldier) {
-        SQLiteDatabase database = this.getWritableDatabase();
-        //prepping/formatting data for update(replace) row
-        ContentValues values = new ContentValues();
-        values.put(KEY_FIRSTNAME, soldier.getfName());
-        values.put(KEY_LASTNAME, soldier.getlName());
-        values.put(KEY_LOCKED, soldier.getIsLocationLockedDatabase());
-        //updating
-        Log.i("DBHupdateSoldier", "Updated!" + TABLE_SOLDIER + " " + KEY_ID + " = " + String.valueOf(soldier.getId()));
-
-        return database.update(TABLE_SOLDIER, values,
-                KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
-
-    }
-
-
-     * Pass Soldier_Id to delete Soldier
-
-    public void deleteSoldier(Soldier soldier) {
-
-        SQLiteDatabase database = this.getWritableDatabase();
-
-        Log.i("DBHdeleteSoldier", "Deleted! " + soldier.getfName() + " " + soldier.getId());
-
-        List<LocationBundle> bundlesToDelete = getAllLocationsBySoldier(soldier);
-        for(LocationBundle bundle2delete : bundlesToDelete) {
-            deleteLocation(bundle2delete);
-        }
-
-        database.delete(TABLE_SOLDIER,
-                KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
-
-        /*
-         if(should_delete_all_soldiers) {
-            List<Soldier> troops = getAllSoldiersByDivision(division);
-            //delete all soldiers
-            for(Soldier soldier : troops) {
-                deleteSoldier(soldier);
-            }
-        }
-        Log.e("insideDeleteDivision", TABLE_DIVISION + ": " + KEY_ID + " = ? " + division.getId());
-        database.delete(TABLE_DIVISION, KEY_ID + " = ?",
-                new String[]{String.valueOf(division.getId())});
-
-
-    }
-
-    //Update all of our Soldiers within the Soldiers Table
-    //we are going to iterate through the table and update each item
-    public void updateSoldierTable() {
-        SQLiteDatabase database = this.getWritableDatabase();
-        List<Soldier> troops = getAllSoldiers();
-
-        for (Soldier soldier : troops) {
-            ContentValues values = new ContentValues();
-            values.put(KEY_FIRSTNAME, soldier.getfName());
-            values.put(KEY_LASTNAME, soldier.getlName());
-            values.put(KEY_LOCKED, soldier.getIsLocationLockedDatabase());
-            //updating
-            database.update(TABLE_SOLDIER, values,
-                    KEY_ID + " = ?", new String[]{String.valueOf(soldier.getId())});
-        }
-    }
-*/
-    /* SELECT * FROM soldiers s, division d, command c WHERE d.tag_name = Watchlist AND d.id = c.tag_id AND s.id = c.todo_id;
-    public List<LocationBundle> getAllLocationsBySoldier(Soldier soldier) {
-        long soldierId = soldier.getId();
-        SQLiteDatabase database = this.getReadableDatabase();
-
-        ArrayList<LocationBundle> packs = new ArrayList<LocationBundle>();
-
-        String selectQuery = "SELECT * FROM "
-                + TABLE_COORDINATES + " ts, "
-                + TABLE_SOLDIER + " td, "
-                + TABLE_MAP + " tc WHERE td."
-                + KEY_ID + " = " + soldierId + " AND td." + KEY_ID
-                + " = " + "tc." + KEY_SOLDIER_ID + " AND ts." + KEY_ID + " = "
-                + "tc." + KEY_COORD_ID;
-
-        Log.i("DBHlocationBySoldier", selectQuery);
-
-        Cursor cursor = database.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                LocationBundle locBundle = new LocationBundle();
-                locBundle.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-                locBundle.setLocalName(cursor.getString(cursor.getColumnIndex(KEY_LOCAL)));
-                locBundle.setLatlng(new LatLng(cursor.getDouble(cursor.getColumnIndex(KEY_LATITUDE)),
-                        cursor.getDouble(cursor.getColumnIndex(KEY_LONGITUDE))));
-
-                packs.add(locBundle);
-
-            } while (cursor.moveToNext());
-        }
-        return packs;
-    }
-
-    //this will query the MAP table and find a soldier that is in the same row as the locBun id
-    public Soldier getLocationsSoldier(LocationBundle locationBundle) {
-        String locId = locationBundle.getLocalName();
-        SQLiteDatabase database = this.getReadableDatabase();
-
-        ArrayList<LocationBundle> packs = new ArrayList<LocationBundle>();
-
-        String selectQuery = "SELECT * FROM "
-                + TABLE_COORDINATES + " ts, "
-                + TABLE_SOLDIER + " td, "
-                + TABLE_MAP + " tc WHERE ts."
-                + KEY_LOCAL + " = '" + locId + "' AND td." + KEY_ID
-                + " = " + "tc." + KEY_SOLDIER_ID + " AND ts." + KEY_ID + " = "
-                + "tc." + KEY_COORD_ID;
-
-        Log.i("DBHsoldierByLocation", selectQuery);
-
-        Cursor cursor = database.rawQuery(selectQuery, null);
-
-        if (cursor != null)
-            cursor.moveToNext();
-
-        Soldier soldier = new Soldier();
-        soldier.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
-        soldier.setfName(cursor.getString(cursor.getColumnIndex(KEY_FIRSTNAME)));
-        soldier.setlName(cursor.getString(cursor.getColumnIndex(KEY_LASTNAME)));
-
-        return soldier;
-
-    }
-*/
 
     //todo: COORDINATES TABLE
     //I did NOT include update or delete...
@@ -501,8 +236,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Log.i("DBHdeleteLocation", "Deleted! " + TABLE_COORDINATES + ": " + KEY_ID + " = " + locBun.getId());
 
+        //delete all of it's associated Venues.
+            //add a boolean parameter to make this optional later???
+        List<Venue> ourLocationsVenues = getAllVenuesFromLocation(locBun.getId());
+        for(Venue venue : ourLocationsVenues) {
+            deleteVenue(venue.getId());
+        }
+
         database.delete(TABLE_COORDINATES,
-                KEY_ID + " =?", new String[]{String.valueOf(locBun.getId())});
+                KEY_ID + " =?", new String[]{ String.valueOf(locBun.getId()) });
 
         /*
         Log.i("insideDeleteDivision", TABLE_DIVISION + ": " + KEY_ID + " = ? " + division.getId());
@@ -566,42 +308,245 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    //todo: MAP TABLE
-    //MAP TABLE WILL NEED TO BE REPURPOSED FOR "USERS" AND "LOCATIONS"
-    /*
+    //TODO:     VENUES table
 
-
-    public long assignLocationToSolider(LocationBundle locBun, Soldier soldier) {
-        SQLiteDatabase databasae = this.getWritableDatabase();
+    //venue added to the database and the location that it is going to be assigned to at creation time
+    public long createVenue(Venue venue, long locationBundleId) {
+        SQLiteDatabase database = getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_COORD_ID, locBun.getId());
-        values.put(KEY_SOLDIER_ID, soldier.getId());
 
-        long id = databasae.insert(TABLE_MAP, null, values);
-        return id;
+        //try/catch?
+        values.put(KEY_VENUE_NAME, venue.getName());
+        values.put(KEY_VENUE_CITY, venue.getCity());
+        values.put(KEY_VENUE_CATEGORY, venue.getCategory());
+        values.put(KEY_VENUE_ID, venue.getVenueId());
+        values.put(KEY_VENUE_RATING, venue.getRating());
+
+        //insert row
+        long venue_id = database.insert(TABLE_VENUES, null, values);
+        venue.setId(venue_id);
+
+        //assign venue to LocationBundle
+        assignVenueToLocation(venue.getId(), locationBundleId);
+        Log.e(TAG, "createVenue: " + venue.getName());
+
+        return venue_id;
     }
 
-    public int updateLocationSoldier(LocationBundle locBun, Soldier soldier) {
-        SQLiteDatabase database = this.getWritableDatabase();
+    //our one little TABLE_COORDS_VENUES method
+    //keep an eye on this bad boy
+    public long assignVenueToLocation(long venue_id, long location_id) {
+        SQLiteDatabase database = getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_COORD_ID, locBun.getId());
-        values.put(KEY_SOLDIER_ID, soldier.getId());
 
-        return database.update(TABLE_MAP, values,
-                KEY_ID + " = ?", new String[]{String.valueOf(locBun.getId())});
+        values.put(KEY_COORDS_ID, location_id);
+        values.put(KEY_VENUES_ID, venue_id);
+
+        long coords_venues_id = database.insert(TABLE_COORDINATES_VENUES, null, values);
+
+        return coords_venues_id;
     }
 
 
-    //Importantly dont forget to close the database connection once you done using it.
-    //Call following method when you dont need access to db anymore.
-    public void closeDatabase() {
-        SQLiteDatabase database = this.getReadableDatabase();
-        if (database != null && database.isOpen())
-            database.close();
+    public Venue getVenue(long venue_id) {
+        SQLiteDatabase database = getReadableDatabase();
 
-        Log.i("closeDatabase()", "3 Star DATABASE CLOSED SIR!");
+        String selectionQuery = "SELECT * FROM " + TABLE_VENUES + " WHERE " + KEY_ID + " = " + venue_id;
+        Log.e(TAG, selectionQuery);
+
+        Cursor cursor = database.rawQuery(selectionQuery, null);
+
+        if(cursor != null)
+            cursor.moveToFirst();
+
+        Venue v = new Venue();
+        v.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+        v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
+        v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
+        v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
+        v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+        v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+        return v;
     }
-    */
+
+    public List<Venue> getAllVenues() {
+        SQLiteDatabase database = getReadableDatabase();
+
+        List<Venue> allVenues = new ArrayList<Venue>();
+
+        String selectionQuery = "SELECT * FROM " + TABLE_VENUES;
+        Log.e(TAG, selectionQuery);
+
+        Cursor cursor = database.rawQuery(selectionQuery, null);
+
+        //looping through all of the rows and adding them to our list
+        if(cursor.moveToFirst()) {
+            do {
+                Venue v = new Venue();
+                v.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
+                v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
+                v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+                allVenues.add(v);
+
+            } while (cursor.moveToNext()); //so long as the cursor is not at the end keep adding Venues
+        }
+
+        return allVenues;
+
+    }
+
+    public List<Venue> getAllVenuesFromLocation(long location_id) {
+        SQLiteDatabase database = getReadableDatabase();
+        List<Venue> venuesByLoc = new ArrayList<Venue>();
+
+        //getAllCoordinatesBySoldier
+        String selectionQuery = "SELECT * FROM "
+                + TABLE_VENUES + " tv, " //ts
+                + TABLE_COORDINATES + " tc, " //td
+                + TABLE_COORDINATES_VENUES + " tt WHERE tc." //tc
+                + KEY_ID + " = " + location_id + " AND tc." + KEY_ID
+                + " = " + "tt." + KEY_COORDS_ID + " AND tv." + KEY_ID + " = "
+                + "tt." + KEY_VENUES_ID;
+        //select * from venues tv, coordinates tc, coordinates_venues tt where tc._id = location_id
+            //  and tc._id = tt.coords_id and tv._id = tt.venues_id
+        Log.e(TAG, selectionQuery);
+
+        Cursor cursor = database.rawQuery(selectionQuery, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                Venue v = new Venue();
+                v.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
+                v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
+                v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+                venuesByLoc.add(v);
+
+            } while (cursor.moveToNext()); //so long as the cursor is not at the end keep adding Venues
+        }
+
+        return venuesByLoc;
+
+    }
+
+    public int updateVenue(Venue venue) {
+        SQLiteDatabase database = getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(KEY_VENUE_NAME, venue.getName());
+        values.put(KEY_VENUE_CITY, venue.getCity());
+        values.put(KEY_VENUE_CATEGORY, venue.getCategory());
+        values.put(KEY_VENUE_ID, venue.getVenueId());
+        values.put(KEY_VENUE_RATING, venue.getRating());
+
+        //updating row
+        return database.update(TABLE_VENUES, values, KEY_ID + " = ?", new String[] { String.valueOf(venue.getId()) });
+    }
+
+    public void deleteVenue(long venue_id) {
+        SQLiteDatabase database = getWritableDatabase();
+
+        database.delete(TABLE_VENUES, KEY_ID + " = ?", new String[] { String.valueOf(venue_id) });
+    }
+
+    //takes a parameter that can be used to get a set of venues by location.
+    //to get all input a negative number
+    public void printVenuesByLocation(long location_id) {
+        SQLiteDatabase database = getReadableDatabase();
+
+        //getAllCoordinatesBySoldier
+            String selectionQuery = "SELECT * FROM "
+                    + TABLE_VENUES + " tv, " //ts
+                    + TABLE_COORDINATES + " tc, " //td
+                    + TABLE_COORDINATES_VENUES + " tt WHERE tc." //tc
+                    + KEY_ID + " = " + location_id + " AND tc." + KEY_ID
+                    + " = " + "tt." + KEY_COORDS_ID + " AND tv." + KEY_ID + " = "
+                    + "tt." + KEY_VENUES_ID;
+            //select * from venues tv, coordinates tc, coordinates_venues tt where tc._id = location_id
+            //  and tc._id = tt.coords_id and tv._id = tt.venues_id
+
+        Log.e(TAG, selectionQuery);
+
+        Cursor cursor = database.rawQuery(selectionQuery, null);
+
+//        Log.e(TAG, String.valueOf(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)).isEmpty()));
+
+        if(cursor.moveToFirst()) {
+            do {
+                Venue v = new Venue();
+                v.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
+                v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
+                v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+                Log.e("DBHprintVenuesLocation", cursor.getInt(cursor.getColumnIndex(KEY_ID)) +
+                        " name: " + cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)) + ", city: " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY))+ ", cat: " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY))+ ", venueID: " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)) + ", rating: " +
+                    cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+            } while (cursor.moveToNext()); //so long as the cursor is not at the end keep adding Venues
+        }
+    }
+
+    public void printVenuesTable() {
+        SQLiteDatabase database = getReadableDatabase();
+        String selectionQuery;
+        selectionQuery = "SELECT * FROM " + TABLE_VENUES;
+        Cursor cursor = database.rawQuery(selectionQuery, null);
+
+        if(cursor.moveToFirst()) {
+            do {
+                Venue v = new Venue();
+                v.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
+                v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
+                v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+                Log.e("DBHprintALLvenues", cursor.getInt(cursor.getColumnIndex(KEY_ID)) +
+                        " name: " + cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)) + ", city: " +
+                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)) + ", cat: " +
+                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)) + ", venueID: " +
+                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)) + ", rating: " +
+                        cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
+
+            } while (cursor.moveToNext()); //so long as the cursor is not at the end keep adding Venues
+        }
+    }
+
+    public void printLinkingTable() {
+        SQLiteDatabase database = getReadableDatabase();
+        String selectionQuery = "SELECT * FROM " + TABLE_COORDINATES_VENUES;
+        Cursor cursor = database.rawQuery(selectionQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Venue v = new Venue();
+                v.setId(cursor.getInt(cursor.getColumnIndex(KEY_ID)));
+                v.setName(String.valueOf(cursor.getInt(cursor.getColumnIndex(KEY_COORDS_ID))));
+                v.setCity(String.valueOf(cursor.getInt(cursor.getColumnIndex(KEY_VENUES_ID))));
+
+                Log.e("printCoordsVenueTable", cursor.getInt(cursor.getColumnIndex(KEY_ID)) + ", " +
+                        String.valueOf(cursor.getInt(cursor.getColumnIndex(KEY_COORDS_ID))) + ", " +
+                        String.valueOf(cursor.getInt(cursor.getColumnIndex(KEY_VENUES_ID))));
+            } while (cursor.moveToNext());
+        }
+    }
+
 }
