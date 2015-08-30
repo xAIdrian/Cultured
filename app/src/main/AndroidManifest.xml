@@ -58,6 +58,9 @@
             android:label="@string/title_activity_maps" >
         </activity>
 
+        <provider android:name="com.androidtitan.hotspots.Provider.VenueProvider"
+            android:authorities="com.androidtitan.hotspots.Provider.VenueProvider" />
+
     </application>
 
 </manifest>

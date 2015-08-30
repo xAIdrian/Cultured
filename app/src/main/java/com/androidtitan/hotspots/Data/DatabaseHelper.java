@@ -26,11 +26,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //tables
     private static final String TABLE_COORDINATES = "coordinates";
     private static final String TABLE_STARTER_COORDS = "randocoordinates";
-    private static final String TABLE_VENUES = "venues";
+    public static final String TABLE_VENUES = "venues";
     private static final String TABLE_COORDINATES_VENUES = "coordinates_venues";
 
     //Shared columns
-    private static final String KEY_ID = "_id";
+    public static final String KEY_ID = "_id";
 
     //coordinates table
     public static final String KEY_LOCAL = "local";
@@ -45,10 +45,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_STARTER_LONGITUDE = "randolongitude";
 
    //venues table
-    private static final String KEY_VENUE_NAME = "venue_name";
+    public static final String KEY_VENUE_NAME = "venue_name";
     private static final String KEY_VENUE_CITY = "venue_city";
     private static final String KEY_VENUE_CATEGORY = "venue_category";
-    private static final String KEY_VENUE_ID = "venue_id";
+    private static final String KEY_VENUE_STRING = "venue_string";
     private static final String KEY_VENUE_RATING = "venue_rating";
 
     //coordinates_venues table
@@ -80,7 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + KEY_VENUE_NAME + " TEXT,"
             + KEY_VENUE_CITY + " TEXT,"
             + KEY_VENUE_CATEGORY + " TEXT, "
-            + KEY_VENUE_ID + " TEXT,"
+            + KEY_VENUE_STRING + " TEXT,"
             + KEY_VENUE_RATING + " REAL" + ")";
 
 
@@ -192,10 +192,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String selectQuery = "SELECT * FROM " + TABLE_COORDINATES
                 + " WHERE " + KEY_ID + " = " + coord_id;
-        Log.i("DBHgetCoordinate", selectQuery);
+        Log.e("DBHgetCoordinate", selectQuery);
 
-        Cursor cursor = database.query(TABLE_COORDINATES, new String[]{KEY_ID, KEY_LOCAL, KEY_LATITUDE, KEY_LONGITUDE},
-                KEY_ID + " =?", new String[]{String.valueOf(coord_id)}, null, null, null, null);
+        Cursor cursor = database.rawQuery(selectQuery, null);
 
         if (cursor != null)
             cursor.moveToFirst();
@@ -238,7 +237,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         //delete all of it's associated Venues.
             //add a boolean parameter to make this optional later???
-        List<Venue> ourLocationsVenues = getAllVenuesFromLocation(locBun.getId());
+        List<Venue> ourLocationsVenues = getAllVenuesFromLocation(locBun);
         for(Venue venue : ourLocationsVenues) {
             deleteVenue(venue.getId());
         }
@@ -320,7 +319,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_VENUE_NAME, venue.getName());
         values.put(KEY_VENUE_CITY, venue.getCity());
         values.put(KEY_VENUE_CATEGORY, venue.getCategory());
-        values.put(KEY_VENUE_ID, venue.getVenueId());
+        values.put(KEY_VENUE_STRING, venue.getVenueId());
         values.put(KEY_VENUE_RATING, venue.getRating());
 
         //insert row
@@ -366,7 +365,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
         v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
         v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
-        v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+        v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_STRING)));
         v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
 
         return v;
@@ -390,7 +389,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
                 v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
                 v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
-                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_STRING)));
                 v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
 
                 allVenues.add(v);
@@ -402,17 +401,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public List<Venue> getAllVenuesFromLocation(long location_id) {
+    public List<Venue> getAllVenuesFromLocation(LocationBundle locationBundle) {
         SQLiteDatabase database = getReadableDatabase();
+
+        String localName = locationBundle.getLocalName();
         List<Venue> venuesByLoc = new ArrayList<Venue>();
 
-        //getAllCoordinatesBySoldier
-        String selectionQuery = "SELECT * FROM "
-                + TABLE_VENUES + " tv, " //ts
-                + TABLE_COORDINATES + " tc, " //td
-                + TABLE_COORDINATES_VENUES + " tt WHERE tc." //tc
-                + KEY_ID + " = " + location_id + " AND tc." + KEY_ID
-                + " = " + "tt." + KEY_COORDS_ID + " AND tv." + KEY_ID + " = "
+        String selectionQuery = "SELECT  * FROM " + TABLE_VENUES + " td, "
+                + TABLE_COORDINATES + " tg, " + TABLE_COORDINATES_VENUES + " tt WHERE tg."
+                + KEY_LOCAL + " = '" + localName + "'" + " AND tg." + KEY_ID
+                + " = " + "tt." + KEY_COORDS_ID + " AND td." + KEY_ID + " = "
                 + "tt." + KEY_VENUES_ID;
         //select * from venues tv, coordinates tc, coordinates_venues tt where tc._id = location_id
             //  and tc._id = tt.coords_id and tv._id = tt.venues_id
@@ -427,7 +425,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
                 v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
                 v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
-                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_STRING)));
                 v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
 
                 venuesByLoc.add(v);
@@ -447,7 +445,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_VENUE_NAME, venue.getName());
         values.put(KEY_VENUE_CITY, venue.getCity());
         values.put(KEY_VENUE_CATEGORY, venue.getCategory());
-        values.put(KEY_VENUE_ID, venue.getVenueId());
+        values.put(KEY_VENUE_STRING, venue.getVenueId());
         values.put(KEY_VENUE_RATING, venue.getRating());
 
         //updating row
@@ -462,19 +460,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //takes a parameter that can be used to get a set of venues by location.
     //to get all input a negative number
-    public void printVenuesByLocation(long location_id) {
+    public void printVenuesByLocation(LocationBundle locationBundle) {
         SQLiteDatabase database = getReadableDatabase();
 
-        //getAllCoordinatesBySoldier
-            String selectionQuery = "SELECT * FROM "
-                    + TABLE_VENUES + " tv, " //ts
-                    + TABLE_COORDINATES + " tc, " //td
-                    + TABLE_COORDINATES_VENUES + " tt WHERE tc." //tc
-                    + KEY_ID + " = " + location_id + " AND tc." + KEY_ID
-                    + " = " + "tt." + KEY_COORDS_ID + " AND tv." + KEY_ID + " = "
-                    + "tt." + KEY_VENUES_ID;
-            //select * from venues tv, coordinates tc, coordinates_venues tt where tc._id = location_id
-            //  and tc._id = tt.coords_id and tv._id = tt.venues_id
+        String localName = locationBundle.getLocalName();
+
+        String selectionQuery = "SELECT * FROM " + TABLE_VENUES + " td, "
+                + TABLE_COORDINATES + " tg, " + TABLE_COORDINATES_VENUES + " tt WHERE tg."
+                + KEY_LOCAL + " = '" + localName + "'" + " AND tg." + KEY_ID
+                + " = " + "tt." + KEY_COORDS_ID + " AND td." + KEY_ID + " = "
+                + "tt." + KEY_VENUES_ID;
 
         Log.e(TAG, selectionQuery);
 
@@ -489,14 +484,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
                 v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
                 v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
-                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_STRING)));
                 v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
 
                 Log.e("DBHprintVenuesLocation", cursor.getInt(cursor.getColumnIndex(KEY_ID)) +
                         " name: " + cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)) + ", city: " +
                     cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY))+ ", cat: " +
                     cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY))+ ", venueID: " +
-                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)) + ", rating: " +
+                    cursor.getString(cursor.getColumnIndex(KEY_VENUE_STRING)) + ", rating: " +
                     cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
 
             } while (cursor.moveToNext()); //so long as the cursor is not at the end keep adding Venues
@@ -516,14 +511,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 v.setName(cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)));
                 v.setCity(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)));
                 v.setCategory(cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)));
-                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)));
+                v.setVenueId(cursor.getString(cursor.getColumnIndex(KEY_VENUE_STRING)));
                 v.setRating(cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
 
                 Log.e("DBHprintALLvenues", cursor.getInt(cursor.getColumnIndex(KEY_ID)) +
                         " name: " + cursor.getString(cursor.getColumnIndex(KEY_VENUE_NAME)) + ", city: " +
                         cursor.getString(cursor.getColumnIndex(KEY_VENUE_CITY)) + ", cat: " +
                         cursor.getString(cursor.getColumnIndex(KEY_VENUE_CATEGORY)) + ", venueID: " +
-                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_ID)) + ", rating: " +
+                        cursor.getString(cursor.getColumnIndex(KEY_VENUE_STRING)) + ", rating: " +
                         cursor.getFloat(cursor.getColumnIndex(KEY_VENUE_RATING)));
 
             } while (cursor.moveToNext()); //so long as the cursor is not at the end keep adding Venues
