@@ -1,6 +1,7 @@
 package com.androidtitan.hotspots.Activity;
 
 import android.app.AlertDialog;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.Data.DatabaseHelper;
 import com.androidtitan.hotspots.Data.LocationBundle;
+import com.androidtitan.hotspots.Fragment.VenueResultsFragment;
 import com.androidtitan.hotspots.Provider.FoursquareHandler;
 import com.androidtitan.hotspots.R;
 import com.google.android.gms.common.ConnectionResult;
@@ -49,6 +51,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public static final String SAVED_DIALOG_BOOL = "savedDialogBool";
 
     DatabaseHelper databaseHelper;
+    VenueResultsFragment venueFragment;
+    FragmentTransaction fragTran;
 
     private GoogleMap map; // Might be null if Google Play services APK is not available.
     private GoogleMapOptions options = new GoogleMapOptions();
@@ -86,6 +90,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean isLocked = false;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +104,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         databaseHelper = DatabaseHelper.getInstance(this);
+        venueFragment = new VenueResultsFragment();
+        fragTran = getFragmentManager().beginTransaction();
+
 
         Intent intent = getIntent();
         locationIndex = intent.getIntExtra(ChampionActivity.SELECTION_TO_MAP, -1);
@@ -317,7 +326,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         case 2:
                             //navigate to Yelp/Foursquare API or display dialog
-                            final AlertDialog.Builder fourSquareDialog = new AlertDialog.Builder(MapsActivity.this);
+                            /*final AlertDialog.Builder fourSquareDialog = new AlertDialog.Builder(MapsActivity.this);
 
                             aDawg.setTitle("You are Super Cool!")
                                     .setMessage("There are 37 locations nearby with an" +
@@ -333,21 +342,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .setNegativeButton("Your Venues", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            databaseHelper.printVenuesByLocation(focusLocation.getId());
+                                            databaseHelper.printVenuesByLocation(focusLocation);
                                             //databaseHelper.printLinkingTable();
                                             dialog.dismiss();
                                         }
                                     });
                             aDawg.show();
-
+*/
                             if(!isLocked) {
                                 new FoursquareHandler(MapsActivity.this, focusLocation.getLatlng().latitude,
-                                        focusLocation.getLatlng().longitude, focusLocation.getId());
+                                        focusLocation.getLatlng().longitude, locationIndex);
 
                             }
+                            databaseHelper.printVenuesByLocation(focusLocation);
 
-                            //todo: launch fragment
+                            fragTran.add(R.id.container, venueFragment, "venueFragment").commit();
 
+                            FABstatus ++;
+
+                            break;
+
+                        case 3:
+
+                            fragTran.remove(venueFragment);
+                            FABstatus --;
+                            //todo: we should also change the FABicon so it points the other way
                             break;
 
                         default:
@@ -358,14 +377,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
-
-        /*locker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                lockingAction();
-
-            }
-        });*/
 
         backer.setOnClickListener(new View.OnClickListener() {
             @Override
