@@ -17,9 +17,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Created by amohnacs on 8/25/15.
@@ -38,14 +36,11 @@ public class FoursquareVenueHandler {
 
     Venue focusVenue;
 
-    List<Integer> ratingsList;
-
     public FoursquareVenueHandler(Context context, long venueDBid) {
         this.context = context;
         databaseHelper = DatabaseHelper.getInstance(context);
         this.venueDBid = venueDBid;
         //this.venueDBid = venueDBid;
-        ratingsList = new ArrayList<Integer>();
 
         new fourquareVenue().execute();
     }
@@ -69,9 +64,9 @@ public class FoursquareVenueHandler {
 
         @Override
         protected void onPreExecute() {
+            // we can start a progress bar here
             focusVenue = databaseHelper.getVenue(venueDBid);
             venue_id = focusVenue.getVenueId();
-
         }
 
         @Override
@@ -79,7 +74,6 @@ public class FoursquareVenueHandler {
             if (tempString == null) {
                 // we have an error to the call
                 // we can also stop the progress bar
-                Log.e(TAG, "ERROR: TEMPSTRING == NULL");
             } else {
                 // all things went right
                 parseFoursquare(tempString);
@@ -134,20 +128,15 @@ public class FoursquareVenueHandler {
                 Iterator<String> keys = jsonObject.keys();
                 while (keys.hasNext()) {
                     String key = keys.next();
-                    Log.i("**********", "**********");
-                    Log.i("resonse key", key);
+                    Log.v("**********", "**********");
+                    Log.v("resonse key", key);
 
                     JSONObject innerJObject = jsonObject.getJSONObject(key);
                     if(innerJObject.has("rating")) {
                         String rating = innerJObject.getString("rating");
-
-                        focusVenue.setRating(Float.parseFloat((rating)));
+                        Log.e(TAG, "rating: " + rating);
+                        focusVenue.setRating(Integer.valueOf(rating));
                         databaseHelper.updateVenue(focusVenue);
-
-                        //Log.e(TAG, focusVenue.getName() + " : " + focusVenue.getRating());
-                    }
-                    else {
-                        //Log.e(TAG, "no rating");
                     }
                 }
 

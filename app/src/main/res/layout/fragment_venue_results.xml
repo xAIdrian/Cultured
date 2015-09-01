@@ -4,16 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="3"
-    android:background="#B3000000"
     tools:context="com.androidtitan.hotspots.Fragment.VenueResultsFragment">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:text="@string/hello_blank_fragment"
-        android:textColor="@android:color/white"/>
+        android:text="@string/hello_blank_fragment" />
 
     <ListView android:id="@android:id/list"
         android:layout_width="match_parent"

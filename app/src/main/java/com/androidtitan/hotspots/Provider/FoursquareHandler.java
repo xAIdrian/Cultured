@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.androidtitan.hotspots.Data.DatabaseHelper;
-import com.androidtitan.hotspots.Data.LocationBundle;
 import com.androidtitan.hotspots.Data.Venue;
 
 import org.apache.http.HttpResponse;
@@ -35,17 +34,15 @@ public class FoursquareHandler {
 
     private String latitude;
     private String longitude;
-    private int location_id;
-    private LocationBundle locationHandle;
+    private long location_id;
 
 
-    public FoursquareHandler(Context context, double latitude, double longitude, int location_id){
+    public FoursquareHandler(Context context, double latitude, double longitude, long location_id){
         this.context=context;
         databaseHelper = DatabaseHelper.getInstance(context);
         this.latitude = String.valueOf(latitude);
         this.longitude = String.valueOf(longitude);
         this.location_id = location_id;
-        locationHandle = databaseHelper.getAllLocations().get(location_id);
 
         new fourquare().execute();
     }
@@ -62,13 +59,14 @@ public class FoursquareHandler {
                     + "&v=20130815&ll=" + latitude + "," + longitude);
 
 
+
             Log.e("foursquare", tempString);
             return "";
         }
 
         @Override
         protected void onPreExecute() {
-
+            // we can start a progress bar here
         }
 
         @Override
@@ -80,9 +78,9 @@ public class FoursquareHandler {
                 // all things went right
                 parseFoursquare(tempString);
 
-                Log.e(TAG, "size: " + databaseHelper.getAllVenuesFromLocation(locationHandle));
+                Log.e(TAG, "size: " + databaseHelper.getAllVenues().size());
                 //now we are getting the rating for each...
-                for(Venue freshVenue : databaseHelper.getAllVenuesFromLocation(locationHandle)) {
+                for(Venue freshVenue : databaseHelper.getAllVenues()) {
                     new FoursquareVenueHandler(context, freshVenue.getId());
                 }
             }
