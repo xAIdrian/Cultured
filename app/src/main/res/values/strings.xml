@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">Hot Spots</string>
+    <string name="app_name">MVP Dagger 2</string>
 
     <string name="hello_world">Hello world! I think you are missing something…</string>
     <string name="action_settings">Settings</string>
     <string name="placeholder">PlaceHolder</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_second">SecondActivity</string>
 
@@ -65,7 +65,7 @@
     <string name="instruction">Set location\nBe judged\nCompete</string>
     <string name="touchtocontinue">Touch.  Continue.</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_splash">SplashActivity</string>
 

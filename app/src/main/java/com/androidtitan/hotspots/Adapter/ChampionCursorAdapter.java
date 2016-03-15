@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
-import com.androidtitan.hotspots.Activity.ChampionActivity;
 import com.androidtitan.hotspots.Data.DatabaseHelper;
 import com.androidtitan.hotspots.R;
 
@@ -45,7 +44,7 @@ public class ChampionCursorAdapter extends SimpleCursorAdapter {
     @Override
     public void bindView(View v, Context context, Cursor c) {
 
-        selection = ((ChampionActivity) context).getListViewSelection();
+        //selection = ((ChampionActivity) context).getListViewSelection();
         int position = c.getPosition();
 
 

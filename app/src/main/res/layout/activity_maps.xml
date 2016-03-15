@@ -43,7 +43,7 @@
                 android:layout_marginLeft="6dp"
                 android:gravity="center_vertical"
                 android:padding="6dp"
-                android:src="@drawable/icon_goleft" />
+                android:src="@drawable/icon_go_left" />
 
 
             <ImageView

@@ -26,6 +26,7 @@ import com.androidtitan.hotspots.Data.LocationBundle;
 import com.androidtitan.hotspots.Fragment.VenueResultsFragment;
 import com.androidtitan.hotspots.Provider.FoursquareHandler;
 import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.SimpleDagger2.MainActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -109,7 +110,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         Intent intent = getIntent();
-        locationIndex = intent.getIntExtra(ChampionActivity.SELECTION_TO_MAP, -1);
+        locationIndex = intent.getIntExtra("string", -1);
 
         focusLocation = databaseHelper.getAllLocations().get(locationIndex);
 
@@ -483,7 +484,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(MapsActivity.this, ChampionActivity.class);
+        Intent intent = new Intent(MapsActivity.this, MainActivity.class);
         startActivity(intent);
     }
 

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.SimpleDagger2.MainActivity;
 
 public class SplashActivity extends Activity {
     private static final String TAG = "hotspots";
@@ -87,7 +88,7 @@ public class SplashActivity extends Activity {
     }
 
     private synchronized void jumpMain() {
-        Intent intent = new Intent(SplashActivity.this, ChampionActivity.class);
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
         startActivity(intent);
         finish();
     }
