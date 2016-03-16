@@ -26,7 +26,7 @@ import com.androidtitan.hotspots.Data.LocationBundle;
 import com.androidtitan.hotspots.Fragment.VenueResultsFragment;
 import com.androidtitan.hotspots.Provider.FoursquareHandler;
 import com.androidtitan.hotspots.R;
-import com.androidtitan.hotspots.SimpleDagger2.MainActivity;
+import com.androidtitan.hotspots.main.ui.MainActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -137,7 +137,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         map.getUiSettings().setZoomControlsEnabled(true);
         map.getUiSettings().setMyLocationButtonEnabled(false);
-        map.setMyLocationEnabled(true);
+        //map.setMyLocationEnabled(true);
 
         //place markers for every saved location
         for (LocationBundle bund : databaseHelper.getAllLocations()) {
@@ -246,8 +246,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 final LocationManager manager = (LocationManager)
                         getSystemService(Context.LOCATION_SERVICE);
-                lastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                        googleAPIclient);
+                /*lastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                        googleAPIclient);*/
 
                 final AlertDialog.Builder aDawg = new AlertDialog.Builder(MapsActivity.this);
 

@@ -1,17 +1,16 @@
-package com.androidtitan.hotspots.SimpleDagger2;
+package com.androidtitan.hotspots.main.presenter;
 
 import android.content.Context;
 import android.util.Log;
 
 /**
- * Created by amohnacs on 3/14/16.
+ * Created by amohnacs on 3/15/16.
  */
-public class Presenter {
+public class MainPresenterImpl implements MainPresenter{
 
     private Context context;
 
-
-    public Presenter(Context context) {
+    public MainPresenterImpl(Context context) {
         this.context = context;
     }
 
@@ -20,5 +19,4 @@ public class Presenter {
             Log.e("TAG", string);
         }
     }
-
 }

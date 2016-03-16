@@ -1,4 +1,4 @@
-package com.androidtitan.hotspots.SimpleDagger2;
+package com.androidtitan.hotspots.main.scopes;
 
 import javax.inject.Scope;
 

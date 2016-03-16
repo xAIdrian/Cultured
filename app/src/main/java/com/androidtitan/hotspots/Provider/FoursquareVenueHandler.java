@@ -1,6 +1,9 @@
 package com.androidtitan.hotspots.Provider;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -8,15 +11,15 @@ import android.view.View;
 import com.androidtitan.hotspots.Data.DatabaseHelper;
 import com.androidtitan.hotspots.Data.Venue;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -24,12 +27,13 @@ import java.util.List;
 /**
  * Created by amohnacs on 8/25/15.
  */
-//TODO: let's call this in our fragment
+
 public class FoursquareVenueHandler {
     private static String TAG = "FoursquareVenueHandler";
 
     DatabaseHelper databaseHelper;
 
+    //todo: @Inject
     private Context context;
 
     //private long venueDBid;
@@ -40,6 +44,7 @@ public class FoursquareVenueHandler {
 
     List<Integer> ratingsList;
 
+    //@Inject
     public FoursquareVenueHandler(Context context, long venueDBid) {
         this.context = context;
         databaseHelper = DatabaseHelper.getInstance(context);
@@ -47,10 +52,10 @@ public class FoursquareVenueHandler {
         //this.venueDBid = venueDBid;
         ratingsList = new ArrayList<Integer>();
 
-        new fourquareVenue().execute();
+        new foursquareUrlFetch().execute();
     }
 
-    public class fourquareVenue extends AsyncTask<View, Void, String> {
+    public class foursquareUrlFetch extends AsyncTask<View, Void, String> {
 
         String tempString;
 
@@ -58,11 +63,14 @@ public class FoursquareVenueHandler {
         @Override
         protected String doInBackground(View... urls) {
             // make Call to the url
-            tempString = makeCall("https://api.foursquare.com/v2/venues/" + venue_id + "?client_id="
-                    + FoursquareHandler.CLIENT_ID + "&client_secret=" + FoursquareHandler.CLIENT_SECRET
-                    + "&v=20130815");
 
-            Log.e(TAG, tempString);
+            if(confirmConnection(context)) {
+                tempString = makeCall("https://api.foursquare.com/v2/venues/" + venue_id + "?client_id="
+                        + FoursquareHandler.CLIENT_ID + "&client_secret=" + FoursquareHandler.CLIENT_SECRET
+                        + "&v=20130815");
+
+                Log.e(TAG, tempString);
+            }
 
             return "";
         }
@@ -81,45 +89,69 @@ public class FoursquareVenueHandler {
                 // we can also stop the progress bar
                 Log.e(TAG, "ERROR: TEMPSTRING == NULL");
             } else {
-                // all things went right
-                parseFoursquare(tempString);
+                new foursquareVenueFetch().execute(tempString);
             }
         }
 
     }
 
+    public class foursquareVenueFetch extends AsyncTask<String, Void, Void> {
 
-    public static String makeCall(String url) {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+
+            parseFoursquare(params[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    /**
+     * Constructs the URL that is used for our call to Foursquare
+     * @param passedURL
+     * @return
+     */
+    public static String makeCall(String passedURL) {
 
         // string buffers the url
-        StringBuffer buffer_string = new StringBuffer(url);
+        StringBuffer buffer_string = new StringBuffer(passedURL);
         String replyString = "";
 
-        // instanciate an HttpClient
-        HttpClient httpclient = new DefaultHttpClient();
-        // instanciate an HttpGet
-        HttpGet httpget = new HttpGet(buffer_string.toString());
-
         try {
-            // get the responce of the httpclient execution of the url
-            HttpResponse response = httpclient.execute(httpget);
-            InputStream is = response.getEntity().getContent();
+            URL url = new URL(buffer_string.toString());
+            HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+
+            InputStream is = httpConnection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
 
             // buffer input stream the result
             BufferedInputStream bis = new BufferedInputStream(is);
-            ByteArrayBuffer baf = new ByteArrayBuffer(20);
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[50]; //create an array of bytes
             int current = 0;
-            while ((current = bis.read()) != -1) {
-                baf.append((byte) current);
+
+            while ((current = bis.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, current);
             }
-            // the result as a string is ready for parsing
-            replyString = new String(baf.toByteArray());
+
+            replyString = new String(buffer.toByteArray());// the result as a string is ready for parsing
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         // trim the whitespaces
         return replyString.trim();
     }
+
 
     public void parseFoursquare(final String response) {
 
@@ -144,7 +176,6 @@ public class FoursquareVenueHandler {
                         focusVenue.setRating(Float.parseFloat((rating)));
                         databaseHelper.updateVenue(focusVenue);
 
-                        //Log.e(TAG, focusVenue.getName() + " : " + focusVenue.getRating());
                     }
                     else {
                         //Log.e(TAG, "no rating");
@@ -156,7 +187,38 @@ public class FoursquareVenueHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
+
+    //todo: we are going to move these away eventually
+    public boolean confirmConnection(Context context) {
+        ConnectivityManager check = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Network[] networkInfos = new Network[0];
+            networkInfos = check.getAllNetworks();
+
+            for(int i = 0; i < networkInfos.length; i++) {
+                if(check.getNetworkInfo(networkInfos[i]).getState() == NetworkInfo.State.CONNECTED) {
+                    Log.e(TAG, "Connected to the network!");
+                    return true;
+                }
+            }
+
+            return false;
+
+        } else {
+           NetworkInfo[] networkInfos  = check.getAllNetworkInfo();
+            for(int i = 0; i < networkInfos.length; i++) {
+                if(networkInfos[i].getState() == NetworkInfo.State.CONNECTED) {
+                    Log.e(TAG, "Connected to the network!");
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
 
 }

@@ -1,4 +1,4 @@
-package com.androidtitan.hotspots.SimpleDagger2;
+package com.androidtitan.hotspots.main.application;
 
 import android.app.Application;
 import android.content.Context;
