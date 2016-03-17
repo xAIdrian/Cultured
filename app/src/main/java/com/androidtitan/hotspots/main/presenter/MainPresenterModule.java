@@ -16,7 +16,7 @@ public class MainPresenterModule {
 
     @Provides @PresenterScope
     public MainPresenter providePresenter(Context context) {
-        return new MainPresenterImpl(context);
+        return new MainPresenterImpl();
     }
 
 

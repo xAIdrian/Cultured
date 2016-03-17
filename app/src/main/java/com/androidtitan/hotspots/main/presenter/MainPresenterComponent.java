@@ -1,8 +1,9 @@
 package com.androidtitan.hotspots.main.presenter;
 
 import com.androidtitan.hotspots.main.application.AppComponent;
-import com.androidtitan.hotspots.main.ui.MainActivity;
+import com.androidtitan.hotspots.main.presenter.adapter.SpotifyCardAdapter;
 import com.androidtitan.hotspots.main.scopes.PresenterScope;
+import com.androidtitan.hotspots.main.ui.ImageListFragment;
 
 import dagger.Component;
 
@@ -16,9 +17,12 @@ import dagger.Component;
 )
 public interface MainPresenterComponent {
 
-    // allow to inject into ACTIVITY
-    // method name not important
-    void inject(MainActivity activity); //let's change this to general activity
-
     MainPresenter getPresenter();
+
+    // allows us to inject into ACTIVITY
+    void inject(ImageListFragment imageListFragment);
+    void inject(SpotifyCardAdapter adapter);
+
+
+
 }

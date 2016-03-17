@@ -2,15 +2,12 @@ package com.androidtitan.hotspots.Adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 import com.androidtitan.hotspots.Data.DatabaseHelper;
-import com.androidtitan.hotspots.R;
 
 /**
  * Created by amohnacs on 8/8/15.
@@ -58,7 +55,7 @@ public class ChampionCursorAdapter extends SimpleCursorAdapter {
         String firstName = myCursor.getString(nameColumn);
         int lockedStatus = myCursor.getInt(lockedColumn); //0 is Opem aka Unlocked
 
-        TextView textView = (TextView) v.findViewById(R.id.primary_champ_text);
+        /*TextView textView = (TextView) v.findViewById(R.id.primary_champ_text);
 
         ImageView lockIcon = (ImageView) v.findViewById(R.id.lockImageView);
         lockIcon.setVisibility(View.GONE);
@@ -80,7 +77,7 @@ public class ChampionCursorAdapter extends SimpleCursorAdapter {
             v.setBackgroundColor(0xFFFFFFFF);
         }
 
-
+*/
     }
 
 }
