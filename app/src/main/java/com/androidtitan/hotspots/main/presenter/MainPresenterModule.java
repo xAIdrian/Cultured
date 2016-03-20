@@ -17,19 +17,26 @@ import dagger.Provides;
 )
 public class MainPresenterModule {
     private final MainActivity act;
+    private final MainView mainview;
 
-    public MainPresenterModule(MainActivity activity) {
+    public MainPresenterModule(MainActivity activity, MainView mainView) {
         this.act = activity;
+        this.mainview = mainView;
     }
 
     @Provides @PresenterScope
-    public MainPresenter providePresenter(Context context) {
-        return new MainPresenterImpl(context);
+    public MainPresenter providePresenter(Context context, MainView view) {
+        return new MainPresenterImpl(context, view);
     }
 
     @Provides @PresenterScope
     public Context provideContext() {
         return act;
+    }
+
+    @Provides @PresenterScope
+    public MainView provideMainView() {
+        return mainview;
     }
 
 

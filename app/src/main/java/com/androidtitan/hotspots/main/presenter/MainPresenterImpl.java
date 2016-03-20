@@ -7,7 +7,6 @@ import com.androidtitan.hotspots.main.domain.DaggerSpotifyRetroFitComponent;
 import com.androidtitan.hotspots.main.domain.SpotifyEndpointInterface;
 import com.androidtitan.hotspots.main.model.Item;
 import com.androidtitan.hotspots.main.model.SpotifyResponse;
-import com.androidtitan.hotspots.main.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +27,16 @@ public class MainPresenterImpl implements MainPresenter{
     @Inject Retrofit retrofit;
 
     private Context context;
+    private MainView mainView;
 
     @Inject
-    public MainPresenterImpl(Context context) {
+    public MainPresenterImpl(Context context, MainView mainView) {
+
         DaggerSpotifyRetroFitComponent.create()
                 .inject(this);
 
-        //App.getAppComponent().inject(this);
         this.context = context;
+        this.mainView = mainView;
     }
 
     public void respond(String string) {
@@ -62,7 +63,7 @@ public class MainPresenterImpl implements MainPresenter{
 
                     for(Item item : resp.getTracks().getItems()) {
                         itemList.add(item);
-                        ((MainActivity)context).updateImageAdapter();
+                        mainView.updateImageAdapter();
 
                     }
                     //Log.e(TAG, resp.getTracks().getItems().get(0).getName());

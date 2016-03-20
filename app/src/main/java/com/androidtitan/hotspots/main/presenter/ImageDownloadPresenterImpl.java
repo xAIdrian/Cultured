@@ -17,6 +17,8 @@ import java.lang.ref.WeakReference;
 public class ImageDownloadPresenterImpl implements ImageDownloadPresenter {
     private final String TAG = getClass().getSimpleName();
 
+
+    @Override
     public void imageDownload(String url, ImageView imageView) {
 
         if(cancelPotentialDownload(url, imageView)) {
@@ -25,7 +27,6 @@ public class ImageDownloadPresenterImpl implements ImageDownloadPresenter {
             imageView.setImageDrawable(downloadDrawable);
             asyncTask.execute(url);
         }
-
     }
 
     private static BitmapDownloaderAsyncTask getBitmapDownloaderTask(ImageView imageView) {
@@ -79,6 +80,11 @@ public class ImageDownloadPresenterImpl implements ImageDownloadPresenter {
                 ImageView imageView = weakImageView.get();
                 if (imageView != null) {
                     imageView.setImageBitmap(bitmap);
+
+                    /*int bgColor = Palette.from(bitmap).generate().getDarkVibrantColor(
+                            ContextCompat.getColor(App.getAppComponent().getApplicationContext(), android.R.color.black));
+
+                    bgLayout.setBackgroundColor(bgColor);*/
                 }
             }
         }
@@ -95,6 +101,5 @@ public class ImageDownloadPresenterImpl implements ImageDownloadPresenter {
         public BitmapDownloaderAsyncTask getBitmapDownloadTask() {
             return weakBitmapAsyncTask.get();
         }
-
     }
 }

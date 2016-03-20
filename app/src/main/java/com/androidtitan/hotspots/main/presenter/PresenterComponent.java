@@ -1,7 +1,7 @@
 package com.androidtitan.hotspots.main.presenter;
 
 import com.androidtitan.hotspots.main.scopes.PresenterScope;
-import com.androidtitan.hotspots.main.ui.ImageListFragment;
+import com.androidtitan.hotspots.main.ui.MainActivity;
 import com.androidtitan.hotspots.main.ui.adapter.ImageAdapter;
 
 import dagger.Component;
@@ -22,7 +22,7 @@ public interface PresenterComponent {
     ImageDownloadPresenter getImagePresenter();
 
     // allows us to inject into ACTIVITY
-    void inject(ImageListFragment imageListFragment);
+    void inject(MainActivity activity);
     void inject(ImageAdapter adapter);
 
 
