@@ -10,10 +10,9 @@ import android.view.ViewGroup;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseFragment;
-import com.androidtitan.hotspots.main.application.App;
 import com.androidtitan.hotspots.main.model.Item;
 import com.androidtitan.hotspots.main.presenter.MainPresenter;
-import com.androidtitan.hotspots.main.presenter.adapter.SpotifyCardAdapter;
+import com.androidtitan.hotspots.main.ui.adapter.ImageAdapter;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class ImageListFragment extends BaseFragment {
     MainPresenter presenter;
 
     private RecyclerView recyclerView;
-    private SpotifyCardAdapter adapter;
+    public ImageAdapter adapter;
 
     private List<Item> trackItems;
 
@@ -48,7 +47,7 @@ public class ImageListFragment extends BaseFragment {
             //
         }
         //telling our component Where to inject Presenter
-        App.getMainPresenterComponent().inject(this);
+        ((MainActivity)getActivity()).getPresenterComponent().inject(this);
 
         trackItems = presenter.querySpotifyTracks("Down the Line", 10);
     }
@@ -69,7 +68,7 @@ public class ImageListFragment extends BaseFragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
 
-        adapter = new SpotifyCardAdapter(getActivity(), trackItems);
+        adapter = new ImageAdapter(getActivity(), trackItems);
         recyclerView.setAdapter(adapter);
     }
 

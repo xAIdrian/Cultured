@@ -1,15 +1,16 @@
-package com.androidtitan.hotspots.main.presenter.adapter;
+package com.androidtitan.hotspots.main.ui.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
-import com.androidtitan.hotspots.main.application.App;
 import com.androidtitan.hotspots.main.model.Item;
+import com.androidtitan.hotspots.main.presenter.ImageDownloadPresenter;
 
 import java.util.List;
 
@@ -18,29 +19,29 @@ import javax.inject.Inject;
 /**
  * Created by amohnacs on 3/3/16.
  */
-public class SpotifyCardAdapter extends RecyclerView.Adapter<SpotifyCardAdapter.ViewHolder> {
+public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> {
 
-    // @Inject private ImageDownloader imageDownloader;
+    @Inject ImageDownloadPresenter imageDownloader;
 
-    @Inject Context context;
+    private Context context;
     private List<Item> trackList;
 
-    public SpotifyCardAdapter(Context context, List<Item> adapterTrackList) {
-        //this.imageDownloader = new ImageDownloader();
+    @Inject
+    public ImageAdapter(Context context, List<Item> adapterTrackList) {
 
-        App.getMainPresenterComponent().inject(this);
+        this.context = context;
         this.trackList = adapterTrackList;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        //public ImageView albumImage;
+        public ImageView albumImage;
         public TextView titleText;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            //albumImage = (ImageView) itemView.findViewById(R.id.albumImageView);
+            albumImage = (ImageView) itemView.findViewById(R.id.albumImageView);
             titleText = (TextView) itemView.findViewById(R.id.titleTextView);
         }
     }
@@ -53,9 +54,11 @@ public class SpotifyCardAdapter extends RecyclerView.Adapter<SpotifyCardAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        /*imageDownloader.imageDownload(trackList.get(position).getImage300Link(),
-                holder.albumImage);*/
+
         holder.titleText.setText(trackList.get(position).getName());
+
+        /*.imageDownload(trackList.get(position).getAlbum().getImages().get(0).getUrl(),
+                holder.albumImage);*/
 
     }
 

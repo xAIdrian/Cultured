@@ -1,5 +1,7 @@
 package com.androidtitan.hotspots.main.domain;
 
+import com.androidtitan.hotspots.main.scopes.SpotifyScope;
+
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -11,12 +13,12 @@ import retrofit2.Retrofit;
 @Module
 public class SpotifyRetroFitModule {
 
-    @Provides
+    @Provides @SpotifyScope
     public SpotifyRetroFit provideSpotifyretroFit() {
         return new SpotifyRetroFit();
     }
 
-    @Provides
+    @Provides @SpotifyScope
     public Retrofit provideRetroFit(SpotifyRetroFit spotifyRetroFit) {
         return spotifyRetroFit.getRetrofit();
     }

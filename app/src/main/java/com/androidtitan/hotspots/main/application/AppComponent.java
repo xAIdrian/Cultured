@@ -15,4 +15,5 @@ public interface AppComponent {
 
     Application getApplication();
     Context getApplicationContext();
+
 }
