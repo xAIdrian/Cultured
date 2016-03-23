@@ -2,13 +2,13 @@
 <resources>
     <!-- YAY Theme Practice! -->
     <style name="customThemeDrawer" parent="Theme.AppCompat.Light">
-        <item name="android:background">@drawable/bg_green_btm</item>
+        <!--//<item name="android:background">@drawable/bg_green_btm</item>-->
     </style>
 
     <style name="customeThemePopup" parent="Theme.AppCompat.Light">
-        <item name="android:background">@drawable/bg_green_left</item>
+        <!--<item name="android:background">@drawable/bg_green_left</item>
         <item name="android:textColor">@color/colorPrimaryDark</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textStyle">bold</item>-->
     </style>
 
 </resources>
