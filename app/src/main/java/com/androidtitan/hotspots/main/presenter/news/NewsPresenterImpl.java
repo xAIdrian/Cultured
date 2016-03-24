@@ -52,9 +52,15 @@ public class NewsPresenterImpl implements NewsPresenter {
             @Override
             public void onResponse(Call<NewsResponse> call, Response<NewsResponse> response) {
                 if(response.isSuccessful()) {
-                    Log.d(TAG, "response received: " + call);
                     NewsResponse resp = response.body();
-                    Log.e(TAG, String.valueOf(resp.getNumResults()));
+                    Log.d(TAG, "response received: " + resp.getStatus() + " : "
+                            + resp.getArticles().size() + " articles received");
+
+                    for(Article article : resp.getArticles()) {
+
+                        itemList.add(article);
+                        newsView.updateNewsAdapter();
+                    }
 
                 } else {
                     Log.e(TAG, "response fail");

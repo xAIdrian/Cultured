@@ -1,9 +1,7 @@
 package com.androidtitan.hotspots.main.domain.retrofit;
 
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
-import com.androidtitan.hotspots.main.model.newyorktimes.NewsResponse;
-import com.androidtitan.hotspots.main.util.ArticleJsonDeserializer;
-import com.androidtitan.hotspots.main.util.NewsJsonDeserializer;
+import com.androidtitan.hotspots.main.domain.ArticleDeserializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -36,8 +34,10 @@ public class NewsRetrofit {
     private static GsonConverterFactory buildGsonConverter() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         //adding custom deserializer
-        gsonBuilder.registerTypeAdapter(NewsResponse.class, new NewsJsonDeserializer());
-        gsonBuilder.registerTypeAdapter(Article.class, new ArticleJsonDeserializer());
+        //gsonBuilder.registerTypeAdapter(NewsResponse.class, new NewsJsonDeserializer());
+        gsonBuilder.registerTypeAdapter(Article.class, new ArticleDeserializer());
+        gsonBuilder.serializeNulls();
+        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
 
         Gson myGson = gsonBuilder.create();
 

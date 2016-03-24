@@ -8,49 +8,10 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <!--<View
-        android:id="@+id/colorBgView"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_gravity="top"
-        android:background="@color/colorPrimary" />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="156dp"
         android:clipToPadding="false"/>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/colorPrimary">
-
-        <RelativeLayout
-            android:id="@+id/toolbarContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?android:attr/actionBarSize"
-                android:background="@color/colorPrimary"/>
-
-            <TextView
-                android:id="@+id/wikiInfoBar"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_below="@+id/toolbar"
-                android:padding="16dp"
-                android:text="@string/long_placeholder"
-                android:gravity="center"
-                android:background="@color/colorPrimary"/>
-
-        </RelativeLayout>
-
-    </RelativeLayout>-->
 
 </android.support.design.widget.CoordinatorLayout>

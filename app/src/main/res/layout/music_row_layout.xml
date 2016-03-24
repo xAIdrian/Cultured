@@ -20,7 +20,7 @@
         android:foreground="?selectableItemBackground">
 
         <ImageView
-            android:id="@+id/albumImageView"
+            android:id="@+id/articleImageView"
             android:layout_width="match_parent"
             android:layout_height="350dp"
             android:scaleType="centerCrop" />
@@ -34,19 +34,21 @@
             android:background="@android:color/white">
 
             <TextView
-                android:id="@+id/trackTextView"
+                android:id="@+id/titleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
                 android:text="@string/placeholder"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_below="@+id/trackTextView"
+                android:layout_below="@+id/titleTextView"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
                 android:layout_marginTop="4dp"
                 android:orientation="horizontal"
                 android:weightSum="2">
@@ -61,7 +63,7 @@
                     android:textColor="@color/colorSecondaryText"/>
 
                 <TextView
-                    android:id="@+id/albumTextView"
+                    android:id="@+id/abstractTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

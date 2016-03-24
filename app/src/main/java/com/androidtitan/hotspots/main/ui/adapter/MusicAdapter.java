@@ -38,25 +38,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         imageDownloader = new ImageDownloader();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        public ImageView albumImage;
-        public RelativeLayout relativeLayout;
-        public TextView trackText;
-        public TextView artistText;
-        public TextView albumText;
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-
-            albumImage = (ImageView) itemView.findViewById(R.id.albumImageView);
-            relativeLayout = (RelativeLayout) itemView.findViewById(R.id.infoRelativeLayout);
-            trackText = (TextView) itemView.findViewById(R.id.trackTextView);
-            artistText = (TextView) itemView.findViewById(R.id.artistTextView);
-            albumText = (TextView) itemView.findViewById(R.id.albumTextView);
-        }
-    }
-
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.music_row_layout, parent, false);
@@ -86,6 +67,25 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
                 holder.albumImage);
 
 
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        public ImageView albumImage;
+        public RelativeLayout relativeLayout;
+        public TextView trackText;
+        public TextView artistText;
+        public TextView albumText;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            albumImage = (ImageView) itemView.findViewById(R.id.articleImageView);
+            relativeLayout = (RelativeLayout) itemView.findViewById(R.id.infoRelativeLayout);
+            trackText = (TextView) itemView.findViewById(R.id.titleTextView);
+            artistText = (TextView) itemView.findViewById(R.id.artistTextView);
+            albumText = (TextView) itemView.findViewById(R.id.abstractTextView);
+        }
     }
 
     @Override

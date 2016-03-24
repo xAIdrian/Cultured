@@ -73,7 +73,7 @@ public class Article {
     private List<String> geoFacet = new ArrayList<String>();
     @SerializedName("related_urls")
     @Expose
-    private Object relatedUrls;
+    private List<RelatedUrl> relatedUrls;
     @SerializedName("multimedia")
     @Expose
     private List<Multimedium> multimedia = new ArrayList<Multimedium>();
@@ -428,7 +428,7 @@ public class Article {
      * @return
      * The relatedUrls
      */
-    public Object getRelatedUrls() {
+    public List<RelatedUrl> getRelatedUrls() {
         return relatedUrls;
     }
 
@@ -437,7 +437,7 @@ public class Article {
      * @param relatedUrls
      * The related_urls
      */
-    public void setRelatedUrls(Object relatedUrls) {
+    public void setRelatedUrls(List<RelatedUrl> relatedUrls) {
         this.relatedUrls = relatedUrls;
     }
 
