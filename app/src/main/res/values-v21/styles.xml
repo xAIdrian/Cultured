@@ -9,6 +9,9 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColorPrimary">@color/colorPrimaryText</item>
         <item name="android:textColorSecondary">@color/colorSecondaryText</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+
+        <item name="android:typeface">monospace</item>
 
     </style>
 

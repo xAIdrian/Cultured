@@ -10,4 +10,5 @@ import java.util.List;
 public interface NewsPresenter {
 
     List<Article> queryNews(String section, int limit);
+    void startMusicActivity(String geoSearcher);
 }

@@ -1,6 +1,9 @@
 package com.androidtitan.hotspots.main.ui.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +14,10 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
-import com.androidtitan.hotspots.main.util.ImageDownloader;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.util.List;
 
@@ -26,10 +32,10 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int SIMPLE_LAYOUT = 0;
     private static final int IMAGE_LAYOUT = 1;
 
-    ImageDownloader imageDownloader;
-
     private Context context;
     private List<Article> articleList;
+
+    private Palette imagePalette;
 
 
     @Inject
@@ -38,7 +44,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.context = context;
         this.articleList = adapterTrackList;
 
-        imageDownloader = new ImageDownloader();
     }
 
     @Override
@@ -107,19 +112,43 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
     }
 
-    private void initViewholderImage(ImageViewHolder holder, int position) {
+    private void initViewholderImage(final ImageViewHolder holder, int position) {
         holder.titleText.setText(articleList.get(position).getTitle());
         holder.abstractText.setText(articleList.get(position).getAbstract());
 
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
 
+
         //Log.e(TAG, String.valueOf(articleList.get(position).getMultimedia().size()));
         try {
-            imageDownloader.imageDownload(articleList.get(position).getMultimedia().get(3).getUrl(),
-                    holder.articleImage);
+            Glide.with(context)
+                    .load(articleList.get(position).getMultimedia().get(3).getUrl())
+                    .asBitmap()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .into(new BitmapImageViewTarget(((ImageViewHolder)holder).articleImage) {
+                        @Override
+                        public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            super.onResourceReady(resource, glideAnimation);
+                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(Palette palette) {
+                                    // Here's your generated palette
+                                    int bgColor = palette.from(resource).generate().getVibrantColor(
+                                                    ContextCompat.getColor(context, R.color.colorAccent));
+                                    //todo: we need to store this int so it can be passed and used.
+
+                                    holder.paletteView.setBackgroundColor(bgColor);
+                                }
+                            });
+                        }
+                    });
+
         } catch(Exception e) {
             e.printStackTrace();
         }
+
+        //holder.fab.setBackgroundColor(Palette.from());
     }
 
     public class ImageViewHolder extends RecyclerView.ViewHolder {
@@ -130,6 +159,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         public TextView abstractText;
         public TextView globalText;
 
+        public View paletteView;
+
         public ImageViewHolder(View itemView) {
             super(itemView);
 
@@ -138,6 +169,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             titleText = (TextView) itemView.findViewById(R.id.titleTextView);
             abstractText = (TextView) itemView.findViewById(R.id.abstractTextView);
             globalText = (TextView) itemView.findViewById(R.id.globalTextView);
+
+            paletteView = (View) itemView.findViewById(R.id.paletteView);
         }
 
     }

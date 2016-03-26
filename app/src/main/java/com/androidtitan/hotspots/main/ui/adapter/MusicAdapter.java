@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.model.spotify.Item;
-import com.androidtitan.hotspots.main.util.ImageDownloader;
 
 import java.util.List;
 
@@ -23,7 +22,6 @@ import javax.inject.Inject;
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> {
     private final String TAG = getClass().getSimpleName();
 
-    ImageDownloader imageDownloader;
 
     private Context context;
     private List<Item> trackList;
@@ -34,8 +32,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
 
         this.context = context;
         this.trackList = adapterTrackList;
-
-        imageDownloader = new ImageDownloader();
     }
 
     @Override
@@ -63,8 +59,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         }
         holder.artistText.setText(artistsStringBuilder.toString());
 
-        imageDownloader.imageDownload(trackList.get(position).getAlbum().getImages().get(0).getUrl(),
-                holder.albumImage);
 
 
     }

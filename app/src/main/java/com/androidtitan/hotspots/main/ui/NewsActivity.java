@@ -1,8 +1,12 @@
 package com.androidtitan.hotspots.main.ui;
 
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseActivity;
@@ -25,8 +29,10 @@ public class NewsActivity extends BaseActivity implements NewsView{
 
     @Inject NewsPresenter presenter;
 
-    RecyclerView recyclerView;
-    NewsAdapter adapter;
+    private Toolbar toolbar;
+    private RecyclerView recyclerView;
+    private NewsAdapter adapter;
+
 
     List<Article> articles;
 
@@ -37,6 +43,9 @@ public class NewsActivity extends BaseActivity implements NewsView{
         setContentView(R.layout.activity_news);
 
         implementComponents();
+        setUpToolbar();
+
+        //presenter.startMusicActivity("nothing for right now");
 
         articles = presenter.queryNews("world", 20);
 
@@ -49,6 +58,14 @@ public class NewsActivity extends BaseActivity implements NewsView{
                 .newsPresenterModule(new NewsPresenterModule(this, this)) //this can be removed
                 .build();
         newsPresenterComponent.inject(this);
+    }
+
+    private void setUpToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(Color.WHITE);
+        final ActionBar actionBar = getSupportActionBar();
+
     }
 
     private void initializeRecyclerView() {
@@ -64,5 +81,13 @@ public class NewsActivity extends BaseActivity implements NewsView{
     @Override
     public void updateNewsAdapter() {
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void startMusicActivity(String geoSearcher) {
+        Intent intent = new Intent(this, MusicActivity.class);
+        //todo: geo will be passed here as a market to get form Spotify search
+        //we are going to use `startActivityForResult` so we can have the same article top and center on the return
+        startActivity(intent);
     }
 }

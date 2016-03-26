@@ -75,4 +75,9 @@ public class NewsPresenterImpl implements NewsPresenter {
 
         return itemList;
     }
+
+    @Override
+    public void startMusicActivity(String geoSearcher) {
+        newsView.startMusicActivity(geoSearcher);
+    }
 }
