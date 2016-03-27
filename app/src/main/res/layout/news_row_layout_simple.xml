@@ -8,21 +8,22 @@
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
     card_view:cardCornerRadius="4dp"
-    card_view:cardElevation="8dp">
+    card_view:cardElevation="8dp"
+    android:background="@drawable/ripple"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground">
 
-    <FrameLayout
+    <RelativeLayout
         android:id="@+id/rippleForeground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/ripple"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?selectableItemBackground">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:id="@+id/infoRelativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/paletteView"
             android:background="@android:color/white"
             android:padding="8dp">
 
@@ -61,5 +62,12 @@
 
         </RelativeLayout>
 
-    </FrameLayout>
+        <View
+            android:id="@+id/paletteView"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/colorPrimary"/>
+
+    </RelativeLayout>
 </android.support.v7.widget.CardView>

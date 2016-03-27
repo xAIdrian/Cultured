@@ -6,5 +6,6 @@ package com.androidtitan.hotspots.main.presenter.news;
 public interface NewsView {
 
     void updateNewsAdapter();
-    void startMusicActivity(String geoSearcher);
+    void updateSpecificNewsAdapter(int position);
+    void refreshCompleted();
 }

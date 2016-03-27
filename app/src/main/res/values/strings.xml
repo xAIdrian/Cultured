@@ -10,6 +10,7 @@
         some featured article.  Why not try listening to these songs while you read the article?
         Keep up the work Adrian.  You\'re great.</string>
     <string name="title_activity_zzzzzzzzzzzz">zzzzzzzzzzzz</string>
+    <string name="title_activity_news_detail">NewsDetailActivity</string>
 
 
     <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->
