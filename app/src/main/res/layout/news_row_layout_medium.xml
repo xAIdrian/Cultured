@@ -22,7 +22,8 @@
         <ImageView
             android:id="@+id/articleImageView"
             android:layout_width="match_parent"
-            android:layout_height="140dp" />
+            android:layout_height="125dp" />
+        <!-- todo: we need to calculate the height of the medium image -->
 
         <RelativeLayout
             android:id="@+id/infoRelativeLayout"

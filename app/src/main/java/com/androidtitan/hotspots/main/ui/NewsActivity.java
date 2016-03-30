@@ -3,24 +3,22 @@ package com.androidtitan.hotspots.main.ui;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseActivity;
@@ -43,20 +41,20 @@ public class NewsActivity extends BaseActivity implements NewsView,
         RecyclerView.OnItemTouchListener{
     private final String TAG = getClass().getSimpleName();
 
-    private static final String ARTICLE_IMAGE_PALETTE_EXTRA = "newsactivity.articleimagepaletteextra";
-    private static final String ARTICLE_URL_EXTRA = "newsactivity.articleurlextra";
+    public static final String ARTICLE_IMAGE_PALETTE_EXTRA = "newsactivity.articleimagepaletteextra";
+    public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
     public static NewsPresenterComponent newsPresenterComponent;
     @Inject NewsPresenter presenter;
 
     private GestureDetectorCompat gestureDetector;
+    private Animation rotateAnim;
 
-    @Bind(R.id.toolbarContainer) RelativeLayout toolbarContainer;
-    @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.colorBgView) View bgView;
-    @Bind(R.id.refreshImageView) ImageView refreshImageView;
     @Bind(R.id.swipeRefresh) SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.list) RecyclerView recyclerView;
+    @Bind(R.id.refreshFab) FloatingActionButton refreshFab;
+
     private NewsAdapter adapter;
 
     List<Article> articles;
@@ -64,7 +62,7 @@ public class NewsActivity extends BaseActivity implements NewsView,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        initializeTranstions();
+        initializeTranstionsAndAnimations();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
 
@@ -76,14 +74,14 @@ public class NewsActivity extends BaseActivity implements NewsView,
         //presenter.startMusicActivity("nothing for right now");
         articles = presenter.firstQueryNews("world", 20);
 
-        setUpToolbar();
         initializeRecyclerView();
 
-        refreshImageView.setOnClickListener(new View.OnClickListener() {
+        refreshFab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
+        refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                swipeRefreshLayout.setRefreshing(true);
-                presenter.refreshQueryNews("world", 20);
+                refreshFab.startAnimation(rotateAnim);
+                refreshRecyclerView();
             }
         });
 
@@ -106,31 +104,16 @@ public class NewsActivity extends BaseActivity implements NewsView,
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-
                 scrollViewParallax(dy);
-
             }
         });
 
     }
 
-    private void scrollViewParallax(int dy) { // divided by three to scroll slower
-        bgView.setTranslationY(bgView.getTranslationY() + dy / 5);
-    }
-
-
-    private void showToolbar() {
-        toolbar
-                .animate()
-                .translationY(0)
-                .start();
-    }
-
-    private void hideToolbar() {
-        toolbar
-                .animate()
-                .translationY((toolbar.getBottom()))
-                .start();
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        refreshRecyclerView();
     }
 
     public void implementComponents() {
@@ -144,13 +127,6 @@ public class NewsActivity extends BaseActivity implements NewsView,
         return presenter;
     }
 
-    private void setUpToolbar() {
-        setSupportActionBar(toolbar);
-        toolbar.setTitleTextColor(Color.WHITE);
-        final ActionBar actionBar = getSupportActionBar();
-
-    }
-
     private void initializeRecyclerView() {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -161,20 +137,26 @@ public class NewsActivity extends BaseActivity implements NewsView,
         recyclerView.setAdapter(adapter);
     }
 
+    private void scrollViewParallax(int dy) { // divided by three to scroll slower
+        bgView.setTranslationY(bgView.getTranslationY() + dy / 5);
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void initializeTranstions() {
+    private void initializeTranstionsAndAnimations() {
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
         if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             // inside your activity (if you did not enable transitions in your theme)
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+            getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
             // set an exit transition
             Transition plode = new Explode();
             getWindow().setEnterTransition(plode);
             getWindow().setExitTransition(plode);
 
         } else {
-            // do something for phones running an SDK before lollipop
+            // do something for phones running an API before lollipop
         }
+        rotateAnim = AnimationUtils.loadAnimation(this, R.anim.rotate_clockwise);
     }
 
     public void refreshRecyclerView() {
@@ -192,17 +174,21 @@ public class NewsActivity extends BaseActivity implements NewsView,
     }
 
 
-    public void startDetailActivity(String url, int paletteColor) {
+    public void startDetailActivity(Article article, int paletteColor) {
+
         Intent intent = new Intent(this, NewsDetailActivity.class);
-        intent.putExtra(ARTICLE_URL_EXTRA, url);
+        intent.putExtra(ARTICLE_EXTRA, article.getUrl());
         intent.putExtra(ARTICLE_IMAGE_PALETTE_EXTRA, paletteColor);
         startActivity(intent);
+
+
     }
 
 
     @Override
     public void refreshCompleted() {
         swipeRefreshLayout.setRefreshing(false);
+        refreshFab.clearAnimation();
     }
 
     @Override

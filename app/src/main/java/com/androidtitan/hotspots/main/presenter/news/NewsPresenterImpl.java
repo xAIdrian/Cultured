@@ -107,7 +107,6 @@ public class NewsPresenterImpl implements NewsPresenter {
                             Log.e(TAG, "actual get :: " + resp.getArticles().get(i).getTitle());
                         }
 
-                        Log.e(TAG, resp.getArticles().get(i).getTitle());
                     }
                     newsView.refreshCompleted();
 

@@ -1,7 +1,5 @@
 package com.androidtitan.hotspots.main.domain;
 
-import android.util.Log;
-
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.model.newyorktimes.Multimedium;
 import com.androidtitan.hotspots.main.model.newyorktimes.RelatedUrl;
@@ -15,6 +13,7 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,9 +41,9 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         tempArticle.setItemType(obj.getAsJsonObject().get("item_type").getAsString());
         tempArticle.setSource(obj.getAsJsonObject().get("source").getAsString());
 
-        tempArticle.setUpdatedDate(obj.getAsJsonObject().get("updated_date").getAsString());
-        tempArticle.setCreatedDate(obj.getAsJsonObject().get("created_date").getAsString());
-        tempArticle.setPublishedDate(obj.getAsJsonObject().get("published_date").getAsString());
+        tempArticle.setUpdatedDate((Date) context.deserialize(obj.getAsJsonObject().get("updated_date"), Date.class));
+        tempArticle.setCreatedDate((Date) context.deserialize(obj.getAsJsonObject().get("created_date"), Date.class));
+        tempArticle.setPublishedDate((Date) context.deserialize(obj.getAsJsonObject().get("published_date"), Date.class));
 
         tempArticle.setMaterialTypeFacet(obj.getAsJsonObject().get("material_type_facet").getAsString());
         tempArticle.setKicker(obj.getAsJsonObject().get("kicker").getAsString());
@@ -105,7 +104,7 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         //todo
         if (obj.getAsJsonObject().get("multimedia") instanceof JsonArray) {
             Multimedium[] mediaobj = context.deserialize(obj.getAsJsonObject().get("multimedia"), Multimedium[].class);
-            tempArticle.setMultimedia(Arrays.asList(mediaobj)); //todo:
+            tempArticle.setMultimedia(Arrays.asList(mediaobj));
         }
 
 

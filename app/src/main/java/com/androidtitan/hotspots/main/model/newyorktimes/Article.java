@@ -6,13 +6,15 @@ package com.androidtitan.hotspots.main.model.newyorktimes;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
-public class Article {
+public class Article implements Serializable{
 
     @SerializedName("section")
     @Expose
@@ -43,13 +45,13 @@ public class Article {
     private String source;
     @SerializedName("updated_date")
     @Expose
-    private String updatedDate;
+    private Date updatedDate;
     @SerializedName("created_date")
     @Expose
-    private String createdDate;
+    private Date createdDate;
     @SerializedName("published_date")
     @Expose
-    private String publishedDate;
+    private Date publishedDate;
     @SerializedName("material_type_facet")
     @Expose
     private String materialTypeFacet;
@@ -248,7 +250,7 @@ public class Article {
      * @return
      * The updatedDate
      */
-    public String getUpdatedDate() {
+    public Date getUpdatedDate() {
         return updatedDate;
     }
 
@@ -257,7 +259,7 @@ public class Article {
      * @param updatedDate
      * The updated_date
      */
-    public void setUpdatedDate(String updatedDate) {
+    public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
     }
 
@@ -266,7 +268,7 @@ public class Article {
      * @return
      * The createdDate
      */
-    public String getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
@@ -275,7 +277,7 @@ public class Article {
      * @param createdDate
      * The created_date
      */
-    public void setCreatedDate(String createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -284,7 +286,7 @@ public class Article {
      * @return
      * The publishedDate
      */
-    public String getPublishedDate() {
+    public Date getPublishedDate() {
         return publishedDate;
     }
 
@@ -293,7 +295,7 @@ public class Article {
      * @param publishedDate
      * The published_date
      */
-    public void setPublishedDate(String publishedDate) {
+    public void setPublishedDate(Date publishedDate) {
         this.publishedDate = publishedDate;
     }
 

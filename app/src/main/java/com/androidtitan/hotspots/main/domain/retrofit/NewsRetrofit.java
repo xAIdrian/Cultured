@@ -1,9 +1,12 @@
 package com.androidtitan.hotspots.main.domain.retrofit;
 
-import com.androidtitan.hotspots.main.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.domain.ArticleDeserializer;
+import com.androidtitan.hotspots.main.domain.DateDeserializer;
+import com.androidtitan.hotspots.main.model.newyorktimes.Article;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.Date;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -34,7 +37,8 @@ public class NewsRetrofit {
     private static GsonConverterFactory buildGsonConverter() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         //adding custom deserializer
-        //gsonBuilder.registerTypeAdapter(NewsResponse.class, new NewsJsonDeserializer());
+        gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+        gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
         gsonBuilder.registerTypeAdapter(Article.class, new ArticleDeserializer());
         gsonBuilder.serializeNulls();
         gsonBuilder.excludeFieldsWithoutExposeAnnotation();

@@ -44,8 +44,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private List<Article> articleList;
     private List<Integer> paletteList;
 
-    private Palette imagePalette;
-
 
     @Inject
     public NewsAdapter(Context context, List<Article> adapterTrackList) {
@@ -133,13 +131,16 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.abstractText.setText(articleList.get(position).getAbstract());
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
 
-        paletteList.add(R.color.colorPrimary);
+
+        paletteList.add(position, ContextCompat.getColor(context, R.color.colorPrimary));
+
 
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((NewsActivity)context).startDetailActivity(
-                        articleList.get(holder.getAdapterPosition()).getUrl(), paletteList.get(holder.getAdapterPosition()));
+                        articleList.get(position),
+                        paletteList.get(position));
             }
         });
     }
@@ -148,7 +149,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             holder.titleText.setText(articleList.get(position).getTitle());
             holder.abstractText.setText(articleList.get(position).getAbstract());
-
             holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
 
             try {
@@ -156,7 +156,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         .load(articleList.get(position).getMultimedia().get(3).getUrl())
                         .asBitmap()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .centerCrop()
+                        .fitCenter()
                         .into(new BitmapImageViewTarget(((LargeImageViewHolder) holder).articleImage) {
                             @Override
                             public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -165,10 +165,10 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     @Override
                                     public void onGenerated(Palette palette) {
                                         // Here's your generated palette
+
                                         int bgColor = palette.from(resource).generate().getVibrantColor(
                                                 ContextCompat.getColor(context, R.color.colorAccent));
-                                        paletteList.add(bgColor);
-
+                                        paletteList.add(position, bgColor);
                                         holder.paletteView.setBackgroundColor(bgColor);
                                     }
                                 });
@@ -183,7 +183,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     ((NewsActivity)context).startDetailActivity(
-                            articleList.get(holder.getAdapterPosition()).getUrl(), paletteList.get(holder.getAdapterPosition()));
+                            articleList.get(position),
+                            paletteList.get(position));
                 }
             });
     }
@@ -191,7 +192,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void initMediumViewholderImage(final MediumImageViewHolder holder, final int position) {
         holder.titleText.setText(articleList.get(position).getTitle());
         holder.abstractText.setText(articleList.get(position).getAbstract());
-
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
 
         try {
@@ -211,7 +211,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                     int bgColor = palette.from(resource).generate().getVibrantColor(
                                             ContextCompat.getColor(context, R.color.colorAccent));
                                     paletteList.add(bgColor);
-
                                     holder.paletteView.setBackgroundColor(bgColor);
                                 }
                             });
@@ -226,7 +225,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             @Override
             public void onClick(View v) {
                 ((NewsActivity)context).startDetailActivity(
-                        articleList.get(holder.getAdapterPosition()).getUrl(), paletteList.get(holder.getAdapterPosition()));
+                        articleList.get(position),
+                        paletteList.get(position));
             }
         });
     }
@@ -282,6 +282,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Nullable @Bind(R.id.titleTextView) TextView titleText;
         @Nullable @Bind(R.id.abstractTextView) TextView abstractText;
         @Nullable @Bind(R.id.globalTextView) TextView globalText;
+        @Nullable @Bind(R.id.paletteView) View paletteView;
 
         public SimpleViewHolder(View itemView) {
             super(itemView);
