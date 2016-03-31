@@ -9,7 +9,6 @@
     <string name="long_placeholder">WikipediaTunes is going to recommend music based on the
         some featured article.  Why not try listening to these songs while you read the article?
         Keep up the work Adrian.  You\'re great.</string>
-    <string name="title_activity_news_detail">NewsDetailActivity</string>
 
     <string name="transition_news_image">transition:NEWSIMAGE</string>
 

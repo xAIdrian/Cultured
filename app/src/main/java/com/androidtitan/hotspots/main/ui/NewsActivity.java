@@ -41,7 +41,6 @@ public class NewsActivity extends BaseActivity implements NewsView,
         RecyclerView.OnItemTouchListener{
     private final String TAG = getClass().getSimpleName();
 
-    public static final String ARTICLE_IMAGE_PALETTE_EXTRA = "newsactivity.articleimagepaletteextra";
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
     public static NewsPresenterComponent newsPresenterComponent;
@@ -174,11 +173,10 @@ public class NewsActivity extends BaseActivity implements NewsView,
     }
 
 
-    public void startDetailActivity(Article article, int paletteColor) {
+    public void startDetailActivity(Article article) {
 
         Intent intent = new Intent(this, NewsDetailActivity.class);
-        intent.putExtra(ARTICLE_EXTRA, article.getUrl());
-        intent.putExtra(ARTICLE_IMAGE_PALETTE_EXTRA, paletteColor);
+        intent.putExtra(ARTICLE_EXTRA, article);
         startActivity(intent);
 
 

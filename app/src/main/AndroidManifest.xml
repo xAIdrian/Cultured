@@ -13,7 +13,7 @@
     <application
         android:name=".main.application.App"
         android:allowBackup="true"
-        android:icon="@mipmap/androidcircle"
+        android:icon="@mipmap/ic_plane"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity android:name=".main.ui.NewsActivity">
@@ -25,7 +25,6 @@
         </activity>
         <activity
             android:name=".main.ui.NewsDetailActivity"
-            android:label="@string/title_activity_news_detail"
             android:parentActivityName=".main.ui.NewsActivity"
             android:theme="@style/AppTheme"/>
         <activity android:name=".main.ui.MusicActivity" />

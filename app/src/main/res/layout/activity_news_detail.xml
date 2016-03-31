@@ -10,7 +10,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="228dp"
         android:fitsSystemWindows="true"
         android:theme="@style/AppTheme.AppBarOverlay">
 
@@ -21,13 +21,13 @@
             android:fitsSystemWindows="true"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <ImageView
+            <com.flaviofaria.kenburnsview.KenBurnsView
                 android:id="@+id/bgheader"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
+                android:scaleType="fitCenter"
                 android:fitsSystemWindows="true"
-                android:background="@drawable/placeholder_golden_gate"
+                android:background="@color/colorAccent"
                 app:layout_collapseMode="pin" />
 
             <android.support.v7.widget.Toolbar
@@ -35,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="parallax"
-                app:theme="@style/AppTheme.PopupOverlay" />
+                app:theme="@style/AppTheme.PopupOverlay"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
@@ -58,9 +58,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:foregroundGravity="center"
-        android:src="@drawable/ic_plane_48"
+        android:src="@drawable/ic_headphones_48"
         app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end"
-        android:background="@color/colorPrimary"/>
+        app:layout_anchorGravity="bottom|end"/>
 
 </android.support.design.widget.CoordinatorLayout>

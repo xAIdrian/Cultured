@@ -26,8 +26,7 @@ import retrofit2.Retrofit;
 public class MusicPresenterImpl implements MusicPresenter {
     private final String TAG = getClass().getSimpleName();
 
-    @Inject
-    SpotifyRetrofit spotifyRetrofit;
+    @Inject SpotifyRetrofit spotifyRetrofit;
 
     private Retrofit retrofit;
     private Context context;

@@ -1,36 +1,52 @@
 package com.androidtitan.hotspots.main.ui;
 
 import android.annotation.TargetApi;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.LinearInterpolator;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
 
 import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.main.model.newyorktimes.Article;
+import com.androidtitan.hotspots.main.presenter.newsdetail.DaggerNewsDetailPresenterComponent;
+import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailModule;
+import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenter;
+import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenterComponent;
+import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailView;
+import com.flaviofaria.kenburnsview.KenBurnsView;
+import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class NewsDetailActivity extends AppCompatActivity {
+public class NewsDetailActivity extends AppCompatActivity implements NewsDetailView{
     private final String TAG = getClass().getSimpleName();
+
+    public static NewsDetailPresenterComponent newsDetailPresenterComponent;
+    @Inject NewsDetailPresenter presenter;
 
     @Bind(R.id.collapse_toolbar) CollapsingToolbarLayout collapsingToolbar;
     @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.bgheader) ImageView articleImageView;
+    @Bind(R.id.bgheader) KenBurnsView articleImageView;
+    @Bind(R.id.fab) FloatingActionButton fab;
     @Bind(R.id.webview) WebView articleWebView;
 
-    private String webUrl;
-    private int paletteColor;
+    private Article article;
+    private Palette palette;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,19 +58,22 @@ public class NewsDetailActivity extends AppCompatActivity {
         if(getIntent().getExtras() != null) {
             Bundle extras = getIntent().getExtras();
 
-            webUrl = extras.getString(NewsActivity.ARTICLE_EXTRA);
-            paletteColor = extras.getInt(NewsActivity.ARTICLE_IMAGE_PALETTE_EXTRA);
+            article = (Article) extras.getSerializable(NewsActivity.ARTICLE_EXTRA);
         }
 
+        implementComponents();
         initializeToolbar();
         initializeViewElements();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                /*// /w/api.php?action=query&format=json&prop=revisions&rvprop=content&titles=georgia%7CMain+PAge
+                presenter.queryWikipediaPage("query", "json", "revisions", "content", "Main%20page");
+
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                        .setAction("Action", null).show();*/
             }
         });
     }
@@ -76,16 +95,31 @@ public class NewsDetailActivity extends AppCompatActivity {
         }
     }
 
+    public void implementComponents() {
+
+
+        newsDetailPresenterComponent = DaggerNewsDetailPresenterComponent.builder()
+                .newsDetailModule(new NewsDetailModule(this, this))
+                .build();
+        newsDetailPresenterComponent.inject(this);
+    }
+
     private void initializeToolbar() {
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_news_48);
-        //collapsingToolbar.setTitle("My Toolbar Tittle");
-        collapsingToolbar.setContentScrimColor(paletteColor);
+        fab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
+        collapsingToolbar.setTitle(article.getGeoFacet().get(0));
     }
 
     private void initializeViewElements() {
+
+        collapsingToolbar.setContentScrimColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+
+        presenter.getHeaderImage(article.getMultimedia(), articleImageView);
+        RandomTransitionGenerator generator = new RandomTransitionGenerator(20000, new LinearInterpolator());
+        articleImageView.setTransitionGenerator(generator);
 
         articleWebView.setWebViewClient(new WebViewClient() {
             @Override
@@ -94,12 +128,23 @@ public class NewsDetailActivity extends AppCompatActivity {
                 return true;
             }
         });
+
         articleWebView.getSettings().setLoadsImagesAutomatically(true);
         articleWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         articleWebView.getSettings().setJavaScriptEnabled(true);
         articleWebView.getSettings().setBuiltInZoomControls(true);
-
-        articleWebView.loadUrl(webUrl);
+        articleWebView.loadUrl(presenter.formattedWikiUrl(article.getGeoFacet().get(0)));
     }
 
+    @Override
+    public void onImageDownload(Palette palette) {
+        //todo: you know...we could use BUTTERKNIFE to get our color resource...
+        int vibrantColor = palette.getVibrantColor(
+                ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
+        int vibrantDarkColor = palette.getDarkVibrantColor(
+                ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
+
+        collapsingToolbar.setContentScrimColor(vibrantDarkColor);
+        fab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
+    }
 }
