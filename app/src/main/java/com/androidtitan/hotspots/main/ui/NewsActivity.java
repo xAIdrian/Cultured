@@ -76,11 +76,9 @@ public class NewsActivity extends BaseActivity implements NewsView,
 
         //saveInstanceState to handle rotations
         if(savedInstanceState != null) {
-            articles = savedInstanceState.getParcelableArrayList(SAVED_STATE_ARTICLE_LIST);
-        } else {
-            articles = presenter.queryNews("world", 20);
+            //articles = savedInstanceState.getParcelableArrayList(SAVED_STATE_ARTICLE_LIST);
         }
-
+        articles = presenter.queryNews("world", 20);
         initializeRecyclerView();
 
         refreshFab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
@@ -180,7 +178,7 @@ public class NewsActivity extends BaseActivity implements NewsView,
     }
 
     public void refreshRecyclerView() {
-        presenter.queryNews("world", 20);
+        presenter.refreshQueryNews("world", 20);
     }
 
     @Override
