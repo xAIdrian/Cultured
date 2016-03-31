@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.GestureDetectorCompat;
@@ -30,17 +31,20 @@ import com.androidtitan.hotspots.main.presenter.news.NewsPresenterModule;
 import com.androidtitan.hotspots.main.presenter.news.NewsView;
 import com.androidtitan.hotspots.main.ui.adapter.NewsAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 public class NewsActivity extends BaseActivity implements NewsView,
         RecyclerView.OnItemTouchListener{
     private final String TAG = getClass().getSimpleName();
 
+    private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
     public static NewsPresenterComponent newsPresenterComponent;
@@ -56,7 +60,7 @@ public class NewsActivity extends BaseActivity implements NewsView,
 
     private NewsAdapter adapter;
 
-    List<Article> articles;
+    private List<Article> articles;
 
 
     @Override
@@ -70,8 +74,12 @@ public class NewsActivity extends BaseActivity implements NewsView,
 
         implementComponents();
 
-        //presenter.startMusicActivity("nothing for right now");
-        articles = presenter.firstQueryNews("world", 20);
+        //saveInstanceState to handle rotations
+        if(savedInstanceState != null) {
+            articles = savedInstanceState.getParcelableArrayList(SAVED_STATE_ARTICLE_LIST);
+        } else {
+            articles = presenter.queryNews("world", 20);
+        }
 
         initializeRecyclerView();
 
@@ -115,6 +123,18 @@ public class NewsActivity extends BaseActivity implements NewsView,
         refreshRecyclerView();
     }
 
+    /**
+     * Save all appropriate fragment state.
+     *
+     * @param outState
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST, (ArrayList<? extends Parcelable>) articles);
+    }
+
     public void implementComponents() {
         newsPresenterComponent = DaggerNewsPresenterComponent.builder()
                 .newsPresenterModule(new NewsPresenterModule(this, this)) //this can be removed
@@ -131,6 +151,7 @@ public class NewsActivity extends BaseActivity implements NewsView,
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnItemTouchListener(this);
+        recyclerView.setItemAnimator(new SlideInLeftAnimator());
 
         adapter = new NewsAdapter(this, articles);
         recyclerView.setAdapter(adapter);
@@ -159,7 +180,7 @@ public class NewsActivity extends BaseActivity implements NewsView,
     }
 
     public void refreshRecyclerView() {
-        presenter.refreshQueryNews("world", 20);
+        presenter.queryNews("world", 20);
     }
 
     @Override
@@ -174,12 +195,9 @@ public class NewsActivity extends BaseActivity implements NewsView,
 
 
     public void startDetailActivity(Article article) {
-
         Intent intent = new Intent(this, NewsDetailActivity.class);
         intent.putExtra(ARTICLE_EXTRA, article);
         startActivity(intent);
-
-
     }
 
 

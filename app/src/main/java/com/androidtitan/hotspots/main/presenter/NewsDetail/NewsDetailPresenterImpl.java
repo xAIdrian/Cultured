@@ -37,7 +37,7 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter{
 
 
     @Override
-    public void getHeaderImage(List<Multimedium> mediaList, ImageView articleImageView) {
+    public void getHeaderImage(List<Multimedium> mediaList, ImageView articleImageView, int width, int height) {
 
         try {
             Glide.with(context)
@@ -60,7 +60,26 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter{
                     });
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, width + " x " + height);
+            Log.e(TAG, "http://loremflickr.com" + width +  "/" + height);
+            Glide.with(context)
+                    .load("http://loremflickr.com/" + width +  "/" + height)
+                    .asBitmap()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .into(new BitmapImageViewTarget(articleImageView) {
+                        @Override
+                        public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            super.onResourceReady(resource, glideAnimation);
+                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(Palette palette) {
+                                    // Here's your generated palette
+                                    newsView.onImageDownload(palette);
+                                }
+                            });
+                        }
+                    });
         }
 
     }
@@ -73,6 +92,7 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter{
 
         for(int i = 0; i < geofacet.length(); i++) {
             if(shouldKeepAppending) {
+
                 if (geofacet.charAt(i) == ' ') {
                     stringBuilder.append("_");
 
@@ -80,8 +100,8 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter{
                     shouldKeepAppending = false;
 
                 } else if (geofacet.charAt(i) == '(') {
-                    Log.e(TAG, "glop");
                     shouldKeepAppending = false;
+
                 } else {
                     stringBuilder.append(geofacet.charAt(i));
                 }

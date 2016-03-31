@@ -3,15 +3,17 @@ package com.androidtitan.hotspots.main.model.newyorktimes;
 /**
  * Created by amohnacs on 3/21/16.
  */
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.io.Serializable;
 
 import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
-public class Multimedium implements Serializable{
+public class Multimedium implements Parcelable {
 
     @SerializedName("url")
     @Expose
@@ -37,6 +39,23 @@ public class Multimedium implements Serializable{
     @SerializedName("copyright")
     @Expose
     private String copyright;
+
+    public Multimedium(){
+
+    }
+
+    public Multimedium(Parcel in) {
+
+        url = in.readString();
+        format = in.readString();
+        height = in.readInt();
+        width = in.readInt();
+        type = in.readString();
+        subtype = in.readString();
+        caption = in.readString();
+        copyright = in.readString();
+
+    }
 
     /**
      *
@@ -182,4 +201,62 @@ public class Multimedium implements Serializable{
         this.copyright = copyright;
     }
 
+    /**
+     * Describe the kinds of special objects contained in this Parcelable's
+     * marshalled representation.
+     *
+     * @return a bitmask indicating the set of special object types marshalled
+     * by the Parcelable.
+     */
+    @Override
+    public int describeContents() {
+        return hashCode();
+    }
+
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(url);
+        dest.writeString(format);
+        dest.writeInt(height);
+        dest.writeInt(width);
+        dest.writeString(type);
+        dest.writeString(subtype);
+        dest.writeString(caption);
+        dest.writeString(copyright);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+        /**
+         * Create a new instance of the Parcelable class, instantiating it
+         * from the given Parcel whose data had previously been written by
+         * {@link Parcelable#writeToParcel Parcelable.writeToParcel()}.
+         *
+         * @param source The Parcel to read the object's data from.
+         * @return Returns a new instance of the Parcelable class.
+         */
+        @Override
+        public Multimedium createFromParcel(Parcel source) {
+            return new Multimedium(source);
+        }
+
+        /**
+         * Create a new array of the Parcelable class.
+         *
+         * @param size Size of the array.
+         * @return Returns an array of the Parcelable class, with every entry
+         * initialized to null.
+         */
+        @Override
+        public Multimedium[] newArray(int size) {
+            return new Multimedium[size];
+        }
+    };
 }

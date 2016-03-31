@@ -3,10 +3,12 @@ package com.androidtitan.hotspots.main.model.newyorktimes;
 /**
  * Created by amohnacs on 3/21/16.
  */
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -14,7 +16,7 @@ import java.util.List;
 import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
-public class Article implements Serializable{
+public class Article implements Parcelable{
 
     @SerializedName("section")
     @Expose
@@ -82,6 +84,46 @@ public class Article implements Serializable{
     @SerializedName("blog_name")
     @Expose
     private String blogName;
+
+    public Article() {
+
+    }
+
+    public Article(Parcel in) { //you must read these in the same order as your wrote them
+        section = in.readString();
+        subsection = in.readString();
+        title = in.readString();
+        _abstract = in.readString();
+        url = in.readString();
+        byline = in.readString();
+        thumbnailStandard = in.readString();
+        itemType = in.readString();
+        source = in.readString();
+
+        updatedDate = (java.util.Date) in.readSerializable();
+        createdDate = (java.util.Date) in.readSerializable();
+        publishedDate = (java.util.Date) in.readSerializable();
+
+        materialTypeFacet = in.readString();
+        kicker = in.readString();
+        subheadline = in.readString();
+
+        desFacet = new ArrayList<String>();
+        in.readStringList(desFacet);
+        orgFacet = new ArrayList<String>();
+        in.readStringList(orgFacet);
+        perFacet = new ArrayList<String>();
+        in.readStringList(perFacet);
+        geoFacet = new ArrayList<String>();
+        in.readStringList(geoFacet);
+
+        relatedUrls = new ArrayList<RelatedUrl>();
+        in.readTypedList(relatedUrls, RelatedUrl.CREATOR);
+        multimedia = new ArrayList<Multimedium>();
+        in.readTypedList(multimedia, Multimedium.CREATOR);
+        blogName = in.readString();
+
+    }
 
     /**
      *
@@ -479,4 +521,81 @@ public class Article implements Serializable{
         this.blogName = blogName;
     }
 
+
+
+    /**
+     * Describe the kinds of special objects contained in this Parcelable's
+     * marshalled representation.
+     *
+     * @return a bitmask indicating the set of special object types marshalled
+     * by the Parcelable.
+     */
+    @Override
+    public int describeContents() {
+        return hashCode();
+    }
+
+    /**
+     * Flatten this object in to a Parcel.
+     *
+     * @param dest  The Parcel in which the object should be written.
+     * @param flags Additional flags about how the object should be written.
+     *              May be 0 or {@link #PARCELABLE_WRITE_RETURN_VALUE}.
+     */
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(section);
+        dest.writeString(subsection);
+        dest.writeString(title);
+        dest.writeString(_abstract);
+        dest.writeString(url);
+        dest.writeString(byline);
+        dest.writeString(thumbnailStandard);
+        dest.writeString(itemType);
+        dest.writeString(source);
+
+        dest.writeSerializable(updatedDate);
+        dest.writeSerializable(createdDate);
+        dest.writeSerializable(publishedDate);
+
+        dest.writeString(materialTypeFacet);
+        dest.writeString(kicker);
+        dest.writeString(subheadline);
+        dest.writeStringList(desFacet);
+        dest.writeStringList(orgFacet);
+        dest.writeStringList(perFacet);
+        dest.writeStringList(geoFacet);
+        dest.writeTypedList(relatedUrls);
+        dest.writeTypedList(multimedia);
+        dest.writeString(blogName);
+
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+
+        /**
+         * Create a new instance of the Parcelable class, instantiating it
+         * from the given Parcel whose data had previously been written by
+         * {@link Parcelable#writeToParcel Parcelable.writeToParcel()}.
+         *
+         * @param source The Parcel to read the object's data from.
+         * @return Returns a new instance of the Parcelable class.
+         */
+        @Override
+        public Article createFromParcel(Parcel source) {
+            return new Article(source);
+        }
+
+        /**
+         * Create a new array of the Parcelable class.
+         *
+         * @param size Size of the array.
+         * @return Returns an array of the Parcelable class, with every entry
+         * initialized to null.
+         */
+        @Override
+        public Article[] newArray(int size) {
+            return new Article[size];
+        }
+    };
 }

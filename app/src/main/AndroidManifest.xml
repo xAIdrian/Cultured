@@ -27,7 +27,7 @@
             android:name=".main.ui.NewsDetailActivity"
             android:parentActivityName=".main.ui.NewsActivity"
             android:theme="@style/AppTheme"/>
-        <activity android:name=".main.ui.MusicActivity" />
+        <activity android:name=".main.ui.MusicActivity"/>
     </application>
 
 </manifest>

@@ -9,6 +9,6 @@ import java.util.List;
  */
 public interface NewsPresenter {
 
-    List<Article> firstQueryNews(String section, int limit);
+    List<Article> queryNews(String section, int limit);
     void refreshQueryNews(String section, int limit);
 }

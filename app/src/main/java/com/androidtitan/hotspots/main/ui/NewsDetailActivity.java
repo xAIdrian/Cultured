@@ -4,7 +4,9 @@ import android.annotation.TargetApi;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,10 +15,14 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
@@ -25,6 +31,7 @@ import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailModule;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenter;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenterComponent;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailView;
+import com.androidtitan.hotspots.main.util.HelperMethods;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
 
@@ -36,6 +43,8 @@ import butterknife.ButterKnife;
 public class NewsDetailActivity extends AppCompatActivity implements NewsDetailView{
     private final String TAG = getClass().getSimpleName();
 
+    private final static String SAVED_STATE_ARTICLE = "newsdetailactivity.savedstatearticle";
+
     public static NewsDetailPresenterComponent newsDetailPresenterComponent;
     @Inject NewsDetailPresenter presenter;
 
@@ -45,8 +54,13 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
     @Bind(R.id.fab) FloatingActionButton fab;
     @Bind(R.id.webview) WebView articleWebView;
 
+    private Handler handler;
+    private Animation scale;
+
     private Article article;
     private Palette palette;
+
+    private int[] dimensionArray = new int[2];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,15 +69,21 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         setContentView(R.layout.activity_news_detail);
         ButterKnife.bind(this);
 
-        if(getIntent().getExtras() != null) {
-            Bundle extras = getIntent().getExtras();
+        if(savedInstanceState != null) {
+            article = savedInstanceState.getParcelable(SAVED_STATE_ARTICLE);
 
-            article = (Article) extras.getSerializable(NewsActivity.ARTICLE_EXTRA);
+        } else {
+            if (getIntent().getExtras() != null) {
+                Bundle extras = getIntent().getExtras();
+
+                article = (Article) extras.getParcelable(NewsActivity.ARTICLE_EXTRA);
+            }
         }
 
         implementComponents();
         initializeToolbar();
         initializeViewElements();
+        initializeAnimations();
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +96,18 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
                         .setAction("Action", null).show();*/
             }
         });
+    }
+
+    /**
+     * Save all appropriate fragment state.
+     *
+     * @param outState
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable(SAVED_STATE_ARTICLE, article);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -97,7 +129,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
 
     public void implementComponents() {
 
-
         newsDetailPresenterComponent = DaggerNewsDetailPresenterComponent.builder()
                 .newsDetailModule(new NewsDetailModule(this, this))
                 .build();
@@ -117,8 +148,13 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
 
         collapsingToolbar.setContentScrimColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
 
-        presenter.getHeaderImage(article.getMultimedia(), articleImageView);
-        RandomTransitionGenerator generator = new RandomTransitionGenerator(20000, new LinearInterpolator());
+        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
+        p.setAnchorId(R.id.collapse_toolbar);
+        fab.setLayoutParams(p);
+        fab.setVisibility(View.GONE);
+
+        getHeaderImage(articleImageView);
+        RandomTransitionGenerator generator = new RandomTransitionGenerator(25000, new LinearInterpolator());
         articleImageView.setTransitionGenerator(generator);
 
         articleWebView.setWebViewClient(new WebViewClient() {
@@ -128,7 +164,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
                 return true;
             }
         });
-
         articleWebView.getSettings().setLoadsImagesAutomatically(true);
         articleWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         articleWebView.getSettings().setJavaScriptEnabled(true);
@@ -136,9 +171,36 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         articleWebView.loadUrl(presenter.formattedWikiUrl(article.getGeoFacet().get(0)));
     }
 
+    private void initializeAnimations() {
+
+        handler = new Handler();
+        scale = AnimationUtils.loadAnimation(this, R.anim.scale);
+    }
+
+    private void getHeaderImage(final ImageView imageview) {
+
+        ViewTreeObserver vto = imageview.getViewTreeObserver();
+        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            public boolean onPreDraw() {
+                //imageview.getViewTreeObserver().removeOnPreDrawListener(this);
+
+                dimensionArray[0] = HelperMethods.convertPixtoDip(imageview.getMeasuredWidth());
+                dimensionArray[1] = HelperMethods.convertPixtoDip(imageview.getMeasuredHeight());
+
+                imageview.getViewTreeObserver().removeOnPreDrawListener(this);
+
+                presenter.getHeaderImage(article.getMultimedia(), articleImageView,
+                        dimensionArray[0], dimensionArray[1]);
+
+                return true;
+            }
+        });
+    }
+
     @Override
     public void onImageDownload(Palette palette) {
         //todo: you know...we could use BUTTERKNIFE to get our color resource...
+
         int vibrantColor = palette.getVibrantColor(
                 ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
         int vibrantDarkColor = palette.getDarkVibrantColor(
@@ -146,5 +208,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
 
         collapsingToolbar.setContentScrimColor(vibrantDarkColor);
         fab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
+
+        fab.setVisibility(View.VISIBLE);
+        fab.startAnimation(scale);
     }
 }

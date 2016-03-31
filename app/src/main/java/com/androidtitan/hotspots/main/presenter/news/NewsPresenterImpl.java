@@ -46,7 +46,7 @@ public class NewsPresenterImpl implements NewsPresenter {
     }
 
     @Override
-    public List<Article> firstQueryNews(String section, int limit) {
+    public List<Article> queryNews(String section, int limit) {
 
         itemList = new ArrayList<Article>();
 
@@ -67,7 +67,7 @@ public class NewsPresenterImpl implements NewsPresenter {
                         itemList.add(article);
                         newsView.updateNewsAdapter();
                     }
-
+                    newsView.refreshCompleted();
                 } else {
                     Log.e(TAG, "response fail");
                 }
@@ -100,11 +100,15 @@ public class NewsPresenterImpl implements NewsPresenter {
 
                     for (int i = 0; i < resp.getArticles().size(); i++) {
 
-                        if(!resp.getArticles().get(i).getTitle().equals(itemList.get(i).getTitle())) {
-                            itemList.add(0, resp.getArticles().get(i));
-                            newsView.updateSpecificNewsAdapter(0);
+                        try {
+                            if (!resp.getArticles().get(i).getTitle().equals(itemList.get(i).getTitle())) {
+                                itemList.add(0, resp.getArticles().get(i));
+                                newsView.updateSpecificNewsAdapter(0);
 
-                            Log.e(TAG, "actual get :: " + resp.getArticles().get(i).getTitle());
+                                Log.e(TAG, "actual get :: " + resp.getArticles().get(i).getTitle());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
 
                     }

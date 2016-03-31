@@ -60,6 +60,7 @@
         android:foregroundGravity="center"
         android:src="@drawable/ic_headphones_48"
         app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end"/>
+        app:layout_anchorGravity="bottom|end"
+        android:visibility="gone"/>
 
 </android.support.design.widget.CoordinatorLayout>

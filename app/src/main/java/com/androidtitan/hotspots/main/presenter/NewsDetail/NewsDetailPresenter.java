@@ -11,6 +11,6 @@ import java.util.List;
  */
 public interface NewsDetailPresenter {
 
-    void getHeaderImage(List<Multimedium> mediaList, ImageView image);
+    void getHeaderImage(List<Multimedium> mediaList, ImageView image, int pixelWidth, int pixelHeight);
     String formattedWikiUrl(String geofacet);
 }
