@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
-import com.androidtitan.hotspots.main.ui.NewsActivity;
+import com.androidtitan.hotspots.main.ui.activities.NewsActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -131,7 +131,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             @Override
             public void onClick(View v) {
                 ((NewsActivity)context).startDetailActivity(
-                        articleList.get(position));
+                        articleList.get(position), null);
             }
         });
     }
@@ -173,7 +173,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     ((NewsActivity)context).startDetailActivity(
-                            articleList.get(position));
+                            articleList.get(position), holder.articleImage);
                 }
             });
     }
@@ -213,7 +213,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             @Override
             public void onClick(View v) {
                 ((NewsActivity)context).startDetailActivity(
-                        articleList.get(position));
+                        articleList.get(position), holder.articleImage);
             }
         });
     }

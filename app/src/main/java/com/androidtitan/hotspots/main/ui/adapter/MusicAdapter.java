@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.model.spotify.Item;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.List;
 
@@ -58,6 +60,17 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
             }
         }
         holder.artistText.setText(artistsStringBuilder.toString());
+
+        try {
+            Glide.with(context)
+                    .load(trackList.get(position).getAlbum().getImages().get(0).getUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .into(holder.albumImage);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
 

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.androidtitan.hotspots.main.application.App;
 import com.androidtitan.hotspots.main.scopes.sPresenterScope;
-import com.androidtitan.hotspots.main.ui.MusicActivity;
+import com.androidtitan.hotspots.main.ui.activities.MusicActivity;
 
 import dagger.Module;
 import dagger.Provides;

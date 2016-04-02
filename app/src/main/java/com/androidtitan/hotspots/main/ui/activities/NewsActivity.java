@@ -1,6 +1,7 @@
-package com.androidtitan.hotspots.main.ui;
+package com.androidtitan.hotspots.main.ui.activities;
 
 import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseActivity;
@@ -38,7 +40,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 
 public class NewsActivity extends BaseActivity implements NewsView,
         RecyclerView.OnItemTouchListener{
@@ -149,7 +151,7 @@ public class NewsActivity extends BaseActivity implements NewsView,
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnItemTouchListener(this);
-        recyclerView.setItemAnimator(new SlideInLeftAnimator());
+        recyclerView.setItemAnimator(new SlideInDownAnimator());
 
         adapter = new NewsAdapter(this, articles);
         recyclerView.setAdapter(adapter);
@@ -192,10 +194,23 @@ public class NewsActivity extends BaseActivity implements NewsView,
     }
 
 
-    public void startDetailActivity(Article article) {
-        Intent intent = new Intent(this, NewsDetailActivity.class);
-        intent.putExtra(ARTICLE_EXTRA, article);
-        startActivity(intent);
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void startDetailActivity(Article article, ImageView articleImage) {
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
+
+            Intent intent = new Intent(this, NewsDetailActivity.class);
+            intent.putExtra(ARTICLE_EXTRA, article);
+            startActivity(intent, options.toBundle());
+        } else {
+            Intent intent = new Intent(this, NewsDetailActivity.class);
+            intent.putExtra(ARTICLE_EXTRA, article);
+            startActivity(intent);
+        }
+
+
     }
 
 
@@ -231,7 +246,7 @@ public class NewsActivity extends BaseActivity implements NewsView,
             int position = recyclerView.getChildAdapterPosition(view);
 
             // Vibrate for 500 milliseconds
-            v.vibrate(100);
+            v.vibrate(50);
             return super.onSingleTapUp(e);
         }
 

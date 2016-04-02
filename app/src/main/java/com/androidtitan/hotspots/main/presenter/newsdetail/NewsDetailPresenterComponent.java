@@ -1,7 +1,7 @@
 package com.androidtitan.hotspots.main.presenter.newsdetail;
 
 import com.androidtitan.hotspots.main.scopes.dvPresenterScope;
-import com.androidtitan.hotspots.main.ui.NewsDetailActivity;
+import com.androidtitan.hotspots.main.ui.activities.NewsDetailActivity;
 
 import dagger.Component;
 

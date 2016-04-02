@@ -1,11 +1,15 @@
-package com.androidtitan.hotspots.main.ui;
+package com.androidtitan.hotspots.main.ui.activities;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Slide;
 import android.view.View;
+import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -40,16 +44,24 @@ public class MusicActivity extends BaseActivity implements MusicView {
     private View bgView;
 
     private List<Item> trackItems;
+    private String geoString;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        initializeTranstions();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
 
+        if(getIntent().getExtras() != null) {
+            geoString = getIntent().getStringExtra(NewsDetailActivity.NEWS_DETAIL_MUSIC_SEARCHER);
+        }
+
         implementComponents();
         //todo: this is going to be moved at some point as it will be Triggered
-        trackItems = presenter.querySpotifyTracks("a", 20);
+        trackItems = presenter.querySpotifyTracks(
+                geoString,
+                20);
 
         setUpToolbar();
         initializeRecyclerView();
@@ -132,14 +144,29 @@ public class MusicActivity extends BaseActivity implements MusicView {
         return toolbarContainer.getTranslationY() - dy > 0;
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void initializeTranstions() {
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            // inside your activity (if you did not enable transitions in your theme)
+            getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+            getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+            // set an exit transition
+            getWindow().setEnterTransition(new Slide());
+            getWindow().setExitTransition(new Slide());
+
+        } else {
+            // do something for phones running an API before lollipop
+        }
+    }
+
     private void setUpToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_wikipedia_48);
         actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setDisplayShowTitleEnabled(false);
-        actionBar.setTitle(getResources().getString(R.string.tracks));
+        actionBar.setTitle(getIntent().getStringExtra(geoString));
     }
 
 

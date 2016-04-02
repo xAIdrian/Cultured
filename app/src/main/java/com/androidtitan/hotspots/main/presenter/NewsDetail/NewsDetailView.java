@@ -7,4 +7,5 @@ import android.support.v7.graphics.Palette;
  */
 public interface NewsDetailView {
     void onImageDownload(Palette palette);
+    void startMusicActivity(String searcher);
 }

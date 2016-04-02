@@ -1,11 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity"
-    android:background="#FFFFFF">
+    tools:context=".MainActivity">
 
-    <item android:id="@+id/title"
-        android:title=""
+    <item android:id="@+id/navigate_away"
+        android:title="View Article"
         android:orderInCategory="1"
-        app:showAsAction="always"/>
+        app:showAsAction="never"
+        app:itemIconTint="@android:color/white"/>
 </menu>

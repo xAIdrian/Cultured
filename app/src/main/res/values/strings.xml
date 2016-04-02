@@ -12,6 +12,9 @@
 
     <string name="transition_news_image">transition:NEWSIMAGE</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
     <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->
 

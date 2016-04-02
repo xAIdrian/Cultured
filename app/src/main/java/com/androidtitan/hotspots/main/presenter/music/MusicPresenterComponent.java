@@ -1,7 +1,7 @@
 package com.androidtitan.hotspots.main.presenter.music;
 
 import com.androidtitan.hotspots.main.scopes.sPresenterScope;
-import com.androidtitan.hotspots.main.ui.MusicActivity;
+import com.androidtitan.hotspots.main.ui.activities.MusicActivity;
 import com.androidtitan.hotspots.main.ui.adapter.MusicAdapter;
 
 import dagger.Component;

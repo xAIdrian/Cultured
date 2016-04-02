@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.androidtitan.hotspots.main.application.App;
 import com.androidtitan.hotspots.main.scopes.dvPresenterScope;
-import com.androidtitan.hotspots.main.ui.NewsDetailActivity;
+import com.androidtitan.hotspots.main.ui.activities.NewsDetailActivity;
 
 import dagger.Module;
 import dagger.Provides;

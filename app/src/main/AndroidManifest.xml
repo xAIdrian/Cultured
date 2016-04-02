@@ -16,7 +16,7 @@
         android:icon="@mipmap/ic_plane"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <activity android:name=".main.ui.NewsActivity">
+        <activity android:name=".main.ui.activities.NewsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,10 +24,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".main.ui.NewsDetailActivity"
-            android:parentActivityName=".main.ui.NewsActivity"
-            android:theme="@style/AppTheme"/>
-        <activity android:name=".main.ui.MusicActivity"/>
+            android:name=".main.ui.activities.NewsDetailActivity"
+            android:parentActivityName=".main.ui.activities.NewsActivity"
+            android:theme="@style/AppTheme"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".main.ui.activities.MusicActivity"
+            android:parentActivityName=".main.ui.activities.NewsDetailActivity"/>
     </application>
 
 </manifest>

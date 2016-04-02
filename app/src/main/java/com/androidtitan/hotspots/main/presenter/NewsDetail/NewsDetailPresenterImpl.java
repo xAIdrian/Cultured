@@ -60,12 +60,13 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter{
                     });
 
         } catch (Exception e) {
+            String url = "http://loremflickr.com/" + width +  "/" + height;
             Log.e(TAG, width + " x " + height);
-            Log.e(TAG, "http://loremflickr.com" + width +  "/" + height);
+            Log.e(TAG, "http://loremflickr.com/" + width +  "/" + height);
             Glide.with(context)
-                    .load("http://loremflickr.com/" + width +  "/" + height)
+                    .load(url)
                     .asBitmap()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .centerCrop()
                     .into(new BitmapImageViewTarget(articleImageView) {
                         @Override
@@ -113,6 +114,11 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter{
         Log.e(TAG, stringBuilder.toString());
 
         return stringBuilder.toString();
+    }
+
+    @Override
+    public void startMusicActivity(String searcher) {
+        newsView.startMusicActivity(searcher);
     }
 
 }

@@ -13,4 +13,5 @@ public interface NewsDetailPresenter {
 
     void getHeaderImage(List<Multimedium> mediaList, ImageView image, int pixelWidth, int pixelHeight);
     String formattedWikiUrl(String geofacet);
+    void startMusicActivity(String searcher);
 }

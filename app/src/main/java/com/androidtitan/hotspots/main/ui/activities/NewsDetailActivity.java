@@ -1,6 +1,9 @@
-package com.androidtitan.hotspots.main.ui;
+package com.androidtitan.hotspots.main.ui.activities;
 
+import android.animation.Animator;
 import android.annotation.TargetApi;
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,9 +15,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
-import android.transition.Transition;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -23,6 +29,7 @@ import android.view.animation.LinearInterpolator;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
@@ -44,23 +51,26 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
     private final String TAG = getClass().getSimpleName();
 
     private final static String SAVED_STATE_ARTICLE = "newsdetailactivity.savedstatearticle";
+    public final static String NEWS_DETAIL_MUSIC_SEARCHER = "newsdetailactivity.newsdetailmusicsearcher";
 
     public static NewsDetailPresenterComponent newsDetailPresenterComponent;
-    @Inject NewsDetailPresenter presenter;
+    @Inject
+    NewsDetailPresenter presenter;
 
     @Bind(R.id.collapse_toolbar) CollapsingToolbarLayout collapsingToolbar;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.bgheader) KenBurnsView articleImageView;
     @Bind(R.id.fab) FloatingActionButton fab;
+    @Bind(R.id.articleTitleTextView) TextView articleTitleText;
     @Bind(R.id.webview) WebView articleWebView;
 
     private Handler handler;
     private Animation scale;
 
     private Article article;
-    private Palette palette;
 
     private int[] dimensionArray = new int[2];
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +79,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         setContentView(R.layout.activity_news_detail);
         ButterKnife.bind(this);
 
+        //todo: we need to persist our WEBVIEW
         if(savedInstanceState != null) {
             article = savedInstanceState.getParcelable(SAVED_STATE_ARTICLE);
 
@@ -89,11 +100,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
             @Override
             public void onClick(View view) {
 
-                /*// /w/api.php?action=query&format=json&prop=revisions&rvprop=content&titles=georgia%7CMain+PAge
-                presenter.queryWikipediaPage("query", "json", "revisions", "content", "Main%20page");
-
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();*/
+              presenter.startMusicActivity(article.getGeoFacet().get(0));
             }
         });
     }
@@ -110,6 +117,23 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         outState.putParcelable(SAVED_STATE_ARTICLE, article);
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void initializeTranstions() {
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
@@ -118,9 +142,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
             getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
             // set an exit transition
-            Transition plode = new Explode();
-            getWindow().setEnterTransition(plode);
-            getWindow().setExitTransition(plode);
+            getWindow().setEnterTransition(new Fade());
+            getWindow().setExitTransition(new Slide());
 
         } else {
             // do something for phones running an API before lollipop
@@ -142,6 +165,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_news_48);
         fab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
         collapsingToolbar.setTitle(article.getGeoFacet().get(0));
+        collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this, R.color.transparent));
     }
 
     private void initializeViewElements() {
@@ -157,6 +181,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         RandomTransitionGenerator generator = new RandomTransitionGenerator(25000, new LinearInterpolator());
         articleImageView.setTransitionGenerator(generator);
 
+        articleTitleText.setText(article.getAbstract());
+
         articleWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -171,10 +197,31 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         articleWebView.loadUrl(presenter.formattedWikiUrl(article.getGeoFacet().get(0)));
     }
 
+
     private void initializeAnimations() {
 
         handler = new Handler();
         scale = AnimationUtils.loadAnimation(this, R.anim.scale);
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    void enterReveal(View view) {
+        // previously invisible view
+
+        // get the center for the clipping circle
+        int cx = view.getMeasuredWidth() / 2;
+        int cy = view.getMeasuredHeight() / 2;
+
+        // get the final radius for the clipping circle
+        int finalRadius = Math.max(view.getWidth(), view.getHeight()) / 2;
+
+        // create the animator for this view (the start radius is zero)
+        Animator anim =
+                ViewAnimationUtils.createCircularReveal(view, cx, cy, 0, finalRadius);
+
+        // make the view visible and start the animation
+        view.setVisibility(View.VISIBLE);
+        anim.start();
     }
 
     private void getHeaderImage(final ImageView imageview) {
@@ -205,11 +252,34 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
                 ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
         int vibrantDarkColor = palette.getDarkVibrantColor(
                 ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
+        int mutedColor = palette.getMutedColor(
+                ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
 
-        collapsingToolbar.setContentScrimColor(vibrantDarkColor);
+        collapsingToolbar.setContentScrimColor(mutedColor);
         fab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
+        articleTitleText.setBackgroundColor(vibrantDarkColor);
+        //tabs.setBackgroundColor(mutedColor);
 
         fab.setVisibility(View.VISIBLE);
         fab.startAnimation(scale);
+
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public void startMusicActivity(String searcher) {
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
+
+            Intent intent = new Intent(this, MusicActivity.class);
+            intent.putExtra(NEWS_DETAIL_MUSIC_SEARCHER, article.getGeoFacet().get(0));
+            startActivity(intent, options.toBundle());
+        } else {
+            Intent intent = new Intent(this, MusicActivity.class);
+            intent.putExtra(NEWS_DETAIL_MUSIC_SEARCHER, article.getGeoFacet().get(0));
+            startActivity(intent);
+        }
     }
 }
