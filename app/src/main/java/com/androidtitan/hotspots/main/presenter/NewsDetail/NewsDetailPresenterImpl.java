@@ -21,7 +21,7 @@ import retrofit2.Retrofit;
 /**
  * Created by amohnacs on 3/26/16.
  */
-public class NewsDetailPresenterImpl implements NewsDetailPresenter{
+public class NewsDetailPresenterImpl implements NewsDetailPresenter {
     private final String TAG = getClass().getSimpleName();
 
     private Retrofit retrofit;
@@ -60,9 +60,7 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter{
                     });
 
         } catch (Exception e) {
-            String url = "http://loremflickr.com/" + width +  "/" + height;
-            Log.e(TAG, width + " x " + height);
-            Log.e(TAG, "http://loremflickr.com/" + width +  "/" + height);
+            String url = "http://loremflickr.com/" + width + "/" + height;
             Glide.with(context)
                     .load(url)
                     .asBitmap()
@@ -86,13 +84,78 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter{
     }
 
     @Override
-    public String formattedWikiUrl(String geofacet) {
+    public String formatDESUrl(String facet) {
 
         StringBuilder stringBuilder = new StringBuilder("https://en.m.wikipedia.org/wiki/");
         boolean shouldKeepAppending = true;
 
-        for(int i = 0; i < geofacet.length(); i++) {
+        for (int i = 0; i < facet.length(); i++) {
+            if (shouldKeepAppending) {
+
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public String formatPERUrl(String facet) {
+
+        StringBuilder stringBuilder = new StringBuilder("https://en.m.wikipedia.org/wiki/");
+        StringBuilder lastNameBuilder = new StringBuilder("_");
+
+        boolean shouldKeepAppending = true;
+        boolean processingLastName = true;
+
+        for (int i = 0; i < facet.length(); i++) {
+
             if(shouldKeepAppending) {
+                if (processingLastName) {
+                    if (facet.charAt(i) != ',') {
+                        lastNameBuilder.append(facet.charAt(i));
+
+                    } else {
+                        processingLastName = false;
+                        i++;
+                    }
+                } else {
+                    if (facet.charAt(i) == ' ') {
+                        stringBuilder.append("_");
+                    } else if (facet.charAt(i) == '(') {
+                        shouldKeepAppending = false;
+                    } else {
+                        stringBuilder.append(facet.charAt(i));
+                    }
+                }
+            }
+        }
+
+        stringBuilder.append(lastNameBuilder);
+        Log.e(TAG, "person :: " + stringBuilder.toString());
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public String formatORgUrl(String facet) {
+
+        StringBuilder stringBuilder = new StringBuilder("https://en.m.wikipedia.org/wiki/");
+
+        for (int i = 0; i < facet.length(); i++) {
+
+
+        }
+
+        return null;
+    }
+
+    @Override
+    public String formatGEOUrl(String geofacet) {
+
+        StringBuilder stringBuilder = new StringBuilder("https://en.m.wikipedia.org/wiki/");
+        boolean shouldKeepAppending = true;
+
+        for (int i = 0; i < geofacet.length(); i++) {
+            if (shouldKeepAppending) {
 
                 if (geofacet.charAt(i) == ' ') {
                     stringBuilder.append("_");
@@ -107,12 +170,8 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter{
                     stringBuilder.append(geofacet.charAt(i));
                 }
             }
-
-            //Log.e(TAG, "what was added :: " + stringBuilder.charAt(32 + i));
         }
-
-        Log.e(TAG, stringBuilder.toString());
-
+        Log.e(TAG, "geo :: " + stringBuilder.toString());
         return stringBuilder.toString();
     }
 

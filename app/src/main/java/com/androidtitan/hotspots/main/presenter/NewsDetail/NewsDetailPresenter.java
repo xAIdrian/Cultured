@@ -12,6 +12,9 @@ import java.util.List;
 public interface NewsDetailPresenter {
 
     void getHeaderImage(List<Multimedium> mediaList, ImageView image, int pixelWidth, int pixelHeight);
-    String formattedWikiUrl(String geofacet);
+    String formatDESUrl(String facet);
+    String formatPERUrl(String facet);
+    String formatORgUrl(String facet);
+    String formatGEOUrl(String facet);
     void startMusicActivity(String searcher);
 }

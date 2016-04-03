@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.transition.Slide;
 import android.view.View;
 import android.view.Window;
@@ -27,21 +28,23 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class MusicActivity extends BaseActivity implements MusicView {
     private final String TAG = getClass().getSimpleName();
-
     private static MusicPresenterComponent musicPresenterComponent;
 
     @Inject
     MusicPresenter presenter;
 
-    private RecyclerView recyclerView;
+    @Bind(R.id.list) RecyclerView recyclerView;
     public MusicAdapter adapter;
 
-    private RelativeLayout toolbarContainer;
-    private TextView wikiInfoBar;
-    private Toolbar toolbar;
-    private View bgView;
+    @Bind(R.id.toolbarContainer) RelativeLayout toolbarContainer;
+    @Bind(R.id.wikiInfoBar) TextView wikiInfoBar;
+    @Bind(R.id.toolbar) Toolbar toolbar;
+    @Bind(R.id.colorBgView) View bgView;
 
     private List<Item> trackItems;
     private String geoString;
@@ -52,6 +55,7 @@ public class MusicActivity extends BaseActivity implements MusicView {
         initializeTranstions();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
+        ButterKnife.bind(this);
 
         if(getIntent().getExtras() != null) {
             geoString = getIntent().getStringExtra(NewsDetailActivity.NEWS_DETAIL_MUSIC_SEARCHER);
@@ -65,10 +69,6 @@ public class MusicActivity extends BaseActivity implements MusicView {
 
         setUpToolbar();
         initializeRecyclerView();
-
-        toolbarContainer = (RelativeLayout) findViewById(R.id.toolbarContainer);
-        wikiInfoBar = (TextView) findViewById(R.id.wikiInfoBar);
-        bgView = (View) findViewById(R.id.colorBgView);
 
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
 
@@ -152,7 +152,7 @@ public class MusicActivity extends BaseActivity implements MusicView {
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
             getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
             // set an exit transition
-            getWindow().setEnterTransition(new Slide());
+            getWindow().setEnterTransition(new Fade());
             getWindow().setExitTransition(new Slide());
 
         } else {
@@ -161,7 +161,6 @@ public class MusicActivity extends BaseActivity implements MusicView {
     }
 
     private void setUpToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -171,7 +170,6 @@ public class MusicActivity extends BaseActivity implements MusicView {
 
 
     private void initializeRecyclerView() {
-        recyclerView = (RecyclerView) findViewById(R.id.list);
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
@@ -180,7 +178,7 @@ public class MusicActivity extends BaseActivity implements MusicView {
         recyclerView.setAdapter(adapter);
     }
 
-    public void implementComponents() {
+   public void implementComponents() {
         musicPresenterComponent = DaggerMusicPresenterComponent.builder()
                 .musicPresenterModule(new MusicPresenterModule(this, this)) //this can be removed
                 .build();

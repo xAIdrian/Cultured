@@ -3,9 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-    <item android:id="@+id/navigate_away"
-        android:title="View Article"
-        android:orderInCategory="1"
-        app:showAsAction="never"
+    <item android:id="@+id/article_action"
+        android:title="@string/view_article"
+        android:orderInCategory="11"
+        android:icon="@drawable/ic_news_48"
+        app:showAsAction="always"
         app:itemIconTint="@android:color/white"/>
 </menu>

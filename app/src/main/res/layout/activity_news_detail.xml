@@ -10,18 +10,15 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="228dp"
+        android:layout_height="300dp"
         android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        android:clipChildren="false">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapse_toolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            android:clipChildren="false"
             app:expandedTitleTextAppearance="@android:color/transparent">
 
             <com.flaviofaria.kenburnsview.KenBurnsView
@@ -31,52 +28,67 @@
                 android:scaleType="fitCenter"
                 android:fitsSystemWindows="true"
                 android:background="@color/colorAccent"
-                app:layout_collapseMode="pin"/>
+                app:layout_collapseMode="pin"
+                android:layout_marginBottom="?android:attr/actionBarSize"/>
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:layout_gravity="bottom"
+                android:minHeight="?android:attr/actionBarSize"
+                app:tabMode="scrollable"/>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:titleMarginTop="13dp"
-                android:gravity="top"
-                app:theme="@style/AppTheme.PopupOverlay"/>
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="bottom"
-                app:tabIndicatorColor="@android:color/white" />
+                app:layout_collapseMode="pin" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
 
     </android.support.design.widget.AppBarLayout>
 
-
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/nestedLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_gravity="fill_vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/content_news_detail" />
+        <!--<include layout="@layout/content_news_detail" />-->
 
+        <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     </android.support.v4.widget.NestedScrollView>
 
+    <TextView
+        android:id="@+id/articleTitleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingTop="16dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="16dp"
+        android:gravity="center"
+        android:background="@color/colorPrimary"
+        android:textColor="@android:color/white"
+        android:layout_gravity="bottom" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/championFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:foregroundGravity="center"
-        android:src="@drawable/ic_headphones_48"
+        android:src="@drawable/ic_plane_48"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        android:visibility="gone"/>
+        app:fabSize="normal"
+        app:layout_behavior="com.androidtitan.hotspots.main.util.FABBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

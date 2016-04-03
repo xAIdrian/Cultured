@@ -11,7 +11,10 @@ import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
@@ -26,8 +29,6 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,9 +39,15 @@ import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailModule;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenter;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenterComponent;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailView;
+import com.androidtitan.hotspots.main.ui.WikiFragment;
+import com.androidtitan.hotspots.main.ui.ViewPagerAdapter;
 import com.androidtitan.hotspots.main.util.HelperMethods;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -52,6 +59,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
 
     private final static String SAVED_STATE_ARTICLE = "newsdetailactivity.savedstatearticle";
     public final static String NEWS_DETAIL_MUSIC_SEARCHER = "newsdetailactivity.newsdetailmusicsearcher";
+    public final static String NEWS_DETAIL_WIKI_URL = "newsdetailactivity.newsdetailwikiurl";
 
     public static NewsDetailPresenterComponent newsDetailPresenterComponent;
     @Inject
@@ -60,9 +68,13 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
     @Bind(R.id.collapse_toolbar) CollapsingToolbarLayout collapsingToolbar;
     @Bind(R.id.toolbar) Toolbar toolbar;
     @Bind(R.id.bgheader) KenBurnsView articleImageView;
-    @Bind(R.id.fab) FloatingActionButton fab;
     @Bind(R.id.articleTitleTextView) TextView articleTitleText;
-    @Bind(R.id.webview) WebView articleWebView;
+    @Bind(R.id.tab_layout) TabLayout tabs;
+    @Bind(R.id.nestedLayout)NestedScrollView scrollView;
+    @Bind(R.id.pager) ViewPager viewPager;
+    private ViewPagerAdapter adapter;
+
+    @Bind(R.id.championFab) FloatingActionButton championFab;
 
     private Handler handler;
     private Animation scale;
@@ -70,7 +82,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
     private Article article;
 
     private int[] dimensionArray = new int[2];
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +91,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         ButterKnife.bind(this);
 
         //todo: we need to persist our WEBVIEW
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             article = savedInstanceState.getParcelable(SAVED_STATE_ARTICLE);
 
         } else {
@@ -94,15 +105,18 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         implementComponents();
         initializeToolbar();
         initializeViewElements();
+        initializeViewPager();
         initializeAnimations();
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        championFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-              presenter.startMusicActivity(article.getGeoFacet().get(0));
             }
         });
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        GoogleApiClient client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     /**
@@ -131,13 +145,29 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.article_action:
+                //todo:use implicit intent to send user to web browser
+                break;
+
+            default:
+
+                break;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
+    public NewsDetailPresenter getPresenter() {
+        return presenter;
+    }
+
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void initializeTranstions() {
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        int currentapiVersion = Build.VERSION.SDK_INT;
+        if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP) {
             // inside your activity (if you did not enable transitions in your theme)
             getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
             getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
@@ -162,20 +192,21 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_news_48);
-        fab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
+        championFab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
         collapsingToolbar.setTitle(article.getGeoFacet().get(0));
         collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this, R.color.transparent));
+
+
     }
 
     private void initializeViewElements() {
 
         collapsingToolbar.setContentScrimColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
 
-        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) fab.getLayoutParams();
+        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) championFab.getLayoutParams();
         p.setAnchorId(R.id.collapse_toolbar);
-        fab.setLayoutParams(p);
-        fab.setVisibility(View.GONE);
+        championFab.setLayoutParams(p);
+        championFab.setVisibility(View.GONE);
 
         getHeaderImage(articleImageView);
         RandomTransitionGenerator generator = new RandomTransitionGenerator(25000, new LinearInterpolator());
@@ -183,20 +214,73 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
 
         articleTitleText.setText(article.getAbstract());
 
-        articleWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                articleWebView.loadUrl(url);
-                return true;
-            }
-        });
-        articleWebView.getSettings().setLoadsImagesAutomatically(true);
-        articleWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        articleWebView.getSettings().setJavaScriptEnabled(true);
-        articleWebView.getSettings().setBuiltInZoomControls(true);
-        articleWebView.loadUrl(presenter.formattedWikiUrl(article.getGeoFacet().get(0)));
     }
 
+    private void initializeViewPager() {
+        scrollView.setFillViewport(true);
+        adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), buildFragments(), buildTitles());
+        viewPager.setAdapter(adapter);
+        tabs.setupWithViewPager(viewPager);
+    }
+
+    private ArrayList<WikiFragment> buildFragments() {
+
+        ArrayList<WikiFragment> frags = new ArrayList<>();
+
+        if(!article.getDesFacet().get(0).equals("")) {
+            WikiFragment frag1 = new WikiFragment();
+            Bundle bundle1 = new Bundle();
+            bundle1.putString(NEWS_DETAIL_WIKI_URL,
+                    article.getDesFacet().get(0));
+            frag1.setArguments(bundle1);
+            frags.add(new WikiFragment());
+        }
+        if(!article.getPerFacet().get(0).equals("")) {
+            WikiFragment frag2 = new WikiFragment();
+            Bundle bundle2 = new Bundle();
+            String temp = presenter.formatPERUrl(article.getPerFacet().get(0));
+            bundle2.putString(NEWS_DETAIL_WIKI_URL, temp);
+            frag2.setArguments(bundle2);
+            frags.add(new WikiFragment());
+        }
+        if(!article.getOrgFacet().get(0).equals("")) {
+            WikiFragment frag3 = new WikiFragment();
+            Bundle bundle3 = new Bundle();
+            bundle3.putString(NEWS_DETAIL_WIKI_URL, article.getOrgFacet().get(0));
+            frag3.setArguments(bundle3);
+            frags.add(new WikiFragment());
+        }
+        if(!article.getGeoFacet().get(0).equals("")) {
+            WikiFragment frag4 = new WikiFragment();
+            Bundle bundle4 = new Bundle();
+            bundle4.putString(NEWS_DETAIL_WIKI_URL,
+                    presenter.formatGEOUrl(article.getGeoFacet().get(0)));
+            frag4.setArguments(bundle4);
+            frags.add(new WikiFragment());
+        }
+
+        return frags;
+    }
+
+    private ArrayList<String> buildTitles() {
+
+        ArrayList<String> titles = new ArrayList<>();
+
+        if(!article.getDesFacet().get(0).equals("")) {
+            titles.add(article.getDesFacet().get(0));
+        }
+        if(!article.getPerFacet().get(0).equals("")) {
+            titles.add(article.getPerFacet().get(0));
+        }
+        if(!article.getOrgFacet().get(0).equals("")) {
+            titles.add(article.getOrgFacet().get(0));
+        }
+        if(!article.getGeoFacet().get(0).equals("")) {
+            titles.add(article.getGeoFacet().get(0));
+        }
+
+        return titles;
+    }
 
     private void initializeAnimations() {
 
@@ -256,20 +340,19 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
                 ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
 
         collapsingToolbar.setContentScrimColor(mutedColor);
-        fab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
-        articleTitleText.setBackgroundColor(vibrantDarkColor);
-        //tabs.setBackgroundColor(mutedColor);
+        championFab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
+        articleTitleText.setBackgroundColor(mutedColor);
+        tabs.setBackgroundColor(mutedColor);
 
-        fab.setVisibility(View.VISIBLE);
-        fab.startAnimation(scale);
-
+        championFab.setVisibility(View.VISIBLE);
+        championFab.startAnimation(scale);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void startMusicActivity(String searcher) {
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+        int currentapiVersion = Build.VERSION.SDK_INT;
+        if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP) {
             //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
             ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
 
@@ -282,4 +365,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
             startActivity(intent);
         }
     }
+
+
 }

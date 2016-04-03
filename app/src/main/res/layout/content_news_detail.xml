@@ -26,17 +26,6 @@
         android:layout_marginTop="-55dp"
         android:layout_below="@+id/articleTitleTextView"/>
 
-    <TextView
-        android:id="@+id/articleTitleTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
-        android:paddingTop="32dp"
-        android:paddingRight="8dp"
-        android:paddingBottom="16dp"
-        android:gravity="center"
-        android:background="@color/colorPrimary"
-        android:textColor="@android:color/white"
-        android:layout_alignParentTop="true" />
+
 
 </RelativeLayout>
