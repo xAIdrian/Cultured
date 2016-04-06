@@ -13,9 +13,5 @@ public class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-
-        //create things that are going to be needed in all of the Activities
-        //todo: perhaps our 'Presenter'
-
     }
 }

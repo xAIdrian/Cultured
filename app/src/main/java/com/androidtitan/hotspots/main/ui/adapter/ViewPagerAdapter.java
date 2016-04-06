@@ -1,9 +1,11 @@
-package com.androidtitan.hotspots.main.ui;
+package com.androidtitan.hotspots.main.ui.adapter;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+
+import com.androidtitan.hotspots.main.ui.fragments.WikiFragment;
 
 import java.util.ArrayList;
 

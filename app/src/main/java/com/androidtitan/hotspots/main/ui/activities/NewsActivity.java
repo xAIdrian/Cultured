@@ -25,12 +25,9 @@ import android.widget.ImageView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseActivity;
+import com.androidtitan.hotspots.main.CulturedApp;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
-import com.androidtitan.hotspots.main.presenter.news.DaggerNewsPresenterComponent;
 import com.androidtitan.hotspots.main.presenter.news.NewsPresenter;
-import com.androidtitan.hotspots.main.presenter.news.NewsPresenterComponent;
-import com.androidtitan.hotspots.main.presenter.news.NewsPresenterModule;
-import com.androidtitan.hotspots.main.presenter.news.NewsView;
 import com.androidtitan.hotspots.main.ui.adapter.NewsAdapter;
 
 import java.util.ArrayList;
@@ -42,14 +39,12 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 
-public class NewsActivity extends BaseActivity implements NewsView,
-        RecyclerView.OnItemTouchListener{
+public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTouchListener{
     private final String TAG = getClass().getSimpleName();
 
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
-    public static NewsPresenterComponent newsPresenterComponent;
     @Inject NewsPresenter presenter;
 
     private GestureDetectorCompat gestureDetector;
@@ -64,7 +59,6 @@ public class NewsActivity extends BaseActivity implements NewsView,
 
     private List<Article> articles;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initializeTranstionsAndAnimations();
@@ -72,9 +66,10 @@ public class NewsActivity extends BaseActivity implements NewsView,
         setContentView(R.layout.activity_news);
 
         ButterKnife.bind(this);
-        gestureDetector = new GestureDetectorCompat(this, new RecyclerViewGestureListener());
+        CulturedApp.getAppComponent().inject(this);
+        presenter.takeActivity(this);
 
-        implementComponents();
+        gestureDetector = new GestureDetectorCompat(this, new RecyclerViewGestureListener());
 
         //saveInstanceState to handle rotations
         if(savedInstanceState != null) {
@@ -135,13 +130,6 @@ public class NewsActivity extends BaseActivity implements NewsView,
         outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST, (ArrayList<? extends Parcelable>) articles);
     }
 
-    public void implementComponents() {
-        newsPresenterComponent = DaggerNewsPresenterComponent.builder()
-                .newsPresenterModule(new NewsPresenterModule(this, this)) //this can be removed
-                .build();
-        newsPresenterComponent.inject(this);
-    }
-
     public NewsPresenter getNewsPresenter() {
         return presenter;
     }
@@ -183,12 +171,10 @@ public class NewsActivity extends BaseActivity implements NewsView,
         presenter.refreshQueryNews("world", 20);
     }
 
-    @Override
     public void updateNewsAdapter() {
         adapter.notifyDataSetChanged();
     }
 
-    @Override
     public void updateSpecificNewsAdapter(int position) {
         adapter.notifyItemChanged(position);
     }
@@ -210,11 +196,8 @@ public class NewsActivity extends BaseActivity implements NewsView,
             startActivity(intent);
         }
 
-
     }
 
-
-    @Override
     public void refreshCompleted() {
         swipeRefreshLayout.setRefreshing(false);
         refreshFab.clearAnimation();

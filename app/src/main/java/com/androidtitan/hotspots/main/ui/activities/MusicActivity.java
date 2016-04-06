@@ -1,6 +1,8 @@
 package com.androidtitan.hotspots.main.ui.activities;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -9,6 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.RelativeLayout;
@@ -16,12 +21,9 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseActivity;
+import com.androidtitan.hotspots.main.CulturedApp;
 import com.androidtitan.hotspots.main.model.spotify.Item;
-import com.androidtitan.hotspots.main.presenter.music.DaggerMusicPresenterComponent;
 import com.androidtitan.hotspots.main.presenter.music.MusicPresenter;
-import com.androidtitan.hotspots.main.presenter.music.MusicPresenterComponent;
-import com.androidtitan.hotspots.main.presenter.music.MusicPresenterModule;
-import com.androidtitan.hotspots.main.presenter.music.MusicView;
 import com.androidtitan.hotspots.main.ui.adapter.MusicAdapter;
 
 import java.util.List;
@@ -31,9 +33,8 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MusicActivity extends BaseActivity implements MusicView {
+public class MusicActivity extends BaseActivity {
     private final String TAG = getClass().getSimpleName();
-    private static MusicPresenterComponent musicPresenterComponent;
 
     @Inject
     MusicPresenter presenter;
@@ -49,20 +50,19 @@ public class MusicActivity extends BaseActivity implements MusicView {
     private List<Item> trackItems;
     private String geoString;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initializeTranstions();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music);
         ButterKnife.bind(this);
+        CulturedApp.getAppComponent().inject(this);
+        presenter.takeActivity(this);
 
         if(getIntent().getExtras() != null) {
             geoString = getIntent().getStringExtra(NewsDetailActivity.NEWS_DETAIL_MUSIC_SEARCHER);
         }
 
-        implementComponents();
-        //todo: this is going to be moved at some point as it will be Triggered
         trackItems = presenter.querySpotifyTracks(
                 geoString,
                 20);
@@ -76,8 +76,8 @@ public class MusicActivity extends BaseActivity implements MusicView {
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    if(Math.abs(toolbarContainer.getTranslationY()) > toolbar.getHeight()) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (Math.abs(toolbarContainer.getTranslationY()) > toolbar.getHeight()) {
                         hideToolbar();
                     } else {
                         showToolbar();
@@ -99,6 +99,31 @@ public class MusicActivity extends BaseActivity implements MusicView {
 
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                Log.e(TAG, "home");
+                setResult(Activity.RESULT_OK, new Intent()
+                        .putExtra(NewsDetailActivity.NEWS_DETAIL_MUSIC_SEARCHER, geoString));
+                this.finish();
+                //NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void showToolbar() {
@@ -168,7 +193,6 @@ public class MusicActivity extends BaseActivity implements MusicView {
         actionBar.setTitle(getIntent().getStringExtra(geoString));
     }
 
-
     private void initializeRecyclerView() {
         final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -178,19 +202,9 @@ public class MusicActivity extends BaseActivity implements MusicView {
         recyclerView.setAdapter(adapter);
     }
 
-   public void implementComponents() {
-        musicPresenterComponent = DaggerMusicPresenterComponent.builder()
-                .musicPresenterModule(new MusicPresenterModule(this, this)) //this can be removed
-                .build();
-        musicPresenterComponent.inject(this);
-    }
-
-    public MusicPresenterComponent getPresenterComponent() {
-        return musicPresenterComponent;
-    }
-
-    @Override
     public void updateImageAdapter() {
         adapter.notifyDataSetChanged();
     }
+
+
 }

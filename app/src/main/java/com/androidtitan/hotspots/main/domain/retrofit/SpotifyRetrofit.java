@@ -15,7 +15,6 @@ public class SpotifyRetrofit {
 
     public SpotifyRetrofit() {
 
-
         spotifyRetrofit = new Retrofit.Builder()
                 .baseUrl(SPOTIFY_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())

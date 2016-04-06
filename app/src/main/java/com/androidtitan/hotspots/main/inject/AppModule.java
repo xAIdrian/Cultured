@@ -1,4 +1,4 @@
-package com.androidtitan.hotspots.main.application;
+package com.androidtitan.hotspots.main.inject;
 
 import android.app.Application;
 import android.content.Context;

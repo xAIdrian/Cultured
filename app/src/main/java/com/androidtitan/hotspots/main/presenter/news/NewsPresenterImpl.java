@@ -5,15 +5,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
 import com.androidtitan.hotspots.R;
-import com.androidtitan.hotspots.main.domain.retrofit.DaggerNewsRetrofitComponent;
 import com.androidtitan.hotspots.main.domain.retrofit.NewsEndpointInterface;
+import com.androidtitan.hotspots.main.domain.retrofit.NewsRetrofit;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.model.newyorktimes.NewsResponse;
+import com.androidtitan.hotspots.main.ui.activities.NewsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import butterknife.Bind;
 import retrofit2.Call;
@@ -27,28 +26,28 @@ import retrofit2.Retrofit;
 public class NewsPresenterImpl implements NewsPresenter {
     private final String TAG = getClass().getSimpleName();
 
-    @Inject Retrofit retrofit;
-    @Bind(R.id.swipeRefresh) SwipeRefreshLayout refreshLayout;
+    Retrofit retrofit;
 
-    private Context context;
-    private NewsView newsView;
+    private NewsActivity newsActivity;
+
+    @Bind(R.id.swipeRefresh) SwipeRefreshLayout refreshLayout;
 
     private ArrayList<Article> itemList;
 
-    @Inject //todo:we are going to make this switch to an RSS Feed Version
-    public NewsPresenterImpl(Context context, NewsView newsview) {
+    //todo:we are going to make this switch to a live Feed Version
+    public NewsPresenterImpl(Context context) {
+        retrofit = new NewsRetrofit().getRetrofit();
+    }
 
-        DaggerNewsRetrofitComponent.create()
-                .inject(this);
-
-        this.context = context;
-        this.newsView = newsview;
+    @Override
+    public void takeActivity(NewsActivity activity) {
+        newsActivity = activity;
     }
 
     @Override
     public List<Article> queryNews(String section, int limit) {
 
-        itemList = new ArrayList<Article>();
+        itemList = new ArrayList<>();
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, limit,
@@ -65,9 +64,9 @@ public class NewsPresenterImpl implements NewsPresenter {
                     for (Article article : resp.getArticles()) {
 
                         itemList.add(article);
-                        newsView.updateNewsAdapter();
+                        newsActivity.updateNewsAdapter();
                     }
-                    newsView.refreshCompleted();
+                    newsActivity.refreshCompleted();
                 } else {
                     Log.e(TAG, "response fail");
                 }
@@ -103,7 +102,7 @@ public class NewsPresenterImpl implements NewsPresenter {
                         try {
                             if (!resp.getArticles().get(i).getTitle().equals(itemList.get(i).getTitle())) {
                                 itemList.add(0, resp.getArticles().get(i));
-                                newsView.updateSpecificNewsAdapter(0);
+                                newsActivity.updateSpecificNewsAdapter(0);
 
                                 Log.e(TAG, "actual get :: " + resp.getArticles().get(i).getTitle());
                             }
@@ -112,7 +111,7 @@ public class NewsPresenterImpl implements NewsPresenter {
                         }
 
                     }
-                    newsView.refreshCompleted();
+                    newsActivity.refreshCompleted();
 
                 } else {
                     Log.e(TAG, "response fail");

@@ -1,11 +1,15 @@
-package com.androidtitan.hotspots.main.application;
+package com.androidtitan.hotspots.main;
 
 import android.app.Application;
+
+import com.androidtitan.hotspots.main.inject.AppComponent;
+import com.androidtitan.hotspots.main.inject.AppModule;
+import com.androidtitan.hotspots.main.inject.DaggerAppComponent;
 
 /**
  * Created by amohnacs on 3/14/16.
  */
-public class App extends Application {
+public class CulturedApp extends Application {
 
     private static AppComponent appComponent;
 

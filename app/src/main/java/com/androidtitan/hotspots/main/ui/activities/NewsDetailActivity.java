@@ -14,7 +14,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
@@ -33,14 +32,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.main.CulturedApp;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
-import com.androidtitan.hotspots.main.presenter.newsdetail.DaggerNewsDetailPresenterComponent;
-import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailModule;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenter;
-import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenterComponent;
-import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailView;
-import com.androidtitan.hotspots.main.ui.WikiFragment;
-import com.androidtitan.hotspots.main.ui.ViewPagerAdapter;
+import com.androidtitan.hotspots.main.ui.adapter.ViewPagerAdapter;
+import com.androidtitan.hotspots.main.ui.fragments.WikiFragment;
 import com.androidtitan.hotspots.main.util.HelperMethods;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
@@ -54,14 +50,15 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class NewsDetailActivity extends AppCompatActivity implements NewsDetailView{
+public class NewsDetailActivity extends AppCompatActivity {
     private final String TAG = getClass().getSimpleName();
 
     private final static String SAVED_STATE_ARTICLE = "newsdetailactivity.savedstatearticle";
     public final static String NEWS_DETAIL_MUSIC_SEARCHER = "newsdetailactivity.newsdetailmusicsearcher";
     public final static String NEWS_DETAIL_WIKI_URL = "newsdetailactivity.newsdetailwikiurl";
 
-    public static NewsDetailPresenterComponent newsDetailPresenterComponent;
+    public static final int MUSIC_ACTIVITY_FOR_RESULT = 1;
+
     @Inject
     NewsDetailPresenter presenter;
 
@@ -70,7 +67,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
     @Bind(R.id.bgheader) KenBurnsView articleImageView;
     @Bind(R.id.articleTitleTextView) TextView articleTitleText;
     @Bind(R.id.tab_layout) TabLayout tabs;
-    @Bind(R.id.nestedLayout)NestedScrollView scrollView;
     @Bind(R.id.pager) ViewPager viewPager;
     private ViewPagerAdapter adapter;
 
@@ -81,6 +77,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
 
     private Article article;
 
+    private String geoFacet;
     private int[] dimensionArray = new int[2];
 
     @Override
@@ -89,8 +86,9 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_detail);
         ButterKnife.bind(this);
+        CulturedApp.getAppComponent().inject(this);
+        presenter.takeActivity(this);
 
-        //todo: we need to persist our WEBVIEW
         if (savedInstanceState != null) {
             article = savedInstanceState.getParcelable(SAVED_STATE_ARTICLE);
 
@@ -101,8 +99,8 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
                 article = (Article) extras.getParcelable(NewsActivity.ARTICLE_EXTRA);
             }
         }
+        geoFacet = article.getGeoFacet().get(0);
 
-        implementComponents();
         initializeToolbar();
         initializeViewElements();
         initializeViewPager();
@@ -111,7 +109,7 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         championFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                presenter.startMusicActivity(article.getGeoFacet().get(0));
             }
         });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -180,20 +178,12 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         }
     }
 
-    public void implementComponents() {
-
-        newsDetailPresenterComponent = DaggerNewsDetailPresenterComponent.builder()
-                .newsDetailModule(new NewsDetailModule(this, this))
-                .build();
-        newsDetailPresenterComponent.inject(this);
-    }
-
     private void initializeToolbar() {
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         championFab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
-        collapsingToolbar.setTitle(article.getGeoFacet().get(0));
+        collapsingToolbar.setTitle(geoFacet); //todo: start activity for result
         collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this, R.color.transparent));
 
 
@@ -217,7 +207,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
     }
 
     private void initializeViewPager() {
-        scrollView.setFillViewport(true);
         adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), buildFragments(), buildTitles());
         viewPager.setAdapter(adapter);
         tabs.setupWithViewPager(viewPager);
@@ -228,35 +217,16 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         ArrayList<WikiFragment> frags = new ArrayList<>();
 
         if(!article.getDesFacet().get(0).equals("")) {
-            WikiFragment frag1 = new WikiFragment();
-            Bundle bundle1 = new Bundle();
-            bundle1.putString(NEWS_DETAIL_WIKI_URL,
-                    article.getDesFacet().get(0));
-            frag1.setArguments(bundle1);
-            frags.add(new WikiFragment());
+            frags.add(WikiFragment.newInstance(presenter.formatDESUrl(article.getDesFacet().get(0))));
         }
         if(!article.getPerFacet().get(0).equals("")) {
-            WikiFragment frag2 = new WikiFragment();
-            Bundle bundle2 = new Bundle();
-            String temp = presenter.formatPERUrl(article.getPerFacet().get(0));
-            bundle2.putString(NEWS_DETAIL_WIKI_URL, temp);
-            frag2.setArguments(bundle2);
-            frags.add(new WikiFragment());
+            frags.add(WikiFragment.newInstance(presenter.formatPERUrl(article.getPerFacet().get(0))));
         }
         if(!article.getOrgFacet().get(0).equals("")) {
-            WikiFragment frag3 = new WikiFragment();
-            Bundle bundle3 = new Bundle();
-            bundle3.putString(NEWS_DETAIL_WIKI_URL, article.getOrgFacet().get(0));
-            frag3.setArguments(bundle3);
-            frags.add(new WikiFragment());
+            frags.add(WikiFragment.newInstance("https://en.m.wikipedia.org/wiki/" + article.getOrgFacet().get(0)));
         }
         if(!article.getGeoFacet().get(0).equals("")) {
-            WikiFragment frag4 = new WikiFragment();
-            Bundle bundle4 = new Bundle();
-            bundle4.putString(NEWS_DETAIL_WIKI_URL,
-                    presenter.formatGEOUrl(article.getGeoFacet().get(0)));
-            frag4.setArguments(bundle4);
-            frags.add(new WikiFragment());
+            frags.add(WikiFragment.newInstance(presenter.formatGEOUrl(article.getGeoFacet().get(0))));
         }
 
         return frags;
@@ -328,7 +298,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
         });
     }
 
-    @Override
     public void onImageDownload(Palette palette) {
         //todo: you know...we could use BUTTERKNIFE to get our color resource...
 
@@ -349,7 +318,6 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    @Override
     public void startMusicActivity(String searcher) {
         int currentapiVersion = Build.VERSION.SDK_INT;
         if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP) {
@@ -358,13 +326,28 @@ public class NewsDetailActivity extends AppCompatActivity implements NewsDetailV
 
             Intent intent = new Intent(this, MusicActivity.class);
             intent.putExtra(NEWS_DETAIL_MUSIC_SEARCHER, article.getGeoFacet().get(0));
-            startActivity(intent, options.toBundle());
+            startActivityForResult(intent, MUSIC_ACTIVITY_FOR_RESULT, options.toBundle());
         } else {
             Intent intent = new Intent(this, MusicActivity.class);
             intent.putExtra(NEWS_DETAIL_MUSIC_SEARCHER, article.getGeoFacet().get(0));
-            startActivity(intent);
+            startActivityForResult(intent, MUSIC_ACTIVITY_FOR_RESULT);
         }
     }
 
+    /**
+     * Dispatch incoming result to the correct fragment.
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        if(requestCode == MUSIC_ACTIVITY_FOR_RESULT) {
+            if(resultCode == RESULT_OK) {
+                geoFacet = data.getStringExtra(NEWS_DETAIL_MUSIC_SEARCHER);
+            }
+        }
+    }
 }

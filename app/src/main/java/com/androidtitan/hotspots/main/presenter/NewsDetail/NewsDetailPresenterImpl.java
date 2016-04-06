@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.androidtitan.hotspots.main.model.newyorktimes.Multimedium;
+import com.androidtitan.hotspots.main.ui.activities.NewsDetailActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -26,15 +27,20 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
 
     private Retrofit retrofit;
     private Context context;
-    private NewsDetailView newsView;
 
-    @Inject //todo:we are going to make this switch to an RSS Feed Version
-    public NewsDetailPresenterImpl(Context context, NewsDetailView newsview) {
+    private NewsDetailActivity detailActivity;
+
+    @Inject //todo:we are going to make this switch to a continuous Feed Version
+    public NewsDetailPresenterImpl(Context context) {
 
         this.context = context;
-        this.newsView = newsview;
     }
 
+
+    @Override
+    public void takeActivity(NewsDetailActivity activity) {
+        detailActivity = activity;
+    }
 
     @Override
     public void getHeaderImage(List<Multimedium> mediaList, ImageView articleImageView, int width, int height) {
@@ -53,7 +59,7 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
                                 @Override
                                 public void onGenerated(Palette palette) {
                                     // Here's your generated palette
-                                    newsView.onImageDownload(palette);
+                                    detailActivity.onImageDownload(palette);
                                 }
                             });
                         }
@@ -74,7 +80,7 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
                                 @Override
                                 public void onGenerated(Palette palette) {
                                     // Here's your generated palette
-                                    newsView.onImageDownload(palette);
+                                    detailActivity.onImageDownload(palette);
                                 }
                             });
                         }
@@ -91,18 +97,26 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
 
         for (int i = 0; i < facet.length(); i++) {
             if (shouldKeepAppending) {
+                if (facet.charAt(i) == ',') {
+                    shouldKeepAppending = false;
 
+                } else if (facet.charAt(i) == '(') {
+                    shouldKeepAppending = false;
+
+                } else {
+                    stringBuilder.append(facet.charAt(i));
+                }
             }
         }
-
-        return null;
+        Log.e(TAG, "geo :: " + stringBuilder.toString());
+        return stringBuilder.toString();
     }
 
     @Override
     public String formatPERUrl(String facet) {
 
         StringBuilder stringBuilder = new StringBuilder("https://en.m.wikipedia.org/wiki/");
-        StringBuilder lastNameBuilder = new StringBuilder("_");
+        StringBuilder lastNameBuilder = new StringBuilder(" ");
 
         boolean shouldKeepAppending = true;
         boolean processingLastName = true;
@@ -119,9 +133,7 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
                         i++;
                     }
                 } else {
-                    if (facet.charAt(i) == ' ') {
-                        stringBuilder.append("_");
-                    } else if (facet.charAt(i) == '(') {
+                    if (facet.charAt(i) == '(') {
                         shouldKeepAppending = false;
                     } else {
                         stringBuilder.append(facet.charAt(i));
@@ -171,13 +183,12 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
                 }
             }
         }
-        Log.e(TAG, "geo :: " + stringBuilder.toString());
         return stringBuilder.toString();
     }
 
     @Override
     public void startMusicActivity(String searcher) {
-        newsView.startMusicActivity(searcher);
+        detailActivity.startMusicActivity(searcher);
     }
 
 }

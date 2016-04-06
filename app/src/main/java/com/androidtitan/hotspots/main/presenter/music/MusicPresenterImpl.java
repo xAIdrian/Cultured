@@ -3,12 +3,11 @@ package com.androidtitan.hotspots.main.presenter.music;
 import android.content.Context;
 import android.util.Log;
 
-import com.androidtitan.hotspots.main.domain.retrofit.DaggerSpotifyRetrofitComponent;
 import com.androidtitan.hotspots.main.domain.retrofit.SpotifyEndpointInterface;
 import com.androidtitan.hotspots.main.domain.retrofit.SpotifyRetrofit;
 import com.androidtitan.hotspots.main.model.spotify.Item;
 import com.androidtitan.hotspots.main.model.spotify.SpotifyResponse;
-import com.androidtitan.hotspots.main.presenter.news.NewsView;
+import com.androidtitan.hotspots.main.ui.activities.MusicActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,27 +25,23 @@ import retrofit2.Retrofit;
 public class MusicPresenterImpl implements MusicPresenter {
     private final String TAG = getClass().getSimpleName();
 
-    @Inject SpotifyRetrofit spotifyRetrofit;
-
     private Retrofit retrofit;
-    private Context context;
-    private MusicView musicView;
-    private NewsView newsView;
+
+    private MusicActivity musicActivity;
 
     @Inject
-    public MusicPresenterImpl(Context context, MusicView musicView) {
+    public MusicPresenterImpl(Context context) {
 
-        DaggerSpotifyRetrofitComponent.create()
-                .inject(this);
+        retrofit = new SpotifyRetrofit().getRetrofit();
+    }
 
-        this.context = context;
-        this.musicView = musicView;
+    @Override
+    public void takeActivity(MusicActivity activity) {
+        musicActivity = activity;
     }
 
     @Override
     public List<Item> querySpotifyTracks(String search, int count) {
-        retrofit = spotifyRetrofit.getRetrofit();
-
         final ArrayList<Item> itemList = new ArrayList<Item>();
 
         SpotifyEndpointInterface spotifyService = retrofit.create(SpotifyEndpointInterface.class);
@@ -61,7 +56,7 @@ public class MusicPresenterImpl implements MusicPresenter {
 
                     for(Item item : resp.getTracks().getItems()) {
                         itemList.add(item);
-                        musicView.updateImageAdapter();
+                        musicActivity.updateImageAdapter();
 
                     }
                     //Log.e(TAG, resp.getTracks().getItems().get(0).getName());

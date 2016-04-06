@@ -1,6 +1,6 @@
 package com.androidtitan.hotspots.main.util;
 
-import com.androidtitan.hotspots.main.application.App;
+import com.androidtitan.hotspots.main.CulturedApp;
 
 /**
  * Created by amohnacs on 3/29/16.
@@ -8,7 +8,7 @@ import com.androidtitan.hotspots.main.application.App;
 public class HelperMethods {
 
     public static float getDensity(){
-        float scale = App.getAppComponent().getApplicationContext()
+        float scale = CulturedApp.getAppComponent().getApplicationContext()
                 .getResources().getDisplayMetrics().density;
         return scale;
     }
