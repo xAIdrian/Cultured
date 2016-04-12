@@ -1,33 +1,34 @@
 package com.androidtitan.hotspots.main.ui.fragments;
 
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.common.BaseFragment;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenter;
+import com.androidtitan.hotspots.main.ui.WikiFragScrollInterface;
 import com.androidtitan.hotspots.main.ui.activities.NewsDetailActivity;
+import com.androidtitan.hotspots.main.ui.adapter.SimpleWikiAdapter;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
-public class WikiFragment extends Fragment {
+public class WikiFragment extends BaseFragment {
     private final String TAG = getClass().getSimpleName();
 
     private static final String WIKI_FRAG_LOCAL_BUNDLE = "wikifragment.wikifraglocalbundle";
 
     private NewsDetailPresenter presenter;
 
-    @Bind(R.id.webview) WebView articleWebView;
-    @Bind(R.id.nestedLayout)NestedScrollView scrollView;
+    WikiFragScrollInterface interfacer;
+    public RecyclerView recyclerView;
 
     private String url;
 
@@ -41,6 +42,18 @@ public class WikiFragment extends Fragment {
         WikiFragment fragment = new WikiFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            interfacer = (WikiFragScrollInterface) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+
     }
 
     @Override
@@ -63,23 +76,42 @@ public class WikiFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_wiki, container, false);
         ButterKnife.bind(this, v);
 
-        scrollView.setFillViewport(true);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-        articleWebView.setWebViewClient(new WebViewClient() {
+        recyclerView = (RecyclerView) v.findViewById(R.id.wikiRecycler);
+        recyclerView.setLayoutManager(layoutManager);
+
+        SimpleWikiAdapter adapter = new SimpleWikiAdapter(getContext(), url);
+        recyclerView.setAdapter(adapter);
+
+        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                articleWebView.loadUrl(url);
-                return true;
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                interfacer.scrollViewParallax(dy);
             }
         });
-
-        articleWebView.getSettings().setLoadsImagesAutomatically(true);
-        articleWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        articleWebView.getSettings().setJavaScriptEnabled(true);
-        articleWebView.getSettings().setBuiltInZoomControls(true);
-        articleWebView.loadUrl(url);
 
         return v;
     }
 
+    /**
+     * Called when the fragment is no longer attached to its activity.  This
+     * is called after {@link #onDestroy()}.
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        interfacer = null;
+    }
 }
+
+

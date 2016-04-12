@@ -59,7 +59,6 @@ dependencies {
     compile 'com.android.support:palette-v7:23.2.1'
     compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
     compile 'com.flaviofaria:kenburnsview:1.0.7'
-    compile 'jp.wasabeef:recyclerview-animators:2.2.1'
     compile 'com.android.support:support-v4:23.2.1'
 }
 

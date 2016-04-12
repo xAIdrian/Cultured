@@ -14,4 +14,6 @@
 
     <dimen name="small_fab_size">48dp</dimen>
 
+    <dimen name="wiki_negative_margin">-55dp</dimen>
+
 </resources>

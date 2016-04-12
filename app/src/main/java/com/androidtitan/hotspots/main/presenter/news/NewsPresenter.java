@@ -11,6 +11,6 @@ import java.util.List;
 public interface NewsPresenter {
 
     void takeActivity(NewsActivity activity);
-    List<Article> queryNews(String section, int limit);
-    void refreshQueryNews(String section, int limit);
+    List<Article> initialNewsQuery(String section, int limit);
+    void appendNewsQuery(String section, int limit, int offset);
 }

@@ -18,6 +18,7 @@ public interface NewsEndpointInterface {
     Call<NewsResponse> articles (
         @Path("section") String string,
         @Query("limit") int count,
+        @Query("offset") int offset,
         @Query("api-key") String yourKey
     );
 

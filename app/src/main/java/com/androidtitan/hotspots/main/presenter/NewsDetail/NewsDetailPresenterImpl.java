@@ -186,9 +186,4 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
         return stringBuilder.toString();
     }
 
-    @Override
-    public void startMusicActivity(String searcher) {
-        detailActivity.startMusicActivity(searcher);
-    }
-
 }

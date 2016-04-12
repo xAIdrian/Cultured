@@ -45,12 +45,12 @@ public class NewsPresenterImpl implements NewsPresenter {
     }
 
     @Override
-    public List<Article> queryNews(String section, int limit) {
+    public List<Article> initialNewsQuery(String section, int limit) {
 
         itemList = new ArrayList<>();
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
-        final Call<NewsResponse> call = newsService.articles(section, limit,
+        final Call<NewsResponse> call = newsService.articles(section, limit, 0, //our offset
                 "043b20a6a48cee1dddf92ee2257cfd73:10:74775241");
 
         call.enqueue(new Callback<NewsResponse>() {
@@ -83,10 +83,10 @@ public class NewsPresenterImpl implements NewsPresenter {
     }
 
     @Override
-    public void refreshQueryNews(String section, int limit) {
+    public void appendNewsQuery(String section, int limit, int offset) {
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
-        final Call<NewsResponse> call = newsService.articles(section, limit,
+        final Call<NewsResponse> call = newsService.articles(section, limit, offset,
                 "043b20a6a48cee1dddf92ee2257cfd73:10:74775241");
 
         call.enqueue(new Callback<NewsResponse>() {
@@ -99,16 +99,7 @@ public class NewsPresenterImpl implements NewsPresenter {
 
                     for (int i = 0; i < resp.getArticles().size(); i++) {
 
-                        try {
-                            if (!resp.getArticles().get(i).getTitle().equals(itemList.get(i).getTitle())) {
-                                itemList.add(0, resp.getArticles().get(i));
-                                newsActivity.updateSpecificNewsAdapter(0);
-
-                                Log.e(TAG, "actual get :: " + resp.getArticles().get(i).getTitle());
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        newsActivity.appendAdapterItemInserted(resp.getArticles().get(i));
 
                     }
                     newsActivity.refreshCompleted();

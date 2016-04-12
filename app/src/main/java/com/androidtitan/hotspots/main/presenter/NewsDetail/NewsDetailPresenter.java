@@ -18,5 +18,4 @@ public interface NewsDetailPresenter {
     String formatPERUrl(String facet);
     String formatORgUrl(String facet);
     String formatGEOUrl(String facet);
-    void startMusicActivity(String searcher);
 }

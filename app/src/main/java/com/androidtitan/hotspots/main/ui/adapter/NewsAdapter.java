@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.ui.activities.NewsActivity;
+import com.androidtitan.hotspots.main.util.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -34,13 +36,17 @@ import butterknife.ButterKnife;
 public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = getClass().getSimpleName();
 
+    private static final int ANIMATED_ITEMS_COUNT = 6;
+
     private static final int SIMPLE_LAYOUT = 0;
     private static final int LARGE_IMAGE_LAYOUT = 1;
     private static final int MEDIUM_IMAGE_LAYOUT = 2;
 
-
     private Context context;
     private List<Article> articleList;
+
+    private int lastAnimatedPosition = -1;
+    private int itemCount = 0;
 
     @Inject
     public NewsAdapter(Context context, List<Article> adapterTrackList) {
@@ -48,6 +54,35 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.context = context;
         this.articleList = adapterTrackList;
 
+    }
+
+    private void runEnterAnimation(View view, int position) {
+
+        if(position >= ANIMATED_ITEMS_COUNT - 1) {
+            return;
+        }
+
+        if(position > lastAnimatedPosition) {
+
+            lastAnimatedPosition = position;
+
+            view.setTranslationY(Utils.getScreenHeight());
+            view.animate()
+                    .translationY(0)
+                    .setInterpolator(new DecelerateInterpolator(3.f))
+                    .setDuration(700)
+                    .start();
+        }
+    }
+
+    public void appendToAdapter(Article article) {
+        articleList.add(article);
+        notifyItemInserted(articleList.size() - 1);
+    }
+
+    public void wipe() {
+        articleList.clear();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -98,6 +133,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+
+        runEnterAnimation(holder.itemView, position);
 
         switch (holder.getItemViewType()) {
             case SIMPLE_LAYOUT:
@@ -285,7 +322,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return articleList.size();
+        itemCount = articleList.size();
+        return itemCount;
     }
 
 }

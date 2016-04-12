@@ -2,23 +2,19 @@ package com.androidtitan.hotspots.main.ui.activities;
 
 import android.animation.Animator;
 import android.annotation.TargetApi;
-import android.app.ActivityOptions;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,22 +22,21 @@ import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.common.BaseActivity;
 import com.androidtitan.hotspots.main.CulturedApp;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenter;
+import com.androidtitan.hotspots.main.ui.WikiFragScrollInterface;
 import com.androidtitan.hotspots.main.ui.adapter.ViewPagerAdapter;
 import com.androidtitan.hotspots.main.ui.fragments.WikiFragment;
-import com.androidtitan.hotspots.main.util.HelperMethods;
+import com.androidtitan.hotspots.main.util.Utils;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 
@@ -50,7 +45,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class NewsDetailActivity extends AppCompatActivity {
+public class NewsDetailActivity extends BaseActivity implements WikiFragScrollInterface{
     private final String TAG = getClass().getSimpleName();
 
     private final static String SAVED_STATE_ARTICLE = "newsdetailactivity.savedstatearticle";
@@ -70,7 +65,7 @@ public class NewsDetailActivity extends AppCompatActivity {
     @Bind(R.id.pager) ViewPager viewPager;
     private ViewPagerAdapter adapter;
 
-    @Bind(R.id.championFab) FloatingActionButton championFab;
+    WikiFragment fragment;
 
     private Handler handler;
     private Animation scale;
@@ -106,15 +101,7 @@ public class NewsDetailActivity extends AppCompatActivity {
         initializeViewPager();
         initializeAnimations();
 
-        championFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                presenter.startMusicActivity(article.getGeoFacet().get(0));
-            }
-        });
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        GoogleApiClient client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+
     }
 
     /**
@@ -145,16 +132,22 @@ public class NewsDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
             case R.id.article_action:
                 //todo:use implicit intent to send user to web browser
                 break;
 
             default:
+                return super.onOptionsItemSelected(item);
 
-                break;
         }
 
-        return super.onOptionsItemSelected(item);
+        return false;
+
     }
 
     public NewsDetailPresenter getPresenter() {
@@ -182,7 +175,6 @@ public class NewsDetailActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        championFab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
         collapsingToolbar.setTitle(geoFacet); //todo: start activity for result
         collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this, R.color.transparent));
 
@@ -193,11 +185,6 @@ public class NewsDetailActivity extends AppCompatActivity {
 
         collapsingToolbar.setContentScrimColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
 
-        CoordinatorLayout.LayoutParams p = (CoordinatorLayout.LayoutParams) championFab.getLayoutParams();
-        p.setAnchorId(R.id.collapse_toolbar);
-        championFab.setLayoutParams(p);
-        championFab.setVisibility(View.GONE);
-
         getHeaderImage(articleImageView);
         RandomTransitionGenerator generator = new RandomTransitionGenerator(25000, new LinearInterpolator());
         articleImageView.setTransitionGenerator(generator);
@@ -207,6 +194,8 @@ public class NewsDetailActivity extends AppCompatActivity {
     }
 
     private void initializeViewPager() {
+        //scrollView.setFillViewport(true);
+
         adapter = new ViewPagerAdapter(this, getSupportFragmentManager(), buildFragments(), buildTitles());
         viewPager.setAdapter(adapter);
         tabs.setupWithViewPager(viewPager);
@@ -255,7 +244,11 @@ public class NewsDetailActivity extends AppCompatActivity {
     private void initializeAnimations() {
 
         handler = new Handler();
-        scale = AnimationUtils.loadAnimation(this, R.anim.scale);
+    }
+
+    @Override
+    public void scrollViewParallax(int dy) { // divided by three to scroll slower
+        articleTitleText.setTranslationY(articleTitleText.getTranslationY() + dy / 5);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -285,8 +278,8 @@ public class NewsDetailActivity extends AppCompatActivity {
             public boolean onPreDraw() {
                 //imageview.getViewTreeObserver().removeOnPreDrawListener(this);
 
-                dimensionArray[0] = HelperMethods.convertPixtoDip(imageview.getMeasuredWidth());
-                dimensionArray[1] = HelperMethods.convertPixtoDip(imageview.getMeasuredHeight());
+                dimensionArray[0] = Utils.convertPixtoDip(imageview.getMeasuredWidth());
+                dimensionArray[1] = Utils.convertPixtoDip(imageview.getMeasuredHeight());
 
                 imageview.getViewTreeObserver().removeOnPreDrawListener(this);
 
@@ -309,45 +302,8 @@ public class NewsDetailActivity extends AppCompatActivity {
                 ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
 
         collapsingToolbar.setContentScrimColor(mutedColor);
-        championFab.setBackgroundTintList(ColorStateList.valueOf(vibrantColor));
-        articleTitleText.setBackgroundColor(mutedColor);
+        articleTitleText.setBackgroundColor(vibrantColor);
         tabs.setBackgroundColor(mutedColor);
 
-        championFab.setVisibility(View.VISIBLE);
-        championFab.startAnimation(scale);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void startMusicActivity(String searcher) {
-        int currentapiVersion = Build.VERSION.SDK_INT;
-        if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP) {
-            //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
-
-            Intent intent = new Intent(this, MusicActivity.class);
-            intent.putExtra(NEWS_DETAIL_MUSIC_SEARCHER, article.getGeoFacet().get(0));
-            startActivityForResult(intent, MUSIC_ACTIVITY_FOR_RESULT, options.toBundle());
-        } else {
-            Intent intent = new Intent(this, MusicActivity.class);
-            intent.putExtra(NEWS_DETAIL_MUSIC_SEARCHER, article.getGeoFacet().get(0));
-            startActivityForResult(intent, MUSIC_ACTIVITY_FOR_RESULT);
-        }
-    }
-
-    /**
-     * Dispatch incoming result to the correct fragment.
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if(requestCode == MUSIC_ACTIVITY_FOR_RESULT) {
-            if(resultCode == RESULT_OK) {
-                geoFacet = data.getStringExtra(NEWS_DETAIL_MUSIC_SEARCHER);
-            }
-        }
     }
 }

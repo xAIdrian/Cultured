@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
@@ -15,13 +16,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.Explode;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseActivity;
@@ -37,7 +41,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 
 public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTouchListener{
     private final String TAG = getClass().getSimpleName();
@@ -45,23 +48,39 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
+    private static final int LOADING_ANIM_TIME = 700;
+
     @Inject NewsPresenter presenter;
 
     private GestureDetectorCompat gestureDetector;
+    private Handler handler;
     private Animation rotateAnim;
+    private Animation fadeAnim;
 
     @Bind(R.id.colorBgView) View bgView;
+    @Bind(R.id.culturedTitleTextView) TextView loadingTitleText;
+
     @Bind(R.id.swipeRefresh) SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.list) RecyclerView recyclerView;
     @Bind(R.id.refreshFab) FloatingActionButton refreshFab;
 
+    private LinearLayoutManager layoutManager;
     private NewsAdapter adapter;
+
+    private boolean firstLoad = true; //used for animation
+    private boolean onRestartChecker = false;
+    private boolean loading = true;
+    private int pastVisibleItems;
+    private int visibleItemCount;
+    private int totalItemCount;
+    public int adapterLoadOffset = 6;
 
     private List<Article> articles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initializeTranstionsAndAnimations();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
 
@@ -70,12 +89,14 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         presenter.takeActivity(this);
 
         gestureDetector = new GestureDetectorCompat(this, new RecyclerViewGestureListener());
+        initializeAnimation();
 
         //saveInstanceState to handle rotations
         if(savedInstanceState != null) {
             //articles = savedInstanceState.getParcelableArrayList(SAVED_STATE_ARTICLE_LIST);
         }
-        articles = presenter.queryNews("world", 20);
+
+        articles = presenter.initialNewsQuery("world", 5);
         initializeRecyclerView();
 
         refreshFab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
@@ -83,7 +104,7 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
             @Override
             public void onClick(View v) {
                 refreshFab.startAnimation(rotateAnim);
-                refreshRecyclerView();
+                refreshEntireRecyclerView();
             }
         });
 
@@ -91,31 +112,39 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshRecyclerView();
+                refreshEntireRecyclerView();
             }
         });
 
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-            }
-
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+
                 scrollViewParallax(dy);
+
+                if(dy > 0) { //check for scroll down
+                    visibleItemCount = layoutManager.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    pastVisibleItems = layoutManager.findFirstCompletelyVisibleItemPosition();
+
+                    if(loading) {
+
+                        if((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+
+                            refreshFab.setClickable(true);
+                            loading = false;
+                            Log.d(TAG, "appending data...");
+
+                            swipeRefreshLayout.setRefreshing(true);
+                            presenter.appendNewsQuery("world", 5, adapterLoadOffset);
+                            adapterLoadOffset += 5;
+                        }
+                    }
+                }
             }
         });
 
-    }
-
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        refreshRecyclerView();
     }
 
     /**
@@ -130,23 +159,19 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST, (ArrayList<? extends Parcelable>) articles);
     }
 
-    public NewsPresenter getNewsPresenter() {
-        return presenter;
-    }
-
     private void initializeRecyclerView() {
-        final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addOnItemTouchListener(this);
-        recyclerView.setItemAnimator(new SlideInDownAnimator());
+        //todo: recyclerView.setItemAnimator(new ());
 
         adapter = new NewsAdapter(this, articles);
         recyclerView.setAdapter(adapter);
     }
 
     private void scrollViewParallax(int dy) { // divided by three to scroll slower
-        bgView.setTranslationY(bgView.getTranslationY() + dy / 5);
+        bgView.setTranslationY(bgView.getTranslationY() - dy / 4);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -164,21 +189,62 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         } else {
             // do something for phones running an API before lollipop
         }
+    }
+
+    public void initializeAnimation() {
+
+        handler = new Handler();
         rotateAnim = AnimationUtils.loadAnimation(this, R.anim.rotate_clockwise);
+        fadeAnim = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+
     }
 
-    public void refreshRecyclerView() {
-        presenter.refreshQueryNews("world", 20);
+    public void refreshEntireRecyclerView() {
+        //todo:
     }
 
-    public void updateNewsAdapter() {
-        adapter.notifyDataSetChanged();
+    public void  updateNewsAdapter() {
+
+        if(firstLoad) {
+
+            firstLoadCompleteAnimation();
+        } else {
+
+            adapter.notifyDataSetChanged();
+        }
     }
 
-    public void updateSpecificNewsAdapter(int position) {
-        adapter.notifyItemChanged(position);
+    public void appendAdapterItemInserted(Article article) {
+        adapter.appendToAdapter(article);
     }
 
+    public void firstLoadCompleteAnimation() {
+
+        final ScaleAnimation scale = new ScaleAnimation((float) 1.0, (float) 1.0, (float) 1.0, (float) 0.33);
+        scale.setFillAfter(true);
+        scale.setDuration(LOADING_ANIM_TIME);
+
+        ///loadingTitleText.setVisibility(View.VISIBLE);
+        loadingTitleText.startAnimation(fadeAnim);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                loadingTitleText.setVisibility(View.INVISIBLE);
+                bgView.startAnimation(scale);
+            }
+        }, LOADING_ANIM_TIME);
+
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                adapter.notifyDataSetChanged();
+                firstLoad = false;
+            }
+        }, LOADING_ANIM_TIME * 2);
+    }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void startDetailActivity(Article article, ImageView articleImage) {
@@ -201,6 +267,8 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
     public void refreshCompleted() {
         swipeRefreshLayout.setRefreshing(false);
         refreshFab.clearAnimation();
+        loading = true;
+        refreshFab.setClickable(true);
     }
 
     @Override
@@ -243,4 +311,5 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
             return super.onDown(e);
         }
     }
+
 }

@@ -50,21 +50,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/nestedLayout"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="fill_vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <!--<include layout="@layout/content_news_detail" />-->
-
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </android.support.v4.widget.NestedScrollView>
 
     <TextView
         android:id="@+id/articleTitleTextView"
@@ -73,22 +64,12 @@
         android:paddingLeft="8dp"
         android:paddingTop="16dp"
         android:paddingRight="8dp"
-        android:paddingBottom="16dp"
+        android:paddingBottom="66dp"
         android:gravity="center"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorDivider"
         android:textColor="@android:color/white"
-        android:layout_gravity="bottom" />
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="-50dp"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/championFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:foregroundGravity="center"
-        android:src="@drawable/ic_headphones_48"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end"
-        app:fabSize="normal"
-        app:layout_behavior="com.androidtitan.hotspots.main.util.FABBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main.ui.fragments.WikiFragment">
+    tools:context=".main.ui.WikiFragment">
 
     <ProgressBar
         android:id="@+id/progress_horizontal"
@@ -15,18 +15,10 @@
         android:maxHeight="24dip"
         android:minHeight="24dip" />
 
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/nestedLayout"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/wikiRecycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="fill_vertical">
+        android:layout_height="match_parent"/>
 
-        <WebView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/webview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="-55dp" />
-
-    </android.support.v4.widget.NestedScrollView>
 
 </FrameLayout>

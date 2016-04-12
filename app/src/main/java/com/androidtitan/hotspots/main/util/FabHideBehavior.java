@@ -7,23 +7,11 @@ import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class FABBehavior extends FloatingActionButton.Behavior {
+public class FabHideBehavior extends FloatingActionButton.Behavior {
 
-    public FABBehavior(Context context, AttributeSet attrs) {
+    public FabHideBehavior(Context context, AttributeSet attrs) {
         super();
     }
-
-    /*@Override
-    public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
-        return dependency instanceof NestedScrollView;
-    } //if this doesn't work let's try NestedScrollView
-
-    @Override
-    public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
-        float translationY = Math.min(0, dependency.getTranslationY() + dependency.getHeight());
-        child.setTranslationY(translationY);
-        return true;
-    }*/
 
     @Override
     public boolean onStartNestedScroll(final CoordinatorLayout coordinatorLayout, final FloatingActionButton child,
