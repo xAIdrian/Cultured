@@ -39,8 +39,6 @@ dependencies {
     // Injection
     apt 'com.google.dagger:dagger-compiler:2.0'
 
-
-
     provided 'com.google.dagger:dagger-compiler:2.0'
     provided 'org.glassfish:javax.annotation:10.0-b28'
     compile 'com.android.support:appcompat-v7:23.2.1'
@@ -60,6 +58,7 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
     compile 'com.flaviofaria:kenburnsview:1.0.7'
     compile 'com.android.support:support-v4:23.2.1'
+    compile 'com.etsy.android.grid:library:1.0.5'
 }
 
 /*

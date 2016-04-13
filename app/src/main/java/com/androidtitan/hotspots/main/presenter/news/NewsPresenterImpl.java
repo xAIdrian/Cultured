@@ -30,9 +30,9 @@ public class NewsPresenterImpl implements NewsPresenter {
 
     private NewsActivity newsActivity;
 
-    @Bind(R.id.swipeRefresh) SwipeRefreshLayout refreshLayout;
+    //@Bind(R.id.swipeRefresh) SwipeRefreshLayout refreshLayout;
 
-    private ArrayList<Article> itemList;
+    private List<Article> itemList;
 
     //todo:we are going to make this switch to a live Feed Version
     public NewsPresenterImpl(Context context) {
@@ -84,6 +84,8 @@ public class NewsPresenterImpl implements NewsPresenter {
 
     @Override
     public void appendNewsQuery(String section, int limit, int offset) {
+
+        itemList = new ArrayList<>();
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, limit, offset,

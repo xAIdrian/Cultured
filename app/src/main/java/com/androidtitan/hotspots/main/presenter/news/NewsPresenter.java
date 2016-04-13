@@ -3,6 +3,7 @@ package com.androidtitan.hotspots.main.presenter.news;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.ui.activities.NewsActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**

@@ -118,6 +118,10 @@ public class NewsDetailActivity extends BaseActivity  {
         }
         geoFacet = article.getGeoFacet().get(0);
 
+        //TODO
+        //TODO:  HOW DO WE PROGRAMMATICALLY CHECK FOR SIZE AND ORIENTATION???
+        //TODO
+
         initializeToolbar();
         initializeViewElements();
         initializeViewPager();
@@ -128,7 +132,7 @@ public class NewsDetailActivity extends BaseActivity  {
 
         bottomSheetBehavior =  BottomSheetBehavior.from(bottomSheet);
 
-        bottomSheetBehavior.setPeekHeight(200);
+        bottomSheetBehavior.setPeekHeight(175);
         /*if(rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
 
         } else {*/
@@ -271,7 +275,8 @@ public class NewsDetailActivity extends BaseActivity  {
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        collapsingToolbar.setTitle(geoFacet); //todo: start activity for result
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.transparent));
+        collapsingToolbar.setTitle(geoFacet);
         collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this, R.color.transparent));
 
 
@@ -279,7 +284,7 @@ public class NewsDetailActivity extends BaseActivity  {
 
     private void initializeViewElements() {
 
-        collapsingToolbar.setContentScrimColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        collapsingToolbar.setContentScrimColor(ContextCompat.getColor(this, R.color.colorDivider));
 
         getHeaderImage(articleImageView);
         RandomTransitionGenerator generator = new RandomTransitionGenerator(25000, new LinearInterpolator());
@@ -393,7 +398,6 @@ public class NewsDetailActivity extends BaseActivity  {
         int mutedColor = palette.getMutedColor(
                 ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
 
-        toolbar.setBackgroundColor(mutedColor);
         collapsingToolbar.setContentScrimColor(mutedColor);
         bottomSheet.setBackgroundColor(vibrantColor);
         tabs.setBackgroundColor(mutedColor);

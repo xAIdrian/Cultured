@@ -1,6 +1,7 @@
 package com.androidtitan.hotspots.main.ui.adapter;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -37,7 +38,7 @@ import butterknife.ButterKnife;
 public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = getClass().getSimpleName();
 
-    private static final int ANIMATED_ITEMS_COUNT = 6;
+    private int ANIMATED_ITEMS_COUNT;
 
     private static final int SIMPLE_LAYOUT = 0;
     private static final int LARGE_IMAGE_LAYOUT = 1;
@@ -55,9 +56,20 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.context = context;
         this.articleList = adapterTrackList;
 
+        ANIMATED_ITEMS_COUNT = animationCount();
+
     }
 
-    //todo: slide down animation
+    private int animationCount() {
+        int screenSize =context.getResources().getConfiguration().screenLayout
+                & Configuration.SCREENLAYOUT_SIZE_MASK;
+        if(screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            return 8;
+        } else {
+            return 3;
+        }
+    }
+
 
 
     /**
@@ -68,12 +80,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
      */
     private void runEnterAnimation(View view, int position) {
 
-        //checking to see if it's going to dropped in "first"
-
-
-            /*if (position >= ANIMATED_ITEMS_COUNT - 1) {
-                return;
-            }*/
+        if (position >= ANIMATED_ITEMS_COUNT - 1) {
+            return;
+        }
 
             if (position > lastAnimatedPosition) {
 
@@ -99,6 +108,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyItemChanged(position);
     }
 
+    public void clearList() {
+        articleList.clear();
+    }
 
     public void wipe() {
         articleList.clear();

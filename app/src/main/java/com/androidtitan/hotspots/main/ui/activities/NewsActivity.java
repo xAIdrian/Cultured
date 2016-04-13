@@ -1,25 +1,28 @@
 package com.androidtitan.hotspots.main.ui.activities;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.util.Log;
 import android.view.Display;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.Window;
@@ -53,24 +56,28 @@ public class NewsActivity extends BaseActivity {
 
     private static final int LOADING_ANIM_TIME = 700;
 
-    @Inject NewsPresenter presenter;
+    @Inject
+    NewsPresenter presenter;
 
-    private GestureDetectorCompat gestureDetector;
     private Handler handler;
     private Animation rotateAnim;
     private Animation fadeAnim;
 
-    @Bind(R.id.colorBgView) View bgView;
-    @Bind(R.id.culturedTitleTextView) TextView loadingTitleText;
+    @Bind(R.id.colorBgView)
+    View bgView;
+    @Bind(R.id.culturedTitleTextView)
+    TextView loadingTitleText;
 
-    @Bind(R.id.swipeRefresh) SwipeRefreshLayout swipeRefreshLayout;
-    @Bind(R.id.list) RecyclerView recyclerView;
-    @Bind(R.id.refreshFab) FloatingActionButton refreshFab;
+    @Bind(R.id.swipeRefresh)
+    SwipeRefreshLayout swipeRefreshLayout;
+    @Bind(R.id.list)
+    RecyclerView recyclerView;
+    @Bind(R.id.refreshFab)
+    FloatingActionButton refreshFab;
 
-    private LinearLayoutManager layoutManager;
+    private LinearLayoutManager linearLayoutManager;
+    private StaggeredGridLayoutManager staggeredLayoutManager;
     private NewsAdapter adapter;
-
-    int rotation;
 
     private boolean firstLoad = true; //used for animation
     private boolean loading = true;
@@ -79,6 +86,7 @@ public class NewsActivity extends BaseActivity {
     private int totalItemCount;
     public int adapterLoadOffset = 6;
 
+    int screenSize;
     public List<Article> articles;
 
     @Override
@@ -96,11 +104,18 @@ public class NewsActivity extends BaseActivity {
         initializeAnimation();
 
         //saveInstanceState to handle rotations
-        if(savedInstanceState != null) {
-            //articles = savedInstanceState.getParcelableArrayList(SAVED_STATE_ARTICLE_LIST);
+        if (savedInstanceState != null) {
+            //
         }
 
-        articles = presenter.initialNewsQuery("world", 5);
+        screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+
+        if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            articles = presenter.initialNewsQuery("world", 10);
+        } else {
+            articles = presenter.initialNewsQuery("world", 5);
+        }
+
         initializeRecyclerView();
 
         refreshFab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
@@ -120,9 +135,6 @@ public class NewsActivity extends BaseActivity {
             }
         });
 
-        Display display = ((WindowManager) this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        rotation= display.getRotation();
-
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -130,42 +142,66 @@ public class NewsActivity extends BaseActivity {
 
                 scrollViewParallax(dy);
 
-                if(dy > 0) { //check for scroll down
+                if (dy > 0) { //check for scroll
 
-                    visibleItemCount = layoutManager.getChildCount();
-                    totalItemCount = layoutManager.getItemCount();
-                    pastVisibleItems = layoutManager.findFirstCompletelyVisibleItemPosition();
+                    if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
 
-                    if(rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
+                        visibleItemCount = staggeredLayoutManager.getChildCount();
+                        totalItemCount = staggeredLayoutManager.getItemCount();
+                        int[] firstVisibleItems = null;
+                        firstVisibleItems = staggeredLayoutManager.findFirstVisibleItemPositions(firstVisibleItems);
 
-                        if(loading) {
-
-                            if ((visibleItemCount + pastVisibleItems + 1) >= totalItemCount) {
-                                //the +1 accounts for having one less card visible to add
-
-                                refreshFab.setClickable(true);
-                                loading = false;
-                                Log.d(TAG, "appending data...");
-
-                                swipeRefreshLayout.setRefreshing(true);
-                                presenter.appendNewsQuery("world", 5, adapterLoadOffset);
-                                adapterLoadOffset += 5;
-                            }
+                        if(firstVisibleItems != null && firstVisibleItems.length > 0) {
+                            pastVisibleItems = firstVisibleItems[0];
                         }
-
-                    } else {
 
                         if (loading) {
 
                             if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-
-                                refreshFab.setClickable(true);
                                 loading = false;
-                                Log.d(TAG, "appending data...");
 
                                 swipeRefreshLayout.setRefreshing(true);
-                                presenter.appendNewsQuery("world", 5, adapterLoadOffset);
-                                adapterLoadOffset += 5;
+                                presenter.appendNewsQuery("world", 10, adapterLoadOffset);
+                                adapterLoadOffset += 10;
+                            }
+                        }
+                    } else {
+
+                        visibleItemCount = linearLayoutManager.getChildCount();
+                        totalItemCount = linearLayoutManager.getItemCount();
+                        pastVisibleItems = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
+
+                        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
+                            if (loading) {
+
+                                if ((visibleItemCount + pastVisibleItems + 1) >= totalItemCount) {
+                                    //the +1 accounts for having one less card visible to add
+
+                                    refreshFab.setClickable(true);
+                                    loading = false;
+                                    Log.d(TAG, "appending data...");
+
+                                    swipeRefreshLayout.setRefreshing(true);
+                                    presenter.appendNewsQuery("world", 5, adapterLoadOffset);
+                                    adapterLoadOffset += 5;
+                                }
+                            }
+
+                        } else {
+
+                            if (loading) {
+
+                                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+
+                                    refreshFab.setClickable(true);
+                                    loading = false;
+                                    Log.d(TAG, "appending data...");
+
+                                    swipeRefreshLayout.setRefreshing(true);
+                                    presenter.appendNewsQuery("world", 5, adapterLoadOffset);
+                                    adapterLoadOffset += 5;
+                                }
                             }
                         }
                     }
@@ -188,9 +224,26 @@ public class NewsActivity extends BaseActivity {
     }
 
     private void initializeRecyclerView() {
-        layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(layoutManager);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
+                && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+
+            staggeredLayoutManager = new StaggeredGridLayoutManager(3, 1);
+            recyclerView.setLayoutManager(staggeredLayoutManager);
+
+        } else if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+
+            Log.e(TAG, "large screen size");
+
+            staggeredLayoutManager = new StaggeredGridLayoutManager(2, 1);
+            recyclerView.setLayoutManager(staggeredLayoutManager);
+
+        } else {
+
+            linearLayoutManager = new LinearLayoutManager(this);
+            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+            recyclerView.setLayoutManager(linearLayoutManager);
+        }
 
         adapter = new NewsAdapter(this, articles);
         recyclerView.setAdapter(adapter);
@@ -230,9 +283,9 @@ public class NewsActivity extends BaseActivity {
         presenter.newArticleRefresh("world");
     }
 
-    public void  updateNewsAdapter() {
+    public void updateNewsAdapter() {
 
-        if(firstLoad) {
+        if (firstLoad) {
 
             firstLoadCompleteAnimation();
         } else {
