@@ -1,4 +1,4 @@
-package com.androidtitan.hotspots.main.util;
+package com.androidtitan.hotspots.main.util.view_util;
 
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;

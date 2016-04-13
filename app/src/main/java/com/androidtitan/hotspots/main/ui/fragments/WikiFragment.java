@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseFragment;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenter;
-import com.androidtitan.hotspots.main.ui.WikiFragScrollInterface;
 import com.androidtitan.hotspots.main.ui.activities.NewsDetailActivity;
 import com.androidtitan.hotspots.main.ui.adapter.SimpleWikiAdapter;
 
@@ -27,7 +26,6 @@ public class WikiFragment extends BaseFragment {
 
     private NewsDetailPresenter presenter;
 
-    WikiFragScrollInterface interfacer;
     public RecyclerView recyclerView;
 
     private String url;
@@ -44,17 +42,6 @@ public class WikiFragment extends BaseFragment {
         return fragment;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            interfacer = (WikiFragScrollInterface) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,33 +72,10 @@ public class WikiFragment extends BaseFragment {
         SimpleWikiAdapter adapter = new SimpleWikiAdapter(getContext(), url);
         recyclerView.setAdapter(adapter);
 
-        recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                interfacer.scrollViewParallax(dy);
-            }
-        });
-
         return v;
     }
 
-    /**
-     * Called when the fragment is no longer attached to its activity.  This
-     * is called after {@link #onDestroy()}.
-     */
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        interfacer = null;
-    }
+
 }
 
 

@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.BounceInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -56,29 +57,48 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
+    //todo: slide down animation
+
+
+    /**
+     * Animation for sliding the cards "up" when the entire list is initially loaded
+     *
+     * @param view
+     * @param position
+     */
     private void runEnterAnimation(View view, int position) {
 
-        if(position >= ANIMATED_ITEMS_COUNT - 1) {
-            return;
-        }
+        //checking to see if it's going to dropped in "first"
 
-        if(position > lastAnimatedPosition) {
 
-            lastAnimatedPosition = position;
+            /*if (position >= ANIMATED_ITEMS_COUNT - 1) {
+                return;
+            }*/
 
-            view.setTranslationY(Utils.getScreenHeight());
-            view.animate()
-                    .translationY(0)
-                    .setInterpolator(new DecelerateInterpolator(3.f))
-                    .setDuration(700)
-                    .start();
-        }
+            if (position > lastAnimatedPosition) {
+
+                lastAnimatedPosition = position;
+
+                view.setTranslationY(Utils.getScreenHeight());
+                view.animate()
+                        .translationY(0)
+                        .setInterpolator(new DecelerateInterpolator(3.f))
+                        .setDuration(700)
+                        .start();
+            }
+
     }
 
     public void appendToAdapter(Article article) {
         articleList.add(article);
         notifyItemInserted(articleList.size() - 1);
     }
+
+    public void insertToAdapter(int position, Article article) {
+        articleList.add(position, article);
+        notifyItemChanged(position);
+    }
+
 
     public void wipe() {
         articleList.clear();

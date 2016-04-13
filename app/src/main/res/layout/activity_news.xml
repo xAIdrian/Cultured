@@ -26,10 +26,6 @@
         android:visibility="gone"/>
 
 
-<!--
-android:layout_height="300dp"
--->
-
     <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
@@ -51,6 +47,6 @@ android:layout_height="300dp"
         android:layout_gravity="end|right|bottom"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_refresh_48"
-        app:layout_behavior="com.androidtitan.hotspots.main.util.FabHideBehavior"/>
+        app:layout_behavior="com.androidtitan.hotspots.main.util.view_util.FabHideBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -13,4 +13,5 @@ public interface NewsPresenter {
     void takeActivity(NewsActivity activity);
     List<Article> initialNewsQuery(String section, int limit);
     void appendNewsQuery(String section, int limit, int offset);
+    void newArticleRefresh(String section);
 }

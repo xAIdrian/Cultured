@@ -2,10 +2,16 @@ package com.androidtitan.hotspots.main.ui.activities;
 
 import android.animation.Animator;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -14,16 +20,20 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
-import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
@@ -31,41 +41,53 @@ import com.androidtitan.hotspots.common.BaseActivity;
 import com.androidtitan.hotspots.main.CulturedApp;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.presenter.newsdetail.NewsDetailPresenter;
-import com.androidtitan.hotspots.main.ui.WikiFragScrollInterface;
 import com.androidtitan.hotspots.main.ui.adapter.ViewPagerAdapter;
 import com.androidtitan.hotspots.main.ui.fragments.WikiFragment;
 import com.androidtitan.hotspots.main.util.Utils;
+import com.androidtitan.hotspots.main.util.view_util.HiddenBottomSheetBehavior;
 import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class NewsDetailActivity extends BaseActivity implements WikiFragScrollInterface{
+public class NewsDetailActivity extends BaseActivity  {
     private final String TAG = getClass().getSimpleName();
 
     private final static String SAVED_STATE_ARTICLE = "newsdetailactivity.savedstatearticle";
-    public final static String NEWS_DETAIL_MUSIC_SEARCHER = "newsdetailactivity.newsdetailmusicsearcher";
-    public final static String NEWS_DETAIL_WIKI_URL = "newsdetailactivity.newsdetailwikiurl";
 
-    public static final int MUSIC_ACTIVITY_FOR_RESULT = 1;
+    private final static int FADE_TIME = 1000;
 
     @Inject
     NewsDetailPresenter presenter;
 
-    @Bind(R.id.collapse_toolbar) CollapsingToolbarLayout collapsingToolbar;
-    @Bind(R.id.toolbar) Toolbar toolbar;
-    @Bind(R.id.bgheader) KenBurnsView articleImageView;
-    @Bind(R.id.articleTitleTextView) TextView articleTitleText;
-    @Bind(R.id.tab_layout) TabLayout tabs;
-    @Bind(R.id.pager) ViewPager viewPager;
-    private ViewPagerAdapter adapter;
+    @Bind(R.id.collapse_toolbar)
+    CollapsingToolbarLayout collapsingToolbar;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
+    @Bind(R.id.bgheader)
+    KenBurnsView articleImageView;
 
-    WikiFragment fragment;
+    @Bind(R.id.bottom_sheet)
+    RelativeLayout bottomSheet;
+    private BottomSheetBehavior bottomSheetBehavior;
+    @Bind(R.id.swipeTextView)
+    TextView swipeText;
+    @Bind(R.id.articleTitleTextView)
+    TextView articleTitleTextView;
+    @Bind(R.id.articleAbstractTextView)
+    TextView articleAbstractText;
+
+    @Bind(R.id.tab_layout)
+    TabLayout tabs;
+    @Bind(R.id.pager)
+    ViewPager viewPager;
+    private ViewPagerAdapter adapter;
 
     private Handler handler;
     private Animation scale;
@@ -101,6 +123,70 @@ public class NewsDetailActivity extends BaseActivity implements WikiFragScrollIn
         initializeViewPager();
         initializeAnimations();
 
+        Display display = ((WindowManager) this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int rotation= display.getRotation();
+
+        bottomSheetBehavior =  BottomSheetBehavior.from(bottomSheet);
+
+        bottomSheetBehavior.setPeekHeight(200);
+        /*if(rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
+
+        } else {*/
+            //bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
+        //}
+
+        final Animation in = new AlphaAnimation(0.0f, 1.0f);
+        in.setDuration(FADE_TIME);
+        final Animation out = new AlphaAnimation(1.0f, 0.0f);
+        out.setDuration(FADE_TIME);
+
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+
+                    case BottomSheetBehavior.STATE_COLLAPSED:
+                        if (!swipeText.equals("Swipe up for more info")) {
+                            swipeText.startAnimation(out);
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    swipeText.setText("Swipe up for more info");
+                                    swipeText.startAnimation(in);
+                                }
+                            }, FADE_TIME);
+                        }
+                        articleImageView.resume();
+                        break;
+
+                    case BottomSheetBehavior.STATE_EXPANDED:
+                        //articleImageView.pause();
+                        if (!swipeText.equals("Swipe down for less info")) {
+                            swipeText.startAnimation(out);
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    swipeText.setText("Swipe down for less info");
+                                    swipeText.startAnimation(in);
+                                }
+                            }, FADE_TIME);
+                        }
+                        break;
+
+                    case BottomSheetBehavior.STATE_DRAGGING:
+
+                        articleImageView.pause();
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
 
     }
 
@@ -138,7 +224,17 @@ public class NewsDetailActivity extends BaseActivity implements WikiFragScrollIn
                 return true;
 
             case R.id.article_action:
-                //todo:use implicit intent to send user to web browser
+
+                Uri webpage = Uri.parse(article.getUrl());
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, webpage);
+
+                PackageManager packageManager = getPackageManager();
+                List<ResolveInfo> activities = packageManager.queryIntentActivities(webIntent, 0);
+                boolean isIntentSafe = activities.size() > 0;
+
+                if (isIntentSafe) {
+                    startActivity(webIntent);
+                }
                 break;
 
             default:
@@ -189,7 +285,9 @@ public class NewsDetailActivity extends BaseActivity implements WikiFragScrollIn
         RandomTransitionGenerator generator = new RandomTransitionGenerator(25000, new LinearInterpolator());
         articleImageView.setTransitionGenerator(generator);
 
-        articleTitleText.setText(article.getAbstract());
+        articleTitleTextView.setText(article.getTitle());
+        articleAbstractText.setText(article.getAbstract());
+
 
     }
 
@@ -205,16 +303,16 @@ public class NewsDetailActivity extends BaseActivity implements WikiFragScrollIn
 
         ArrayList<WikiFragment> frags = new ArrayList<>();
 
-        if(!article.getDesFacet().get(0).equals("")) {
+        if (!article.getDesFacet().get(0).equals("")) {
             frags.add(WikiFragment.newInstance(presenter.formatDESUrl(article.getDesFacet().get(0))));
         }
-        if(!article.getPerFacet().get(0).equals("")) {
+        if (!article.getPerFacet().get(0).equals("")) {
             frags.add(WikiFragment.newInstance(presenter.formatPERUrl(article.getPerFacet().get(0))));
         }
-        if(!article.getOrgFacet().get(0).equals("")) {
+        if (!article.getOrgFacet().get(0).equals("")) {
             frags.add(WikiFragment.newInstance("https://en.m.wikipedia.org/wiki/" + article.getOrgFacet().get(0)));
         }
-        if(!article.getGeoFacet().get(0).equals("")) {
+        if (!article.getGeoFacet().get(0).equals("")) {
             frags.add(WikiFragment.newInstance(presenter.formatGEOUrl(article.getGeoFacet().get(0))));
         }
 
@@ -225,16 +323,16 @@ public class NewsDetailActivity extends BaseActivity implements WikiFragScrollIn
 
         ArrayList<String> titles = new ArrayList<>();
 
-        if(!article.getDesFacet().get(0).equals("")) {
+        if (!article.getDesFacet().get(0).equals("")) {
             titles.add(article.getDesFacet().get(0));
         }
-        if(!article.getPerFacet().get(0).equals("")) {
+        if (!article.getPerFacet().get(0).equals("")) {
             titles.add(article.getPerFacet().get(0));
         }
-        if(!article.getOrgFacet().get(0).equals("")) {
+        if (!article.getOrgFacet().get(0).equals("")) {
             titles.add(article.getOrgFacet().get(0));
         }
-        if(!article.getGeoFacet().get(0).equals("")) {
+        if (!article.getGeoFacet().get(0).equals("")) {
             titles.add(article.getGeoFacet().get(0));
         }
 
@@ -244,11 +342,6 @@ public class NewsDetailActivity extends BaseActivity implements WikiFragScrollIn
     private void initializeAnimations() {
 
         handler = new Handler();
-    }
-
-    @Override
-    public void scrollViewParallax(int dy) { // divided by three to scroll slower
-        articleTitleText.setTranslationY(articleTitleText.getTranslationY() + dy / 5);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -292,7 +385,6 @@ public class NewsDetailActivity extends BaseActivity implements WikiFragScrollIn
     }
 
     public void onImageDownload(Palette palette) {
-        //todo: you know...we could use BUTTERKNIFE to get our color resource...
 
         int vibrantColor = palette.getVibrantColor(
                 ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
@@ -301,9 +393,11 @@ public class NewsDetailActivity extends BaseActivity implements WikiFragScrollIn
         int mutedColor = palette.getMutedColor(
                 ContextCompat.getColor(NewsDetailActivity.this, R.color.colorAccent));
 
+        toolbar.setBackgroundColor(mutedColor);
         collapsingToolbar.setContentScrimColor(mutedColor);
-        articleTitleText.setBackgroundColor(vibrantColor);
+        bottomSheet.setBackgroundColor(vibrantColor);
         tabs.setBackgroundColor(mutedColor);
 
     }
 }
+

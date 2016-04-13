@@ -17,10 +17,13 @@ import android.support.v7.widget.RecyclerView;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.util.Log;
+import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
@@ -42,7 +45,7 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTouchListener{
+public class NewsActivity extends BaseActivity {
     private final String TAG = getClass().getSimpleName();
 
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
@@ -67,15 +70,16 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
     private LinearLayoutManager layoutManager;
     private NewsAdapter adapter;
 
+    int rotation;
+
     private boolean firstLoad = true; //used for animation
-    private boolean onRestartChecker = false;
     private boolean loading = true;
     private int pastVisibleItems;
     private int visibleItemCount;
     private int totalItemCount;
     public int adapterLoadOffset = 6;
 
-    private List<Article> articles;
+    public List<Article> articles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +92,7 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         CulturedApp.getAppComponent().inject(this);
         presenter.takeActivity(this);
 
-        gestureDetector = new GestureDetectorCompat(this, new RecyclerViewGestureListener());
+        loadingTitleText.setVisibility(View.VISIBLE);
         initializeAnimation();
 
         //saveInstanceState to handle rotations
@@ -104,7 +108,7 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
             @Override
             public void onClick(View v) {
                 refreshFab.startAnimation(rotateAnim);
-                refreshEntireRecyclerView();
+                refreshForNewArticles();
             }
         });
 
@@ -112,9 +116,12 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshEntireRecyclerView();
+                refreshForNewArticles();
             }
         });
+
+        Display display = ((WindowManager) this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        rotation= display.getRotation();
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -124,21 +131,42 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
                 scrollViewParallax(dy);
 
                 if(dy > 0) { //check for scroll down
+
                     visibleItemCount = layoutManager.getChildCount();
                     totalItemCount = layoutManager.getItemCount();
                     pastVisibleItems = layoutManager.findFirstCompletelyVisibleItemPosition();
 
-                    if(loading) {
+                    if(rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
 
-                        if((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                        if(loading) {
 
-                            refreshFab.setClickable(true);
-                            loading = false;
-                            Log.d(TAG, "appending data...");
+                            if ((visibleItemCount + pastVisibleItems + 1) >= totalItemCount) {
+                                //the +1 accounts for having one less card visible to add
 
-                            swipeRefreshLayout.setRefreshing(true);
-                            presenter.appendNewsQuery("world", 5, adapterLoadOffset);
-                            adapterLoadOffset += 5;
+                                refreshFab.setClickable(true);
+                                loading = false;
+                                Log.d(TAG, "appending data...");
+
+                                swipeRefreshLayout.setRefreshing(true);
+                                presenter.appendNewsQuery("world", 5, adapterLoadOffset);
+                                adapterLoadOffset += 5;
+                            }
+                        }
+
+                    } else {
+
+                        if (loading) {
+
+                            if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+
+                                refreshFab.setClickable(true);
+                                loading = false;
+                                Log.d(TAG, "appending data...");
+
+                                swipeRefreshLayout.setRefreshing(true);
+                                presenter.appendNewsQuery("world", 5, adapterLoadOffset);
+                                adapterLoadOffset += 5;
+                            }
                         }
                     }
                 }
@@ -163,15 +191,13 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.addOnItemTouchListener(this);
-        //todo: recyclerView.setItemAnimator(new ());
 
         adapter = new NewsAdapter(this, articles);
         recyclerView.setAdapter(adapter);
     }
 
     private void scrollViewParallax(int dy) { // divided by three to scroll slower
-        bgView.setTranslationY(bgView.getTranslationY() - dy / 4);
+        bgView.setTranslationY(bgView.getTranslationY() - dy / 3);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -199,8 +225,9 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
 
     }
 
-    public void refreshEntireRecyclerView() {
-        //todo:
+    public void refreshForNewArticles() {
+
+        presenter.newArticleRefresh("world");
     }
 
     public void  updateNewsAdapter() {
@@ -214,8 +241,12 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         }
     }
 
-    public void appendAdapterItemInserted(Article article) {
+    public void appendAdapterItem(Article article) {
         adapter.appendToAdapter(article);
+    }
+
+    public void insertAdapterItem(int position, Article article) {
+        adapter.insertToAdapter(position, article);
     }
 
     public void firstLoadCompleteAnimation() {
@@ -224,14 +255,14 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         scale.setFillAfter(true);
         scale.setDuration(LOADING_ANIM_TIME);
 
-        ///loadingTitleText.setVisibility(View.VISIBLE);
+        loadingTitleText.setVisibility(View.GONE);
         loadingTitleText.startAnimation(fadeAnim);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
 
-                loadingTitleText.setVisibility(View.INVISIBLE);
                 bgView.startAnimation(scale);
+
             }
         }, LOADING_ANIM_TIME);
 
@@ -269,47 +300,6 @@ public class NewsActivity extends BaseActivity implements RecyclerView.OnItemTou
         refreshFab.clearAnimation();
         loading = true;
         refreshFab.setClickable(true);
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-        gestureDetector.onTouchEvent(e);
-        return false;
-    }
-
-    @Override
-    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-    }
-
-    @Override
-    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-    }
-
-    private class RecyclerViewGestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        Vibrator v = (Vibrator) getBaseContext().getSystemService(Context.VIBRATOR_SERVICE);
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
-            int position = recyclerView.getChildAdapterPosition(view);
-
-            // Vibrate for 500 milliseconds
-            v.vibrate(50);
-            return super.onSingleTapUp(e);
-        }
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            View view = recyclerView.findChildViewUnder(e.getX(), e.getY());
-            int position = recyclerView.getChildAdapterPosition(view);
-
-            // Vibrate for 500 milliseconds
-            //v.vibrate(50);
-            return super.onDown(e);
-        }
     }
 
 }

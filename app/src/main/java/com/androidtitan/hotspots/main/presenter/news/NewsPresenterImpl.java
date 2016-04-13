@@ -99,7 +99,7 @@ public class NewsPresenterImpl implements NewsPresenter {
 
                     for (int i = 0; i < resp.getArticles().size(); i++) {
 
-                        newsActivity.appendAdapterItemInserted(resp.getArticles().get(i));
+                        newsActivity.appendAdapterItem(resp.getArticles().get(i));
 
                     }
                     newsActivity.refreshCompleted();
@@ -114,6 +114,46 @@ public class NewsPresenterImpl implements NewsPresenter {
                 t.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public void newArticleRefresh(final String section) {
+
+        NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
+        final Call<NewsResponse> call = newsService.articles(section, 1, 0,
+                "043b20a6a48cee1dddf92ee2257cfd73:10:74775241");
+
+        call.enqueue(new Callback<NewsResponse>() {
+            @Override
+            public void onResponse(Call<NewsResponse> call, Response<NewsResponse> response) {
+                if (response.isSuccessful()) {
+                    NewsResponse resp = response.body();
+                    Log.d(TAG, "refresh response received: " + resp.getStatus() + " : "
+                            + resp.getArticles().size() + " articles received");
+
+                    if(!resp.getArticles().get(0).getAbstract()
+                            .equals(newsActivity.articles.get(0).getAbstract())) {
+
+                        newsActivity.insertAdapterItem(0, resp.getArticles().get(0));
+                        newArticleRefresh(section);
+
+                        Log.d(TAG, "Item added to the top ...");
+                    }
+
+                } else {
+                    Log.e(TAG, "response fail");
+                }
+
+                newsActivity.refreshCompleted();
+            }
+
+            @Override
+            public void onFailure(Call<NewsResponse> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+
+        //todo: do we need to return anything?
     }
 }
 
