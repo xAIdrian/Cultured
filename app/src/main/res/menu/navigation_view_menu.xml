@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/onbaordingGroup">
+
+        <item
+            android:id="@+id/onboarding_card_generator"
+            android:icon="@drawable/ic_onboarding"
+            android:title="@string/generate_onboarding" />
+
+    </group>
+
+    <group
+        android:id="@+id/aboutGroup">
+
+        <item
+            android:id="@+id/about_card_generator"
+            android:icon="@drawable/ic_waves"
+            android:title="@string/generate_about" />
+
+    </group>
+
+</menu>

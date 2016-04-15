@@ -19,13 +19,13 @@
             android:layout_height="match_parent"
             android:layout_weight="1">
 
-        <com.flaviofaria.kenburnsview.KenBurnsView
-            android:id="@+id/bgheader"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorDivider"
-            android:fitsSystemWindows="true"
-            android:scaleType="centerCrop" />
+            <com.flaviofaria.kenburnsview.KenBurnsView
+                android:id="@+id/bgheader"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorDivider"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -56,14 +56,14 @@
                     app:expandedTitleTextAppearance="@android:color/transparent"
                     app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/tab_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="?android:attr/actionBarSize"
-                    android:layout_gravity="bottom"
-                    android:background="@color/colorDivider"
-                    android:minHeight="?android:attr/actionBarSize"
-                    app:tabMode="scrollable" />
+                    <android.support.design.widget.TabLayout
+                        android:id="@+id/tab_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="?android:attr/actionBarSize"
+                        android:layout_gravity="bottom"
+                        android:background="@color/colorDivider"
+                        android:minHeight="?android:attr/actionBarSize"
+                        app:tabMode="scrollable" />
 
                 </android.support.design.widget.CollapsingToolbarLayout>
 

@@ -19,6 +19,12 @@
     <string name="loading">Cultured is loading ...</string>
     <string name="swipe_up">Swipe up for more info</string>
 
-    <!-- <string name="empty">Please give me something to display \n I'm hungry</string> -->
+    <string name="onboarding_title">Welcome\nto\nCultured</string>
+    <string name="oboarding_intro">Don\'t you want to know what\'s going on in the world but don\'t want to read lengthy news articles? Cultured solves that.</string>
+    <string name="onboarding_body">Select an article topic that interests you and from there you\'ll be able to learn more about the people, organizations, and countries involved.\n \nHappy Travels.</string>
+
+    <string name="onboarding_gotit">Got it!</string>
+    <string name="generate_onboarding">Show Onboarding Card</string>
+    <string name="generate_about">Show About Card</string>
 
 </resources>

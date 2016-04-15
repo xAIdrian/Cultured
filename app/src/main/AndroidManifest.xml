@@ -27,9 +27,10 @@
         <activity
             android:name=".main.ui.activities.NewsDetailActivity"
             android:parentActivityName=".main.ui.activities.NewsActivity"
-            android:theme="@style/AppTheme"
-
-            android:configChanges="orientation" />
+            android:theme="@style/AppTheme" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="5f9eefa08e9c99125059405beb5e237858ddfb43" />
     </application>
 
 </manifest>

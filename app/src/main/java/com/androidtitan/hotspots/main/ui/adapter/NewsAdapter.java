@@ -1,12 +1,14 @@
 package com.androidtitan.hotspots.main.ui.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.main.CulturedApp;
 import com.androidtitan.hotspots.main.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.ui.activities.NewsActivity;
 import com.androidtitan.hotspots.main.util.Utils;
@@ -38,14 +41,19 @@ import butterknife.ButterKnife;
 public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = getClass().getSimpleName();
 
+    public static String CULTURED_PREFERENCES = "com.androidtitan.hotspots.main.culturedpreferences";
+    public static String PREFERENCES_SHOULD_ONBOARD = "com.androidtitan.hotspots.main.preferencesshouldonboard";
     private int ANIMATED_ITEMS_COUNT;
 
     private static final int SIMPLE_LAYOUT = 0;
     private static final int LARGE_IMAGE_LAYOUT = 1;
     private static final int MEDIUM_IMAGE_LAYOUT = 2;
+    private static final int ONBOARDING_LAYOUT = 3;
 
     private Context context;
     private List<Article> articleList;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     private int lastAnimatedPosition = -1;
     private int itemCount = 0;
@@ -55,6 +63,17 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         this.context = context;
         this.articleList = adapterTrackList;
+
+        sharedPreferences = context.getSharedPreferences(CULTURED_PREFERENCES, Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        //todo: if sharedPreferences says it is our first time using the app
+        if(!sharedPreferences.contains(PREFERENCES_SHOULD_ONBOARD)) {
+            editor.putBoolean(PREFERENCES_SHOULD_ONBOARD, true);
+            editor.commit();
+
+            articleList.add(0, new Article());
+        }
 
         ANIMATED_ITEMS_COUNT = animationCount();
 
@@ -66,11 +85,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if(screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
             return 8;
         } else {
-            return 3;
+            return 4;
         }
     }
-
-
 
     /**
      * Animation for sliding the cards "up" when the entire list is initially loaded
@@ -117,8 +134,31 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyDataSetChanged();
     }
 
+    public void resetOnboardingCard() {
+
+        editor.putBoolean(PREFERENCES_SHOULD_ONBOARD, true);
+        editor.commit();
+        articleList.add(0, new Article());
+        notifyItemInserted(0);
+        //notifyItemInserted(0);
+    }
+
+    public void showAboutCard() {
+
+        //todo: first we need to create the About Card layout
+        //todo: ViewHolder
+
+        articleList.add(0, new Article());
+        notifyItemInserted(0);
+    }
+
     @Override
     public int getItemViewType(int position) {
+
+        if(position == 0 && sharedPreferences.getBoolean(PREFERENCES_SHOULD_ONBOARD, false)) {
+            return ONBOARDING_LAYOUT;
+
+        } else
 
         if(articleList.get(position).getMultimedia().size() > 3) {
             return LARGE_IMAGE_LAYOUT;
@@ -153,6 +193,11 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 viewHolder = new MediumImageViewHolder(v3);
                 break;
 
+            case ONBOARDING_LAYOUT:
+                View v4 = LayoutInflater.from(parent.getContext()).inflate(R.layout.onboarding_card, parent, false);
+                viewHolder = new OnboardingViewHolder(v4);
+                break;
+
             default:
                 View def = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_row_layout_simple, parent, false);
                 viewHolder = new SimpleViewHolder(def);
@@ -164,7 +209,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
 
         runEnterAnimation(holder.itemView, position);
 
@@ -182,10 +227,24 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             case MEDIUM_IMAGE_LAYOUT:
                 MediumImageViewHolder mediumImageViewHolder = (MediumImageViewHolder) holder;
                 initMediumViewholderImage(mediumImageViewHolder, position);
+                break;
+
+            case ONBOARDING_LAYOUT:
+                OnboardingViewHolder onboardingViewHolder = (OnboardingViewHolder) holder;
+                onboardingViewHolder.gotitText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        editor.putBoolean(PREFERENCES_SHOULD_ONBOARD, false);
+                        editor.commit();
+
+                        articleList.remove(0);
+                        notifyItemRemoved(0);
+                    }
+                });
+                break;
 
             default:
-
-
+                //
                 break;
         }
 
@@ -350,6 +409,20 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         }
 
+    }
+
+    public static class OnboardingViewHolder extends RecyclerView.ViewHolder{
+
+        @Nullable @Bind(R.id.gotitTextView) TextView gotitText;
+
+        public OnboardingViewHolder(View itemView) {
+            super(itemView);
+            try {
+                ButterKnife.bind(this, itemView);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override

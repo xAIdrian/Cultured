@@ -12,8 +12,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +25,7 @@ import android.transition.Explode;
 import android.transition.Transition;
 import android.util.Log;
 import android.view.Display;
+import android.view.MenuItem;
 import android.view.Surface;
 import android.view.View;
 import android.view.Window;
@@ -75,6 +78,11 @@ public class NewsActivity extends BaseActivity {
     @Bind(R.id.refreshFab)
     FloatingActionButton refreshFab;
 
+    @Bind(R.id.drawerLayout)
+    DrawerLayout drawerLayout;
+    @Bind(R.id.drawer_navigation_view)
+    NavigationView navigationView;
+
     private LinearLayoutManager linearLayoutManager;
     private StaggeredGridLayoutManager staggeredLayoutManager;
     private NewsAdapter adapter;
@@ -100,6 +108,7 @@ public class NewsActivity extends BaseActivity {
         CulturedApp.getAppComponent().inject(this);
         presenter.takeActivity(this);
 
+        refreshFab.hide();
         loadingTitleText.setVisibility(View.VISIBLE);
         initializeAnimation();
 
@@ -115,6 +124,33 @@ public class NewsActivity extends BaseActivity {
         } else {
             articles = presenter.initialNewsQuery("world", 5);
         }
+
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                drawerLayout.closeDrawers();
+
+                switch (item.getItemId()) {
+
+                    case R.id.onboarding_card_generator:
+
+                        adapter.resetOnboardingCard();
+
+                        break;
+
+                    case R.id.about_card_generator:
+
+                        //adapter.showAboutCard();
+
+                        break;
+
+                    default:
+
+                        Log.e(TAG, "Incorrect navigation drawer item selected");
+                }
+                return true;
+            }
+        });
 
         initializeRecyclerView();
 
@@ -233,8 +269,6 @@ public class NewsActivity extends BaseActivity {
 
         } else if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
 
-            Log.e(TAG, "large screen size");
-
             staggeredLayoutManager = new StaggeredGridLayoutManager(2, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
 
@@ -326,6 +360,7 @@ public class NewsActivity extends BaseActivity {
 
                 adapter.notifyDataSetChanged();
                 firstLoad = false;
+                refreshFab.show();
             }
         }, LOADING_ANIM_TIME * 2);
     }

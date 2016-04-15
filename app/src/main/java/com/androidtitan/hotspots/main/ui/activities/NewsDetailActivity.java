@@ -6,6 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.TypedArray;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +24,8 @@ import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -118,26 +124,24 @@ public class NewsDetailActivity extends BaseActivity  {
         }
         geoFacet = article.getGeoFacet().get(0);
 
-        //TODO
-        //TODO:  HOW DO WE PROGRAMMATICALLY CHECK FOR SIZE AND ORIENTATION???
-        //TODO
-
         initializeToolbar();
         initializeViewElements();
         initializeViewPager();
         initializeAnimations();
 
-        Display display = ((WindowManager) this.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        int rotation= display.getRotation();
+        /*TypedValue tv = new TypedValue();
+        int peekHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics()) / 2;
+*/
+
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int height = size.y;
+        int peekHeight = height / 8;
 
         bottomSheetBehavior =  BottomSheetBehavior.from(bottomSheet);
-
-        bottomSheetBehavior.setPeekHeight(175);
-        /*if(rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
-
-        } else {*/
-            //bottomSheetBehavior.setState(bottomSheetBehavior.STATE_HIDDEN);
-        //}
+        bottomSheetBehavior.setPeekHeight(peekHeight);
 
         final Animation in = new AlphaAnimation(0.0f, 1.0f);
         in.setDuration(FADE_TIME);
@@ -289,6 +293,7 @@ public class NewsDetailActivity extends BaseActivity  {
         getHeaderImage(articleImageView);
         RandomTransitionGenerator generator = new RandomTransitionGenerator(25000, new LinearInterpolator());
         articleImageView.setTransitionGenerator(generator);
+        articleImageView.pause();
 
         articleTitleTextView.setText(article.getTitle());
         articleAbstractText.setText(article.getAbstract());
