@@ -134,13 +134,20 @@ public class NewsActivity extends BaseActivity {
 
                     case R.id.onboarding_card_generator:
 
-                        adapter.resetOnboardingCard();
+                        if(!adapter.getSharedPreferences().getBoolean(adapter.PREFERENCES_SHOULD_ONBOARD , false)
+                                && adapter.getAboutStatus() == false) {
+                            adapter.resetOnboardingCard();
+                        }
+
 
                         break;
 
                     case R.id.about_card_generator:
 
-                        //adapter.showAboutCard();
+                        if(!adapter.getSharedPreferences().getBoolean(adapter.PREFERENCES_SHOULD_ONBOARD , false)
+                                && adapter.getAboutStatus() == false) {
+                            adapter.showAboutCard();
+                        }
 
                         break;
 
@@ -158,18 +165,39 @@ public class NewsActivity extends BaseActivity {
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                refreshFab.startAnimation(rotateAnim);
-                refreshForNewArticles();
+
+                if(!adapter.getSharedPreferences().getBoolean(adapter.PREFERENCES_SHOULD_ONBOARD , false)
+                        && adapter.getAboutStatus() == false) {
+                    refreshFab.startAnimation(rotateAnim);
+                    refreshForNewArticles();
+
+                } else {
+
+                    refreshCompleted();
+                }
             }
         });
 
-        swipeRefreshLayout.setColorSchemeColors(R.color.colorPrimary, R.color.colorAccent);
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorCaribbean, R.color.colorCrush);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refreshForNewArticles();
+
+                if(!adapter.getSharedPreferences().getBoolean(adapter.PREFERENCES_SHOULD_ONBOARD , false)
+                        && adapter.getAboutStatus() == false) {
+
+                    refreshForNewArticles();
+
+                } else {
+
+                    refreshCompleted();
+                }
+
+
             }
         });
+
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -315,6 +343,7 @@ public class NewsActivity extends BaseActivity {
     public void refreshForNewArticles() {
 
         presenter.newArticleRefresh("world");
+
     }
 
     public void updateNewsAdapter() {

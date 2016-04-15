@@ -13,7 +13,7 @@
     <application
         android:name=".main.CulturedApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_plane"
+        android:icon="@mipmap/cultured_app_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 

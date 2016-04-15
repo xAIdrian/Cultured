@@ -27,4 +27,9 @@
     <string name="generate_onboarding">Show Onboarding Card</string>
     <string name="generate_about">Show About Card</string>
 
+    <string name="about_intro">Cultured was developed by Adrian Mohnacs.</string>
+    <string name="about_body">Third party libraries used:\n\nDagger 2.  Butterknife.  Retrofit 2.  (Square)\n\n
+    Glide.  (Google) \n\n
+    KenBurnsView. </string>
+
 </resources>

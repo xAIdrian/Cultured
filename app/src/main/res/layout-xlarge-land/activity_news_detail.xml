@@ -25,7 +25,8 @@
                 android:layout_height="match_parent"
                 android:background="@color/colorDivider"
                 android:fitsSystemWindows="true"
-                android:scaleType="centerCrop" />
+                android:scaleType="centerCrop"
+                android:layout_marginTop="-100dp" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"

@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,6 +50,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int LARGE_IMAGE_LAYOUT = 1;
     private static final int MEDIUM_IMAGE_LAYOUT = 2;
     private static final int ONBOARDING_LAYOUT = 3;
+    private static final int ABOUT_LAYOUT = 4;
 
     private Context context;
     private List<Article> articleList;
@@ -57,6 +59,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private int lastAnimatedPosition = -1;
     private int itemCount = 0;
+    private boolean shouldShowAboutCard = false;
 
     @Inject
     public NewsAdapter(Context context, List<Article> adapterTrackList) {
@@ -68,7 +71,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         editor = sharedPreferences.edit();
 
         //todo: if sharedPreferences says it is our first time using the app
-        if(!sharedPreferences.contains(PREFERENCES_SHOULD_ONBOARD)) {
+        if (!sharedPreferences.contains(PREFERENCES_SHOULD_ONBOARD)) {
             editor.putBoolean(PREFERENCES_SHOULD_ONBOARD, true);
             editor.commit();
 
@@ -80,9 +83,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private int animationCount() {
-        int screenSize =context.getResources().getConfiguration().screenLayout
+        int screenSize = context.getResources().getConfiguration().screenLayout
                 & Configuration.SCREENLAYOUT_SIZE_MASK;
-        if(screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+        if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
             return 8;
         } else {
             return 4;
@@ -101,17 +104,17 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return;
         }
 
-            if (position > lastAnimatedPosition) {
+        if (position > lastAnimatedPosition) {
 
-                lastAnimatedPosition = position;
+            lastAnimatedPosition = position;
 
-                view.setTranslationY(Utils.getScreenHeight());
-                view.animate()
-                        .translationY(0)
-                        .setInterpolator(new DecelerateInterpolator(3.f))
-                        .setDuration(700)
-                        .start();
-            }
+            view.setTranslationY(Utils.getScreenHeight());
+            view.animate()
+                    .translationY(0)
+                    .setInterpolator(new DecelerateInterpolator(3.f))
+                    .setDuration(700)
+                    .start();
+        }
 
     }
 
@@ -139,31 +142,36 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         editor.putBoolean(PREFERENCES_SHOULD_ONBOARD, true);
         editor.commit();
         articleList.add(0, new Article());
-        notifyItemInserted(0);
-        //notifyItemInserted(0);
+        notifyDataSetChanged();
     }
 
     public void showAboutCard() {
-
-        //todo: first we need to create the About Card layout
-        //todo: ViewHolder
-
+        shouldShowAboutCard = true;
         articleList.add(0, new Article());
-        notifyItemInserted(0);
+        notifyDataSetChanged();
+    }
+
+    public SharedPreferences getSharedPreferences() {
+        return sharedPreferences;
+    }
+
+    public boolean getAboutStatus() {
+        return shouldShowAboutCard;
     }
 
     @Override
     public int getItemViewType(int position) {
 
-        if(position == 0 && sharedPreferences.getBoolean(PREFERENCES_SHOULD_ONBOARD, false)) {
+        if(position == 0 && shouldShowAboutCard) {
+            return ABOUT_LAYOUT;
+
+        } else if (position == 0 && sharedPreferences.getBoolean(PREFERENCES_SHOULD_ONBOARD, false)) {
             return ONBOARDING_LAYOUT;
 
-        } else
-
-        if(articleList.get(position).getMultimedia().size() > 3) {
+        } else if (articleList.get(position).getMultimedia().size() > 3) {
             return LARGE_IMAGE_LAYOUT;
 
-        } else if(articleList.get(position).getMultimedia().size() == 3) {
+        } else if (articleList.get(position).getMultimedia().size() == 3) {
             return MEDIUM_IMAGE_LAYOUT;
 
         } else {
@@ -198,9 +206,14 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 viewHolder = new OnboardingViewHolder(v4);
                 break;
 
+            case ABOUT_LAYOUT:
+                View v5 = LayoutInflater.from(parent.getContext()).inflate(R.layout.about_card, parent, false);
+                viewHolder = new AboutViewHolder(v5);
+                break;
+
             default:
-                View def = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_row_layout_simple, parent, false);
-                viewHolder = new SimpleViewHolder(def);
+                //todo:
+                viewHolder = onCreateViewHolder(parent, viewType);
                 break;
         }
 
@@ -231,11 +244,26 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             case ONBOARDING_LAYOUT:
                 OnboardingViewHolder onboardingViewHolder = (OnboardingViewHolder) holder;
+
                 onboardingViewHolder.gotitText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         editor.putBoolean(PREFERENCES_SHOULD_ONBOARD, false);
                         editor.commit();
+
+                        articleList.remove(0);
+                        notifyItemRemoved(0);
+                    }
+                });
+                break;
+
+            case ABOUT_LAYOUT:
+                AboutViewHolder aboutViewHolder = (AboutViewHolder) holder;
+
+                aboutViewHolder.gotitText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        shouldShowAboutCard = false;
 
                         articleList.remove(0);
                         notifyItemRemoved(0);
@@ -250,7 +278,16 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
-    private void initViewholderSimple(final SimpleViewHolder holder, final int position) {
+    private void initViewholderSimple(final SimpleViewHolder holder,  int position) {
+
+        if(sharedPreferences.getBoolean(PREFERENCES_SHOULD_ONBOARD, false) || shouldShowAboutCard) {
+
+            position ++;
+
+        }
+
+        final int finalPosition = position;
+
         holder.titleText.setText(articleList.get(position).getTitle());
         holder.abstractText.setText(articleList.get(position).getAbstract());
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
@@ -258,52 +295,53 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((NewsActivity)context).startDetailActivity(
-                        articleList.get(position), null);
+                ((NewsActivity) context).startDetailActivity(
+                        articleList.get(finalPosition), null);
             }
         });
+
     }
 
     private void initLargeViewholderImage(final LargeImageViewHolder holder, final int position) {
 
-            holder.titleText.setText(articleList.get(position).getTitle());
-            holder.abstractText.setText(articleList.get(position).getAbstract());
-            holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
+        holder.titleText.setText(articleList.get(position).getTitle());
+        holder.abstractText.setText(articleList.get(position).getAbstract());
+        holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
 
-            try {
-                Glide.with(context)
-                        .load(articleList.get(position).getMultimedia().get(3).getUrl())
-                        .asBitmap()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .fitCenter()
-                        .into(new BitmapImageViewTarget(((LargeImageViewHolder) holder).articleImage) {
-                            @Override
-                            public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                                super.onResourceReady(resource, glideAnimation);
-                                Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                                    @Override
-                                    public void onGenerated(Palette palette) {
-                                        // Here's your generated palette
+        try {
+            Glide.with(context)
+                    .load(articleList.get(position).getMultimedia().get(3).getUrl())
+                    .asBitmap()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .fitCenter()
+                    .into(new BitmapImageViewTarget(((LargeImageViewHolder) holder).articleImage) {
+                        @Override
+                        public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                            super.onResourceReady(resource, glideAnimation);
+                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(Palette palette) {
+                                    // Here's your generated palette
 
-                                        int bgColor = palette.from(resource).generate().getVibrantColor(
-                                                ContextCompat.getColor(context, R.color.colorAccent));
-                                        holder.paletteView.setBackgroundColor(bgColor);
-                                    }
-                                });
-                            }
-                        });
+                                    int bgColor = palette.from(resource).generate().getVibrantColor(
+                                            ContextCompat.getColor(context, R.color.colorAccent));
+                                    holder.paletteView.setBackgroundColor(bgColor);
+                                }
+                            });
+                        }
+                    });
 
-            } catch (Exception e) {
-                e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        holder.clickLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((NewsActivity) context).startDetailActivity(
+                        articleList.get(position), holder.articleImage);
             }
-
-            holder.clickLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((NewsActivity)context).startDetailActivity(
-                            articleList.get(position), holder.articleImage);
-                }
-            });
+        });
     }
 
     private void initMediumViewholderImage(final MediumImageViewHolder holder, final int position) {
@@ -340,22 +378,34 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((NewsActivity)context).startDetailActivity(
+                ((NewsActivity) context).startDetailActivity(
                         articleList.get(position), holder.articleImage);
             }
         });
     }
 
 
-    public static class LargeImageViewHolder extends RecyclerView.ViewHolder{
+    public static class LargeImageViewHolder extends RecyclerView.ViewHolder {
 
-        @Nullable @Bind(R.id.rippleForeground) RelativeLayout clickLayout;
-        @Nullable @Bind(R.id.articleImageView) ImageView articleImage;
-        @Nullable @Bind(R.id.titleTextView) TextView titleText;
-        @Nullable @Bind(R.id.abstractTextView) TextView abstractText;
-        @Nullable @Bind(R.id.globalTextView) TextView globalText;
+        @Nullable
+        @Bind(R.id.rippleForeground)
+        RelativeLayout clickLayout;
+        @Nullable
+        @Bind(R.id.articleImageView)
+        ImageView articleImage;
+        @Nullable
+        @Bind(R.id.titleTextView)
+        TextView titleText;
+        @Nullable
+        @Bind(R.id.abstractTextView)
+        TextView abstractText;
+        @Nullable
+        @Bind(R.id.globalTextView)
+        TextView globalText;
 
-        @Nullable @Bind(R.id.paletteView) View paletteView;
+        @Nullable
+        @Bind(R.id.paletteView)
+        View paletteView;
 
         public LargeImageViewHolder(View itemView) {
             super(itemView);
@@ -368,15 +418,27 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    public static class MediumImageViewHolder extends RecyclerView.ViewHolder{
+    public static class MediumImageViewHolder extends RecyclerView.ViewHolder {
 
-        @Nullable @Bind(R.id.rippleForeground) RelativeLayout clickLayout;
-        @Nullable @Bind(R.id.articleImageView) ImageView articleImage;
-        @Nullable @Bind(R.id.titleTextView) TextView titleText;
-        @Nullable @Bind(R.id.abstractTextView) TextView abstractText;
-        @Nullable @Bind(R.id.globalTextView) TextView globalText;
+        @Nullable
+        @Bind(R.id.rippleForeground)
+        RelativeLayout clickLayout;
+        @Nullable
+        @Bind(R.id.articleImageView)
+        ImageView articleImage;
+        @Nullable
+        @Bind(R.id.titleTextView)
+        TextView titleText;
+        @Nullable
+        @Bind(R.id.abstractTextView)
+        TextView abstractText;
+        @Nullable
+        @Bind(R.id.globalTextView)
+        TextView globalText;
 
-        @Nullable @Bind(R.id.paletteView) View paletteView;
+        @Nullable
+        @Bind(R.id.paletteView)
+        View paletteView;
 
 
         public MediumImageViewHolder(View itemView) {
@@ -392,12 +454,24 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
 
-        @Nullable @Bind(R.id.rippleForeground) RelativeLayout clickLayout;
-        @Nullable @Bind(R.id.articleImageView) ImageView articleImage;
-        @Nullable @Bind(R.id.titleTextView) TextView titleText;
-        @Nullable @Bind(R.id.abstractTextView) TextView abstractText;
-        @Nullable @Bind(R.id.globalTextView) TextView globalText;
-        @Nullable @Bind(R.id.paletteView) View paletteView;
+        @Nullable
+        @Bind(R.id.rippleForeground)
+        RelativeLayout clickLayout;
+        @Nullable
+        @Bind(R.id.articleImageView)
+        ImageView articleImage;
+        @Nullable
+        @Bind(R.id.titleTextView)
+        TextView titleText;
+        @Nullable
+        @Bind(R.id.abstractTextView)
+        TextView abstractText;
+        @Nullable
+        @Bind(R.id.globalTextView)
+        TextView globalText;
+        @Nullable
+        @Bind(R.id.paletteView)
+        View paletteView;
 
         public SimpleViewHolder(View itemView) {
             super(itemView);
@@ -411,11 +485,30 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
-    public static class OnboardingViewHolder extends RecyclerView.ViewHolder{
+    public static class OnboardingViewHolder extends RecyclerView.ViewHolder {
 
-        @Nullable @Bind(R.id.gotitTextView) TextView gotitText;
+        @Nullable
+        @Bind(R.id.gotitTextView)
+        TextView gotitText;
 
         public OnboardingViewHolder(View itemView) {
+            super(itemView);
+
+            try {
+                ButterKnife.bind(this, itemView);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static class AboutViewHolder extends RecyclerView.ViewHolder {
+
+        @Nullable
+        @Bind(R.id.gotitTextView)
+        TextView gotitText;
+
+        public AboutViewHolder(View itemView) {
             super(itemView);
             try {
                 ButterKnife.bind(this, itemView);
