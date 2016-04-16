@@ -6,6 +6,7 @@ import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.model.newyorktimes.Multimedium;
 import com.androidtitan.hotspots.main.ui.activities.NewsDetailActivity;
 import com.bumptech.glide.Glide;
@@ -51,6 +52,7 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
                     .asBitmap()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
+                    .placeholder(R.drawable.im_placeholder)
                     .into(new BitmapImageViewTarget(articleImageView) {
                         @Override
                         public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -72,6 +74,7 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
                     .asBitmap()
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .centerCrop()
+                    .placeholder(R.drawable.im_placeholder)
                     .into(new BitmapImageViewTarget(articleImageView) {
                         @Override
                         public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {

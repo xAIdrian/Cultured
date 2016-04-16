@@ -208,7 +208,8 @@ public class NewsActivity extends BaseActivity {
 
                 if (dy > 0) { //check for scroll
 
-                    if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+                    if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
+                            getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
                         visibleItemCount = staggeredLayoutManager.getChildCount();
                         totalItemCount = staggeredLayoutManager.getItemCount();
@@ -295,7 +296,8 @@ public class NewsActivity extends BaseActivity {
             staggeredLayoutManager = new StaggeredGridLayoutManager(3, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
 
-        } else if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+        } else if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
+                getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
             staggeredLayoutManager = new StaggeredGridLayoutManager(2, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);

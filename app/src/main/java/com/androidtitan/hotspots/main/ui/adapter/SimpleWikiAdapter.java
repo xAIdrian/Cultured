@@ -48,6 +48,7 @@ public class SimpleWikiAdapter extends RecyclerView.Adapter<SimpleWikiAdapter.Vi
         holder.webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
         holder.webView.getSettings().setJavaScriptEnabled(true);
         holder.webView.getSettings().setBuiltInZoomControls(true);
+        holder.webView.setHorizontalScrollBarEnabled(false);
         holder.webView.loadUrl(urlString);
     }
 

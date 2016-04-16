@@ -88,7 +88,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
             return 8;
         } else {
-            return 4;
+            return 3;
         }
     }
 
@@ -212,8 +212,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 break;
 
             default:
-                //todo:
-                viewHolder = onCreateViewHolder(parent, viewType);
+                View v6 = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_row_layout_simple, parent, false);
+                viewHolder = new SimpleViewHolder(v6);
                 break;
         }
 
@@ -253,6 +253,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                         articleList.remove(0);
                         notifyItemRemoved(0);
+                        //notifyDataSetChanged();
                     }
                 });
                 break;
@@ -267,6 +268,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                         articleList.remove(0);
                         notifyItemRemoved(0);
+                        //notifyDataSetChanged();
                     }
                 });
                 break;
@@ -314,6 +316,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .asBitmap()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .fitCenter()
+                    .placeholder(R.drawable.im_placeholder)
                     .into(new BitmapImageViewTarget(((LargeImageViewHolder) holder).articleImage) {
                         @Override
                         public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
@@ -355,6 +358,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     .asBitmap()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
+                    .placeholder(R.drawable.im_placeholder)
                     .into(new BitmapImageViewTarget(((MediumImageViewHolder) holder).articleImage) {
                         @Override
                         public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
