@@ -20,4 +20,14 @@
 
     </group>
 
+    <group
+        android:id="@+id/mailGroup">
+
+        <item
+            android:id="@+id/support_mail"
+            android:icon="@drawable/ic_mail"
+            android:title="@string/support_mail" />
+
+    </group>
+
 </menu>

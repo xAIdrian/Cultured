@@ -24,12 +24,14 @@
     <string name="onboarding_body">Select an article topic that interests you and from there you\'ll be able to learn more about the people, organizations, and countries involved.\n \nHappy Travels.</string>
 
     <string name="onboarding_gotit">Got it!</string>
-    <string name="generate_onboarding">Show Onboarding Card</string>
-    <string name="generate_about">Show About Card</string>
+    <string name="generate_onboarding">Show Onboarding</string>
+    <string name="generate_about">Show About</string>
+    <string name="support_mail">Give Feedback</string>
 
     <string name="about_intro">Cultured was developed by Adrian Mohnacs.</string>
     <string name="about_body">Third party libraries used:\n\nDagger 2.  Butterknife.  Retrofit 2.  (Square)\n\n
     Glide.  (Google) \n\n
-    KenBurnsView. </string>
+    KenBurnsView. \n\n
+    icon8.com</string>
 
 </resources>

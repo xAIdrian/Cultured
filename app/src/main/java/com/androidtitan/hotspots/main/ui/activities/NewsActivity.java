@@ -151,6 +151,14 @@ public class NewsActivity extends BaseActivity {
 
                         break;
 
+                    case R.id.support_mail:
+
+                        //todo: Implicit intent with picker to send email to adrian.mohnacs@gmail.com
+
+
+
+                        break;
+
                     default:
 
                         Log.e(TAG, "Incorrect navigation drawer item selected");
