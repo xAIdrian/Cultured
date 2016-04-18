@@ -24,6 +24,8 @@ Upon viewing an article the user has a viewpager full of wikipedia articls, each
 They have the option to view the article's abstract or they can view the entire article outside of the app by clicking an icon.
 <br>
 <br>
-<br>
-<br>
-![get-it-on-google-play-logo-300x89](https://cloud.githubusercontent.com/assets/7444521/14589801/ff9a92b0-04b8-11e6-85f7-6284126d8d05.png)
+<a href="https://play.google.com/store/apps/details?id=com.androidtitan.hotspots">
+  <img alt="Get it on Google Play"
+       width="150"
+       src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" />
+</a>
