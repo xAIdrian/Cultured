@@ -68,7 +68,10 @@ public class NewsDetailPresenterImpl implements NewsDetailPresenter {
                     });
 
         } catch (Exception e) {
-            String url = "http://loremflickr.com/" + width + "/" + height;
+            String url = "https://unsplash.it/" + width + "/" + height + "/?random";
+
+            Log.e(TAG, url);
+
             Glide.with(context)
                     .load(url)
                     .asBitmap()

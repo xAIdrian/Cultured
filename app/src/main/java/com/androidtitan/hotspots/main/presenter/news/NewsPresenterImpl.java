@@ -51,7 +51,7 @@ public class NewsPresenterImpl implements NewsPresenter {
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, limit, 0, //our offset
-                newsActivity.getResources().getString(R.string.nyt_key_yo));
+                newsActivity.getResources().getString(R.string.nyt_api_yo));
 
         Log.e(TAG, call.toString());
 
@@ -92,7 +92,7 @@ public class NewsPresenterImpl implements NewsPresenter {
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, limit, offset,
-                newsActivity.getResources().getString(R.string.nyt_key_yo));
+                newsActivity.getResources().getString(R.string.nyt_api_yo));
 
         call.enqueue(new Callback<NewsResponse>() {
             @Override
@@ -126,7 +126,7 @@ public class NewsPresenterImpl implements NewsPresenter {
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, 1, 0,
-                newsActivity.getResources().getString(R.string.nyt_key_yo));
+                newsActivity.getResources().getString(R.string.nyt_api_yo));
 
         call.enqueue(new Callback<NewsResponse>() {
             @Override

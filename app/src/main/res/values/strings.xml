@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Cultured</string>
 
-    <string name="nyt_key_yo">81d9fdae8dbc6db887857f0bedad3a92:19:74775241</string>
+    <string name="nyt_api_yo">81d9fdae8dbc6db887857f0bedad3a92:19:74775241</string>
 
     <string name="hello_world">I think you are missing something…</string>
     <string name="action_settings">Settings</string>
