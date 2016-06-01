@@ -45,13 +45,15 @@ public class NewsPresenterImpl implements NewsPresenter {
     }
 
     @Override
-    public List<Article> initialNewsQuery(String section, int limit) {
+    public List<Article> initialNewsQuery(final String section, final int limit) {
 
         itemList = new ArrayList<>();
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, limit, 0, //our offset
-                "043b20a6a48cee1dddf92ee2257cfd73:10:74775241");
+                newsActivity.getResources().getString(R.string.nyt_key_yo));
+
+        Log.e(TAG, call.toString());
 
         call.enqueue(new Callback<NewsResponse>() {
             @Override
@@ -67,8 +69,9 @@ public class NewsPresenterImpl implements NewsPresenter {
                         newsActivity.updateNewsAdapter();
                     }
                     newsActivity.refreshCompleted();
+
                 } else {
-                    Log.e(TAG, "response fail");
+                    Log.e(TAG, "response fail : " + response.message());
                 }
             }
 
@@ -89,7 +92,7 @@ public class NewsPresenterImpl implements NewsPresenter {
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, limit, offset,
-                "043b20a6a48cee1dddf92ee2257cfd73:10:74775241");
+                newsActivity.getResources().getString(R.string.nyt_key_yo));
 
         call.enqueue(new Callback<NewsResponse>() {
             @Override
@@ -107,7 +110,7 @@ public class NewsPresenterImpl implements NewsPresenter {
                     newsActivity.refreshCompleted();
 
                 } else {
-                    Log.e(TAG, "response fail");
+                    Log.e(TAG, "response fail : " + response.message());
                 }
             }
 
@@ -123,7 +126,7 @@ public class NewsPresenterImpl implements NewsPresenter {
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, 1, 0,
-                "043b20a6a48cee1dddf92ee2257cfd73:10:74775241");
+                newsActivity.getResources().getString(R.string.nyt_key_yo));
 
         call.enqueue(new Callback<NewsResponse>() {
             @Override
@@ -143,7 +146,7 @@ public class NewsPresenterImpl implements NewsPresenter {
                     }
 
                 } else {
-                    Log.e(TAG, "response fail");
+                    Log.e(TAG, "response fail : " + response.message());
                 }
 
                 newsActivity.refreshCompleted();
@@ -155,7 +158,6 @@ public class NewsPresenterImpl implements NewsPresenter {
             }
         });
 
-        //todo: do we need to return anything?
     }
 }
 

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Cultured</string>
 
+    <string name="nyt_key_yo">81d9fdae8dbc6db887857f0bedad3a92:19:74775241</string>
+
     <string name="hello_world">I think you are missing something…</string>
     <string name="action_settings">Settings</string>
     <string name="placeholder">PlaceHolder</string>
@@ -21,7 +23,7 @@
 
     <string name="onboarding_title">Welcome\nto\nCultured</string>
     <string name="oboarding_intro">Don\'t you want to know what\'s going on in the world but don\'t want to read lengthy news articles? Cultured solves that.</string>
-    <string name="onboarding_body">Select an article topic that interests you and from there you\'ll be able to learn more about the people, organizations, and countries involved.\n \nHappy Travels.</string>
+    <string name="onboarding_body">Select an article that interests you and from there you\'ll be able to learn more about the people, organizations, and countries involved.\n \nHappy Travels.</string>
 
     <string name="onboarding_gotit">Got it!</string>
     <string name="generate_onboarding">Show Onboarding</string>
@@ -33,5 +35,6 @@
     Glide.  (Google) \n\n
     KenBurnsView. \n\n
     icon8.com</string>
+    <string name="chooser_text">Which app would you like to use?</string>
 
 </resources>

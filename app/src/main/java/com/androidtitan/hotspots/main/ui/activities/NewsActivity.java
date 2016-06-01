@@ -155,7 +155,17 @@ public class NewsActivity extends BaseActivity {
 
                         //todo: Implicit intent with picker to send email to adrian.mohnacs@gmail.com
 
-
+                        Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
+                        feedbackIntent.setType("plain/text");
+                        feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[] {"adrian.mohnacs@gmail.com"});
+                        feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "Cultured Feedback");
+                        feedbackIntent.putExtra(Intent.EXTRA_TEXT, "Hi Adrian,\nHere\'s what I think about Cultured...");
+                        //chooser
+                        String title = getResources().getString(R.string.chooser_text);
+                        Intent chooser = Intent.createChooser(feedbackIntent, title);
+                        if (feedbackIntent.resolveActivity(getPackageManager()) != null) {
+                            startActivity(chooser);
+                        }
 
                         break;
 
@@ -428,5 +438,11 @@ public class NewsActivity extends BaseActivity {
         loading = true;
         refreshFab.setClickable(true);
     }
+
+
+
+
+
+
 
 }

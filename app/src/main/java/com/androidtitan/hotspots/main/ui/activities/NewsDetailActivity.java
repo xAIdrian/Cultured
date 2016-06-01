@@ -133,7 +133,6 @@ public class NewsDetailActivity extends BaseActivity  {
         int peekHeight = TypedValue.complexToDimensionPixelSize(tv.data,getResources().getDisplayMetrics()) / 2;
 */
 
-
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
