@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:transitionGroup="true"
-    tools:context=".main.ui.activities.NewsDetailActivity">
+    tools:context=".main.newsdetail.NewsDetailActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"

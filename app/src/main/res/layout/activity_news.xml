@@ -10,8 +10,7 @@
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="match_parent">
 
         <View
             android:id="@+id/colorBgView"
@@ -42,7 +41,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_below="@+id/wikiInfoBar"
-                android:clipToPadding="false" />
+                android:clipToPadding="false"
+                android:paddingTop="120dp"/>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -54,6 +54,23 @@
             android:layout_margin="@dimen/fab_margin"
             android:src="@drawable/ic_refresh"
             app:layout_behavior="com.androidtitan.hotspots.main.util.view_util.FabHideBehavior" />
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        </android.support.design.widget.AppBarLayout>
 
     </android.support.design.widget.CoordinatorLayout>
 

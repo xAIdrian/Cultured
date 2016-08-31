@@ -29,7 +29,7 @@ public class NewsRetrofit {
 
         nytRetrofit = new Retrofit.Builder()
                 .baseUrl(NEWYORKTIMES_BASE_URL)
-                .client(httpClient)
+                //.client(httpClient)
                 .addConverterFactory(buildGsonConverter())
                 .build();
     }
@@ -44,6 +44,7 @@ public class NewsRetrofit {
         gsonBuilder.excludeFieldsWithoutExposeAnnotation();
 
         Gson myGson = gsonBuilder.create();
+
 
         return GsonConverterFactory.create(myGson);
     }
