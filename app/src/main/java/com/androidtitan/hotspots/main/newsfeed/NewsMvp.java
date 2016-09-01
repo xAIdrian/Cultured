@@ -13,7 +13,7 @@ public interface NewsMvp {
 
     interface Provider {
 
-        List<Article> fetchArticles(String section, int limit);
+        List<Article> fetchArticles(String section, int limit, CallbackListener listener);
         void fetchAdditionalArticles(String section, int limit, int offset, CallbackListener listener);
         void fetchAdditionalArticlesToInsert(String section, List<Article> articlesList, CallbackListener listener);
 
@@ -27,20 +27,21 @@ public interface NewsMvp {
 
     interface Presenter {
 
-        void initalArticleStore(int limit);
-        void loadNextNewsArticles(int limit, int offset);
+        List<Article> loadArticles(int limit);
+        void loadOffsetArticles(int limit, int offset);
         void newArticleRefresh();
 
-        List<Article> getArticles();
     }
 
     interface View extends MvpView{
 
         void updateNewsAdapter();
-        void refreshCompleted();
+        void onLoadComplete();
 
         void appendAdapterItem(Article article);
         void insertAdapterItem(int index, Article article);
+
+        List<Article> getArticles();
 
     }
 

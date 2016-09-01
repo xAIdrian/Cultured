@@ -70,8 +70,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
     SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.list)
     RecyclerView recyclerView;
-    @Bind(R.id.refreshFab)
-    FloatingActionButton refreshFab;
 
     @Bind(R.id.drawerLayout)
     DrawerLayout drawerLayout;
@@ -84,6 +82,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
 
     private AppBarLayout appBarLayout;
 
+    List<Article> articles;
+
     private boolean firstLoad = true; //used for animation
     private boolean loading = true;
     private int pastVisibleItems;
@@ -92,6 +92,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
     public int adapterLoadOffset = 6;
 
     int screenSize;
+
 
 
     @Override
@@ -105,7 +106,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
         super.getAppComponent().inject(this);
         presenter.bindView(this);
 
-        refreshFab.hide();
+        articles = new ArrayList<>();
+
         loadingTitleText.setVisibility(View.VISIBLE);
         initializeAnimation();
 
@@ -123,9 +125,9 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
         screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
         if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
-            presenter.initalArticleStore(10);
+            articles = presenter.loadArticles(10);
         } else {
-            presenter.initalArticleStore(5);
+            articles = presenter.loadArticles(5);
         }
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -182,22 +184,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
 
         initializeRecyclerView();
 
-        refreshFab.setBackgroundTintList(getResources().getColorStateList(R.color.colorPrimary));
-        refreshFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (!adapter.getSharedPreferences().getBoolean(adapter.PREFERENCES_SHOULD_ONBOARD, false)
-                        && adapter.getAboutStatus() == false) {
-                    refreshFab.startAnimation(rotateAnim);
-                    refreshForNewArticles();
-
-                } else {
-
-                    refreshCompleted();
-                }
-            }
-        });
 
 
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorCaribbean, R.color.colorCrush);
@@ -212,7 +198,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
 
                 } else {
 
-                    refreshCompleted();
+                    onLoadComplete();
                 }
 
 
@@ -254,7 +240,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
                                 loading = false;
 
                                 swipeRefreshLayout.setRefreshing(true);
-                                presenter.loadNextNewsArticles(10, adapterLoadOffset);
+                                presenter.loadOffsetArticles(10, adapterLoadOffset);
                                 adapterLoadOffset += 10;
                             }
                         }
@@ -272,12 +258,11 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
                                 if ((visibleItemCount + pastVisibleItems + 1) >= totalItemCount) {
                                     //the +1 accounts for having one less card visible to add
 
-                                    refreshFab.setClickable(true);
                                     loading = false;
                                     Log.d(TAG, "appending data...");
 
                                     swipeRefreshLayout.setRefreshing(true);
-                                    presenter.loadNextNewsArticles(5, adapterLoadOffset);
+                                    presenter.loadOffsetArticles(5, adapterLoadOffset);
                                     adapterLoadOffset += 5;
                                 }
                             }
@@ -288,12 +273,11 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
 
                                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
 
-                                    refreshFab.setClickable(true);
                                     loading = false;
                                     Log.d(TAG, "appending data...");
 
                                     swipeRefreshLayout.setRefreshing(true);
-                                    presenter.loadNextNewsArticles(5, adapterLoadOffset);
+                                    presenter.loadOffsetArticles(5, adapterLoadOffset);
                                     adapterLoadOffset += 5;
                                 }
                             }
@@ -335,7 +319,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
 
         //todo :: Let's refigure out what this does and decide if we want to keep it or not
         outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST,
-                (ArrayList<? extends Parcelable>) presenter.getArticles());
+                (ArrayList<? extends Parcelable>) articles);
     }
 
     private void initializeRecyclerView() {
@@ -359,7 +343,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
             recyclerView.setLayoutManager(linearLayoutManager);
         }
 
-        adapter = new NewsAdapter(this, presenter.getArticles());
+        adapter = new NewsAdapter(this, articles);
         recyclerView.setAdapter(adapter);
     }
 
@@ -368,27 +352,23 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
     }
 
 
-
-
     @Override
     public void updateNewsAdapter() {
 
-        if (firstLoad) {
+        adapter.notifyDataSetChanged();
 
-            firstLoadCompleteAnimation();
-        } else {
-
-            adapter.notifyDataSetChanged();
-        }
     }
 
 
     @Override
-    public void refreshCompleted() {
-        swipeRefreshLayout.setRefreshing(false);
-        refreshFab.clearAnimation();
-        loading = true;
-        refreshFab.setClickable(true);
+    public void onLoadComplete() {
+
+        if (firstLoad) {
+            firstLoadCompleteAnimation();
+        } else {
+            onRefreshComplete();
+        }
+
     }
 
     @Override
@@ -400,6 +380,16 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
     @Override
     public void insertAdapterItem(int index, Article article) {
         adapter.insertToAdapter(index, article);
+    }
+
+    @Override
+    public List<Article> getArticles() {
+        return articles;
+    }
+
+    private void onRefreshComplete() {
+        swipeRefreshLayout.setRefreshing(false);
+        loading = true;
     }
 
     public void initializeAnimation() {
@@ -439,7 +429,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
 
                 adapter.notifyDataSetChanged();
                 firstLoad = false;
-                refreshFab.show();
             }
         }, LOADING_ANIM_TIME * 2);
     }

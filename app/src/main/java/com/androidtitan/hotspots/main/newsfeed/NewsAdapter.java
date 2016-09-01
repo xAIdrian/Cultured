@@ -293,13 +293,13 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.abstractText.setText(articleList.get(position).getAbstract());
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
 
-        holder.clickLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((NewsActivity) context).startDetailActivity(
-                        articleList.get(finalPosition), null);
-            }
-        });
+//        holder.clickLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ((NewsActivity) context).startDetailActivity(
+//                        articleList.get(finalPosition), null);
+//            }
+//        });
 
     }
 

@@ -42,7 +42,7 @@ public class NewsProvider implements NewsMvp.Provider {
 
 
     @Override
-    public List<Article> fetchArticles(String section, int limit) {
+    public List<Article> fetchArticles(String section, int limit, final CallbackListener listener) {
 
         NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, limit, 0, //our offset
@@ -60,10 +60,13 @@ public class NewsProvider implements NewsMvp.Provider {
 
                         fetchArticleList.add(article);
                     }
+                    listener.onCompleted();
 
                 } else {
                     Log.e(TAG, "response fail : " + response.message());
                 }
+
+
             }
 
             @Override
