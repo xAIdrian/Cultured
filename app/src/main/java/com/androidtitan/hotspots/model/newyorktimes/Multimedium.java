@@ -1,4 +1,4 @@
-package com.androidtitan.hotspots.main.model.newyorktimes;
+package com.androidtitan.hotspots.model.newyorktimes;
 
 /**
  * Created by amohnacs on 3/21/16.

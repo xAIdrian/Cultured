@@ -1,8 +1,8 @@
 package com.androidtitan.hotspots.main.domain;
 
-import com.androidtitan.hotspots.main.model.newyorktimes.Article;
-import com.androidtitan.hotspots.main.model.newyorktimes.Multimedium;
-import com.androidtitan.hotspots.main.model.newyorktimes.RelatedUrl;
+import com.androidtitan.hotspots.model.newyorktimes.Article;
+import com.androidtitan.hotspots.model.newyorktimes.Multimedium;
+import com.androidtitan.hotspots.model.newyorktimes.RelatedUrl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

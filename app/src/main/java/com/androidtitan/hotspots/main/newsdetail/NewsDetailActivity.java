@@ -37,7 +37,7 @@ import android.widget.TextView;
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseActivity;
 import com.androidtitan.hotspots.main.CulturedApp;
-import com.androidtitan.hotspots.main.model.newyorktimes.Article;
+import com.androidtitan.hotspots.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.newsfeed.NewsActivity;
 import com.androidtitan.hotspots.main.newsdetail.fragments.WikiFragment;
 import com.androidtitan.hotspots.main.util.Utils;

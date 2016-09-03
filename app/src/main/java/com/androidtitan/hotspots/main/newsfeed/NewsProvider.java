@@ -6,8 +6,8 @@ import android.util.Log;
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.domain.retrofit.NewsEndpointInterface;
 import com.androidtitan.hotspots.main.domain.retrofit.NewsRetrofit;
-import com.androidtitan.hotspots.main.model.newyorktimes.Article;
-import com.androidtitan.hotspots.main.model.newyorktimes.NewsResponse;
+import com.androidtitan.hotspots.model.newyorktimes.Article;
+import com.androidtitan.hotspots.model.newyorktimes.NewsResponse;
 
 import java.util.ArrayList;
 import java.util.List;

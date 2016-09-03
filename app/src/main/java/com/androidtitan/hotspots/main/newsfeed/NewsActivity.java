@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -33,7 +32,7 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseActivity;
-import com.androidtitan.hotspots.main.model.newyorktimes.Article;
+import com.androidtitan.hotspots.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.newsdetail.NewsDetailActivity;
 
 import java.util.ArrayList;

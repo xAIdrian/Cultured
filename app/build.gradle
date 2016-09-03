@@ -50,11 +50,13 @@ android {
         resolutionStrategy.force 'com.android.support:support-annotations:23.4.0'
     }
 
+
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('src/main/res/libs/swipeactionadapter-1.4.3.jar')
+    debugCompile 'com.squareup.haha:haha:2.0.3'
 
     //testing
     testCompile 'junit:junit:4.12'
@@ -66,6 +68,8 @@ dependencies {
     androidTestCompile "org.robolectric:robolectric:3.1.+"
     androidTestCompile 'com.android.support:support-annotations:23.4.0'
     androidTestCompile "org.mockito:mockito-core:2.+"
+
+    compile 'com.squareup.retrofit2:retrofit-mock:2.0.0'
 
     //support libraries
     compile 'com.android.support:appcompat-v7:23.2.1'

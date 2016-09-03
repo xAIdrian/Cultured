@@ -2,7 +2,7 @@ package com.androidtitan.hotspots.main.newsdetail;
 
 import android.widget.ImageView;
 
-import com.androidtitan.hotspots.main.model.newyorktimes.Multimedium;
+import com.androidtitan.hotspots.model.newyorktimes.Multimedium;
 
 import java.util.List;
 

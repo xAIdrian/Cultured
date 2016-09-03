@@ -1,7 +1,7 @@
 package com.androidtitan.hotspots.main.newsfeed;
 
 import com.androidtitan.hotspots.common.MvpView;
-import com.androidtitan.hotspots.main.model.newyorktimes.Article;
+import com.androidtitan.hotspots.model.newyorktimes.Article;
 
 import java.util.List;
 

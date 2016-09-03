@@ -1,4 +1,4 @@
-package com.androidtitan.hotspots.main.model.wikipedia;
+package com.androidtitan.hotspots.model.wikipedia;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

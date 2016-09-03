@@ -2,7 +2,7 @@ package com.androidtitan.hotspots.main.domain.retrofit;
 
 import com.androidtitan.hotspots.main.domain.ArticleDeserializer;
 import com.androidtitan.hotspots.main.domain.DateDeserializer;
-import com.androidtitan.hotspots.main.model.newyorktimes.Article;
+import com.androidtitan.hotspots.model.newyorktimes.Article;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

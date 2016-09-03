@@ -17,13 +17,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
-import com.androidtitan.hotspots.main.model.newyorktimes.Article;
-import com.androidtitan.hotspots.main.newsfeed.NewsActivity;
+import com.androidtitan.hotspots.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.util.Utils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.animation.ViewPropertyAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.text.DateFormat;

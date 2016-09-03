@@ -1,6 +1,6 @@
 package com.androidtitan.hotspots.main.domain.retrofit;
 
-import com.androidtitan.hotspots.main.model.newyorktimes.NewsResponse;
+import com.androidtitan.hotspots.model.newyorktimes.NewsResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

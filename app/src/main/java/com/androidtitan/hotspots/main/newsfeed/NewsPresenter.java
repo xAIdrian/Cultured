@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.androidtitan.hotspots.common.BasePresenter;
 import com.androidtitan.hotspots.main.CulturedApp;
-import com.androidtitan.hotspots.main.model.newyorktimes.Article;
+import com.androidtitan.hotspots.model.newyorktimes.Article;
 
 import java.util.List;
 

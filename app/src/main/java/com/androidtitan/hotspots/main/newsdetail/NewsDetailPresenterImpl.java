@@ -7,7 +7,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.androidtitan.hotspots.R;
-import com.androidtitan.hotspots.main.model.newyorktimes.Multimedium;
+import com.androidtitan.hotspots.model.newyorktimes.Multimedium;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
