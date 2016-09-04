@@ -3,7 +3,7 @@ package com.androidtitan.hotspots.main.inject;
 import android.app.Application;
 import android.content.Context;
 
-import com.androidtitan.hotspots.main.newsfeed.NewsActivity;
+import com.androidtitan.hotspots.main.newsfeed.ui.NewsActivity;
 import com.androidtitan.hotspots.main.newsdetail.NewsDetailActivity;
 import com.androidtitan.hotspots.main.newsfeed.NewsAdapter;
 import com.androidtitan.hotspots.main.newsfeed.NewsPresenter;

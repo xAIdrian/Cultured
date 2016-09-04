@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
+import com.androidtitan.hotspots.main.newsfeed.ui.NewsActivity;
 import com.androidtitan.hotspots.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.util.Utils;
 import com.bumptech.glide.Glide;

@@ -16,22 +16,27 @@ import retrofit2.converter.gson.GsonConverterFactory;
 /**
  * Created by amohnacs on 3/21/16.
  */
-public class NewsRetrofit {
+public class ServiceGenerator {
 
-    public static final String NEWYORKTIMES_BASE_URL = "http://api.nytimes.com/svc/news/v3/content/nyt/";
-    private Retrofit nytRetrofit;
+    public static final String NEWYORKTIMES_BASE_URL = "http://api.nytimes.com/svc/news/v3/content/all/";
 
-    public NewsRetrofit() {
+    private static Retrofit.Builder nytRetrofitBulder = new Retrofit.Builder()
+            . baseUrl(NEWYORKTIMES_BASE_URL)
+            .addConverterFactory(buildGsonConverter());
+
+    public static <S> S createService(Class<S> serviceClass) {
+
+        Retrofit retrofit = nytRetrofitBulder.client(httpClient().build()).build();
+        return retrofit.create(serviceClass);
+    }
+
+    public static Retrofit retrofit = nytRetrofitBulder.client(httpClient().build()).build();
+
+    private static OkHttpClient.Builder httpClient() {
         //logger
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient httpClient = new OkHttpClient.Builder().addInterceptor(interceptor).build();
-
-        nytRetrofit = new Retrofit.Builder()
-                .baseUrl(NEWYORKTIMES_BASE_URL)
-                //.client(httpClient)
-                .addConverterFactory(buildGsonConverter())
-                .build();
+        return new OkHttpClient.Builder().addInterceptor(interceptor);
     }
 
     private static GsonConverterFactory buildGsonConverter() {
@@ -47,10 +52,6 @@ public class NewsRetrofit {
 
 
         return GsonConverterFactory.create(myGson);
-    }
-
-    public Retrofit getRetrofit() {
-        return nytRetrofit;
     }
 
 }

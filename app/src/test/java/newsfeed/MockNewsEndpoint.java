@@ -1,12 +1,11 @@
 package newsfeed;
 
-import com.androidtitan.hotspots.main.domain.retrofit.NewsEndpointInterface;
+import com.androidtitan.hotspots.main.domain.retrofit.NewsEndpoint;
 import com.androidtitan.hotspots.model.newyorktimes.Article;
 import com.androidtitan.hotspots.model.newyorktimes.Multimedium;
 import com.androidtitan.hotspots.model.newyorktimes.NewsResponse;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Path;
@@ -17,7 +16,8 @@ import retrofit2.mock.BehaviorDelegate;
  * Created by amohnacs on 9/2/16.
  */
 
-public class MockNewsEndpointInterface implements NewsEndpointInterface {
+public class MockNewsEndpoint implements NewsEndpoint {
+    private final String TAG = getClass().getSimpleName();
 
     public static final String TEST_STRING = "testString";
     public static final String TEST_URL = "http://test.com";
@@ -31,9 +31,9 @@ public class MockNewsEndpointInterface implements NewsEndpointInterface {
     private static final int TEST_OFFSET = 0;
     private static final String TEST_API_KEY = "testapikey";
 
-    private final BehaviorDelegate<NewsEndpointInterface> delegate;
+    private final BehaviorDelegate<NewsEndpoint> delegate;
 
-    public MockNewsEndpointInterface(BehaviorDelegate<NewsEndpointInterface> service) {
+    public MockNewsEndpoint(BehaviorDelegate<NewsEndpoint> service) {
         this.delegate = service;
 
         TEST_FACET = new ArrayList<>();

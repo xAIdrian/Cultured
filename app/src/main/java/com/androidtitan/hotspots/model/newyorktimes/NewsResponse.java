@@ -3,6 +3,7 @@ package com.androidtitan.hotspots.model.newyorktimes;
 /**
  * Created by amohnacs on 3/21/16.
  */
+import com.androidtitan.hotspots.model.ApiError;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -26,6 +27,16 @@ public class NewsResponse {
     @SerializedName("results")
     @Expose
     private List<Article> articles = new ArrayList<Article>();
+
+    private ApiError apiError;
+
+    public ApiError getApiError() {
+        return apiError;
+    }
+
+    public void setApiError(ApiError apiError) {
+        this.apiError = apiError;
+    }
 
     /**
      *

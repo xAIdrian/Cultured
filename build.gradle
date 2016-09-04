@@ -18,6 +18,11 @@ buildscript {
         }
     }
 
+    ext {
+        supportLibraryVersion = '23.4.0'
+        supportLibraryVersionv7 = '23.2.1'
+    }
+
 }
 
 allprojects {

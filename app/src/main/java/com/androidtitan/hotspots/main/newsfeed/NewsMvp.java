@@ -1,8 +1,10 @@
 package com.androidtitan.hotspots.main.newsfeed;
 
 import com.androidtitan.hotspots.common.MvpView;
+import com.androidtitan.hotspots.model.ApiError;
 import com.androidtitan.hotspots.model.newyorktimes.Article;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -22,6 +24,8 @@ public interface NewsMvp {
             void insertArticleInAdapter(int index, Article article);
 
             void onCompleted();
+
+            void responseFailed(ApiError apiError);
         }
     }
 
@@ -42,6 +46,7 @@ public interface NewsMvp {
         void insertAdapterItem(int index, Article article);
 
         List<Article> getArticles();
+        void displayError(String message, HashMap<String, Object> additonalProperties);
 
     }
 

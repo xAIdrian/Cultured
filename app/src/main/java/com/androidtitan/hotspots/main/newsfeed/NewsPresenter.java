@@ -1,9 +1,11 @@
 package com.androidtitan.hotspots.main.newsfeed;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.androidtitan.hotspots.common.BasePresenter;
 import com.androidtitan.hotspots.main.CulturedApp;
+import com.androidtitan.hotspots.model.ApiError;
 import com.androidtitan.hotspots.model.newyorktimes.Article;
 
 import java.util.List;
@@ -69,6 +71,13 @@ public class NewsPresenter extends BasePresenter<NewsMvp.View> implements NewsMv
     @Override
     public void onCompleted() {
         getMvpView().onLoadComplete();
+    }
+
+    @Override
+    public void responseFailed(ApiError apiError) {
+        Log.d(TAG, apiError.getMessage());
+        getMvpView().displayError(apiError.getMessage(), apiError.getAdditionalProperties());
+
     }
 }
 

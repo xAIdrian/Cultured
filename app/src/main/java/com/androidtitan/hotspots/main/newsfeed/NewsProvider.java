@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.androidtitan.hotspots.R;
-import com.androidtitan.hotspots.main.domain.retrofit.NewsEndpointInterface;
-import com.androidtitan.hotspots.main.domain.retrofit.NewsRetrofit;
+import com.androidtitan.hotspots.main.domain.retrofit.NewsEndpoint;
+import com.androidtitan.hotspots.main.domain.retrofit.ServiceGenerator;
+import com.androidtitan.hotspots.main.util.ErrorUtils;
+import com.androidtitan.hotspots.model.ApiError;
 import com.androidtitan.hotspots.model.newyorktimes.Article;
 import com.androidtitan.hotspots.model.newyorktimes.NewsResponse;
 
@@ -18,7 +20,6 @@ import javax.inject.Singleton;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 /**
  * Created by amohnacs on 8/29/16.
@@ -29,7 +30,9 @@ public class NewsProvider implements NewsMvp.Provider {
     private final String TAG = getClass().getSimpleName();
 
     private Context context;
-    private Retrofit retrofit;
+    private NewsEndpoint newsService
+            = ServiceGenerator.createService(NewsEndpoint.class);
+
 
     private ArrayList<Article> fetchArticleList = new ArrayList<>();
     private ArrayList<Article> loadNextArticleList = new ArrayList<>();
@@ -37,14 +40,12 @@ public class NewsProvider implements NewsMvp.Provider {
     @Inject
     public NewsProvider(Context context) {
         this.context = context;
-        retrofit = new NewsRetrofit().getRetrofit();
     }
 
 
     @Override
     public List<Article> fetchArticles(String section, int limit, final CallbackListener listener) {
 
-        NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, limit, 0, //our offset
                 context.getResources().getString(R.string.nyt_api_yo));
 
@@ -63,14 +64,18 @@ public class NewsProvider implements NewsMvp.Provider {
                     listener.onCompleted();
 
                 } else {
-                    Log.e(TAG, "response fail : " + response.message());
-                }
+                    Log.d(TAG, "response fail : " + response.message());
 
+                    ApiError apiError = ErrorUtils.parseError(response);
+                    listener.responseFailed(apiError);
+                }
 
             }
 
             @Override
             public void onFailure(Call<NewsResponse> call, Throwable t) {
+                // there is more than just a failing request (like: no internet connection)
+                Log.d(TAG, "there is more than just a failing request (like: no internet connection)");
                 t.printStackTrace();
             }
         });
@@ -82,7 +87,6 @@ public class NewsProvider implements NewsMvp.Provider {
     public void fetchAdditionalArticles(String section, int limit, int offset,
                                         final CallbackListener listener) {
 
-        NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
         final Call<NewsResponse> call = newsService.articles(section, limit, offset,
                 context.getResources().getString(R.string.nyt_api_yo));
 
@@ -115,7 +119,7 @@ public class NewsProvider implements NewsMvp.Provider {
     @Override
     public void fetchAdditionalArticlesToInsert(String section, final List<Article> articlesList,
                                                 final CallbackListener listener) {
-        NewsEndpointInterface newsService = retrofit.create(NewsEndpointInterface.class);
+
         final Call<NewsResponse> call = newsService.articles(section, 1, 0,
                 context.getResources().getString(R.string.nyt_api_yo));
 

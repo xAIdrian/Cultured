@@ -1,4 +1,4 @@
-package com.androidtitan.hotspots.main.newsfeed;
+package com.androidtitan.hotspots.main.newsfeed.ui;
 
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
@@ -32,10 +32,14 @@ import android.widget.TextView;
 
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.common.BaseActivity;
+import com.androidtitan.hotspots.main.newsfeed.NewsAdapter;
+import com.androidtitan.hotspots.main.newsfeed.NewsMvp;
+import com.androidtitan.hotspots.main.newsfeed.NewsPresenter;
 import com.androidtitan.hotspots.model.newyorktimes.Article;
 import com.androidtitan.hotspots.main.newsdetail.NewsDetailActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -43,19 +47,20 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class NewsActivity extends BaseActivity implements NewsMvp.View{
+public class NewsActivity extends BaseActivity implements NewsMvp.View {
     private final String TAG = getClass().getSimpleName();
 
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
     private static final int LOADING_ANIM_TIME = 700;
+    public static final String ERROR_MESSAGE = "errorfragment.errormessage";
+    public static final String ERROR_MAP = "errorfragment.errormap";
 
     @Inject
     NewsPresenter presenter;
 
     private Handler handler;
-    private Animation rotateAnim;
     private Animation fadeAnim;
 
     Toolbar supportActionBar;
@@ -386,6 +391,20 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
         return articles;
     }
 
+    @Override
+    public void displayError(String message, HashMap<String, Object> additonalProperties) {
+        //todo: we need a way to return from the error
+
+        ErrorFragment errorFragment = new ErrorFragment();
+        Bundle args = new Bundle();
+        args.putString(ERROR_MESSAGE, message);
+        args.putSerializable(ERROR_MAP, additonalProperties);
+        errorFragment.setArguments(args);
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.list, errorFragment);
+    }
+
     private void onRefreshComplete() {
         swipeRefreshLayout.setRefreshing(false);
         loading = true;
@@ -394,7 +413,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View{
     public void initializeAnimation() {
 
         handler = new Handler();
-        rotateAnim = AnimationUtils.loadAnimation(this, R.anim.rotate_clockwise);
         fadeAnim = AnimationUtils.loadAnimation(this, R.anim.fade_out);
 
     }

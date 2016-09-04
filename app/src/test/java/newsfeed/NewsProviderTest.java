@@ -1,21 +1,16 @@
 package newsfeed;
 
-import android.content.Context;
 import android.test.InstrumentationTestCase;
 
 import com.androidtitan.hotspots.BuildConfig;
-import com.androidtitan.hotspots.main.domain.retrofit.NewsEndpointInterface;
-import com.androidtitan.hotspots.main.newsfeed.NewsMvp;
-import com.androidtitan.hotspots.main.newsfeed.NewsProvider;
+import com.androidtitan.hotspots.main.domain.retrofit.NewsEndpoint;
 import com.androidtitan.hotspots.model.newyorktimes.NewsResponse;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.exceptions.ExceptionIncludingMockitoWarnings;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -41,7 +36,7 @@ public class NewsProviderTest extends InstrumentationTestCase{
     /*private NewsProvider newsProvider;
 
     @Mock Context mockContext;
-    @Mock NewsEndpointInterface mockNewsService;
+    @Mock NewsEndpoint mockNewsService;
 
     @Mock NewsMvp.Provider.CallbackListener mockCallbackListener;
 */
@@ -73,10 +68,10 @@ public class NewsProviderTest extends InstrumentationTestCase{
     }
 
     @Test
-    public void fetchArticles_shouldReturnList_whenInputIsValid() throws Exception{
+    public void testFetchArticlesResponseRetrieval() throws Exception{
 
-        BehaviorDelegate<NewsEndpointInterface> delegate = mockRetrofit.create(NewsEndpointInterface.class);
-        NewsEndpointInterface mockEndpointInterface = new MockNewsEndpointInterface(delegate);
+        BehaviorDelegate<NewsEndpoint> delegate = mockRetrofit.create(NewsEndpoint.class);
+        NewsEndpoint mockEndpointInterface = new MockNewsEndpoint(delegate);
 
         //actual test
         Call<NewsResponse> response = mockEndpointInterface.articles(TEST_SECTION, TEST_LIMIT, TEST_OFFSET, TEST_API_KEY);
@@ -87,9 +82,26 @@ public class NewsProviderTest extends InstrumentationTestCase{
 
     }
 
+    // todo :: for these we need to visit NYT API and get the appropriate JSON?
+        // or do we just need to check that isSuccessful() is false?x
+    @Test
+    public void testFailedArticlesResponseRetrieval() throws Exception {
+        //404 error
+        //https://riggaroo.co.za/retrofit-2-mocking-http-responses/
+
+    }
+
+    @Test
+    public void testInvalidKeyResponse() throws Exception {
+        //Invalid API key
+
+    }
+
     @After
     public void tearDown() throws Exception {
 
+        retrofit = null;
+        mockRetrofit = null;
     }
 
 }

@@ -10,7 +10,7 @@ import retrofit2.http.Query;
 /**
  * Created by amohnacs on 3/21/16.
  */
-public interface NewsEndpointInterface {
+public interface NewsEndpoint {
     ///{section}[/time-period][.response-format]?api-key={your-API-key}
     //hworld/.json?limit=20&api-key=sample-key
 
