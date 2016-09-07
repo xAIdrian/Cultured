@@ -23,7 +23,7 @@ import static com.androidtitan.hotspots.main.newsfeed.ui.NewsActivity.ERROR_MESS
 public class ErrorFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
 
-    private @Bind(R.id.restartTextView) TextView restartText;
+    @Bind(R.id.restartTextView) TextView restartText;
 
     private String errorMessage;
     private HashMap<String, Object> errorMap;

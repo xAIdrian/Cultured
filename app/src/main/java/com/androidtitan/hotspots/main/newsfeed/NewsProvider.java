@@ -6,8 +6,6 @@ import android.util.Log;
 import com.androidtitan.hotspots.R;
 import com.androidtitan.hotspots.main.domain.retrofit.NewsEndpoint;
 import com.androidtitan.hotspots.main.domain.retrofit.ServiceGenerator;
-import com.androidtitan.hotspots.main.util.ErrorUtils;
-import com.androidtitan.hotspots.model.ApiError;
 import com.androidtitan.hotspots.model.newyorktimes.Article;
 import com.androidtitan.hotspots.model.newyorktimes.NewsResponse;
 
@@ -20,6 +18,7 @@ import javax.inject.Singleton;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * Created by amohnacs on 8/29/16.
@@ -30,9 +29,7 @@ public class NewsProvider implements NewsMvp.Provider {
     private final String TAG = getClass().getSimpleName();
 
     private Context context;
-    private NewsEndpoint newsService
-            = ServiceGenerator.createService(NewsEndpoint.class);
-
+    private NewsEndpoint newsService;
 
     private ArrayList<Article> fetchArticleList = new ArrayList<>();
     private ArrayList<Article> loadNextArticleList = new ArrayList<>();
@@ -40,11 +37,13 @@ public class NewsProvider implements NewsMvp.Provider {
     @Inject
     public NewsProvider(Context context) {
         this.context = context;
+        newsService = ServiceGenerator.createService(NewsEndpoint.class);
     }
 
 
     @Override
     public List<Article> fetchArticles(String section, int limit, final CallbackListener listener) {
+
 
         final Call<NewsResponse> call = newsService.articles(section, limit, 0, //our offset
                 context.getResources().getString(R.string.nyt_api_yo));
@@ -64,18 +63,14 @@ public class NewsProvider implements NewsMvp.Provider {
                     listener.onCompleted();
 
                 } else {
-                    Log.d(TAG, "response fail : " + response.message());
-
-                    ApiError apiError = ErrorUtils.parseError(response);
-                    listener.responseFailed(apiError);
+                    Log.e(TAG, "response fail : " + response.message());
                 }
+
 
             }
 
             @Override
             public void onFailure(Call<NewsResponse> call, Throwable t) {
-                // there is more than just a failing request (like: no internet connection)
-                Log.d(TAG, "there is more than just a failing request (like: no internet connection)");
                 t.printStackTrace();
             }
         });

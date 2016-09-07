@@ -36,8 +36,7 @@
     KenBurnsView. \n\n
     icon8.com</string>
     <string name="chooser_text">Which app would you like to use?</string>
-
-    <string name="error">It looks like Cultured got lost.\nOut Dev team is on it.</string>
-    <string name="restart_app">I want to restart</string>
+    <string name="error">Error</string>
+    <string name="restart_app">Would you like to restart the app?</string>
 
 </resources>

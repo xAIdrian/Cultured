@@ -1,9 +1,6 @@
 package com.androidtitan.hotspots.main;
 
 import android.app.Application;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.androidtitan.hotspots.main.inject.AppComponent;
 import com.androidtitan.hotspots.main.inject.AppModule;

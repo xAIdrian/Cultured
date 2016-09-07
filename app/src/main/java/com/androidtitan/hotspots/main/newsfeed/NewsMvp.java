@@ -4,8 +4,8 @@ import com.androidtitan.hotspots.common.MvpView;
 import com.androidtitan.hotspots.model.ApiError;
 import com.androidtitan.hotspots.model.newyorktimes.Article;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by amohnacs on 8/29/16.
@@ -23,9 +23,9 @@ public interface NewsMvp {
             void appendArticleToAdapter(Article article);
             void insertArticleInAdapter(int index, Article article);
 
-            void onCompleted();
+            void responseFailed(ApiError error);
 
-            void responseFailed(ApiError apiError);
+            void onCompleted();
         }
     }
 
@@ -46,8 +46,8 @@ public interface NewsMvp {
         void insertAdapterItem(int index, Article article);
 
         List<Article> getArticles();
-        void displayError(String message, HashMap<String, Object> additonalProperties);
 
+        void displayError(String message, Map<String, Object> additionalProperties);
     }
 
 }

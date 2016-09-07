@@ -41,6 +41,7 @@ import com.androidtitan.hotspots.main.newsdetail.NewsDetailActivity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -392,17 +393,13 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     }
 
     @Override
-    public void displayError(String message, HashMap<String, Object> additonalProperties) {
-        //todo: we need a way to return from the error
+    public void displayError(String message, Map<String, Object> additionalProperties) {
 
-        ErrorFragment errorFragment = new ErrorFragment();
-        Bundle args = new Bundle();
-        args.putString(ERROR_MESSAGE, message);
-        args.putSerializable(ERROR_MAP, additonalProperties);
-        errorFragment.setArguments(args);
+        ErrorFragment errorFrag = ErrorFragment.newInstance(message, additionalProperties);
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.list, errorFragment);
+                .add(R.id.list, errorFrag);
+
     }
 
     private void onRefreshComplete() {
