@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.androidtitan.hotspots.main.newsfeed.ui.ErrorFragment">
+    tools:context="com.androidtitan.culturedapp.main.newsfeed.ui.ErrorFragment">
 
     <ImageView
         android:id="@+id/errorImageView"
