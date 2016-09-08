@@ -31,7 +31,6 @@ public class NewsPresenter extends BasePresenter<NewsMvp.View> implements NewsMv
         this.context = context;
 
         CulturedApp.getAppComponent().inject(this);
-
     }
 
 

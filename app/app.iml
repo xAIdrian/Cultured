@@ -264,8 +264,8 @@
     <orderEntry type="library" exported="" scope="TEST" name="robolectric-3.1.2" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="asm-tree-5.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-cast-framework-9.4.0" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="maven-project-2.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="javawriter-2.1.1" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="maven-project-2.2.1" level="project" />
     <orderEntry type="library" exported="" name="logging-interceptor-3.3.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-location-9.4.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-3.3.0" level="project" />
