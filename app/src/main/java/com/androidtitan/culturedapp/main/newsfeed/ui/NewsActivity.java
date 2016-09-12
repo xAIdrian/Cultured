@@ -1,7 +1,6 @@
 package com.androidtitan.culturedapp.main.newsfeed.ui;
 
 import android.annotation.TargetApi;
-import android.app.ActivityOptions;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -27,7 +26,6 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -72,7 +70,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     @Bind(R.id.swipeRefresh)
     SwipeRefreshLayout swipeRefreshLayout;
-    @Bind(R.id.list)
+    @Bind(R.id.newsList)
     RecyclerView recyclerView;
 
     @Bind(R.id.drawerLayout)
@@ -397,7 +395,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         ErrorFragment errorFrag = ErrorFragment.newInstance(message, additionalProperties);
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.list, errorFrag);
+                .add(R.id.newsList, errorFrag);
 
     }
 
