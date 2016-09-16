@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="NewsHeaderLayout">
+        <attr name="titleText" format="string" />
+        <attr name="dateText" format="string" />
+        <attr name="sectionText" format="string" />
+        <attr name="gradientDrawable" format="integer" />
+    </declare-styleable>
+</resources>
