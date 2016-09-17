@@ -42,7 +42,7 @@
                 android:layout_height="match_parent"
                 android:layout_below="@+id/wikiInfoBar"
                 android:clipToPadding="false"
-                android:paddingTop="120dp"/>
+                android:paddingTop="?android:attr/actionBarSize"/>
 
         </android.support.v4.widget.SwipeRefreshLayout>
 

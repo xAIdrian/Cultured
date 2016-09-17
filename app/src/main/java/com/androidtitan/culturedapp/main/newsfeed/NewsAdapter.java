@@ -307,19 +307,14 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void initLargeViewholderImage(final LargeImageViewHolder holder, final int position) {
 
-        holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
-
-        holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
-//        holder.titleText.setText(articleList.get(position).getTitle());
-        holder.abstractText.setText(articleList.get(position).getAbstract());
-
         DateFormat formatter = new SimpleDateFormat("MMM dd h:mm a");
         String dateFormatted = formatter.format(articleList.get(position).getCreatedDate());
-        holder.newsHeaderLayout.setDateText(dateFormatted);
-//        holder.dateText.setText(dateFormatted);
 
+        holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
+        holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
+        holder.abstractText.setText(articleList.get(position).getAbstract());
         holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
-//        holder.sectionView.setText(articleList.get(position).getGeoFacet().get(0));
+        holder.newsHeaderLayout.setDateText(dateFormatted);
 
         try {
             Glide.with(context)
@@ -361,9 +356,15 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private void initMediumViewholderImage(final MediumImageViewHolder holder, final int position) {
-        holder.titleText.setText(articleList.get(position).getTitle());
+
+        DateFormat formatter = new SimpleDateFormat("MMM dd h:mm a");
+        String dateFormatted = formatter.format(articleList.get(position).getCreatedDate());
+
+        holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
+        holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
         holder.abstractText.setText(articleList.get(position).getAbstract());
-        holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
+        holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
+        holder.newsHeaderLayout.setDateText(dateFormatted);
 
         try {
             Glide.with(context)
@@ -439,15 +440,11 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Bind(R.id.articleImageView)
         ImageView articleImage;
         @Nullable
-        @Bind(R.id.titleTextView)
-        TextView titleText;
+        @Bind(R.id.newsHeaderLayout)
+        NewsHeaderLayout newsHeaderLayout;
         @Nullable
         @Bind(R.id.abstractTextView)
         TextView abstractText;
-        @Nullable
-        @Bind(R.id.globalTextView)
-        TextView globalText;
-
 
 
         public MediumImageViewHolder(View itemView) {

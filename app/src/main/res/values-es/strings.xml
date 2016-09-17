@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Culto</string>
+
+    <string name="nyt_api_yo">81d9fdae8dbc6db887857f0bedad3a92:19:74775241</string>
+
+    <string name="hello_world">Creo que falta algo ...</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="placeholder">PlaceHolder</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="transition_news_image">transition:NEWSIMAGE</string>
+
+    <string name="view_article">Ver artículo</string>
+
+    <string name="loading">Cultivadas se está cargando ...</string>
+    <string name="swipe_up">Pase hacia arriba para obtener más información</string>
+
+    <string name="onboarding_title">Bienvenido\na\Cultivadas</string>
+    <string name="oboarding_intro">¿No quieres saber lo que está pasando en el mundo , pero no quieren leer largos artículos de noticias ? Cultivadas soluciona.</string>
+    <string name="onboarding_body">Seleccionar un artículo que le interesa y desde allí podrás aprender más acerca de las personas, organizaciones y países involved.\n \nHappy viajes.</string>
+
+    <string name="onboarding_gotit">¡Lo tengo!</string>
+    <string name="generate_onboarding">Mostrar Onboarding</string>
+    <string name="generate_about">Acerca de mostrar</string>
+    <string name="support_mail">Dar opinion</string>
+
+    <string name="about_intro">Cultivadas fue desarrollado por Adrian Mohnacs .</string>
+    <string name="about_body">Las bibliotecas de terceros usados:\n\nDagger 2.  Butterknife.  Retrofit 2.  (Square)\n\n
+    Glide.  (Google) \n\n
+    KenBurnsView. \n\n
+    icon8.com</string>
+    <string name="chooser_text">¿Qué aplicación le gustaría usar ?</string>
+    <string name="error">Error</string>
+    <string name="restart_app">¿Le gustaría reiniciar la aplicación?</string>
+
+    <string name="graph">Grafico</string>
+    <string name="my_facets">mis facetas</string>
+
+
+</resources>

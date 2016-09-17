@@ -3,19 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <item android:id="@+id/menu_item_affect"
-        android:title="Graphs"
+    <item android:id="@+id/menu_item_graph"
+        android:title="@string/graph"
+        android:icon="@drawable/ic_graph"
         android:orderInCategory="1"
         app:showAsAction="always"/>
 
-    <item android:id="@+id/menu_item_world"
-        android:title="World News"
+    <item android:id="@+id/menu_item_facets"
+        android:title="@string/my_facets"
+        android:icon="@drawable/ic_bookmark"
         android:orderInCategory="2"
-        app:showAsAction="always"/>
-
-    <item android:id="@+id/menu_item_top"
-        android:title="Top Stories"
-        android:orderInCategory="3"
         app:showAsAction="always"/>
 
 

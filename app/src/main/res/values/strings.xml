@@ -39,5 +39,8 @@
     <string name="error">Error</string>
     <string name="restart_app">Would you like to restart the app?</string>
 
+    <string name="graph">Graph</string>
+    <string name="my_facets">My Facets</string>
+
 
 </resources>

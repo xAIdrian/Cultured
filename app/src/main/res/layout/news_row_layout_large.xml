@@ -39,7 +39,7 @@
             custom:gradientDrawable="@drawable/bg_gradient_primary" />
 
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/infoRelativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,25 +54,12 @@
                 android:id="@+id/abstractTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
+                android:layout_gravity="start"
                 android:layout_marginTop="8dp"
                 android:padding="8dp"
                 android:text="@string/placeholder" />
 
-
-           <!-- <ImageView
-                android:id="@+id/globalImageView"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/abstractTextView"
-                android:layout_margin="8dp"
-                android:src="@drawable/ic_plane_takeoff"
-                android:textColor="@color/colorSecondaryText"
-                android:textStyle="bold" />-->
-
-        </RelativeLayout>
+        </LinearLayout>
 
     </RelativeLayout>
 
