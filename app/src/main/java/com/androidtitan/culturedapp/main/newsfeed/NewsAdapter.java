@@ -318,6 +318,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
         holder.newsHeaderLayout.setDateText(dateFormatted);
 
+
         try {
             Glide.with(context)
                     .load(articleList.get(position).getMultimedia().get(3).getUrl())
