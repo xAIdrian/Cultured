@@ -12,7 +12,8 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?selectableItemBackground"
-    card_view:cardElevation="4dp">
+    card_view:cardElevation="4dp"
+    android:contentDescription="@string/accessability_cardview">
 
     <RelativeLayout
         android:id="@+id/rippleForeground"

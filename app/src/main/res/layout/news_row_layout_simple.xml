@@ -11,7 +11,8 @@
     android:background="@drawable/ripple"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?selectableItemBackground">
+    android:foreground="?selectableItemBackground"
+    android:contentDescription="@string/accessability_cardview">
 
     <RelativeLayout
         android:id="@+id/rippleForeground"
@@ -22,7 +23,6 @@
             android:id="@+id/infoRelativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/paletteView"
             android:background="@android:color/white"
             android:padding="8dp">
 

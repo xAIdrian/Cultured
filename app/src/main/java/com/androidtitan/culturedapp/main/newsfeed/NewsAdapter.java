@@ -6,8 +6,10 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.KeyEventCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -353,6 +355,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 //                        articleList.get(position), holder.articleImage);
             }
         });
+
     }
 
     private void initMediumViewholderImage(final MediumImageViewHolder holder, final int position) {

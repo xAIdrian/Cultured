@@ -95,8 +95,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     int screenSize;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initializeTranstionsAndAnimations();
@@ -111,6 +109,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         articles = new ArrayList<>();
 
         loadingTitleText.setVisibility(View.VISIBLE);
+        loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
+
         initializeAnimation();
 
         //saveInstanceState to handle rotations
@@ -186,8 +186,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
         initializeRecyclerView();
 
-
-
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorCaribbean, R.color.colorCrush);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -206,7 +204,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
             }
         });
-
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

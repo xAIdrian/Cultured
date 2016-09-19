@@ -42,5 +42,8 @@
     <string name="graph">Graph</string>
     <string name="my_facets">My Facets</string>
 
+    <!-- Accessability Strings -->
+    <string name="accessability_cardview">Select card to view news article</string>
+    <string name="accessability_loading">Your articles are loading</string>
 
 </resources>
