@@ -1,6 +1,9 @@
 package com.androidtitan.culturedapp.main.newsfeed.ui;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -47,6 +50,10 @@ import butterknife.ButterKnife;
 
 public class NewsActivity extends BaseActivity implements NewsMvp.View {
     private final String TAG = getClass().getSimpleName();
+
+    public static final String AUTHORITY = "com.androidtitan.culturedapp.provider";
+    public static final String ACCOUNT_TYPE = "com.androidtitan.culturedapp";
+    public static final String ACCOUNT = "dummyaccount";
 
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
@@ -98,6 +105,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initializeTranstionsAndAnimations();
+        //initialize dummy account
+        Account account = createSyncAccount(this);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
@@ -319,6 +328,28 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         //todo :: Let's refigure out what this does and decide if we want to keep it or not
         outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST,
                 (ArrayList<? extends Parcelable>) articles);
+    }
+
+    private Account createSyncAccount(Context context) {
+
+        Account newAccount = new Account(ACCOUNT, ACCOUNT_TYPE);
+        AccountManager accountManager = (AccountManager) context.getSystemService(ACCOUNT_SERVICE);
+
+        if(accountManager.addAccountExplicitly(newAccount, null, null)) {
+            /*
+             * If you don't set android:syncable="true" in
+             * in your <provider> element in the manifest,
+             * then call context.setIsSyncable(account, AUTHORITY, 1)
+             * here.
+             */
+        } else {
+            /*
+             * The account exists or some other error occurred. Log this, report it,
+             * or handle it internally.
+             */
+        }
+        return newAccount; //todo: is this the proper object to return?
+
     }
 
     private void initializeRecyclerView() {

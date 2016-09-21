@@ -7,6 +7,7 @@ import android.content.Context;
 import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
 import com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity;
+import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
 
 import javax.inject.Singleton;
 
@@ -15,7 +16,8 @@ import dagger.Component;
 @Singleton
 @Component (
         modules = { AppModule.class,
-                    NewsModule.class}
+                    NewsModule.class,
+                    TopArticleModule.class}
 )
 public interface AppComponent {
 
@@ -27,5 +29,6 @@ public interface AppComponent {
 //    void inject(NewsDetailActivity activity);
 
     void inject(NewsPresenter newsPresenter);
+    void inject(TopArticlePresenter topArticlePresenter);
 
 }
