@@ -37,9 +37,15 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         tempArticle.setUrl(obj.getAsJsonObject().get("url").getAsString());
         tempArticle.setByline(obj.getAsJsonObject().get("byline").getAsString());
 
-        tempArticle.setThumbnailStandard(obj.getAsJsonObject().get("thumbnail_standard").getAsString());
+        if(obj.getAsJsonObject().get("thumbnail_standard") != null) {
+            tempArticle.setThumbnailStandard(obj.getAsJsonObject().get("thumbnail_standard").getAsString());
+        }
+
         tempArticle.setItemType(obj.getAsJsonObject().get("item_type").getAsString());
-        tempArticle.setSource(obj.getAsJsonObject().get("source").getAsString());
+
+        if(obj.getAsJsonObject().get("source") != null) {
+            tempArticle.setSource(obj.getAsJsonObject().get("source").getAsString());
+        }
 
         tempArticle.setUpdatedDate((Date) context.deserialize(obj.getAsJsonObject().get("updated_date"), Date.class));
         tempArticle.setCreatedDate((Date) context.deserialize(obj.getAsJsonObject().get("created_date"), Date.class));
@@ -47,18 +53,22 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
 
         tempArticle.setMaterialTypeFacet(obj.getAsJsonObject().get("material_type_facet").getAsString());
         tempArticle.setKicker(obj.getAsJsonObject().get("kicker").getAsString());
-        tempArticle.setSubheadline(obj.getAsJsonObject().get("subheadline").getAsString());
+
+        if(obj.getAsJsonObject().get("subheadline") != null) {
+            tempArticle.setSubheadline(obj.getAsJsonObject().get("subheadline").getAsString());
+        }
         tempArticle.setBlogName(obj.getAsJsonObject().get("section").getAsString());
 
-        //todo
-        if(obj.getAsJsonObject().get("related_urls") instanceof JsonObject) {
-            RelatedUrl tempRelatedUrl = new RelatedUrl();
-            tempRelatedUrl.setSuggestedLinkText((obj.getAsJsonObject().get("related_urls")).getAsJsonObject().get("suggested_link_text").getAsString());
-            tempRelatedUrl.setUrl((obj.getAsJsonObject().get("related_urls")).getAsJsonObject().get("url").getAsString());
+        if(obj.getAsJsonObject().get("related_urls") != null) {
+            if (obj.getAsJsonObject().get("related_urls") instanceof JsonObject) {
+                RelatedUrl tempRelatedUrl = new RelatedUrl();
+                tempRelatedUrl.setSuggestedLinkText((obj.getAsJsonObject().get("related_urls")).getAsJsonObject().get("suggested_link_text").getAsString());
+                tempRelatedUrl.setUrl((obj.getAsJsonObject().get("related_urls")).getAsJsonObject().get("url").getAsString());
 
-            List<RelatedUrl> list = new ArrayList<RelatedUrl>();
-            list.add(tempRelatedUrl);
-            tempArticle.setRelatedUrls(list);
+                List<RelatedUrl> list = new ArrayList<RelatedUrl>();
+                list.add(tempRelatedUrl);
+                tempArticle.setRelatedUrls(list);
+            }
         }
 
         List<String> desList = new ArrayList<String>();

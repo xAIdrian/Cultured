@@ -4,13 +4,18 @@ import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.main.toparticle.ContentProviderInterface;
+
+import static com.androidtitan.culturedapp.main.toparticle.model.DatabaseContract.Article.TABLE_NAME;
+import static com.androidtitan.culturedapp.main.toparticle.model.DatabaseContract.CONTENT_URI;
 
 /**
  * Created by amohnacs on 7/17/16.
@@ -19,54 +24,106 @@ import com.androidtitan.culturedapp.main.toparticle.ContentProviderInterface;
 public class TopArticleContentProvider extends ContentProvider {
     private final String TAG = getClass().getSimpleName();
 
-    private final static String AUTHORITY = "com.androidtitan.culturedapp.provider";
-    private static String BASE_PATH = TopArticleSQLiteHelper.DATABASE_NAME;
-    private static String path_CONTENT_URI =  "content://" + AUTHORITY+ "/" + BASE_PATH +"/";
-    static final String SINGLE_RECORD_MIME_TYPE = "vnd.android.cursor.item/vnd.marakana.android.lifecycle.status";
-    static final String MULTIPLE_RECORDS_MIME_TYPE = "vnd.android.cursor.dir/vnd.marakana.android.lifecycle.status";
-
-    public static final Uri CONTENT_URI = Uri.parse(path_CONTENT_URI);
-
-    TopArticleSQLiteHelper haloSqlHelper;
-    TopArticleTable.TopArticleEntry topArticleEntry;
+    private static final int ARTICLE_ID = 1;
+    private static final int ARTICLE_LIST = 2;
+    private static final UriMatcher uriMatcher;
 
     Context context;
+    ArticleSQLiteHelper sqLiteHelper;
+
+    static {
+        uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI(DatabaseContract.AUTHORITY, DatabaseContract.Article.TABLE_NAME + "/#", ARTICLE_ID);
+        uriMatcher.addURI(DatabaseContract.AUTHORITY, DatabaseContract.Article.TABLE_NAME, ARTICLE_LIST);
+
+    }
 
     @Override
     public boolean onCreate() {
         Log.d(TAG, "onCreate");
 
         context = getContext();
+        sqLiteHelper = new ArticleSQLiteHelper(context);
 
         return true;
 
     }
 
     @Override
+    public Cursor query(Uri uri, String[] projection, String selection,
+                        String[] selectionArgs, String sortOrder) {
+        Log.d(TAG, "query with uri: " + uri.toString());
+
+        String tableName;
+        Cursor cursor;
+
+        switch (uriMatcher.match(uri)) {
+            case ARTICLE_LIST:
+
+                tableName = DatabaseContract.Article.TABLE_NAME;
+
+                if(TextUtils.isEmpty(sortOrder)) {
+                    sortOrder = DatabaseContract.Article._ID + " DESC";
+
+                }
+                cursor = sqLiteHelper.getReadableDatabase()
+                        .query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported Uri: " + uri);
+        }
+
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
+    }
+
+
+    @Override
     public String getType(Uri uri) {
-        String ret = context.getContentResolver().getType(CONTENT_URI);
-        Log.d(TAG, "getType returning: " + ret);
-        return ret;
+        switch (uriMatcher.match(uri)) {
+            case ARTICLE_ID:
+                return DatabaseContract.SINGLE_CONTENT_TYPE;
+
+            case ARTICLE_LIST:
+                return DatabaseContract.LIST_CONTENT_TYPE;
+
+            default:
+                throw new IllegalArgumentException("unsupported Uri: " + uri);
+        }
     }
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         Log.d(TAG, "insert uri: " + uri.toString());
 
-        SQLiteDatabase db = haloSqlHelper.getWritableDatabase();
+        long insertedRowId = 0;
 
-        Uri result = null;
+        switch (uriMatcher.match(uri)) {
+            case ARTICLE_ID:
 
-        long rowID = db.insert(topArticleEntry.TABLE_NAME, null, values);
+                insertedRowId = sqLiteHelper.getWritableDatabase()
+                        .insert(DatabaseContract.Article.TABLE_NAME, null, values);
 
-        if (rowID > 0) {
-            // Return a URI to the newly created row on success
-            result = ContentUris.withAppendedId(CONTENT_URI, rowID);
+                break;
 
-            // Notify the Context's ContentResolver of the change
-            context.getContentResolver().notifyChange(result, null);
+            case ARTICLE_LIST:
+
+                insertedRowId = sqLiteHelper.getWritableDatabase()
+                        .insert(DatabaseContract.Article.TABLE_NAME, null, values);
+
+                break;
+
+            default:
+                throw new IllegalArgumentException("unsupported Uri: " + uri);
         }
-        return result;
+
+        if(insertedRowId > 0) {
+            notifyUriChanges(uri);
+            return ContentUris.withAppendedId(uri, insertedRowId);
+        } else {
+            return null;
+        }
     }
 
 
@@ -76,59 +133,72 @@ public class TopArticleContentProvider extends ContentProvider {
                       String[] selectionArgs) {
         Log.d(TAG, "update uri: " + uri.toString());
 
-        int count = 0;
-        SQLiteDatabase db = haloSqlHelper.getWritableDatabase();
+        int updateCount = 0;
 
-        count = db.update(topArticleEntry.TABLE_NAME, values, selection, selectionArgs);
+        switch (uriMatcher.match(uri)) {
 
-        if(count > 0) {
+            case ARTICLE_ID:
+                updateCount = sqLiteHelper.getWritableDatabase().delete(
+                        DatabaseContract.Article.TABLE_NAME, selection, selectionArgs);
+                break;
 
-            context.getContentResolver().notifyChange(uri, null);
+            case ARTICLE_LIST:
+                updateCount = sqLiteHelper.getWritableDatabase().delete(
+                        DatabaseContract.Article.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported uri: " + uri);
         }
 
-        return 0;
+        if(updateCount > 0) {
+            notifyUriChanges(uri);
+        }
+
+        return updateCount;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         Log.d(TAG, "delete uri: " + uri.toString());
 
-        int count = 0;
-        SQLiteDatabase db = haloSqlHelper.getWritableDatabase();
+        int deleteCount;
 
-        count = db.delete(topArticleEntry.TABLE_NAME, selection, selectionArgs);
+        switch (uriMatcher.match(uri)) {
 
-        if (count > 0) {
-            context.getContentResolver().notifyChange(uri, null);
+            case ARTICLE_ID:
+                deleteCount = sqLiteHelper.getWritableDatabase().delete(
+                        DatabaseContract.Article.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            case ARTICLE_LIST:
+                deleteCount = sqLiteHelper.getWritableDatabase().delete(
+                        DatabaseContract.Article.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported uri: " + uri);
         }
 
-        return 0;
-    }
-
-    @Override
-    public Cursor query(Uri uri, String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
-        Log.d(TAG, "query with uri: " + uri.toString());
-
-        SQLiteDatabase db = haloSqlHelper.getWritableDatabase();
-
-        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(topArticleEntry.TABLE_NAME);
-
-        Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null ,null, sortOrder);
-
-        return cursor;
+        if(deleteCount > 0) {
+            notifyUriChanges(uri);
+        }
+        return deleteCount;
     }
 
     public void updateContext(Context context, ContentProviderInterface.ProviderCallback listener) {
         this.context = context;
-        haloSqlHelper = new TopArticleSQLiteHelper(context);
+        sqLiteHelper = new ArticleSQLiteHelper(context);
         Log.d(TAG, "Lazy creation of SQLiteOpenHelper");
-        if(haloSqlHelper == null) {
+        if(sqLiteHelper == null) {
             listener.SQLiteCreationComplete(false);
         } else {
             listener.SQLiteCreationComplete(true);
         }
+    }
+
+    private void notifyUriChanges(Uri uri) {
+        getContext().getContentResolver().notifyChange(uri, null);
     }
 }
 

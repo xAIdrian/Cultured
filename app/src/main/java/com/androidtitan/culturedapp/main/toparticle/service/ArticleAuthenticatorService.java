@@ -12,17 +12,29 @@ import android.support.annotation.Nullable;
 public class ArticleAuthenticatorService extends Service {
     private static final String TAG = "ArticleAuthenticatorService";
 
-    private ArticleAuthenticator articleAuthenticator;
+    private ArticleAuthenticator authenticator;
 
     @Override
     public void onCreate() {
 
-        articleAuthenticator = new ArticleAuthenticator(this);
+        authenticator = new ArticleAuthenticator(this);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return articleAuthenticator.getIBinder();
+        return authenticator.getIBinder();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+//    @Override
+//    public int onStartCommand(Intent intent, int flags, int startId) {
+//        return START_STICKY;
+//    }
+
+
 }

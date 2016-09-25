@@ -3,9 +3,11 @@ package com.androidtitan.culturedapp.main.newsfeed.ui;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,6 +39,8 @@ import com.androidtitan.culturedapp.common.BaseActivity;
 import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
+import com.androidtitan.culturedapp.main.toparticle.model.ArticleCursorWrapper;
+import com.androidtitan.culturedapp.main.toparticle.model.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 
 import java.util.ArrayList;
@@ -52,8 +56,14 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     private final String TAG = getClass().getSimpleName();
 
     public static final String AUTHORITY = "com.androidtitan.culturedapp.provider";
-    public static final String ACCOUNT_TYPE = "com.androidtitan.culturedapp";
+    public static final String ACCOUNT_TYPE = "com.androidtitan";
     public static final String ACCOUNT = "dummyaccount";
+    // Sync interval constants
+    public static final long SECONDS_PER_MINUTE = 60L;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 60L;
+    public static final long SYNC_INTERVAL =
+            SYNC_INTERVAL_IN_MINUTES *
+                    SECONDS_PER_MINUTE;
 
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
@@ -67,6 +77,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     private Handler handler;
     private Animation fadeAnim;
+    private Account account;
 
     Toolbar supportActionBar;
 
@@ -106,7 +117,16 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     protected void onCreate(Bundle savedInstanceState) {
         initializeTranstionsAndAnimations();
         //initialize dummy account
-        Account account = createSyncAccount(this);
+        account = createSyncAccount(this);
+        /*Intent serviceIntent = new Intent(this, ArticleSyncService.class);
+        startService(serviceIntent);*/
+        //todo: this lines do not work or are not needed
+        getContentResolver().setIsSyncable(account, AUTHORITY, 1);
+        getContentResolver().addPeriodicSync(
+                account,
+                AUTHORITY,
+                Bundle.EMPTY,
+                10);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
@@ -313,6 +333,47 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.menu_item_graph:
+                // Pass the settings flags by inserting them in a bundle
+                Bundle settingsBundle = new Bundle();
+                settingsBundle.putBoolean(
+                        ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                settingsBundle.putBoolean(
+                        ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+                getContentResolver().requestSync(account, AUTHORITY, settingsBundle);
+
+                break;
+
+            case R.id.menu_item_facets:
+
+                Cursor articleCursor = getContentResolver().query(
+                        DatabaseContract.Article.CONTENT_URI, null, null, null, null
+                );
+                ArticleCursorWrapper wrapper = new ArticleCursorWrapper(articleCursor);
+                wrapper.moveToFirst();
+
+                Article article;
+                List<Article> articles = new ArrayList<Article>();
+
+                Log.e(TAG, "retrieving from Content Provider...");
+                while(!wrapper.isAfterLast()) {
+
+                    Log.e(TAG, wrapper.getArticle().getTitle());
+                    articles.add(wrapper.getArticle());
+
+                    wrapper.moveToNext();
+                }
+
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid options item: " + item.getItemId());
+
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

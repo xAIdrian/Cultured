@@ -14,7 +14,7 @@ import java.nio.channels.UnsupportedAddressTypeException;
  */
 
 public class ArticleAuthenticator extends AbstractAccountAuthenticator {
-    private static final String TAG = "ArticleAuthenticator";
+    private final String TAG = getClass().getSimpleName();
 
 
     public ArticleAuthenticator(Context context) {

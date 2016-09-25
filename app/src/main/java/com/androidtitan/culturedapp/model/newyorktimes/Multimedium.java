@@ -44,6 +44,14 @@ public class Multimedium implements Parcelable {
 
     }
 
+    public Multimedium(String url, Integer height,
+                       Integer width, String caption) {
+        this.url = url;
+        this.height = height;
+        this.width = width;
+        this.caption = caption;
+    }
+
     public Multimedium(Parcel in) {
 
         url = in.readString();

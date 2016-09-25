@@ -41,7 +41,7 @@
         </service>
 
         <service android:name=".main.toparticle.service.ArticleSyncService"
-            android:exported="true"
+            android:exported="false"
             android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
@@ -52,10 +52,15 @@
         </service>
 
         <provider
-            android:name=".main.toparticle.model.TopArticleContentProvider"
+            android:name="com.androidtitan.culturedapp.main.toparticle.model.TopArticleContentProvider"
             android:authorities="com.androidtitan.culturedapp.provider"
+            android:syncable="true"
             android:enabled="true"
             android:exported="false" />
+
+        <!--
+            android:label="@string/app_name"
+            -->
 
     </application>
 

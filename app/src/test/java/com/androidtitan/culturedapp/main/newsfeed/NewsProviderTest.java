@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -29,8 +28,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.mock.BehaviorDelegate;
 import retrofit2.mock.MockRetrofit;
 import retrofit2.mock.NetworkBehavior;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by amohnacs on 9/7/16.
@@ -75,7 +72,7 @@ public class NewsProviderTest extends InstrumentationTestCase {
         NewsEndpoint mockEndpointInterface = new MockNewsEndpoint(delegate);
 
         //actual test
-        Call<NewsResponse> response = mockEndpointInterface.articles(TEST_SECTION, TEST_LIMIT, TEST_OFFSET, TEST_API_KEY);
+        Call<NewsResponse> response = mockEndpointInterface.newsWireArticles(TEST_SECTION, TEST_LIMIT, TEST_OFFSET, TEST_API_KEY);
         Response<NewsResponse> newsResponse = response.execute();
 
         //asserting response
@@ -93,7 +90,7 @@ public class NewsProviderTest extends InstrumentationTestCase {
         MockFailedNewsEndpoint mockFailedNewsEndpoint = new MockFailedNewsEndpoint(delegate);
 
         //Actual Test
-        Call<NewsResponse> response = mockFailedNewsEndpoint.articles(TEST_SECTION, TEST_LIMIT, TEST_OFFSET, TEST_API_KEY);
+        Call<NewsResponse> response = mockFailedNewsEndpoint.newsWireArticles(TEST_SECTION, TEST_LIMIT, TEST_OFFSET, TEST_API_KEY);
         Response<NewsResponse> newsResponse = response.execute();
         assertFalse(newsResponse.isSuccessful());
 
