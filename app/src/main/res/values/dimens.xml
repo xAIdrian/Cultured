@@ -15,5 +15,7 @@
     <dimen name="small_fab_size">48dp</dimen>
 
     <dimen name="wiki_negative_margin">-55dp</dimen>
+    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 
 </resources>

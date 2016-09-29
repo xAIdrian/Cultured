@@ -39,7 +39,7 @@ public class MockFailedNewsEndpoint implements NewsEndpoint {
     }
 
     @Override
-    public Call<NewsResponse> articles(@Path("section") String string, @Query("limit") int count, @Query("offset") int offset, @Query("api-key") String yourKey) {
+    public Call<NewsResponse> newsWireArticles(@Path("section") String string, @Query("limit") int count, @Query("offset") int offset, @Query("api-key") String yourKey) {
 
         ApiError error = new ApiError();
         error.setCode(404);
@@ -56,11 +56,16 @@ public class MockFailedNewsEndpoint implements NewsEndpoint {
             Response response = Response.error(404, ResponseBody.create(
                     MediaType.parse("application/json"), responseAsJsonString));
             return delegate.returning(Calls.response(response))
-                    .articles(TEST_SECTION, TEST_LIMIT, TEST_OFFSET, TEST_API_KEY);
+                    .newsWireArticles(TEST_SECTION, TEST_LIMIT, TEST_OFFSET, TEST_API_KEY);
 
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             return Calls.failure((IOException) e);
         }
+    }
+
+    @Override
+    public Call<NewsResponse> topStories(@Path("section") String string, @Query("api-key") String yourKey) {
+        return null;
     }
 }

@@ -44,8 +44,8 @@ public class NewsProvider implements NewsMvp.Provider {
     public List<Article> fetchArticles(String section, int limit, final CallbackListener listener) {
 
 
-        final Call<NewsResponse> call = newsService.articles(section, limit, 0, //our offset
-                context.getResources().getString(R.string.nyt_api_yo));
+        final Call<NewsResponse> call = newsService.newsWireArticles(section, limit, 0, //our offset
+                context.getResources().getString(R.string.nyt_api_key_newswire));
 
         call.enqueue(new Callback<NewsResponse>() {
             @Override
@@ -53,7 +53,7 @@ public class NewsProvider implements NewsMvp.Provider {
                 if (response.isSuccessful()) {
                     NewsResponse resp = response.body();
                     Log.d(TAG, "response received: " + resp.getStatus() + " : "
-                            + resp.getArticles().size() + " articles received");
+                            + resp.getArticles().size() + " newsWireArticles received");
 
                     for (Article article : resp.getArticles()) {
 
@@ -81,8 +81,8 @@ public class NewsProvider implements NewsMvp.Provider {
     public void fetchAdditionalArticles(String section, int limit, int offset,
                                         final CallbackListener listener) {
 
-        final Call<NewsResponse> call = newsService.articles(section, limit, offset,
-                context.getResources().getString(R.string.nyt_api_yo));
+        final Call<NewsResponse> call = newsService.newsWireArticles(section, limit, offset,
+                context.getResources().getString(R.string.nyt_api_key_newswire));
 
         call.enqueue(new Callback<NewsResponse>() {
             @Override
@@ -90,7 +90,7 @@ public class NewsProvider implements NewsMvp.Provider {
                 if (response.isSuccessful()) {
                     NewsResponse resp = response.body();
                     Log.d(TAG, "refresh response received: " + resp.getStatus() + " : "
-                            + resp.getArticles().size() + " articles received");
+                            + resp.getArticles().size() + " newsWireArticles received");
 
                     for (int i = 0; i < resp.getArticles().size(); i++) {
 
@@ -114,8 +114,8 @@ public class NewsProvider implements NewsMvp.Provider {
     public void fetchAdditionalArticlesToInsert(String section, final List<Article> articlesList,
                                                 final CallbackListener listener) {
 
-        final Call<NewsResponse> call = newsService.articles(section, 1, 0,
-                context.getResources().getString(R.string.nyt_api_yo));
+        final Call<NewsResponse> call = newsService.newsWireArticles(section, 1, 0,
+                context.getResources().getString(R.string.nyt_api_key_newswire));
 
         call.enqueue(new Callback<NewsResponse>() {
             @Override
@@ -123,7 +123,7 @@ public class NewsProvider implements NewsMvp.Provider {
                 if (response.isSuccessful()) {
                     NewsResponse resp = response.body();
                     Log.d(TAG, "refresh response received: " + resp.getStatus() + " : "
-                            + resp.getArticles().size() + " articles received");
+                            + resp.getArticles().size() + " newsWireArticles received");
 
                     if(!resp.getArticles().get(0).getAbstract()
                             .equals(articlesList.get(0).getAbstract())) {

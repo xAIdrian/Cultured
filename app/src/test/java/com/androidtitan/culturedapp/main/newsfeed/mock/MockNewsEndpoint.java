@@ -41,7 +41,7 @@ public class MockNewsEndpoint implements NewsEndpoint {
     }
 
     @Override
-    public Call<NewsResponse> articles(@Path("section") String string, @Query("limit") int count, @Query("offset") int offset, @Query("api-key") String yourKey) {
+    public Call<NewsResponse> newsWireArticles(@Path("section") String string, @Query("limit") int count, @Query("offset") int offset, @Query("api-key") String yourKey) {
 
         ArrayList<Article> articles = new ArrayList<>();
 
@@ -72,8 +72,13 @@ public class MockNewsEndpoint implements NewsEndpoint {
         newsResponse.setArticles(articles);
 
         return delegate.returningResponse(newsResponse)
-                .articles(TEST_SECTION, TEST_LIMIT, TEST_OFFSET, TEST_API_KEY);
+                .newsWireArticles(TEST_SECTION, TEST_LIMIT, TEST_OFFSET, TEST_API_KEY);
 
 
+    }
+
+    @Override
+    public Call<NewsResponse> topStories(@Path("section") String string, @Query("api-key") String yourKey) {
+        return null;
     }
 }

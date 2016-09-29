@@ -12,6 +12,8 @@ import dagger.Provides;
  * Created by amohnacs on 3/21/16.
  */
 
+//todo: as this portion of the app is built out and we add more components and background processes we are going to include more module @Provide methods
+
 @Module (
         includes = { AppModule.class }
 )

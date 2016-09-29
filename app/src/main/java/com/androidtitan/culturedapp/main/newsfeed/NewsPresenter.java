@@ -24,8 +24,7 @@ public class NewsPresenter extends BasePresenter<NewsMvp.View> implements NewsMv
 
     @Inject
     NewsProvider newsProvider;
-
-
+    
     //todo:we are going to make this switch to a live Feed Version
     public NewsPresenter(Context context) {
         this.context = context;

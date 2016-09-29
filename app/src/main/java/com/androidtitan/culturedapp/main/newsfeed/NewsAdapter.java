@@ -6,10 +6,8 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.KeyEventCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +18,6 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.view.NewsHeaderLayout;
-import com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity;
 import com.androidtitan.culturedapp.main.util.Utils;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.bumptech.glide.Glide;
@@ -36,8 +33,6 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static com.google.android.gms.analytics.internal.zzy.v;
 
 /**
  * Created by amohnacs on 3/23/16.

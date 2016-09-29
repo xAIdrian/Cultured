@@ -1,6 +1,7 @@
 package com.androidtitan.culturedapp.main;
 
 import android.app.Application;
+import android.os.AsyncTask;
 
 import com.androidtitan.culturedapp.main.inject.AppComponent;
 import com.androidtitan.culturedapp.main.inject.AppModule;
@@ -26,6 +27,6 @@ public class CulturedApp extends Application {
     public static AppComponent getAppComponent(){
         return appComponent;
     }
-
-
 }
+
+
