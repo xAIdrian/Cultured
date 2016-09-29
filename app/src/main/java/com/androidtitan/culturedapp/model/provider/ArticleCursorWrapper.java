@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.main.toparticle.model;
+package com.androidtitan.culturedapp.model.provider;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
@@ -10,8 +10,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static android.R.attr.format;
 
 /**
  * Created by amohnacs on 9/24/16.

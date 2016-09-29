@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.main.toparticle.model;
+package com.androidtitan.culturedapp.model.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -6,22 +6,17 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.main.toparticle.ContentProviderInterface;
 
-import static com.androidtitan.culturedapp.main.toparticle.model.DatabaseContract.Article.TABLE_NAME;
-import static com.androidtitan.culturedapp.main.toparticle.model.DatabaseContract.CONTENT_URI;
-
 /**
  * Created by amohnacs on 7/17/16.
  */
 
-public class TopArticleContentProvider extends ContentProvider {
+public class CulturedContentProvider extends android.content.ContentProvider {
     private final String TAG = getClass().getSimpleName();
 
     private static final int ARTICLE_ID = 1;
@@ -29,7 +24,7 @@ public class TopArticleContentProvider extends ContentProvider {
     private static final UriMatcher uriMatcher;
 
     Context context;
-    ArticleSQLiteHelper sqLiteHelper;
+    SQLiteHelper sqLiteHelper;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -43,7 +38,7 @@ public class TopArticleContentProvider extends ContentProvider {
         Log.d(TAG, "onCreate");
 
         context = getContext();
-        sqLiteHelper = new ArticleSQLiteHelper(context);
+        sqLiteHelper = new SQLiteHelper(context);
 
         return true;
 
@@ -188,7 +183,7 @@ public class TopArticleContentProvider extends ContentProvider {
 
     public void updateContext(Context context, ContentProviderInterface.ProviderCallback listener) {
         this.context = context;
-        sqLiteHelper = new ArticleSQLiteHelper(context);
+        sqLiteHelper = new SQLiteHelper(context);
         Log.d(TAG, "Lazy creation of SQLiteOpenHelper");
         if(sqLiteHelper == null) {
             listener.SQLiteCreationComplete(false);

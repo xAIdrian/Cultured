@@ -7,7 +7,7 @@ import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.androidtitan.culturedapp.main.toparticle.model.DatabaseContract;
+import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -154,10 +154,13 @@ public class Article implements Parcelable {
         cv.put(DatabaseContract.Article.SECTION, section);
         cv.put(DatabaseContract.Article.TITLE, title);
         cv.put(DatabaseContract.Article.URL, url);
-        cv.put(DatabaseContract.Article.MEDIA_URL, multimedia.get(0).getUrl());
-        cv.put(DatabaseContract.Article.MEDIA_CAPTION, multimedia.get(0).getCaption());
-        cv.put(DatabaseContract.Article.MEDIA_HEIGHT, multimedia.get(0).getHeight());
-        cv.put(DatabaseContract.Article.MEDIA_WIDTH, multimedia.get(0).getWidth());
+
+        if(multimedia.size() > 0) {
+            cv.put(DatabaseContract.Article.MEDIA_URL, multimedia.get(0).getUrl());
+            cv.put(DatabaseContract.Article.MEDIA_CAPTION, multimedia.get(0).getCaption());
+            cv.put(DatabaseContract.Article.MEDIA_HEIGHT, multimedia.get(0).getHeight());
+            cv.put(DatabaseContract.Article.MEDIA_WIDTH, multimedia.get(0).getWidth());
+        }
 
         return cv;
     }

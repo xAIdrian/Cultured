@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.main.toparticle.model;
+package com.androidtitan.culturedapp.model.provider;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by amohnacs on 7/17/16.
  */
 
-public class ArticleSQLiteHelper extends SQLiteOpenHelper {
+public class SQLiteHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "articles.sqlite";
@@ -18,7 +18,7 @@ public class ArticleSQLiteHelper extends SQLiteOpenHelper {
     private static final String INT_TYPE = " INTEGER";
     private static final String COMMA_SEP = ",";
 
-    public ArticleSQLiteHelper(Context context) {
+    public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

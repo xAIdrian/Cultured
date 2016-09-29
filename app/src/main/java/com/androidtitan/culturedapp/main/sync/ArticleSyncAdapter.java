@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.main.toparticle.service;
+package com.androidtitan.culturedapp.main.sync;
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
@@ -13,7 +13,7 @@ import android.util.Log;
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.main.domain.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.main.domain.retrofit.ServiceGenerator;
-import com.androidtitan.culturedapp.main.toparticle.model.DatabaseContract;
+import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
 
@@ -64,6 +64,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
         //      the top article in the content provider
         //clean up
 
+        clearDd();
         Log.d(TAG, "SyncAdapter onPerformSync()");
         List<Article> articles = fetchTopArticles(5);
 
@@ -124,6 +125,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void clearDd() {
+        Log.e(TAG, "clearing Database sir");
         context.getContentResolver().delete(DatabaseContract.Article.CONTENT_URI, null, null);
     }
 }

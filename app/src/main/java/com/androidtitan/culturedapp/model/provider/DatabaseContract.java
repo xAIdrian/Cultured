@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.main.toparticle.model;
+package com.androidtitan.culturedapp.model.provider;
 
 import android.content.ContentResolver;
 import android.net.Uri;
@@ -18,7 +18,7 @@ public class DatabaseContract {
     public static final String SINGLE_CONTENT_TYPE =
             ContentResolver.CURSOR_ITEM_BASE_TYPE + "vnd." + AUTHORITY;
 
-    //private static String BASE_PATH = ArticleSQLiteHelper.DATABASE_NAME;
+    //private static String BASE_PATH = SQLiteHelper.DATABASE_NAME;
     //private static String path_CONTENT_URI =  "content://" + AUTHORITY+ "/" + BASE_PATH +"/";
 //    static final String SINGLE_RECORD_MIME_TYPE = "vnd.android.cursor.item/vnd.marakana.android.lifecycle.status";
 //    static final String MULTIPLE_RECORDS_MIME_TYPE = "vnd.android.cursor.dir/vnd.marakana.android.lifecycle.status";

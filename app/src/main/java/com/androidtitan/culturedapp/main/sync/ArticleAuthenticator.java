@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.main.toparticle.service;
+package com.androidtitan.culturedapp.main.sync;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
