@@ -1,6 +1,5 @@
 package com.androidtitan.culturedapp.model.provider;
 
-import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,8 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-
-import com.androidtitan.culturedapp.main.toparticle.ContentProviderInterface;
 
 /**
  * Created by amohnacs on 7/17/16.
@@ -52,7 +49,16 @@ public class CulturedContentProvider extends android.content.ContentProvider {
         String tableName;
         Cursor cursor;
 
-        switch (uriMatcher.match(uri)) {
+        tableName = DatabaseContract.Article.TABLE_NAME;
+
+        if(TextUtils.isEmpty(sortOrder)) {
+            sortOrder = DatabaseContract.Article._ID + " DESC";
+
+        }
+        cursor = sqLiteHelper.getReadableDatabase()
+                .query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
+
+       /* switch (uriMatcher.match(uri)) {
             case ARTICLE_LIST:
 
                 tableName = DatabaseContract.Article.TABLE_NAME;
@@ -67,7 +73,7 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
             default:
                 throw new IllegalArgumentException("Unsupported Uri: " + uri);
-        }
+        }*/
 
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;

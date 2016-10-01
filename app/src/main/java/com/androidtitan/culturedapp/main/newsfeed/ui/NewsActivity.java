@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -60,6 +62,8 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
+
 public class NewsActivity extends BaseActivity implements NewsMvp.View {
     private final String TAG = getClass().getSimpleName();
 
@@ -104,6 +108,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     @Bind(R.id.drawer_navigation_view)
     NavigationView navigationView;
 
+    SharedPreferences sharedPreferences;
+
     private LinearLayoutManager linearLayoutManager;
     private StaggeredGridLayoutManager staggeredLayoutManager;
     private NewsAdapter adapter;
@@ -128,6 +134,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         //initialize dummy account
         account = createSyncAccount(this);
         initFCM();
+
+        sharedPreferencesSetup();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
@@ -318,11 +326,21 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     }
 
+    private void sharedPreferencesSetup() {
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        isSyncingPeriodically = sharedPreferences.getBoolean(PREFERENCES_SYNCING_PERIODICALLY, false);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
 
         if(isSyncingPeriodically) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, false).apply();
+
             ContentResolver.removePeriodicSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
         }
     }
@@ -353,26 +371,17 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                 break;
 
             case R.id.menu_item_graph:
-                // Pass the settings flags by inserting them in a bundle
-                Bundle settingsBundle = new Bundle();
-                settingsBundle.putBoolean(
-                        ContentResolver.SYNC_EXTRAS_MANUAL, true);
-                settingsBundle.putBoolean(
-                        ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-                getContentResolver().requestSync(account, DatabaseContract.AUTHORITY, settingsBundle);
 
                 break;
 
             case R.id.menu_item_facets:
 
-                Cursor articleCursor = getContentResolver().query(
+                /*Cursor articleCursor = getContentResolver().query(
                         DatabaseContract.Article.CONTENT_URI, null, null, null, null
                 );
                 ArticleCursorWrapper wrapper = new ArticleCursorWrapper(articleCursor);
                 wrapper.moveToFirst();
 
-                Article article;
                 List<Article> articles = new ArrayList<Article>();
 
                 Log.e(TAG, "retrieving from Content Provider...");
@@ -382,7 +391,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                     articles.add(wrapper.getArticle());
 
                     wrapper.moveToNext();
-                }
+                }*/
 
                 break;
 
@@ -611,10 +620,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         return appBarLayout.getTranslationY() - dy > 0;
     }
 
-    /* todo:
-        I believe that this can be replaced by utilizing the FirebaseInstanceIdService
-        It has trigger for token creation
-     */
     private void initFCM() {
         PreferenceStore preferenceStore = PreferenceStore.get(this);
         String currentToken = preferenceStore.getFcmToken();
@@ -623,6 +628,10 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
             new FCMRegistrationTask().execute();
         } else {
             Log.d(TAG, "Have token: " + currentToken);
+
+            if(!isSyncingPeriodically) {
+                setupPeriodicSync();
+            }
         }
     }
 
@@ -674,11 +683,18 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     private void setupPeriodicSync() {
         isSyncingPeriodically = true;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, true).apply();
+
         ContentResolver.setIsSyncable(account, DatabaseContract.AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(
                 account, DatabaseContract.AUTHORITY, true);
         ContentResolver.addPeriodicSync(
                 account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+
+        //ensure we have data for the initial viewing of pages
+        getContentResolver().requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
+
     }
 
 
