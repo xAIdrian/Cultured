@@ -15,12 +15,22 @@ public interface NewsEndpoint {
     ///{section}[/time-period][.response-format]?api-key={your-API-key}
     //hworld/.json?limit=20&api-key=sample-key
 
-    @GET("{section}/.json")
-    Call<NewsResponse> articles (
+    @GET("/svc/news/v3/content/all/{section}.json")
+    Call<NewsResponse> newsWireArticles(
             @Path("section") String string,
             @Query("limit") int count,
             @Query("offset") int offset,
             @Query("api-key") String yourKey
+    );
+
+    @GET("svc/topstories/v2/{section}.json")
+    Call<NewsResponse> topStories(
+            @Path("section") String string,
+            @Query("api-key") String yourKey
+            /*,
+            @Query("limit") int count,
+            @Query("offset") int offset,
+            */
     );
 
 }

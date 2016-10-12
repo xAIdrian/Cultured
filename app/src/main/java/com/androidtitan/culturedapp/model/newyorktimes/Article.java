@@ -3,9 +3,11 @@ package com.androidtitan.culturedapp.model.newyorktimes;
 /**
  * Created by amohnacs on 3/21/16.
  */
+import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -89,6 +91,16 @@ public class Article implements Parcelable {
 
     }
 
+    public Article(String title, String section, String _abstract, String url, Date createdDate,
+                   String desFacet, String orgFacet, String perFacet,
+                   String geoFacet, Multimedium multimedia) {
+        this.title = title;
+        this.section = section;
+        this._abstract = _abstract;
+        this.url = url;
+        this.createdDate = createdDate;
+    }
+
     public Article(Parcel in) { //you must read these in the same order as your wrote them
         section = in.readString();
         subsection = in.readString();
@@ -123,6 +135,34 @@ public class Article implements Parcelable {
         in.readTypedList(multimedia, Multimedium.CREATOR);
         blogName = in.readString();
 
+    }
+
+    public ContentValues getContentValues() {
+        ContentValues cv = new ContentValues();
+        cv.put(DatabaseContract.Article.ABSTRACT, _abstract);
+        cv.put(DatabaseContract.Article.CREATED_DATE, createdDate.toString());
+
+        if(desFacet.size() > 0)
+            cv.put(DatabaseContract.Article.DES_FACET, desFacet.get(0));
+        if(geoFacet.size() > 0)
+            cv.put(DatabaseContract.Article.GEO_FACET, geoFacet.get(0));
+        if(orgFacet.size() > 0)
+            cv.put(DatabaseContract.Article.ORG_FACET, orgFacet.get(0));
+        if(perFacet.size() > 0)
+            cv.put(DatabaseContract.Article.PER_FACET, perFacet.get(0));
+
+        cv.put(DatabaseContract.Article.SECTION, section);
+        cv.put(DatabaseContract.Article.TITLE, title);
+        cv.put(DatabaseContract.Article.URL, url);
+
+        if(multimedia.size() > 0) {
+            cv.put(DatabaseContract.Article.MEDIA_URL, multimedia.get(0).getUrl());
+            cv.put(DatabaseContract.Article.MEDIA_CAPTION, multimedia.get(0).getCaption());
+            cv.put(DatabaseContract.Article.MEDIA_HEIGHT, multimedia.get(0).getHeight());
+            cv.put(DatabaseContract.Article.MEDIA_WIDTH, multimedia.get(0).getWidth());
+        }
+
+        return cv;
     }
 
     /**
@@ -521,6 +561,13 @@ public class Article implements Parcelable {
         this.blogName = blogName;
     }
 
+    public String get_abstract() {
+        return _abstract;
+    }
+
+    public void set_abstract(String _abstract) {
+        this._abstract = _abstract;
+    }
 
 
     /**

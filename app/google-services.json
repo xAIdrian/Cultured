@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "612691836045",
+    "firebase_url": "https://culturedapp-e0590.firebaseio.com",
+    "project_id": "culturedapp-e0590",
+    "storage_bucket": "culturedapp-e0590.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612691836045:android:79f8c18ac9d2ea66",
+        "android_client_info": {
+          "package_name": "com.androidtitan.culturedapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612691836045-1kr1ronk3lbm0jmj2lg3iubc1tsack5k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.androidtitan.culturedapp",
+            "certificate_hash": "6DD0DAED87CF668D168F58DF3425AC8BF83315F9"
+          }
+        },
+        {
+          "client_id": "612691836045-l5el6r0idt1m38vnj6c6b4g5n7bodq05.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5hb4cfOLSZDMCzZOJELJwFOz_5Q1acy0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612691836045-l5el6r0idt1m38vnj6c6b4g5n7bodq05.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

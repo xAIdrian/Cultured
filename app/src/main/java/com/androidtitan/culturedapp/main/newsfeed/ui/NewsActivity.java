@@ -1,8 +1,14 @@
 package com.androidtitan.culturedapp.main.newsfeed.ui;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,11 +37,20 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.BaseActivity;
+import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
+import com.androidtitan.culturedapp.main.toparticle.TopArticleActivity;
+import com.androidtitan.culturedapp.model.provider.ArticleCursorWrapper;
+import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.iid.InstanceID;
+import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +62,16 @@ import butterknife.ButterKnife;
 
 public class NewsActivity extends BaseActivity implements NewsMvp.View {
     private final String TAG = getClass().getSimpleName();
+
+    private static final String SENDER_ID = "612691836045";
+    public static final String ACCOUNT_TYPE = "com.androidtitan";
+    public static final String ACCOUNT = "dummyaccount";
+    // Sync interval constants
+    public static final long SECONDS_PER_MINUTE = 60L;
+    public static final long SYNC_INTERVAL_IN_MINUTES = 180L;
+    public static final long SYNC_INTERVAL =
+            SYNC_INTERVAL_IN_MINUTES *
+                    SECONDS_PER_MINUTE;
 
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
@@ -60,6 +85,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     private Handler handler;
     private Animation fadeAnim;
+    private Account account;
 
     Toolbar supportActionBar;
 
@@ -86,6 +112,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     List<Article> articles;
 
+    private boolean isSyncingPeriodically;
     private boolean firstLoad = true; //used for animation
     private boolean loading = true;
     private int pastVisibleItems;
@@ -98,6 +125,9 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initializeTranstionsAndAnimations();
+        //initialize dummy account
+        account = createSyncAccount(this);
+        initFCM();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
@@ -289,6 +319,15 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(isSyncingPeriodically) {
+            ContentResolver.removePeriodicSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         presenter.unbindView();
@@ -304,6 +343,54 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.menu_item_toparticle:
+
+                //todo: what else do we need to pass to this Activity???
+                startActivity(new Intent(this, TopArticleActivity.class));
+
+                break;
+
+            case R.id.menu_item_graph:
+                // Pass the settings flags by inserting them in a bundle
+                Bundle settingsBundle = new Bundle();
+                settingsBundle.putBoolean(
+                        ContentResolver.SYNC_EXTRAS_MANUAL, true);
+                settingsBundle.putBoolean(
+                        ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+
+                getContentResolver().requestSync(account, DatabaseContract.AUTHORITY, settingsBundle);
+
+                break;
+
+            case R.id.menu_item_facets:
+
+                Cursor articleCursor = getContentResolver().query(
+                        DatabaseContract.Article.CONTENT_URI, null, null, null, null
+                );
+                ArticleCursorWrapper wrapper = new ArticleCursorWrapper(articleCursor);
+                wrapper.moveToFirst();
+
+                Article article;
+                List<Article> articles = new ArrayList<Article>();
+
+                Log.e(TAG, "retrieving from Content Provider...");
+                while(!wrapper.isAfterLast()) {
+
+                    Log.e(TAG, wrapper.getArticle().getTitle());
+                    articles.add(wrapper.getArticle());
+
+                    wrapper.moveToNext();
+                }
+
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid options item: " + item.getItemId());
+
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -319,6 +406,28 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         //todo :: Let's refigure out what this does and decide if we want to keep it or not
         outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST,
                 (ArrayList<? extends Parcelable>) articles);
+    }
+
+    private Account createSyncAccount(Context context) {
+
+        Account newAccount = new Account(ACCOUNT, ACCOUNT_TYPE);
+        AccountManager accountManager = (AccountManager) context.getSystemService(ACCOUNT_SERVICE);
+
+        if(accountManager.addAccountExplicitly(newAccount, null, null)) {
+            /*
+             * If you don't set android:syncable="true" in
+             * in your <provider> element in the manifest,
+             * then call context.setIsSyncable(account, AUTHORITY, 1)
+             * here.
+             */
+        } else {
+            /*
+             * The account exists or some other error occurred. Log this, report it,
+             * or handle it internally.
+             */
+        }
+        return newAccount; //todo: is this the proper object to return?
+
     }
 
     private void initializeRecyclerView() {
@@ -502,6 +611,75 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         return appBarLayout.getTranslationY() - dy > 0;
     }
 
+    /* todo:
+        I believe that this can be replaced by utilizing the FirebaseInstanceIdService
+        It has trigger for token creation
+     */
+    private void initFCM() {
+        PreferenceStore preferenceStore = PreferenceStore.get(this);
+        String currentToken = preferenceStore.getFcmToken();
+
+        if(currentToken == null) {
+            new FCMRegistrationTask().execute();
+        } else {
+            Log.d(TAG, "Have token: " + currentToken);
+        }
+    }
+
+    private class FCMRegistrationTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            if(NewsActivity.this == null) {
+                return null;
+            }
+
+            int googleApiAvailable = GoogleApiAvailability.getInstance()
+                    .isGooglePlayServicesAvailable(NewsActivity.this);
+            if (googleApiAvailable != ConnectionResult.SUCCESS) {
+                Log.e(TAG, "Play services not available, cannot register for GCM");
+                return null;
+            }
+
+            InstanceID instanceID = InstanceID.getInstance(NewsActivity.this);
+
+            try {
+                String token = instanceID.getToken(SENDER_ID, FirebaseMessaging.INSTANCE_ID_SCOPE, null);
+                Log.d(TAG, "Got token: " + token);
+                return token;
+
+            } catch (IOException e) {
+                Log.e(TAG, "Failed to get token from InstanceID", e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String token) {
+            super.onPostExecute(token);
+
+            if (token == null) {
+                setupPeriodicSync();
+            } else {
+                PreferenceStore.get(NewsActivity.this).setFcmToken(token);
+            }
+        }
+    }
+
+    private void setupPeriodicSync() {
+        isSyncingPeriodically = true;
+        ContentResolver.setIsSyncable(account, DatabaseContract.AUTHORITY, 1);
+        ContentResolver.setSyncAutomatically(
+                account, DatabaseContract.AUTHORITY, true);
+        ContentResolver.addPeriodicSync(
+                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+    }
 
 
 }

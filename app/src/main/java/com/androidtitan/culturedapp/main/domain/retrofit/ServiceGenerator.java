@@ -18,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 public class ServiceGenerator {
 
-    public static final String NEWYORKTIMES_BASE_URL = "http://api.nytimes.com/svc/news/v3/content/all/";
+    public static final String NEWYORKTIMES_BASE_URL = "http://api.nytimes.com";
 
     private static Retrofit.Builder nytRetrofitBulder = new Retrofit.Builder()
             . baseUrl(NEWYORKTIMES_BASE_URL)
