@@ -291,8 +291,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         }
 
-        final int finalPosition = position;
-
         holder.titleText.setText(articleList.get(position).getTitle());
         holder.abstractText.setText(articleList.get(position).getAbstract());
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
@@ -310,13 +308,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void initLargeViewholderImage(final LargeImageViewHolder holder, final int position) {
 
         DateFormat formatter = new SimpleDateFormat("MMM dd h:mm a");
-        String dateFormatted = formatter.format(articleList.get(position).getCreatedDate());
+        final String dateFormatted = formatter.format(articleList.get(position).getCreatedDate());
 
-        holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
-        holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
         holder.abstractText.setText(articleList.get(position).getAbstract());
-        holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
-        holder.newsHeaderLayout.setDateText(dateFormatted);
 
         try {
             Glide.with(context)
@@ -329,23 +323,22 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         @Override
                         public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             super.onResourceReady(resource, glideAnimation);
-                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                                @Override
-                                public void onGenerated(Palette palette) {
-                                    // Here's your generated palette
 
-                                    int bgColor = palette.from(resource).generate().getVibrantColor(
-                                            ContextCompat.getColor(context, R.color.colorAccent));
-                                    //holder.paletteView.setBackgroundColor(bgColor);
+                            holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
+                            holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
+                            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
+                            holder.newsHeaderLayout.setDateText(dateFormatted);
 
-                                    //todo: make changes to the drawable to shade it with Palette
-                                }
-                            });
                         }
                     });
 
         } catch (Exception e) {
             e.printStackTrace();
+
+            holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
+            holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
+            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
+            holder.newsHeaderLayout.setDateText(dateFormatted);
         }
 
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
@@ -361,13 +354,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private void initMediumViewholderImage(final MediumImageViewHolder holder, final int position) {
 
         DateFormat formatter = new SimpleDateFormat("MMM dd h:mm a");
-        String dateFormatted = formatter.format(articleList.get(position).getCreatedDate());
+        final String dateFormatted = formatter.format(articleList.get(position).getCreatedDate());
 
-        holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
-        holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
         holder.abstractText.setText(articleList.get(position).getAbstract());
-        holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
-        holder.newsHeaderLayout.setDateText(dateFormatted);
 
         try {
             Glide.with(context)
@@ -381,20 +370,26 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         @Override
                         public void onResourceReady(final Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                             super.onResourceReady(resource, glideAnimation);
-                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                                @Override
-                                public void onGenerated(Palette palette) {
-                                    // Here's your generated palette
-                                    int bgColor = palette.from(resource).generate().getVibrantColor(
-                                            ContextCompat.getColor(context, R.color.colorAccent));
 
-                                }
-                            });
+                            if (holder.newsHeaderLayout != null) {
+                                holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
+                            }
+                            holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
+                            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
+                            holder.newsHeaderLayout.setDateText(dateFormatted);
+
                         }
                     });
 
         } catch (Exception e) {
             e.printStackTrace();
+
+            if (holder.newsHeaderLayout != null) {
+                holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
+            }
+            holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
+            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
+            holder.newsHeaderLayout.setDateText(dateFormatted);
         }
 
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
