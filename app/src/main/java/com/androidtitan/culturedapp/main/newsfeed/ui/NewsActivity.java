@@ -38,13 +38,13 @@ import android.widget.TextView;
 
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.BaseActivity;
+import com.androidtitan.culturedapp.common.structure.BaseActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleActivity;
-import com.androidtitan.culturedapp.model.provider.ArticleCursorWrapper;
+import com.androidtitan.culturedapp.model.provider.wrappers.ArticleCursorWrapper;
 import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.google.android.gms.common.ConnectionResult;
@@ -133,9 +133,9 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         initializeTranstionsAndAnimations();
         //initialize dummy account
         account = createSyncAccount(this);
-        initFCM();
 
         sharedPreferencesSetup();
+        initFCM();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news);
@@ -151,12 +151,11 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
         initializeAnimation();
 
-        //saveInstanceState to handle rotations
         if (savedInstanceState != null) {
             //
         }
-
-        supportActionBar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
+        // Attaching the layout to the toolbar object
+        supportActionBar = (Toolbar) findViewById(R.id.toolbar);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         setSupportActionBar(supportActionBar);
         getSupportActionBar().setTitle("");
@@ -170,9 +169,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
             articles = presenter.loadArticles(5);
         }
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
+        navigationView.setNavigationItemSelectedListener((item) -> {
                 drawerLayout.closeDrawers();
 
                 switch (item.getItemId()) {
@@ -196,9 +193,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
                         break;
 
+                    //todo: Implicit intent with picker to send email to adrian.mohnacs@gmail.com
                     case R.id.support_mail:
-
-                        //todo: Implicit intent with picker to send email to adrian.mohnacs@gmail.com
 
                         Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
                         feedbackIntent.setType("plain/text");
@@ -219,7 +215,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                         Log.e(TAG, "Incorrect navigation drawer item selected");
                 }
                 return true;
-            }
         });
 
         initializeRecyclerView();
@@ -365,7 +360,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         switch (item.getItemId()) {
             case R.id.menu_item_toparticle:
 
-                //todo: what else do we need to pass to this Activity???
                 startActivity(new Intent(this, TopArticleActivity.class));
 
                 break;
@@ -376,8 +370,10 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
             case R.id.menu_item_facets:
 
-                /*Cursor articleCursor = getContentResolver().query(
-                        DatabaseContract.Article.CONTENT_URI, null, null, null, null
+//                Used to print what is held in our content provider
+
+                Cursor articleCursor = getContentResolver().query(
+                        DatabaseContract.ArticleTable.CONTENT_URI, null, null, null, null
                 );
                 ArticleCursorWrapper wrapper = new ArticleCursorWrapper(articleCursor);
                 wrapper.moveToFirst();
@@ -391,7 +387,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                     articles.add(wrapper.getArticle());
 
                     wrapper.moveToNext();
-                }*/
+                }
 
                 break;
 
@@ -412,7 +408,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //todo :: Let's refigure out what this does and decide if we want to keep it or not
+        //Let's decide if we want to keep it or not
         outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST,
                 (ArrayList<? extends Parcelable>) articles);
     }
@@ -559,8 +555,11 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         }, LOADING_ANIM_TIME * 2);
     }
 
-    /*@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void startDetailActivity(Article article, ImageView articleImage) {
+    /*
+        Will this ever come back?
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void startDetailActivity(ArticleTable article, ImageView articleImage) {
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
         if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
@@ -593,7 +592,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         }
     }
 
-//parallax animation methods
+    //parallax animation methods
     private void showToolbarBy(int dy) {
 
         if (cannotShowMore(dy)) {
@@ -690,10 +689,10 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         ContentResolver.setSyncAutomatically(
                 account, DatabaseContract.AUTHORITY, true);
         ContentResolver.addPeriodicSync(
-                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, 300);
 
         //ensure we have data for the initial viewing of pages
-        getContentResolver().requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
+        ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
 
     }
 

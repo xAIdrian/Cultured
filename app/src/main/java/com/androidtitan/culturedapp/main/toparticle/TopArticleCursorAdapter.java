@@ -1,4 +1,15 @@
+
 package com.androidtitan.culturedapp.main.toparticle;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.androidtitan.culturedapp.common.view.CursorRecyclerViewAdapter;
+
+
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,6 +22,7 @@ import com.androidtitan.culturedapp.common.view.CursorRecyclerViewAdapter;
 /**
  * Created by amohnacs on 10/1/16.
  */
+
 
 public class TopArticleCursorAdapter extends CursorRecyclerViewAdapter<TopArticleCursorAdapter.ViewHolder> {
     private final String TAG = getClass().getSimpleName();
@@ -44,3 +56,4 @@ public class TopArticleCursorAdapter extends CursorRecyclerViewAdapter<TopArticl
         }
     }
 }
+

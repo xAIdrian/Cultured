@@ -13,19 +13,15 @@ public class DatabaseContract {
     public final static String AUTHORITY = "com.androidtitan.culturedapp.provider";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-    public static final String LIST_CONTENT_TYPE =
-            ContentResolver.CURSOR_DIR_BASE_TYPE + "vnd." + AUTHORITY;
-    public static final String SINGLE_CONTENT_TYPE =
-            ContentResolver.CURSOR_ITEM_BASE_TYPE + "vnd." + AUTHORITY;
+/* Sample:
 
-    //private static String BASE_PATH = SQLiteHelper.DATABASE_NAME;
-    //private static String path_CONTENT_URI =  "content://" + AUTHORITY+ "/" + BASE_PATH +"/";
-//    static final String SINGLE_RECORD_MIME_TYPE = "vnd.android.cursor.item/vnd.marakana.android.lifecycle.status";
-//    static final String MULTIPLE_RECORDS_MIME_TYPE = "vnd.android.cursor.dir/vnd.marakana.android.lifecycle.status";
+    private static String BASE_PATH = SQLiteHelper.DATABASE_NAME;
+    private static String path_CONTENT_URI =  "content://" + AUTHORITY+ "/" + BASE_PATH +"/";
+    static final String SINGLE_RECORD_MIME_TYPE = "vnd.android.cursor.item/vnd.marakana.android.lifecycle.status";
+    static final String MULTIPLE_RECORDS_MIME_TYPE = "vnd.android.cursor.dir/vnd.marakana.android.lifecycle.status";
+*/
+    public static final class ArticleTable {
 
-
-
-    public static final class Article {
         public static final String TABLE_NAME = "toparticles";
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(DatabaseContract.CONTENT_URI, TABLE_NAME);
@@ -42,10 +38,25 @@ public class DatabaseContract {
         public static final String PER_FACET = "per_facet";
         public static final String GEO_FACET = "geo_facet";
 
-        public static final String MEDIA_URL = "media_url";
-        public static final String MEDIA_CAPTION = "media_caption";
-        public static final String MEDIA_WIDTH = "media_width"; //integer
-        public static final String MEDIA_HEIGHT = "media_height"; //integer
     }
 
+    public static final class MediaTable {
+
+        public static final String TABLE_NAME = "toparticlesmedia";
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(DatabaseContract.CONTENT_URI, TABLE_NAME);
+
+        public static final String _ID = "_ID";
+        public static final String STORY_ID = "story_id";
+        public static final String SIZE = "size";
+        public static final String URL = "url";
+        public static final String FORMAT = "format";
+        public static final String HEIGHT = "height"; //int
+        public static final String WIDTH = "width"; //int
+        public static final String TYPE = "type";
+        public static final String SUBTYPE = "subtype";
+        public static final String CAPTION = "caption";
+        public static final String COPYRIGHT = "copyright";
+
+    }
 }

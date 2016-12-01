@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.common;
+package com.androidtitan.culturedapp.common.structure;
 
 /**
  * Base interface that any class that wants to act as a View in the MainMVP (Model View MainPresenter)

@@ -7,6 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import rx.Observable;
 
 /**
  * Created by amohnacs on 3/21/16.
@@ -16,7 +17,7 @@ public interface NewsEndpoint {
     //hworld/.json?limit=20&api-key=sample-key
 
     @GET("/svc/news/v3/content/all/{section}.json")
-    Call<NewsResponse> newsWireArticles(
+    Observable<NewsResponse> newsWireArticles(
             @Path("section") String string,
             @Query("limit") int count,
             @Query("offset") int offset,
@@ -24,7 +25,7 @@ public interface NewsEndpoint {
     );
 
     @GET("svc/topstories/v2/{section}.json")
-    Call<NewsResponse> topStories(
+    Observable<NewsResponse> topStories(
             @Path("section") String string,
             @Query("api-key") String yourKey
             /*,

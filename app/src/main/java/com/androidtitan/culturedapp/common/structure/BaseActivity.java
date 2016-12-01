@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.common;
+package com.androidtitan.culturedapp.common.structure;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

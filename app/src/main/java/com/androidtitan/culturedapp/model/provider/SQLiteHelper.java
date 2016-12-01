@@ -25,21 +25,32 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
-                "CREATE TABLE " + DatabaseContract.Article.TABLE_NAME + " (" +
-                        DatabaseContract.Article._ID + " INTEGER PRIMARY KEY," +
-                        DatabaseContract.Article.TITLE + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.SECTION + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.ABSTRACT + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.URL + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.CREATED_DATE + TEXT_TYPE+ COMMA_SEP +
-                        DatabaseContract.Article.DES_FACET + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.ORG_FACET + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.PER_FACET + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.GEO_FACET + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.MEDIA_URL + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.MEDIA_CAPTION + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.MEDIA_WIDTH + INT_TYPE + COMMA_SEP +
-                        DatabaseContract.Article.MEDIA_HEIGHT + INT_TYPE + " )"
+                "CREATE TABLE IF NOT EXISTS " + DatabaseContract.ArticleTable.TABLE_NAME + " ( " +
+                        DatabaseContract.ArticleTable._ID + " INTEGER PRIMARY KEY," +
+                        DatabaseContract.ArticleTable.TITLE + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.ArticleTable.SECTION + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.ArticleTable.ABSTRACT + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.ArticleTable.URL + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.ArticleTable.CREATED_DATE + TEXT_TYPE+ COMMA_SEP +
+                        DatabaseContract.ArticleTable.DES_FACET + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.ArticleTable.ORG_FACET + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.ArticleTable.PER_FACET + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.ArticleTable.GEO_FACET + TEXT_TYPE + " )"
+        );
+
+        db.execSQL(
+                "CREATE TABLE IF NOT EXISTS " + DatabaseContract.MediaTable.TABLE_NAME + " ( " +
+                        DatabaseContract.MediaTable._ID + " INTEGER KEY PRIMARY," +
+                        DatabaseContract.MediaTable.STORY_ID + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.MediaTable.SIZE + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.MediaTable.URL + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.MediaTable.FORMAT + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.MediaTable.HEIGHT + INT_TYPE + COMMA_SEP +
+                        DatabaseContract.MediaTable.WIDTH + INT_TYPE + COMMA_SEP +
+                        DatabaseContract.MediaTable.TYPE + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.MediaTable.SUBTYPE + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.MediaTable.CAPTION + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.MediaTable.COPYRIGHT + TEXT_TYPE + " )"
         );
     }
 

@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.common;
+package com.androidtitan.culturedapp.common.structure;
 
 import android.support.v4.app.Fragment;
 
