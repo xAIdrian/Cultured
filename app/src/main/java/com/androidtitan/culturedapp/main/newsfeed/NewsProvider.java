@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.RxHelper;
 import com.androidtitan.culturedapp.main.domain.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.main.domain.retrofit.ServiceGenerator;
+import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
 
@@ -18,6 +20,9 @@ import javax.inject.Singleton;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rx.*;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by amohnacs on 8/29/16.
@@ -44,35 +49,45 @@ public class NewsProvider implements NewsMvp.Provider {
     public List<Article> fetchArticles(String section, int limit, final CallbackListener listener) {
 
 
-        final Call<NewsResponse> call = newsService.newsWireArticles(section, limit, 0, //our offset
+        final Observable<NewsResponse> call = newsService.newsWireArticles(section, limit, 0, //our offset
                 context.getResources().getString(R.string.nyt_api_key_newswire));
 
-        call.enqueue(new Callback<NewsResponse>() {
-            @Override
-            public void onResponse(Call<NewsResponse> call, Response<NewsResponse> response) {
-                if (response.isSuccessful()) {
-                    NewsResponse resp = response.body();
-                    Log.d(TAG, "response received: " + resp.getStatus() + " : "
-                            + resp.getArticles().size() + " newsWireArticles received");
+        call.compose(RxHelper.applySchedulers())
+                .retry(10)
+                .doOnError(e -> {
+                    e.printStackTrace();
 
-                    for (Article article : resp.getArticles()) {
+                    ApiError error = new ApiError();
+                    error.setMessage(e.getMessage());
+                    listener.responseFailed(error);
+                })
+                .subscribe(new Subscriber<NewsResponse>() {
+                    @Override
+                    public void onCompleted() {
 
-                        fetchArticleList.add(article);
+                    Log.d(TAG, "response received: " + fetchArticleList.size() + " newsWireArticles received");
+
+                        listener.onCompleted();
                     }
-                    listener.onCompleted();
 
-                } else {
-                    Log.e(TAG, "response fail : " + response.message());
-                }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
 
+                        ApiError error = new ApiError();
+                        error.setMessage(e.getMessage());
+                        listener.responseFailed(error);
+                    }
 
-            }
+                    @Override
+                    public void onNext(NewsResponse newsResponse) {
 
-            @Override
-            public void onFailure(Call<NewsResponse> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+                        for(Article article : newsResponse.getArticles()) {
+                            fetchArticleList.add(article);
+                        }
+
+                    }
+                });
 
         return fetchArticleList;
     }
@@ -81,32 +96,45 @@ public class NewsProvider implements NewsMvp.Provider {
     public void fetchAdditionalArticles(String section, int limit, int offset,
                                         final CallbackListener listener) {
 
-        final Call<NewsResponse> call = newsService.newsWireArticles(section, limit, offset,
+        final Observable<NewsResponse> call = newsService.newsWireArticles(section, limit, offset,
                 context.getResources().getString(R.string.nyt_api_key_newswire));
 
-        call.enqueue(new Callback<NewsResponse>() {
-            @Override
-            public void onResponse(Call<NewsResponse> call, Response<NewsResponse> response) {
-                if (response.isSuccessful()) {
-                    NewsResponse resp = response.body();
-                    Log.d(TAG, "refresh response received: " + resp.getStatus() + " : "
-                            + resp.getArticles().size() + " newsWireArticles received");
+        call.compose(RxHelper.applySchedulers())
+                .retry(10)
+                .doOnError(e -> {
+                    e.printStackTrace();
 
-                    for (int i = 0; i < resp.getArticles().size(); i++) {
+                    ApiError error = new ApiError();
+                    error.setMessage(e.getMessage());
+                    listener.responseFailed(error);
+                })
+                .subscribe(new Subscriber<NewsResponse>() {
+                    @Override
+                    public void onCompleted() {
 
-                        listener.appendArticleToAdapter(resp.getArticles().get(i));
+                        Log.d(TAG, "response received: " + fetchArticleList.size() + " newsWireArticles received");
+
+                        listener.onCompleted();
                     }
 
-                } else {
-                    Log.e(TAG, "response fail : " + response.message());
-                }
-                listener.onCompleted();
-            }
-            @Override
-            public void onFailure(Call<NewsResponse> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+
+                        ApiError error = new ApiError();
+                        error.setMessage(e.getMessage());
+                        listener.responseFailed(error);
+                    }
+
+                    @Override
+                    public void onNext(NewsResponse newsResponse) {
+
+                        for (Article article : newsResponse.getArticles()) {
+                            listener.appendArticleToAdapter(article);
+
+                        }
+                    }
+                });
 
     }
 
@@ -114,36 +142,48 @@ public class NewsProvider implements NewsMvp.Provider {
     public void fetchAdditionalArticlesToInsert(String section, final List<Article> articlesList,
                                                 final CallbackListener listener) {
 
-        final Call<NewsResponse> call = newsService.newsWireArticles(section, 1, 0,
+        final Observable<NewsResponse> call = newsService.newsWireArticles(section, 1, 0,
                 context.getResources().getString(R.string.nyt_api_key_newswire));
 
-        call.enqueue(new Callback<NewsResponse>() {
-            @Override
-            public void onResponse(Call<NewsResponse> call, Response<NewsResponse> response) {
-                if (response.isSuccessful()) {
-                    NewsResponse resp = response.body();
-                    Log.d(TAG, "refresh response received: " + resp.getStatus() + " : "
-                            + resp.getArticles().size() + " newsWireArticles received");
+        call.compose(RxHelper.applySchedulers())
+                .retry(10)
+                .doOnError(e -> {
+                    e.printStackTrace();
 
-                    if(!resp.getArticles().get(0).getAbstract()
-                            .equals(articlesList.get(0).getAbstract())) {
+                    ApiError error = new ApiError();
+                    error.setMessage(e.getMessage());
+                    listener.responseFailed(error);
+                })
+                .subscribe(new Subscriber<NewsResponse>() {
+                    @Override
+                    public void onCompleted() {
 
-                        listener.insertArticleInAdapter(0, resp.getArticles().get(0));
+                        Log.d(TAG, "response received: " + fetchArticleList.size() + " newsWireArticles received");
 
-                        Log.d(TAG, "Item added to the top ...");
+                        listener.onCompleted();
                     }
 
-                } else {
-                    Log.e(TAG, "response fail : " + response.message());
-                }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
 
-                listener.onCompleted();
-            }
+                        ApiError error = new ApiError();
+                        error.setMessage(e.getMessage());
+                        listener.responseFailed(error);
+                    }
 
-            @Override
-            public void onFailure(Call<NewsResponse> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+                    @Override
+                    public void onNext(NewsResponse newsResponse) {
+
+                        if (!newsResponse.getArticles().get(0).getAbstract()
+                                .equals(articlesList.get(0).getAbstract())) {
+
+                            listener.insertArticleInAdapter(0, newsResponse.getArticles().get(0));
+
+                            Log.d(TAG, "Item added to the top ...");
+                        }
+                    }
+                });
     }
+
 }

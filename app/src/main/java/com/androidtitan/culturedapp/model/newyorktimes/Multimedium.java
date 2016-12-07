@@ -4,9 +4,12 @@ package com.androidtitan.culturedapp.model.newyorktimes;
  * Created by amohnacs on 3/21/16.
  */
 
+import android.content.ContentValues;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -14,6 +17,8 @@ import javax.annotation.Generated;
 
 @Generated("org.jsonschema2pojo")
 public class Multimedium implements Parcelable {
+
+    private long storyId;
 
     @SerializedName("url")
     @Expose
@@ -52,6 +57,21 @@ public class Multimedium implements Parcelable {
         this.caption = caption;
     }
 
+    public Multimedium(String storyId, String url, String format, int height, int width, String type, String subtype, String caption, String copyright) {
+
+        this.storyId = Integer.valueOf(storyId);
+        this.url = url;
+        this.format = format;
+        this.height = height;
+        this.width = width;
+        this.type = type;
+        this.subtype = subtype;
+        this.caption = caption;
+        this.copyright = copyright;
+
+    }
+
+    //must be read these in the same order as your wrote them
     public Multimedium(Parcel in) {
 
         url = in.readString();
@@ -63,6 +83,30 @@ public class Multimedium implements Parcelable {
         caption = in.readString();
         copyright = in.readString();
 
+    }
+
+    public ContentValues getContentValues() {
+
+        ContentValues cv = new ContentValues();
+        cv.put(DatabaseContract.MediaTable.STORY_ID, storyId);
+        cv.put(DatabaseContract.MediaTable.URL, url);
+        cv.put(DatabaseContract.MediaTable.FORMAT, format);
+        cv.put(DatabaseContract.MediaTable.HEIGHT, height);
+        cv.put(DatabaseContract.MediaTable.WIDTH, width);
+        cv.put(DatabaseContract.MediaTable.TYPE, type);
+        cv.put(DatabaseContract.MediaTable.SUBTYPE, subtype);
+        cv.put(DatabaseContract.MediaTable.CAPTION, caption);
+        cv.put(DatabaseContract.MediaTable.COPYRIGHT, copyright);
+
+        return cv;
+    }
+
+    public long getStoryId() {
+        return storyId;
+    }
+
+    public void setStoryId(long storyId) {
+        this.storyId = storyId;
     }
 
     /**
@@ -135,6 +179,7 @@ public class Multimedium implements Parcelable {
      */
     public void setWidth(Integer width) {
         this.width = width;
+
     }
 
     /**

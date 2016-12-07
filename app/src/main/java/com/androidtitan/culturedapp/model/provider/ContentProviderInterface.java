@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.main.toparticle;
+package com.androidtitan.culturedapp.model.provider;
 
 /**
  * Created by amohnacs on 9/19/16.

@@ -1,6 +1,6 @@
 package com.androidtitan.culturedapp.model.provider;
 
-import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,7 +10,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.androidtitan.culturedapp.main.toparticle.ContentProviderInterface;
+import static android.content.ContentResolver.CURSOR_DIR_BASE_TYPE;
+import static com.androidtitan.culturedapp.model.provider.DatabaseContract.AUTHORITY;
 
 /**
  * Created by amohnacs on 7/17/16.
@@ -19,8 +20,16 @@ import com.androidtitan.culturedapp.main.toparticle.ContentProviderInterface;
 public class CulturedContentProvider extends android.content.ContentProvider {
     private final String TAG = getClass().getSimpleName();
 
-    private static final int ARTICLE_ID = 1;
+
+    public static final String SINGLE_CONTENT_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "vnd." + AUTHORITY;
+    public static final String LIST_CONTENT_TYPE = CURSOR_DIR_BASE_TYPE + "vnd." + AUTHORITY;
+
+    private static final int ARTICLE = 1;
     private static final int ARTICLE_LIST = 2;
+
+    private static final int MEDIA = 3;
+    private static final int MEDIA_LIST = 4;
+
     private static final UriMatcher uriMatcher;
 
     Context context;
@@ -28,9 +37,12 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(DatabaseContract.AUTHORITY, DatabaseContract.Article.TABLE_NAME + "/#", ARTICLE_ID);
-        uriMatcher.addURI(DatabaseContract.AUTHORITY, DatabaseContract.Article.TABLE_NAME, ARTICLE_LIST);
 
+        uriMatcher.addURI(AUTHORITY, DatabaseContract.ArticleTable.TABLE_NAME + "/#", ARTICLE);
+        uriMatcher.addURI(AUTHORITY, DatabaseContract.ArticleTable.TABLE_NAME, ARTICLE_LIST);
+
+        uriMatcher.addURI(AUTHORITY, DatabaseContract.MediaTable.TABLE_NAME + "/#", MEDIA);
+        uriMatcher.addURI(AUTHORITY, DatabaseContract.MediaTable.TABLE_NAME, MEDIA_LIST);
     }
 
     @Override
@@ -45,6 +57,29 @@ public class CulturedContentProvider extends android.content.ContentProvider {
     }
 
     @Override
+    public String getType(Uri uri) {
+        switch (uriMatcher.match(uri)) {
+            case ARTICLE:
+                return SINGLE_CONTENT_TYPE + DatabaseContract.ArticleTable.TABLE_NAME;
+
+            case ARTICLE_LIST:
+                return LIST_CONTENT_TYPE + DatabaseContract.ArticleTable.TABLE_NAME;
+
+            case MEDIA:
+                return SINGLE_CONTENT_TYPE + DatabaseContract.MediaTable.TABLE_NAME;
+
+            case MEDIA_LIST:
+                return LIST_CONTENT_TYPE + DatabaseContract.MediaTable.TABLE_NAME;
+
+            default:
+                throw new IllegalArgumentException("unsupported Uri: " + uri);
+        }
+    }
+
+    /////
+    // todo:
+    // ContentProvider methods we need to add additional support for the querying of a single item
+    @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
         Log.d(TAG, "query with uri: " + uri.toString());
@@ -52,18 +87,36 @@ public class CulturedContentProvider extends android.content.ContentProvider {
         String tableName;
         Cursor cursor;
 
-        switch (uriMatcher.match(uri)) {
+        if(TextUtils.isEmpty(sortOrder)) {
+            sortOrder = "_ID" + " DESC";
+
+        }
+
+       switch (uriMatcher.match(uri)) {
+
             case ARTICLE_LIST:
 
-                tableName = DatabaseContract.Article.TABLE_NAME;
+                tableName = DatabaseContract.ArticleTable.TABLE_NAME;
 
                 if(TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = DatabaseContract.Article._ID + " DESC";
+                    sortOrder = "_ID DESC";
 
                 }
                 cursor = sqLiteHelper.getReadableDatabase()
                         .query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
                 break;
+
+           case MEDIA_LIST:
+
+               tableName = DatabaseContract.MediaTable.TABLE_NAME;
+
+               if(TextUtils.isEmpty(sortOrder)) {
+                   sortOrder = "_ID DESC";
+
+               }
+               cursor = sqLiteHelper.getReadableDatabase()
+                       .query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
+               break;
 
             default:
                 throw new IllegalArgumentException("Unsupported Uri: " + uri);
@@ -73,21 +126,6 @@ public class CulturedContentProvider extends android.content.ContentProvider {
         return cursor;
     }
 
-
-    @Override
-    public String getType(Uri uri) {
-        switch (uriMatcher.match(uri)) {
-            case ARTICLE_ID:
-                return DatabaseContract.SINGLE_CONTENT_TYPE;
-
-            case ARTICLE_LIST:
-                return DatabaseContract.LIST_CONTENT_TYPE;
-
-            default:
-                throw new IllegalArgumentException("unsupported Uri: " + uri);
-        }
-    }
-
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         Log.d(TAG, "insert uri: " + uri.toString());
@@ -95,18 +133,17 @@ public class CulturedContentProvider extends android.content.ContentProvider {
         long insertedRowId = 0;
 
         switch (uriMatcher.match(uri)) {
-            case ARTICLE_ID:
-
-                insertedRowId = sqLiteHelper.getWritableDatabase()
-                        .insert(DatabaseContract.Article.TABLE_NAME, null, values);
-
-                break;
-
             case ARTICLE_LIST:
 
                 insertedRowId = sqLiteHelper.getWritableDatabase()
-                        .insert(DatabaseContract.Article.TABLE_NAME, null, values);
+                        .insert(DatabaseContract.ArticleTable.TABLE_NAME, null, values);
 
+                break;
+
+            case MEDIA_LIST:
+
+                insertedRowId = sqLiteHelper.getWritableDatabase()
+                        .insert(DatabaseContract.MediaTable.TABLE_NAME, null, values);
                 break;
 
             default:
@@ -132,14 +169,15 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
         switch (uriMatcher.match(uri)) {
 
-            case ARTICLE_ID:
-                updateCount = sqLiteHelper.getWritableDatabase().delete(
-                        DatabaseContract.Article.TABLE_NAME, selection, selectionArgs);
-                break;
-
             case ARTICLE_LIST:
                 updateCount = sqLiteHelper.getWritableDatabase().delete(
-                        DatabaseContract.Article.TABLE_NAME, selection, selectionArgs);
+                        DatabaseContract.ArticleTable.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            case MEDIA_LIST:
+
+                updateCount = sqLiteHelper.getWritableDatabase()
+                        .delete(DatabaseContract.MediaTable.TABLE_NAME, selection, selectionArgs);
                 break;
 
             default:
@@ -161,14 +199,15 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
         switch (uriMatcher.match(uri)) {
 
-            case ARTICLE_ID:
-                deleteCount = sqLiteHelper.getWritableDatabase().delete(
-                        DatabaseContract.Article.TABLE_NAME, selection, selectionArgs);
-                break;
-
             case ARTICLE_LIST:
                 deleteCount = sqLiteHelper.getWritableDatabase().delete(
-                        DatabaseContract.Article.TABLE_NAME, selection, selectionArgs);
+                        DatabaseContract.ArticleTable.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            case MEDIA_LIST:
+
+                deleteCount = sqLiteHelper.getWritableDatabase()
+                        .delete(DatabaseContract.MediaTable.TABLE_NAME, selection, selectionArgs);
                 break;
 
             default:
@@ -178,6 +217,7 @@ public class CulturedContentProvider extends android.content.ContentProvider {
         if(deleteCount > 0) {
             notifyUriChanges(uri);
         }
+
         return deleteCount;
     }
 

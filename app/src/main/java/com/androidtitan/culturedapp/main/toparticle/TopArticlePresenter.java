@@ -3,8 +3,9 @@ package com.androidtitan.culturedapp.main.toparticle;
 import android.content.Context;
 import android.graphics.Bitmap;
 
-import com.androidtitan.culturedapp.common.BasePresenter;
+import com.androidtitan.culturedapp.common.structure.BasePresenter;
 import com.androidtitan.culturedapp.main.CulturedApp;
+import com.androidtitan.culturedapp.model.provider.ContentProviderInterface;
 
 import javax.inject.Inject;
 

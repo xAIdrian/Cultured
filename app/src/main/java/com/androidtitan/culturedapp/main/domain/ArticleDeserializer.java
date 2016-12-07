@@ -1,5 +1,7 @@
 package com.androidtitan.culturedapp.main.domain;
 
+import android.util.Log;
+
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.androidtitan.culturedapp.model.newyorktimes.RelatedUrl;
@@ -18,6 +20,13 @@ import java.util.List;
 
 /**
  * Created by amohnacs on 3/22/16.
+ */
+
+/*
+    TODO: reevaluate the null checks inside of the deserializer
+        There are a number of JsonObjects that are checked for null values.  The null values are getting
+        saved to the ArticleTable and we passing null values.
+
  */
 public class ArticleDeserializer implements JsonDeserializer<Article> {
     final String TAG = getClass().getSimpleName();
@@ -45,6 +54,8 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
 
         if(obj.getAsJsonObject().get("source") != null) {
             tempArticle.setSource(obj.getAsJsonObject().get("source").getAsString());
+        } else {
+            tempArticle.setSource("");
         }
 
         tempArticle.setUpdatedDate((Date) context.deserialize(obj.getAsJsonObject().get("updated_date"), Date.class));
@@ -54,10 +65,15 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         tempArticle.setMaterialTypeFacet(obj.getAsJsonObject().get("material_type_facet").getAsString());
         tempArticle.setKicker(obj.getAsJsonObject().get("kicker").getAsString());
 
-        if(obj.getAsJsonObject().get("subheadline") != null) {
-            tempArticle.setSubheadline(obj.getAsJsonObject().get("subheadline").getAsString());
+        if(obj.getAsJsonObject().get("headline") != null) {
+            tempArticle.setheadline(obj.getAsJsonObject().get("headline").getAsString());
         }
-        tempArticle.setBlogName(obj.getAsJsonObject().get("section").getAsString());
+
+        if(obj.getAsJsonObject().get("blog_name") != null) {
+            tempArticle.setBlogName(obj.getAsJsonObject().get("blog_name").getAsString());
+        } else {
+            tempArticle.setBlogName("");
+        }
 
         if(obj.getAsJsonObject().get("related_urls") != null) {
             if (obj.getAsJsonObject().get("related_urls") instanceof JsonObject) {
@@ -115,6 +131,8 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         if (obj.getAsJsonObject().get("multimedia") instanceof JsonArray) {
             Multimedium[] mediaobj = context.deserialize(obj.getAsJsonObject().get("multimedia"), Multimedium[].class);
             tempArticle.setMultimedia(Arrays.asList(mediaobj));
+
+            Log.e(TAG, obj.getAsJsonObject().get("multimedia").toString());
         }
 
 
@@ -122,10 +140,10 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
     }
 
 
-    /*private Article getOrCreate(final String name) {
-        Article author = cache.get().get(name);
+    /*private ArticleTable getOrCreate(final String name) {
+        ArticleTable author = cache.get().get(name);
         if (author == null) {
-            author = new Article();
+            author = new ArticleTable();
             cache.get().put(name, author);
         }
         return author;

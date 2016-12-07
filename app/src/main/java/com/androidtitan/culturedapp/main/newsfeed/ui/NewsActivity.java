@@ -6,6 +6,7 @@ import android.annotation.TargetApi;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -36,15 +38,16 @@ import android.widget.TextView;
 
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.BaseActivity;
+import com.androidtitan.culturedapp.common.structure.BaseActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleActivity;
-import com.androidtitan.culturedapp.model.provider.ArticleCursorWrapper;
+import com.androidtitan.culturedapp.model.provider.wrappers.ArticleCursorWrapper;
 import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.provider.wrappers.MultimediumCursorWrapper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.iid.InstanceID;
@@ -59,6 +62,8 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
 public class NewsActivity extends BaseActivity implements NewsMvp.View {
     private final String TAG = getClass().getSimpleName();
@@ -104,6 +109,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     @Bind(R.id.drawer_navigation_view)
     NavigationView navigationView;
 
+    SharedPreferences sharedPreferences;
+
     private LinearLayoutManager linearLayoutManager;
     private StaggeredGridLayoutManager staggeredLayoutManager;
     private NewsAdapter adapter;
@@ -127,6 +134,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         initializeTranstionsAndAnimations();
         //initialize dummy account
         account = createSyncAccount(this);
+
+        sharedPreferencesSetup();
         initFCM();
 
         super.onCreate(savedInstanceState);
@@ -143,12 +152,11 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
         initializeAnimation();
 
-        //saveInstanceState to handle rotations
         if (savedInstanceState != null) {
             //
         }
-
-        supportActionBar = (Toolbar) findViewById(R.id.toolbar); // Attaching the layout to the toolbar object
+        // Attaching the layout to the toolbar object
+        supportActionBar = (Toolbar) findViewById(R.id.toolbar);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
         setSupportActionBar(supportActionBar);
         getSupportActionBar().setTitle("");
@@ -162,9 +170,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
             articles = presenter.loadArticles(5);
         }
 
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
+        navigationView.setNavigationItemSelectedListener((item) -> {
                 drawerLayout.closeDrawers();
 
                 switch (item.getItemId()) {
@@ -188,9 +194,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
                         break;
 
+                    //todo: Implicit intent with picker to send email to adrian.mohnacs@gmail.com
                     case R.id.support_mail:
-
-                        //todo: Implicit intent with picker to send email to adrian.mohnacs@gmail.com
 
                         Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
                         feedbackIntent.setType("plain/text");
@@ -211,7 +216,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                         Log.e(TAG, "Incorrect navigation drawer item selected");
                 }
                 return true;
-            }
         });
 
         initializeRecyclerView();
@@ -318,11 +322,21 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     }
 
+    private void sharedPreferencesSetup() {
+
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        isSyncingPeriodically = sharedPreferences.getBoolean(PREFERENCES_SYNCING_PERIODICALLY, false);
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
 
         if(isSyncingPeriodically) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, false).apply();
+
             ContentResolver.removePeriodicSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
         }
     }
@@ -347,41 +361,45 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         switch (item.getItemId()) {
             case R.id.menu_item_toparticle:
 
-                //todo: what else do we need to pass to this Activity???
                 startActivity(new Intent(this, TopArticleActivity.class));
 
                 break;
 
             case R.id.menu_item_graph:
-                // Pass the settings flags by inserting them in a bundle
-                Bundle settingsBundle = new Bundle();
-                settingsBundle.putBoolean(
-                        ContentResolver.SYNC_EXTRAS_MANUAL, true);
-                settingsBundle.putBoolean(
-                        ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-
-                getContentResolver().requestSync(account, DatabaseContract.AUTHORITY, settingsBundle);
 
                 break;
 
             case R.id.menu_item_facets:
 
+//                Used to print what is held in our content provider
+                // todo: this must go at some point!
+
                 Cursor articleCursor = getContentResolver().query(
-                        DatabaseContract.Article.CONTENT_URI, null, null, null, null
+                        DatabaseContract.ArticleTable.CONTENT_URI, null, null, null, null
                 );
                 ArticleCursorWrapper wrapper = new ArticleCursorWrapper(articleCursor);
                 wrapper.moveToFirst();
 
-                Article article;
-                List<Article> articles = new ArrayList<Article>();
-
-                Log.e(TAG, "retrieving from Content Provider...");
+                Log.e(TAG, "retrieving ARTICLES from Content Provider...");
                 while(!wrapper.isAfterLast()) {
 
-                    Log.e(TAG, wrapper.getArticle().getTitle());
-                    articles.add(wrapper.getArticle());
+                    Log.d(TAG, wrapper.getArticle().getTitle());
 
                     wrapper.moveToNext();
+                }
+
+                Cursor mediaCursor = getContentResolver().query(
+                        DatabaseContract.MediaTable.CONTENT_URI, null, null, null, null
+                );
+                MultimediumCursorWrapper mwrapper = new MultimediumCursorWrapper(mediaCursor);
+                mwrapper.moveToFirst();
+
+                Log.e(TAG, "retrieving MEDIA from Content Provider...");
+                while(!mwrapper.isAfterLast()) {
+
+                    Log.d(TAG, "**media:" + mwrapper.getMultimedium().getUrl());
+
+                    mwrapper.moveToNext();
                 }
 
                 break;
@@ -403,7 +421,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //todo :: Let's refigure out what this does and decide if we want to keep it or not
+        //Let's decide if we want to keep it or not
         outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST,
                 (ArrayList<? extends Parcelable>) articles);
     }
@@ -550,8 +568,11 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         }, LOADING_ANIM_TIME * 2);
     }
 
-    /*@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void startDetailActivity(Article article, ImageView articleImage) {
+    /*
+        Will this ever come back?
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void startDetailActivity(ArticleTable article, ImageView articleImage) {
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
         if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
@@ -584,7 +605,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         }
     }
 
-//parallax animation methods
+    //parallax animation methods
     private void showToolbarBy(int dy) {
 
         if (cannotShowMore(dy)) {
@@ -611,10 +632,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         return appBarLayout.getTranslationY() - dy > 0;
     }
 
-    /* todo:
-        I believe that this can be replaced by utilizing the FirebaseInstanceIdService
-        It has trigger for token creation
-     */
     private void initFCM() {
         PreferenceStore preferenceStore = PreferenceStore.get(this);
         String currentToken = preferenceStore.getFcmToken();
@@ -623,6 +640,10 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
             new FCMRegistrationTask().execute();
         } else {
             Log.d(TAG, "Have token: " + currentToken);
+
+            if(!isSyncingPeriodically) {
+                setupPeriodicSync();
+            }
         }
     }
 
@@ -674,11 +695,18 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
     private void setupPeriodicSync() {
         isSyncingPeriodically = true;
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, true).apply();
+
         ContentResolver.setIsSyncable(account, DatabaseContract.AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(
                 account, DatabaseContract.AUTHORITY, true);
         ContentResolver.addPeriodicSync(
-                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, 300);
+
+        //ensure we have data for the initial viewing of pages
+        ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
+
     }
 
 

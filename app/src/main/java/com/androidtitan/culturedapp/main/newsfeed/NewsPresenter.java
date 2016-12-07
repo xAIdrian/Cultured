@@ -3,7 +3,7 @@ package com.androidtitan.culturedapp.main.newsfeed;
 import android.content.Context;
 import android.util.Log;
 
-import com.androidtitan.culturedapp.common.BasePresenter;
+import com.androidtitan.culturedapp.common.structure.BasePresenter;
 import com.androidtitan.culturedapp.main.CulturedApp;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;

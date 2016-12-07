@@ -20,6 +20,8 @@ import javax.annotation.Generated;
 @Generated("org.jsonschema2pojo")
 public class Article implements Parcelable {
 
+    private long id;
+
     @SerializedName("section")
     @Expose
     private String section;
@@ -62,9 +64,9 @@ public class Article implements Parcelable {
     @SerializedName("kicker")
     @Expose
     private String kicker;
-    @SerializedName("subheadline")
+    @SerializedName("headline")
     @Expose
-    private String subheadline;
+    private String headline;
     @SerializedName("des_facet")
     @Expose
     private List<String> desFacet = new ArrayList<String>();
@@ -87,21 +89,52 @@ public class Article implements Parcelable {
     @Expose
     private String blogName;
 
+    private String singleDesFacet;
+    private String singleOrgFacet;
+    private String singlePerFacet;
+    private String singleGeoFacet;
+    private Multimedium singleMedia;
+
     public Article() {
 
     }
 
     public Article(String title, String section, String _abstract, String url, Date createdDate,
-                   String desFacet, String orgFacet, String perFacet,
-                   String geoFacet, Multimedium multimedia) {
+                   List<String> desFacet, List<String> orgFacet, List<String> perFacet,
+                   List<String> geoFacet, List<Multimedium> multimedia) {
+
         this.title = title;
         this.section = section;
         this._abstract = _abstract;
         this.url = url;
         this.createdDate = createdDate;
+        this.desFacet = desFacet;
+        this.orgFacet = orgFacet;
+        this.perFacet = perFacet;
+        this.geoFacet = geoFacet;
+        this.multimedia = multimedia;
     }
 
-    public Article(Parcel in) { //you must read these in the same order as your wrote them
+    public Article(String id, String title, String section, String _abstract, String url, Date createdDate,
+                   List<String> desFacet, List<String> orgFacet, List<String> perFacet,
+                   List<String> geoFacet, List<Multimedium> multimedia) {
+
+        this.id = Integer.valueOf(id);
+        this.title = title;
+        this.section = section;
+        this._abstract = _abstract;
+        this.url = url;
+        this.createdDate = createdDate;
+        this.desFacet = desFacet;
+        this.orgFacet = orgFacet;
+        this.perFacet = perFacet;
+        this.geoFacet = geoFacet;
+        this.multimedia = multimedia;
+    }
+
+
+    //must be read these in the same order as your wrote them
+    public Article(Parcel in) {
         section = in.readString();
         subsection = in.readString();
         title = in.readString();
@@ -118,7 +151,7 @@ public class Article implements Parcelable {
 
         materialTypeFacet = in.readString();
         kicker = in.readString();
-        subheadline = in.readString();
+        headline = in.readString();
 
         desFacet = new ArrayList<String>();
         in.readStringList(desFacet);
@@ -137,30 +170,15 @@ public class Article implements Parcelable {
 
     }
 
-    public ContentValues getContentValues() {
+
+    public ContentValues getArticleContentValues() {
+
         ContentValues cv = new ContentValues();
-        cv.put(DatabaseContract.Article.ABSTRACT, _abstract);
-        cv.put(DatabaseContract.Article.CREATED_DATE, createdDate.toString());
-
-        if(desFacet.size() > 0)
-            cv.put(DatabaseContract.Article.DES_FACET, desFacet.get(0));
-        if(geoFacet.size() > 0)
-            cv.put(DatabaseContract.Article.GEO_FACET, geoFacet.get(0));
-        if(orgFacet.size() > 0)
-            cv.put(DatabaseContract.Article.ORG_FACET, orgFacet.get(0));
-        if(perFacet.size() > 0)
-            cv.put(DatabaseContract.Article.PER_FACET, perFacet.get(0));
-
-        cv.put(DatabaseContract.Article.SECTION, section);
-        cv.put(DatabaseContract.Article.TITLE, title);
-        cv.put(DatabaseContract.Article.URL, url);
-
-        if(multimedia.size() > 0) {
-            cv.put(DatabaseContract.Article.MEDIA_URL, multimedia.get(0).getUrl());
-            cv.put(DatabaseContract.Article.MEDIA_CAPTION, multimedia.get(0).getCaption());
-            cv.put(DatabaseContract.Article.MEDIA_HEIGHT, multimedia.get(0).getHeight());
-            cv.put(DatabaseContract.Article.MEDIA_WIDTH, multimedia.get(0).getWidth());
-        }
+        cv.put(DatabaseContract.ArticleTable.ABSTRACT, _abstract);
+        cv.put(DatabaseContract.ArticleTable.CREATED_DATE, createdDate.toString());
+        cv.put(DatabaseContract.ArticleTable.SECTION, section);
+        cv.put(DatabaseContract.ArticleTable.TITLE, title);
+        cv.put(DatabaseContract.ArticleTable.URL, url);
 
         return cv;
     }
@@ -420,19 +438,19 @@ public class Article implements Parcelable {
     /**
      *
      * @return
-     * The subheadline
+     * The headline
      */
-    public String getSubheadline() {
-        return subheadline;
+    public String getheadline() {
+        return headline;
     }
 
     /**
      *
-     * @param subheadline
-     * The subheadline
+     * @param headline
+     * The headline
      */
-    public void setSubheadline(String subheadline) {
-        this.subheadline = subheadline;
+    public void setheadline(String headline) {
+        this.headline = headline;
     }
 
     /**
@@ -607,7 +625,7 @@ public class Article implements Parcelable {
 
         dest.writeString(materialTypeFacet);
         dest.writeString(kicker);
-        dest.writeString(subheadline);
+        dest.writeString(headline);
         dest.writeStringList(desFacet);
         dest.writeStringList(orgFacet);
         dest.writeStringList(perFacet);
@@ -645,4 +663,17 @@ public class Article implements Parcelable {
             return new Article[size];
         }
     };
+
+    public void setId(String id) {
+        this.id = Integer.valueOf(id);
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public long getId() {
+        return id;
+    }
+
 }

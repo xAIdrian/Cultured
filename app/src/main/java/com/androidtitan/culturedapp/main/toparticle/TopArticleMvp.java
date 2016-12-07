@@ -2,7 +2,7 @@ package com.androidtitan.culturedapp.main.toparticle;
 
 import android.graphics.Bitmap;
 
-import com.androidtitan.culturedapp.common.MvpView;
+import com.androidtitan.culturedapp.common.structure.MvpView;
 
 /**
  * Created by amohnacs on 9/19/16.
