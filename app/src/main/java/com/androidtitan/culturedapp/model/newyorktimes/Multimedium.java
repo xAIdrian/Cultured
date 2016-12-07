@@ -19,7 +19,6 @@ import javax.annotation.Generated;
 public class Multimedium implements Parcelable {
 
     private long storyId;
-    private MediaSize size;
 
     @SerializedName("url")
     @Expose
@@ -58,10 +57,9 @@ public class Multimedium implements Parcelable {
         this.caption = caption;
     }
 
-    public Multimedium(String storyId, String size, String url, String format, int height, int width, String type, String subtype, String caption, String copyright) {
+    public Multimedium(String storyId, String url, String format, int height, int width, String type, String subtype, String caption, String copyright) {
 
         this.storyId = Integer.valueOf(storyId);
-        this.size = getMediaSize(size);
         this.url = url;
         this.format = format;
         this.height = height;
@@ -91,7 +89,6 @@ public class Multimedium implements Parcelable {
 
         ContentValues cv = new ContentValues();
         cv.put(DatabaseContract.MediaTable.STORY_ID, storyId);
-        cv.put(DatabaseContract.MediaTable.SIZE, size.toString());
         cv.put(DatabaseContract.MediaTable.URL, url);
         cv.put(DatabaseContract.MediaTable.FORMAT, format);
         cv.put(DatabaseContract.MediaTable.HEIGHT, height);
@@ -110,14 +107,6 @@ public class Multimedium implements Parcelable {
 
     public void setStoryId(long storyId) {
         this.storyId = storyId;
-    }
-
-    public MediaSize getSize() {
-        return size;
-    }
-
-    public void setSize(MediaSize size) {
-        this.size = size;
     }
 
     /**
@@ -172,7 +161,6 @@ public class Multimedium implements Parcelable {
      */
     public void setHeight(Integer height) {
         this.height = height;
-        setMediaSize(height);
     }
 
     /**
@@ -191,7 +179,6 @@ public class Multimedium implements Parcelable {
      */
     public void setWidth(Integer width) {
         this.width = width;
-        setMediaSize(width);
 
     }
 
@@ -325,54 +312,4 @@ public class Multimedium implements Parcelable {
             return new Multimedium[size];
         }
     };
-
-    // todo: This can be reinforced with some returns, null checks, and number ranges
-    private void setMediaSize(Integer height) {
-
-        switch (height) {
-            case 75:
-                size = MediaSize.XSMALL;
-                break;
-
-            case 150:
-                size = MediaSize.SMALL;
-                break;
-
-            case 127:
-                size = MediaSize.MEDIUM;
-                break;
-
-            case 140:
-                size = MediaSize.LARGE;
-                break;
-
-            case 1365:
-                size = MediaSize.XLARGE;
-                break;
-        }
-
-    }
-
-    public MediaSize getMediaSize(String incomingSize) {
-
-        switch (incomingSize) {
-            case "xsmall":
-                return MediaSize.XSMALL;
-
-            case "small":
-                return MediaSize.SMALL;
-
-            case "medium":
-                return MediaSize.MEDIUM;
-
-            case "large":
-                return MediaSize.LARGE;
-
-            case "xlarge":
-                return  MediaSize.XLARGE;
-
-            default:
-                return null;
-        }
-    }
 }

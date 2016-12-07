@@ -47,6 +47,7 @@ import com.androidtitan.culturedapp.main.toparticle.TopArticleActivity;
 import com.androidtitan.culturedapp.model.provider.wrappers.ArticleCursorWrapper;
 import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.provider.wrappers.MultimediumCursorWrapper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.iid.InstanceID;
@@ -371,6 +372,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
             case R.id.menu_item_facets:
 
 //                Used to print what is held in our content provider
+                // todo: this must go at some point!
 
                 Cursor articleCursor = getContentResolver().query(
                         DatabaseContract.ArticleTable.CONTENT_URI, null, null, null, null
@@ -378,15 +380,26 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                 ArticleCursorWrapper wrapper = new ArticleCursorWrapper(articleCursor);
                 wrapper.moveToFirst();
 
-                List<Article> articles = new ArrayList<Article>();
-
-                Log.e(TAG, "retrieving from Content Provider...");
+                Log.e(TAG, "retrieving ARTICLES from Content Provider...");
                 while(!wrapper.isAfterLast()) {
 
-                    Log.e(TAG, wrapper.getArticle().getTitle());
-                    articles.add(wrapper.getArticle());
+                    Log.d(TAG, wrapper.getArticle().getTitle());
 
                     wrapper.moveToNext();
+                }
+
+                Cursor mediaCursor = getContentResolver().query(
+                        DatabaseContract.MediaTable.CONTENT_URI, null, null, null, null
+                );
+                MultimediumCursorWrapper mwrapper = new MultimediumCursorWrapper(mediaCursor);
+                mwrapper.moveToFirst();
+
+                Log.e(TAG, "retrieving MEDIA from Content Provider...");
+                while(!mwrapper.isAfterLast()) {
+
+                    Log.d(TAG, "**media:" + mwrapper.getMultimedium().getUrl());
+
+                    mwrapper.moveToNext();
                 }
 
                 break;

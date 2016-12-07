@@ -35,12 +35,6 @@ public class ArticleCursorWrapper extends CursorWrapper {
         String url = getString(getColumnIndex(DatabaseContract.ArticleTable.URL));
         String createdDate = getString(getColumnIndex(DatabaseContract.ArticleTable.CREATED_DATE));
 
-        String des = getString(getColumnIndex(DatabaseContract.ArticleTable.DES_FACET));
-        String org = getString(getColumnIndex(DatabaseContract.ArticleTable.ORG_FACET));
-        String per = getString(getColumnIndex(DatabaseContract.ArticleTable.PER_FACET));
-        String geo = getString(getColumnIndex(DatabaseContract.ArticleTable.GEO_FACET));
-
-
         /*
         Date createdDate = convert Date
          */

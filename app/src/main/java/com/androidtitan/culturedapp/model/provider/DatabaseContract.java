@@ -13,7 +13,7 @@ public class DatabaseContract {
     public final static String AUTHORITY = "com.androidtitan.culturedapp.provider";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
-/* Sample:
+/* Sample MIME types:
 
     private static String BASE_PATH = SQLiteHelper.DATABASE_NAME;
     private static String path_CONTENT_URI =  "content://" + AUTHORITY+ "/" + BASE_PATH +"/";
@@ -33,11 +33,6 @@ public class DatabaseContract {
         public static final String URL = "url";
         public static final String CREATED_DATE = "create_date";
 
-        public static final String DES_FACET = "des_facet";
-        public static final String ORG_FACET = "org_facet";
-        public static final String PER_FACET = "per_facet";
-        public static final String GEO_FACET = "geo_facet";
-
     }
 
     public static final class MediaTable {
@@ -48,7 +43,7 @@ public class DatabaseContract {
 
         public static final String _ID = "_ID";
         public static final String STORY_ID = "story_id";
-        public static final String SIZE = "size";
+        public static final String SIZE = "media_size"; // we're not actually storing this shhh...
         public static final String URL = "url";
         public static final String FORMAT = "format";
         public static final String HEIGHT = "height"; //int

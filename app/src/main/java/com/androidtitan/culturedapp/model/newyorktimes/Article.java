@@ -171,21 +171,11 @@ public class Article implements Parcelable {
     }
 
 
-    public ContentValues getContentValues() {
+    public ContentValues getArticleContentValues() {
 
         ContentValues cv = new ContentValues();
         cv.put(DatabaseContract.ArticleTable.ABSTRACT, _abstract);
         cv.put(DatabaseContract.ArticleTable.CREATED_DATE, createdDate.toString());
-
-        if(desFacet.size() > 0)
-            cv.put(DatabaseContract.ArticleTable.DES_FACET, desFacet.get(0));
-        if(geoFacet.size() > 0)
-            cv.put(DatabaseContract.ArticleTable.GEO_FACET, geoFacet.get(0));
-        if(orgFacet.size() > 0)
-            cv.put(DatabaseContract.ArticleTable.ORG_FACET, orgFacet.get(0));
-        if(perFacet.size() > 0)
-            cv.put(DatabaseContract.ArticleTable.PER_FACET, perFacet.get(0));
-
         cv.put(DatabaseContract.ArticleTable.SECTION, section);
         cv.put(DatabaseContract.ArticleTable.TITLE, title);
         cv.put(DatabaseContract.ArticleTable.URL, url);

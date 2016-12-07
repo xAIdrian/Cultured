@@ -19,7 +19,6 @@ public class MultimediumCursorWrapper extends CursorWrapper{
     public Multimedium getMultimedium() {
 
         String storyId = getString(getColumnIndex(DatabaseContract.MediaTable.STORY_ID));
-        String size = getString(getColumnIndex(DatabaseContract.MediaTable.SIZE));
         String url = getString(getColumnIndex(DatabaseContract.MediaTable.URL));
         String format = getString(getColumnIndex(DatabaseContract.MediaTable.FORMAT));
         int height = getInt(getColumnIndex(DatabaseContract.MediaTable.HEIGHT));
@@ -29,6 +28,6 @@ public class MultimediumCursorWrapper extends CursorWrapper{
         String caption = getString(getColumnIndex(DatabaseContract.MediaTable.CAPTION));
         String copyright = getString(getColumnIndex(DatabaseContract.MediaTable.COPYRIGHT));
 
-        return new Multimedium(storyId, size, url, format, height, width, type, subtype, caption, copyright);
+        return new Multimedium(storyId, url, format, height, width, type, subtype, caption, copyright);
     }
 }

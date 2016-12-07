@@ -76,6 +76,9 @@ public class CulturedContentProvider extends android.content.ContentProvider {
         }
     }
 
+    /////
+    // todo:
+    // ContentProvider methods we need to add additional support for the querying of a single item
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
@@ -130,14 +133,14 @@ public class CulturedContentProvider extends android.content.ContentProvider {
         long insertedRowId = 0;
 
         switch (uriMatcher.match(uri)) {
-            case ARTICLE:
+            case ARTICLE_LIST:
 
                 insertedRowId = sqLiteHelper.getWritableDatabase()
                         .insert(DatabaseContract.ArticleTable.TABLE_NAME, null, values);
 
                 break;
 
-            case MEDIA:
+            case MEDIA_LIST:
 
                 insertedRowId = sqLiteHelper.getWritableDatabase()
                         .insert(DatabaseContract.MediaTable.TABLE_NAME, null, values);
@@ -166,12 +169,12 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
         switch (uriMatcher.match(uri)) {
 
-            case ARTICLE:
+            case ARTICLE_LIST:
                 updateCount = sqLiteHelper.getWritableDatabase().delete(
                         DatabaseContract.ArticleTable.TABLE_NAME, selection, selectionArgs);
                 break;
 
-            case MEDIA:
+            case MEDIA_LIST:
 
                 updateCount = sqLiteHelper.getWritableDatabase()
                         .delete(DatabaseContract.MediaTable.TABLE_NAME, selection, selectionArgs);
@@ -196,12 +199,12 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
         switch (uriMatcher.match(uri)) {
 
-            case ARTICLE:
+            case ARTICLE_LIST:
                 deleteCount = sqLiteHelper.getWritableDatabase().delete(
                         DatabaseContract.ArticleTable.TABLE_NAME, selection, selectionArgs);
                 break;
 
-            case MEDIA:
+            case MEDIA_LIST:
 
                 deleteCount = sqLiteHelper.getWritableDatabase()
                         .delete(DatabaseContract.MediaTable.TABLE_NAME, selection, selectionArgs);

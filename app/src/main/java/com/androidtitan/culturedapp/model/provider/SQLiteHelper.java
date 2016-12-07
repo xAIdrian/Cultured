@@ -16,7 +16,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static final String TEXT_TYPE = " TEXT";
     private static final String INT_TYPE = " INTEGER";
-    private static final String COMMA_SEP = ",";
+    private static final String COMMA_SEP = ", ";
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -25,22 +25,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
-                "CREATE TABLE IF NOT EXISTS " + DatabaseContract.ArticleTable.TABLE_NAME + " ( " +
+                "CREATE TABLE " + DatabaseContract.ArticleTable.TABLE_NAME + " ( " +
                         DatabaseContract.ArticleTable._ID + " INTEGER PRIMARY KEY," +
                         DatabaseContract.ArticleTable.TITLE + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.ArticleTable.SECTION + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.ArticleTable.ABSTRACT + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.ArticleTable.URL + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.ArticleTable.CREATED_DATE + TEXT_TYPE+ COMMA_SEP +
-                        DatabaseContract.ArticleTable.DES_FACET + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.ArticleTable.ORG_FACET + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.ArticleTable.PER_FACET + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.ArticleTable.GEO_FACET + TEXT_TYPE + " )"
+                        DatabaseContract.ArticleTable.CREATED_DATE + TEXT_TYPE +" );"
         );
 
         db.execSQL(
-                "CREATE TABLE IF NOT EXISTS " + DatabaseContract.MediaTable.TABLE_NAME + " ( " +
-                        DatabaseContract.MediaTable._ID + " INTEGER KEY PRIMARY," +
+                "CREATE TABLE " + DatabaseContract.MediaTable.TABLE_NAME + " ( " +
+                        DatabaseContract.MediaTable._ID + " INTEGER PRIMARY KEY, " +
                         DatabaseContract.MediaTable.STORY_ID + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.MediaTable.SIZE + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.MediaTable.URL + TEXT_TYPE + COMMA_SEP +
@@ -50,7 +46,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                         DatabaseContract.MediaTable.TYPE + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.MediaTable.SUBTYPE + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.MediaTable.CAPTION + TEXT_TYPE + COMMA_SEP +
-                        DatabaseContract.MediaTable.COPYRIGHT + TEXT_TYPE + " )"
+                        DatabaseContract.MediaTable.COPYRIGHT + TEXT_TYPE + " );"
         );
     }
 
