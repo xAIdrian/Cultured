@@ -2,7 +2,7 @@ package com.androidtitan.culturedapp.main.newsfeed.mock;
 
 import android.util.Log;
 
-import com.androidtitan.culturedapp.main.domain.retrofit.NewsEndpoint;
+import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
 import com.google.gson.Gson;

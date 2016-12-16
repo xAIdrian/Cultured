@@ -18,49 +18,22 @@
     <RelativeLayout
         android:id="@+id/rippleForeground"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/articleImageView"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="500dp"
             android:layout_alignParentTop="true"
-            android:scaleType="fitXY"
+            android:scaleType="centerCrop"
             android:transitionName="@string/transition_news_image" />
 
-        <com.androidtitan.culturedapp.common.view.NewsHeaderLayout
+        <com.androidtitan.culturedapp.common.view.TopArticleHeaderLayout
             android:id="@+id/newsHeaderLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/articleImageView"
-            android:layout_above="@+id/infoRelativeLayout"
-            custom:titleText="@string/placeholder"
-            custom:dateText="@string/placeholder"
-            custom:sectionText="@string/placeholder"
-            custom:gradientDrawable="@drawable/bg_gradient_primary" />
-
-
-        <LinearLayout
-            android:id="@+id/infoRelativeLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/articleImageView"
-            android:background="@android:color/white"
-            android:paddingBottom="8dp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp">
-
-
-            <TextView
-                android:id="@+id/abstractTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="8dp"
-                android:padding="8dp"
-                android:text="@string/placeholder" />
-
-        </LinearLayout>
+            custom:articleGradientDrawable="@drawable/bg_gradient_primary" />
 
     </RelativeLayout>
 

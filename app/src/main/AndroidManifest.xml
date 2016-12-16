@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name=".main.toparticle.TopArticleActivity"
+            android:name=".main.toparticle.ui.TopArticleActivity"
             android:label="@string/title_activity_top_article"
             android:theme="@style/AppTheme"></activity>
 

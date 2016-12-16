@@ -11,61 +11,70 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 
-
 /**
- * Created by amohnacs on 9/12/16.
+ * Created by Adrian Mohnacs on 12/12/16.
  */
 
-public class NewsHeaderLayout extends RelativeLayout {
+public class TopArticleHeaderLayout extends RelativeLayout{
     private final String TAG = getClass().getSimpleName();
 
     private RelativeLayout gradientRelativeLayout;
     private TextView titleTextView;
+    private TextView abstractTextView;
     private TextView dateTextView;
     private TextView sectionTextView;
 
     private String titleText;
+    private String abstractText;
     private String dateText;
     private String sectionText;
     private Drawable gradientDrawable;
 
-    public NewsHeaderLayout(Context context, AttributeSet attrs) {
+    public TopArticleHeaderLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.NewsHeaderLayout, 0, 0);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.TopArticleHeaderLayout, 0, 0);
 
-        titleText = typedArray.getString(R.styleable.NewsHeaderLayout_newsTitleText);
-        dateText = typedArray.getString(R.styleable.NewsHeaderLayout_newsDateText);
-        sectionText = typedArray.getString(R.styleable.NewsHeaderLayout_newsSectionText);
-        gradientDrawable = typedArray.getDrawable(R.styleable.NewsHeaderLayout_newsGradientDrawable);
+        try {
+            titleText = typedArray.getString(R.styleable.TopArticleHeaderLayout_articleTitleText);
+            abstractText = typedArray.getString(R.styleable.TopArticleHeaderLayout_articleAbstractText);
+            dateText = typedArray.getString(R.styleable.TopArticleHeaderLayout_articleDateText);
+            sectionText = typedArray.getString(R.styleable.TopArticleHeaderLayout_articleSectionText);
+            gradientDrawable = typedArray.getDrawable(R.styleable.TopArticleHeaderLayout_articleGradientDrawable);
+        } finally {
+            typedArray.recycle();
+        }
 
         LayoutInflater layoutInflater = (LayoutInflater.from(context));
-        layoutInflater.inflate(R.layout.newsfeed_header_layout, this);
+        layoutInflater.inflate(R.layout.top_article_header_layout, this);
 
         gradientRelativeLayout = (RelativeLayout) findViewById(R.id.gradientRelativeLayout);
-        gradientRelativeLayout.setBackgroundDrawable(gradientDrawable);
-
         titleTextView = (TextView) findViewById(R.id.titleTextView);
-        titleTextView.setText(titleText);
-
+        abstractTextView = (TextView) findViewById(R.id.abstractTextView);
         dateTextView = (TextView) findViewById(R.id.dateTextView);
-        dateTextView.setText(dateText);
-
         sectionTextView = (TextView) findViewById(R.id.sectionTextView);
+
+        gradientRelativeLayout.setBackgroundDrawable(gradientDrawable);
+        titleTextView.setText(titleText);
+        abstractTextView.setText(abstractText);
+        dateTextView.setText(dateText);
         sectionTextView.setText(sectionText);
+
+        invalidate();
+        requestLayout();
 
     }
 
     //todo: when we start defining our own custom styles we need to give these a go
-    public NewsHeaderLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TopArticleHeaderLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public NewsHeaderLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public TopArticleHeaderLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public NewsHeaderLayout(Context context) {
+    public TopArticleHeaderLayout(Context context) {
         this(context, null);
     }
 
@@ -83,6 +92,20 @@ public class NewsHeaderLayout extends RelativeLayout {
 
     public void setTitleText(String titleText) {
         titleTextView.setText(titleText);
+
+        invalidate();
+        requestLayout();
+    }
+
+    public String getAbstractText() {
+        return abstractText;
+    }
+
+    public void setAbstractText(String abstractText) {
+        abstractTextView.setText(abstractText);
+
+        invalidate();
+        requestLayout();
     }
 
     public String getDateText() {
@@ -91,6 +114,9 @@ public class NewsHeaderLayout extends RelativeLayout {
 
     public void setDateText(String dateText) {
         dateTextView.setText(dateText);
+
+        invalidate();
+        requestLayout();
     }
 
     public String getSectionText() {
@@ -99,6 +125,9 @@ public class NewsHeaderLayout extends RelativeLayout {
 
     public void setSectionText(String sectionText) {
         sectionTextView.setText(sectionText);
+
+        invalidate();
+        requestLayout();
     }
 
     public Drawable getGradientDrawable() {
@@ -107,5 +136,8 @@ public class NewsHeaderLayout extends RelativeLayout {
 
     public void setGradientDrawable(int gradientDrawable) {
         gradientRelativeLayout.setBackgroundColor(gradientDrawable);
+
+        invalidate();
+        requestLayout();
     }
 }

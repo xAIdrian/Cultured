@@ -54,7 +54,7 @@ public class ErrorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_error, container, false);
+        View v = inflater.inflate(R.layout.error_fragment, container, false);
 
         restartText.setOnClickListener(new View.OnClickListener() {
             @Override

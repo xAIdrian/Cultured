@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -185,22 +183,22 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         switch (viewType) {
             case SIMPLE_LAYOUT:
-                View v1 = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_row_layout_simple, parent, false);
+                View v1 = inflater.inflate(R.layout.newsfeed_row_layout_simple, parent, false);
                 viewHolder = new SimpleViewHolder(v1);
                 break;
 
             case LARGE_IMAGE_LAYOUT:
-                View v2 = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_row_layout_large, parent, false);
+                View v2 = inflater.inflate(R.layout.newsfeed_row_layout_large, parent, false);
                 viewHolder = new LargeImageViewHolder(v2);
                 break;
 
             case MEDIUM_IMAGE_LAYOUT:
-                View v3 = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_row_layout_medium, parent, false);
+                View v3 = inflater.inflate(R.layout.newsfeed_row_layout_medium, parent, false);
                 viewHolder = new MediumImageViewHolder(v3);
                 break;
 
             case ONBOARDING_LAYOUT:
-                View v4 = LayoutInflater.from(parent.getContext()).inflate(R.layout.onboarding_card, parent, false);
+                View v4 = inflater.inflate(R.layout.onboarding_card, parent, false);
                 viewHolder = new OnboardingViewHolder(v4);
                 break;
 
@@ -210,7 +208,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 break;
 
             default:
-                View v6 = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_row_layout_simple, parent, false);
+                View v6 = LayoutInflater.from(parent.getContext()).inflate(R.layout.newsfeed_row_layout_simple, parent, false);
                 viewHolder = new SimpleViewHolder(v6);
                 break;
         }
@@ -305,8 +303,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         DateFormat formatter = new SimpleDateFormat("MMM dd h:mm a");
         final String dateFormatted = formatter.format(articleList.get(position).getCreatedDate());
 
-        holder.abstractText.setText(articleList.get(position).getAbstract());
-
 
         try {
             Glide.with(context)
@@ -351,8 +347,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         DateFormat formatter = new SimpleDateFormat("MMM dd h:mm a");
         final String dateFormatted = formatter.format(articleList.get(position).getCreatedDate());
-
-        holder.abstractText.setText(articleList.get(position).getAbstract());
 
         try {
             Glide.with(context)
@@ -409,10 +403,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Nullable
         @Bind(R.id.newsHeaderLayout)
         NewsHeaderLayout newsHeaderLayout;
-        @Nullable
-        @Bind(R.id.abstractTextView)
-        TextView abstractText;
-
 
         public LargeImageViewHolder(View itemView) {
             super(itemView);
@@ -436,9 +426,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         @Nullable
         @Bind(R.id.newsHeaderLayout)
         NewsHeaderLayout newsHeaderLayout;
-        @Nullable
-        @Bind(R.id.abstractTextView)
-        TextView abstractText;
 
 
         public MediumImageViewHolder(View itemView) {
@@ -517,8 +504,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        itemCount = articleList.size();
-        return itemCount;
+        return articleList.size();
     }
 
 }

@@ -3,7 +3,7 @@ package com.androidtitan.culturedapp.main.newsfeed;
 import android.test.InstrumentationTestCase;
 
 import com.androidtitan.culturedapp.BuildConfig;
-import com.androidtitan.culturedapp.main.domain.retrofit.NewsEndpoint;
+import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.main.newsfeed.mock.MockFailedNewsEndpoint;
 import com.androidtitan.culturedapp.main.newsfeed.mock.MockNewsEndpoint;
 import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;

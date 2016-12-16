@@ -1,6 +1,6 @@
 package com.androidtitan.culturedapp.main.util;
 
-import com.androidtitan.culturedapp.main.domain.retrofit.ServiceGenerator;
+import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
 import com.androidtitan.culturedapp.model.ApiError;
 
 import java.io.IOException;

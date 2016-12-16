@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.main.domain;
+package com.androidtitan.culturedapp.main.web;
 
 import android.util.Log;
 

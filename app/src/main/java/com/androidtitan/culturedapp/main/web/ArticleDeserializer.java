@@ -1,6 +1,4 @@
-package com.androidtitan.culturedapp.main.domain;
-
-import android.util.Log;
+package com.androidtitan.culturedapp.main.web;
 
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
@@ -127,12 +125,10 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         }
         tempArticle.setGeoFacet(geoList);
 
-        //todo
         if (obj.getAsJsonObject().get("multimedia") instanceof JsonArray) {
             Multimedium[] mediaobj = context.deserialize(obj.getAsJsonObject().get("multimedia"), Multimedium[].class);
             tempArticle.setMultimedia(Arrays.asList(mediaobj));
 
-            Log.e(TAG, obj.getAsJsonObject().get("multimedia").toString());
         }
 
 

@@ -43,7 +43,7 @@ import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
-import com.androidtitan.culturedapp.main.toparticle.TopArticleActivity;
+import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.model.provider.wrappers.ArticleCursorWrapper;
 import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
@@ -139,7 +139,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         initFCM();
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news);
+        setContentView(R.layout.newsfeed_activity);
 
         ButterKnife.bind(this);
         super.getAppComponent().inject(this);
@@ -350,8 +350,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-
+        inflater.inflate(R.menu.news_menu, menu);
         return true;
     }
 
@@ -365,14 +364,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
                 break;
 
-            case R.id.menu_item_graph:
-
-                break;
-
-            case R.id.menu_item_facets:
-
-//                Used to print what is held in our content provider
-                // todo: this must go at some point!
+            /*case R.id.menu_item_facets:
 
                 Cursor articleCursor = getContentResolver().query(
                         DatabaseContract.ArticleTable.CONTENT_URI, null, null, null, null
@@ -402,7 +394,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                     mwrapper.moveToNext();
                 }
 
-                break;
+                break;*/
 
             default:
                 throw new IllegalArgumentException("Invalid options item: " + item.getItemId());
@@ -477,14 +469,12 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         bgView.setTranslationY(bgView.getTranslationY() - dy / 3);
     }
 
-
     @Override
     public void updateNewsAdapter() {
 
         adapter.notifyDataSetChanged();
 
     }
-
 
     @Override
     public void onLoadComplete() {

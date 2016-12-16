@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="NewsHeaderLayout">
-        <attr name="titleText" format="string" />
-        <attr name="dateText" format="string" />
-        <attr name="sectionText" format="string" />
-        <attr name="gradientDrawable" format="integer" />
+        <attr name="newsTitleText" format="string" />
+        <attr name="newsDateText" format="string" />
+        <attr name="newsSectionText" format="string" />
+        <attr name="newsGradientDrawable" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="TopArticleHeaderLayout">
+        <attr name="articleTitleText" format="string" />
+        <attr name="articleAbstractText" format="string" />
+        <attr name="articleDateText" format="string" />
+        <attr name="articleSectionText" format="string" />
+        <attr name="articleGradientDrawable" format="integer" />
     </declare-styleable>
 </resources>
