@@ -1,7 +1,7 @@
-package com.androidtitan.culturedapp.main.domain.retrofit;
+package com.androidtitan.culturedapp.main.web.retrofit;
 
-import com.androidtitan.culturedapp.main.domain.ArticleDeserializer;
-import com.androidtitan.culturedapp.main.domain.DateDeserializer;
+import com.androidtitan.culturedapp.main.web.ArticleDeserializer;
+import com.androidtitan.culturedapp.main.web.DateDeserializer;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

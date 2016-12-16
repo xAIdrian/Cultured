@@ -7,6 +7,5 @@ package com.androidtitan.culturedapp.common.structure;
  */
 public interface MvpView {
     //what has to happen in all of your views?
-        //that goes here
 
 }

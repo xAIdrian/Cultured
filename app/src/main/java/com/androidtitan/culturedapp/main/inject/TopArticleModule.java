@@ -2,8 +2,8 @@ package com.androidtitan.culturedapp.main.inject;
 
 import android.content.Context;
 
+import com.androidtitan.culturedapp.main.toparticle.TopArticleLoaderProvider;
 import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
-import com.androidtitan.culturedapp.main.toparticle.TopArticleProvider;
 
 import dagger.Module;
 import dagger.Provides;
@@ -23,8 +23,8 @@ public class TopArticleModule {
     }
 
     @Provides
-    public TopArticleProvider provideTopArticleProvider(Context context) {
-        return new TopArticleProvider(context);
+    public TopArticleLoaderProvider provideTopArticleProvider(Context context) {
+        return new TopArticleLoaderProvider(context);
     }
 
 }

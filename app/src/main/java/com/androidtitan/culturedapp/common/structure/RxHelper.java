@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.common;
+package com.androidtitan.culturedapp.common.structure;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;

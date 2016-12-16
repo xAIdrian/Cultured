@@ -12,9 +12,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.RxHelper;
-import com.androidtitan.culturedapp.main.domain.retrofit.NewsEndpoint;
-import com.androidtitan.culturedapp.main.domain.retrofit.ServiceGenerator;
+import com.androidtitan.culturedapp.common.structure.RxHelper;
+import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
+import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.androidtitan.culturedapp.model.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
@@ -153,7 +153,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
 
         for(Multimedium multimedium : multimedia) {
 
-            multimedium.setStoryId(articleId);
+            multimedium.setStoryId(articleId + 1);
             Uri insertedUri = getContext().getContentResolver()
                     .insert(DatabaseContract.MediaTable.CONTENT_URI, multimedium.getContentValues());
         }

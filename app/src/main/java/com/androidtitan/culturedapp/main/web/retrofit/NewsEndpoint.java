@@ -1,9 +1,8 @@
-package com.androidtitan.culturedapp.main.domain.retrofit;
+package com.androidtitan.culturedapp.main.web.retrofit;
 
 
 import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
 
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;

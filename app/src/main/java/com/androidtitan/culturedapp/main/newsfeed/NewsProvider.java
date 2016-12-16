@@ -4,9 +4,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.RxHelper;
-import com.androidtitan.culturedapp.main.domain.retrofit.NewsEndpoint;
-import com.androidtitan.culturedapp.main.domain.retrofit.ServiceGenerator;
+import com.androidtitan.culturedapp.common.structure.RxHelper;
+import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
+import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
@@ -17,12 +17,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import rx.*;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by amohnacs on 8/29/16.
