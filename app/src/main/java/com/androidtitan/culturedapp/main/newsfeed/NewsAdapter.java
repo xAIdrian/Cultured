@@ -25,6 +25,7 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -32,14 +33,15 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
+import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
+
 /**
  * Created by amohnacs on 3/23/16.
  */
 public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = getClass().getSimpleName();
 
-    public static String CULTURED_PREFERENCES = "com.androidtitan.hotspots.main.culturedpreferences";
-    public static String PREFERENCES_SHOULD_ONBOARD = "com.androidtitan.hotspots.main.preferencesshouldonboard";
     private int ANIMATED_ITEMS_COUNT;
 
     private static final int SIMPLE_LAYOUT = 0;
@@ -54,7 +56,6 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private SharedPreferences.Editor editor;
 
     private int lastAnimatedPosition = -1;
-    private int itemCount = 0;
     private boolean shouldShowAboutCard = false;
 
     @Inject
@@ -66,9 +67,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         sharedPreferences = context.getSharedPreferences(CULTURED_PREFERENCES, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        //todo: if sharedPreferences says it is our first time using the app
-        if (!sharedPreferences.contains(PREFERENCES_SHOULD_ONBOARD)) {
-            editor.putBoolean(PREFERENCES_SHOULD_ONBOARD, true);
+        if (!sharedPreferences.contains(PREFERENCES_APP_FIRST_RUN)) {
+            editor.putBoolean(PREFERENCES_APP_FIRST_RUN, true);
             editor.commit();
 
             articleList.add(0, new Article());
@@ -119,9 +119,14 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         notifyItemInserted(articleList.size() - 1);
     }
 
-    public void insertToAdapter(int position, Article article) {
+    public void insertIntoAdapter(int position, Article article) {
         articleList.add(position, article);
         notifyItemChanged(position);
+    }
+
+    public void insertIntoAdapter(int position, ArrayList<Article> articles) {
+        articleList.addAll(position, articles);
+        notifyItemRangeChanged(0, articles.size());
     }
 
     public void clearList() {
@@ -135,7 +140,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public void resetOnboardingCard() {
 
-        editor.putBoolean(PREFERENCES_SHOULD_ONBOARD, true);
+        editor.putBoolean(PREFERENCES_APP_FIRST_RUN, true);
         editor.commit();
         articleList.add(0, new Article());
         notifyDataSetChanged();
@@ -161,7 +166,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if(position == 0 && shouldShowAboutCard) {
             return ABOUT_LAYOUT;
 
-        } else if (position == 0 && sharedPreferences.getBoolean(PREFERENCES_SHOULD_ONBOARD, false)) {
+        } else if (position == 0 && sharedPreferences.getBoolean(PREFERENCES_APP_FIRST_RUN, false)) {
             return ONBOARDING_LAYOUT;
 
         } else if (articleList.get(position).getMultimedia().size() > 3) {
@@ -244,7 +249,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 onboardingViewHolder.gotitText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        editor.putBoolean(PREFERENCES_SHOULD_ONBOARD, false);
+                        editor.putBoolean(PREFERENCES_APP_FIRST_RUN, false);
                         editor.commit();
 
                         articleList.remove(0);
@@ -278,7 +283,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void initViewholderSimple(final SimpleViewHolder holder,  int position) {
 
-        if(sharedPreferences.getBoolean(PREFERENCES_SHOULD_ONBOARD, false) || shouldShowAboutCard) {
+        if(sharedPreferences.getBoolean(PREFERENCES_APP_FIRST_RUN, false) || shouldShowAboutCard) {
 
             position ++;
 

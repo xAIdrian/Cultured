@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.model.provider;
+package com.androidtitan.culturedapp.main.provider;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import static android.content.ContentResolver.CURSOR_DIR_BASE_TYPE;
-import static com.androidtitan.culturedapp.model.provider.DatabaseContract.AUTHORITY;
+import static com.androidtitan.culturedapp.main.provider.DatabaseContract.AUTHORITY;
 
 /**
  * Created by amohnacs on 7/17/16.

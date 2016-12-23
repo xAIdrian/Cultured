@@ -1,6 +1,5 @@
 package com.androidtitan.culturedapp.main.toparticle;
 
-import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -11,8 +10,8 @@ import com.androidtitan.culturedapp.common.structure.BasePresenter;
 import com.androidtitan.culturedapp.main.CulturedApp;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
-import com.androidtitan.culturedapp.model.provider.wrappers.ArticleCursorWrapper;
-import com.androidtitan.culturedapp.model.provider.wrappers.MultimediumCursorWrapper;
+import com.androidtitan.culturedapp.main.provider.wrappers.ArticleCursorWrapper;
+import com.androidtitan.culturedapp.main.provider.wrappers.MultimediumCursorWrapper;
 
 import java.util.ArrayList;
 

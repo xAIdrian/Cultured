@@ -49,13 +49,6 @@ public class NewsProvider implements NewsMvp.Provider {
 
         call.compose(RxHelper.applySchedulers())
                 .retry(10)
-                .doOnError(e -> {
-                    e.printStackTrace();
-
-                    ApiError error = new ApiError();
-                    error.setMessage(e.getMessage());
-                    listener.responseFailed(error);
-                })
                 .subscribe(new Subscriber<NewsResponse>() {
                     @Override
                     public void onCompleted() {
@@ -96,13 +89,6 @@ public class NewsProvider implements NewsMvp.Provider {
 
         call.compose(RxHelper.applySchedulers())
                 .retry(10)
-                .doOnError(e -> {
-                    e.printStackTrace();
-
-                    ApiError error = new ApiError();
-                    error.setMessage(e.getMessage());
-                    listener.responseFailed(error);
-                })
                 .subscribe(new Subscriber<NewsResponse>() {
                     @Override
                     public void onCompleted() {
@@ -137,18 +123,11 @@ public class NewsProvider implements NewsMvp.Provider {
     public void fetchAdditionalArticlesToInsert(String section, final List<Article> articlesList,
                                                 final CallbackListener listener) {
 
-        final Observable<NewsResponse> call = newsService.newsWireArticles(section, 1, 0,
+        final Observable<NewsResponse> call = newsService.newsWireArticles(section, 10, 0,
                 context.getResources().getString(R.string.nyt_api_key_newswire));
 
         call.compose(RxHelper.applySchedulers())
                 .retry(10)
-                .doOnError(e -> {
-                    e.printStackTrace();
-
-                    ApiError error = new ApiError();
-                    error.setMessage(e.getMessage());
-                    listener.responseFailed(error);
-                })
                 .subscribe(new Subscriber<NewsResponse>() {
                     @Override
                     public void onCompleted() {
@@ -170,13 +149,17 @@ public class NewsProvider implements NewsMvp.Provider {
                     @Override
                     public void onNext(NewsResponse newsResponse) {
 
-                        if (!newsResponse.getArticles().get(0).getAbstract()
-                                .equals(articlesList.get(0).getAbstract())) {
+                        List<Article> responseArticles = newsResponse.getArticles();
+                        ArrayList<Article> newArticles = new ArrayList<Article>();
 
-                            listener.insertArticleInAdapter(0, newsResponse.getArticles().get(0));
-
-                            Log.d(TAG, "Item added to the top ...");
+                        for(int i = 0; i < responseArticles.size(); i++) {
+                            if (!responseArticles.get(i).getTitle()
+                                    .equals(articlesList.get(i).getTitle())) {
+                                newArticles.add(responseArticles.get(i));
+                            }
                         }
+
+                        listener.insertArticlesIntoAdapter(0, newArticles);
                     }
                 });
     }

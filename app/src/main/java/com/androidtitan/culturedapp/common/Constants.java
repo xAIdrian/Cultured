@@ -12,6 +12,8 @@ public class Constants {
     public static final int MEDIA_LOADER_ID = 75841;
 
     //shared preferences
+    public static String CULTURED_PREFERENCES = "com.androidtitan.hotspots.main.culturedpreferences";
+    public static String PREFERENCES_APP_FIRST_RUN = "com.androidtitan.hotspots.main.preferencesshouldonboard";
     public static final String PREFERENCES_SYNCING_PERIODICALLY = "sharedpreferences.syncingperiodically";
     public static final String PREFERENCES_ARTICLE_ID = "sharedpreferences.articleid";
 

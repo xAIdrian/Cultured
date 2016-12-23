@@ -23,6 +23,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="view_article">View Article</string>
 
+    <string name="simple_loading">Loading...</string>
     <string name="loading">Cultured is loading ...</string>
     <string name="swipe_up">Swipe up for more info</string>
 
@@ -42,7 +43,8 @@
     icon8.com</string>
     <string name="chooser_text">Which app would you like to use?</string>
     <string name="error">Error</string>
-    <string name="restart_app">Would you like to restart the app?</string>
+    <string name="nice_error">Your news is not loading at the moment.\nCheck your internet connection and try again.</string>
+    <string name="restart_app">Click to restart the app</string>
 
     <string name="top_article">Top Article</string>
     <string name="graph">Graph</string>

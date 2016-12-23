@@ -1,6 +1,5 @@
-package com.androidtitan.culturedapp.model.provider;
+package com.androidtitan.culturedapp.main.provider;
 
-import android.content.ContentResolver;
 import android.net.Uri;
 
 /**

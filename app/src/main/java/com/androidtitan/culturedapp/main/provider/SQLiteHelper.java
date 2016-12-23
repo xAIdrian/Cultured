@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.model.provider;
+package com.androidtitan.culturedapp.main.provider;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

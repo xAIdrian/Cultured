@@ -4,6 +4,7 @@ import com.androidtitan.culturedapp.common.structure.MvpView;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,10 +22,10 @@ public interface NewsMvp {
 
         interface CallbackListener {
             void appendArticleToAdapter(Article article);
-            void insertArticleInAdapter(int index, Article article);
+            void insertArticleIntoAdapter(int index, Article article);
+            void insertArticlesIntoAdapter(int index, ArrayList<Article> articles);
 
             void responseFailed(ApiError error);
-
             void onCompleted();
         }
     }
@@ -33,17 +34,17 @@ public interface NewsMvp {
 
         List<Article> loadArticles(int limit);
         void loadOffsetArticles(int limit, int offset);
-        void newArticleRefresh();
+        void newsArticlesRefresh(List<Article> articles, int limit);
 
     }
 
     interface View extends MvpView {
 
-        void updateNewsAdapter();
         void onLoadComplete();
 
         void appendAdapterItem(Article article);
         void insertAdapterItem(int index, Article article);
+        void insertAdapterItems(int index, ArrayList<Article> articles);
 
         List<Article> getArticles();
 

@@ -4,7 +4,7 @@ import android.accounts.Account;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.androidtitan.culturedapp.model.provider.DatabaseContract;
+import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 

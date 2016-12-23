@@ -1,5 +1,7 @@
 package com.androidtitan.culturedapp.main.toparticle.ui;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +22,8 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
 
 public class TopArticleActivity extends BaseActivity implements TopArticleMvp.View {
     private final String TAG = getClass().getSimpleName();
@@ -46,6 +50,7 @@ public class TopArticleActivity extends BaseActivity implements TopArticleMvp.Vi
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Top Articles");
 
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

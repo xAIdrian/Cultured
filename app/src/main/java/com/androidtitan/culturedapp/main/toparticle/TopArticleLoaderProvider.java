@@ -1,15 +1,10 @@
 package com.androidtitan.culturedapp.main.toparticle;
 
-import android.app.LoaderManager;
 import android.content.Context;
 import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.androidtitan.culturedapp.model.provider.DatabaseContract;
+import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 
 import java.security.InvalidParameterException;
 

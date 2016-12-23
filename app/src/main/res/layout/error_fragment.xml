@@ -4,34 +4,41 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.androidtitan.culturedapp.main.newsfeed.ui.ErrorFragment">
-
-    <ImageView
-        android:id="@+id/errorImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        app:srcCompat="@drawable/ic_error"/>
+    tools:context="com.androidtitan.culturedapp.main.newsfeed.ui.ErrorFragment"
+    android:background="@color/colorPrimary">
 
     <TextView
         android:id="@+id/errorTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/errorImageView"
-        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="true"
         android:gravity="center"
         android:padding="8dp"
-        android:text="@string/error"/>
+        android:textColor="@android:color/white"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/nice_error" />
+
+    <TextView
+        android:id="@+id/extraInfoTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/errorTextView"
+        android:layout_centerHorizontal="true"
+        android:padding="16dp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:text="@string/restart_app" />
 
     <TextView
         android:id="@+id/restartTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/extraInfoTextView"
         android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
-        android:text="@string/restart_app"
-        android:textColor="@color/colorPrimary"
-        android:textAppearance="?android:attr/textAppearanceMedium"/>
+        android:padding="16dp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/restart_app" />
 
 </RelativeLayout>

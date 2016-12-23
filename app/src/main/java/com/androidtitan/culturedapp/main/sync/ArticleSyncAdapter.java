@@ -16,7 +16,7 @@ import com.androidtitan.culturedapp.common.structure.RxHelper;
 import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
-import com.androidtitan.culturedapp.model.provider.DatabaseContract;
+import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
 
@@ -26,8 +26,8 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 
+import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_ARTICLE_ID;
-import static com.androidtitan.culturedapp.main.newsfeed.NewsAdapter.CULTURED_PREFERENCES;
 
 /**
  * Created by amohnacs on 8/7/16.
@@ -77,9 +77,11 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
             clean up
         */
 
+        Log.e(TAG, "WE ARE RUNNING OUR SYNC ADAPTER");
+
         clearDdValues();
         Log.d(TAG, "SyncAdapter onPerformSync()");
-        List<Article> articles = fetchTopArticles(10);
+        fetchTopArticles(10);
 
     }
 
@@ -92,9 +94,6 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
 
         call.compose(RxHelper.applySchedulers())
                 .retry(10)
-                .doOnError(e -> {
-                    e.printStackTrace();
-                })
                 .subscribe(new Subscriber<NewsResponse>() {
                     @Override
                     public void onCompleted() {

@@ -1,11 +1,10 @@
-package com.androidtitan.culturedapp.model.provider.wrappers;
+package com.androidtitan.culturedapp.main.provider.wrappers;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
-import com.androidtitan.culturedapp.model.provider.DatabaseContract;
+import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 
 import java.text.DateFormat;
 import java.text.ParseException;

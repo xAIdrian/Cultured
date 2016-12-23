@@ -1,6 +1,7 @@
 package com.androidtitan.culturedapp.main.newsfeed.ui;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -23,8 +24,10 @@ import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity.ERROR_M
 public class ErrorFragment extends Fragment {
     private final String TAG = getClass().getSimpleName();
 
-    @Bind(R.id.restartTextView)
+    ErrorFragmentInterface errorInterface;
+
     TextView restartText;
+    TextView messageText;
 
     private String errorMessage;
     private HashMap<String, Object> errorMap;
@@ -56,14 +59,39 @@ public class ErrorFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.error_fragment, container, false);
 
+        restartText = (TextView) v.findViewById(R.id.restartTextView);
+        messageText = (TextView) v.findViewById(R.id.extraInfoTextView);
+
+        messageText.setText(errorMessage);
+
         restartText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //todo : restart app
+                errorInterface.restartArticleLoad();
             }
         });
 
         return v;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ErrorFragmentInterface) {
+            errorInterface = (ErrorFragmentInterface) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        errorInterface = null;
+    }
+}
+
+interface ErrorFragmentInterface {
+    void restartArticleLoad();
 }
