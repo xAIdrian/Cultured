@@ -291,7 +291,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         holder.titleText.setText(articleList.get(position).getTitle());
         holder.abstractText.setText(articleList.get(position).getAbstract());
-        holder.globalText.setText(articleList.get(position).getGeoFacet().get(0));
+        holder.globalText.setText(articleList.get(position).getGeoFacet().get(0).getFacetText());
 
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -323,7 +323,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                             holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
                             holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
-                            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
+                            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0).getFacetText());
                             holder.newsHeaderLayout.setDateText(dateFormatted);
 
                         }
@@ -334,7 +334,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
             holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
-            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
+            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0).getFacetText());
             holder.newsHeaderLayout.setDateText(dateFormatted);
         }
 
@@ -370,7 +370,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
                             }
                             holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
-                            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
+                            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0).getFacetText());
                             holder.newsHeaderLayout.setDateText(dateFormatted);
 
                         }
@@ -383,7 +383,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 holder.newsHeaderLayout.setGradientViewHeight(holder.articleImage);
             }
             holder.newsHeaderLayout.setTitleText(articleList.get(position).getTitle());
-            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
+            holder.newsHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0).getFacetText());
             holder.newsHeaderLayout.setDateText(dateFormatted);
         }
 

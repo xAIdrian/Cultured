@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -101,6 +102,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
     @Bind(R.id.newsList)
     RecyclerView recyclerView;
+    @Bind(R.id.refreshFloatingActionButton)
+    FloatingActionButton refreshFab;
 
     @Bind(R.id.drawerLayout)
     DrawerLayout drawerLayout;
@@ -305,6 +308,12 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
                     showToolbarBy(dy);
                 }
             }
+        });
+
+        refreshFab.setOnClickListener(v -> {
+            presenter.newsArticlesRefresh(articles, 5);
+            loading = true;
+            showColoredSnackbar();
         });
 
     }
@@ -695,7 +704,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         ContentResolver.setSyncAutomatically(
                 account, DatabaseContract.AUTHORITY, true);
         ContentResolver.addPeriodicSync(
-                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, 300);
+                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
         ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
     }
 

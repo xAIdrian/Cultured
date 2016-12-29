@@ -1,6 +1,8 @@
 package com.androidtitan.culturedapp.main.web;
 
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.androidtitan.culturedapp.model.newyorktimes.RelatedUrl;
 import com.google.gson.JsonArray;
@@ -85,43 +87,47 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
             }
         }
 
-        List<String> desList = new ArrayList<String>();
+        List<Facet> desList = new ArrayList<Facet>();
         if (obj.get("des_facet") instanceof JsonArray) {
             for(JsonElement ele : obj.get("des_facet").getAsJsonArray()) {
-                desList.add(ele.getAsString());
+                Facet facet = new Facet(FacetType.DES, ele.getAsString(), tempArticle.getCreatedDate());
+                desList.add(facet);
             }
         } else {
-            desList.add("");
+            desList.add(new Facet());
         }
         tempArticle.setDesFacet(desList);
 
-        List<String> orgList = new ArrayList<String>();
+        List<Facet> orgList = new ArrayList<Facet>();
         if (obj.get("org_facet") instanceof JsonArray) {
             for(JsonElement ele : obj.get("org_facet").getAsJsonArray()) {
-                orgList.add(ele.getAsString());
+                Facet facet = new Facet(FacetType.ORG, ele.getAsString(), tempArticle.getCreatedDate());
+                orgList.add(facet);
             }
         } else {
-            orgList.add("");
+            orgList.add(new Facet());
         }
         tempArticle.setOrgFacet(orgList);
 
-        List<String> perList = new ArrayList<String>();
+        List<Facet> perList = new ArrayList<Facet>();
         if (obj.get("per_facet") instanceof JsonArray) {
             for(JsonElement ele : obj.get("per_facet").getAsJsonArray()) {
-                perList.add(ele.getAsString());
+                Facet facet = new Facet(FacetType.PER, ele.getAsString(), tempArticle.getCreatedDate());
+                perList.add(facet);
             }
         } else {
-            perList.add("");
+            perList.add(new Facet());
         }
         tempArticle.setPerFacet(perList);
 
-        List<String> geoList = new ArrayList<String>();
+        List<Facet> geoList = new ArrayList<Facet>();
         if (obj.get("geo_facet") instanceof JsonArray) {
             for(JsonElement ele : obj.get("geo_facet").getAsJsonArray()) {
-                geoList.add(ele.getAsString());
+                Facet facet = new Facet(FacetType.GEO, ele.getAsString(), tempArticle.getCreatedDate());
+                geoList.add(facet);
             }
         } else {
-            geoList.add("");
+            geoList.add(new Facet());
         }
         tempArticle.setGeoFacet(geoList);
 

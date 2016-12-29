@@ -26,7 +26,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
                 "CREATE TABLE " + DatabaseContract.ArticleTable.TABLE_NAME + " ( " +
-                        DatabaseContract.ArticleTable._ID + " INTEGER PRIMARY KEY," +
+                        DatabaseContract.ArticleTable._ID + " INTEGER PRIMARY KEY, " +
                         DatabaseContract.ArticleTable.TITLE + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.ArticleTable.SECTION + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.ArticleTable.ABSTRACT + TEXT_TYPE + COMMA_SEP +
@@ -47,6 +47,16 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                         DatabaseContract.MediaTable.SUBTYPE + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.MediaTable.CAPTION + TEXT_TYPE + COMMA_SEP +
                         DatabaseContract.MediaTable.COPYRIGHT + TEXT_TYPE + " );"
+        );
+
+        db.execSQL(
+                "CREATE TABLE " + DatabaseContract.FacetTable.TABLE_NAME + " ( " +
+                        DatabaseContract.FacetTable._ID + " INTEGER PRIMARY KEY, " +
+                        DatabaseContract.FacetTable.STORY_ID + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.FacetTable.TYPE + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.FacetTable.FACET + TEXT_TYPE + COMMA_SEP +
+                        DatabaseContract.FacetTable.CREATED_DATE + TEXT_TYPE + " );"
+
         );
     }
 

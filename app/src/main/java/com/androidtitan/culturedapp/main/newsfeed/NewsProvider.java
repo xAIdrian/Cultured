@@ -152,10 +152,13 @@ public class NewsProvider implements NewsMvp.Provider {
                         List<Article> responseArticles = newsResponse.getArticles();
                         ArrayList<Article> newArticles = new ArrayList<Article>();
 
-                        for(int i = 0; i < responseArticles.size(); i++) {
-                            if (!responseArticles.get(i).getTitle()
-                                    .equals(articlesList.get(i).getTitle())) {
-                                newArticles.add(responseArticles.get(i));
+                        for(int i = 0; i < responseArticles.size() - 1; i++) {
+
+                            if(responseArticles.get(i) != null && articlesList.get(i) != null) {
+                                if (!responseArticles.get(i).getTitle()
+                                        .equals(articlesList.get(i).getTitle())) {
+                                    newArticles.add(responseArticles.get(i));
+                                }
                             }
                         }
 
