@@ -28,6 +28,7 @@ import rx.Observable;
 import rx.Subscriber;
 
 import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
+import static com.androidtitan.culturedapp.common.Constants.NO_ARTICLE_ID;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_ARTICLE_ID;
 
 /**
@@ -78,10 +79,9 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
             clean up
         */
 
-        Log.e(TAG, "WE ARE RUNNING OUR SYNC ADAPTER");
+        Log.e(TAG, "Running sync adapter. onPerformSync()");
 
-        clearDdValues();
-        Log.d(TAG, "SyncAdapter onPerformSync()");
+        clearTopArticleDdValues();
         fetchTopArticles(10);
 
     }
@@ -171,7 +171,8 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
 
         for(Facet facet : facets) {
 
-            if(articleId == -1) { //we set our articles to -1 when we are just pulling Facets for our Trending
+            if(articleId == NO_ARTICLE_ID) { //we set our articles to -1 when we are just pulling Facets for our Trending
+                facet.setStoryId(NO_ARTICLE_ID);
                 Uri insertedUri = getContext().getContentResolver()
                         .insert(DatabaseContract.FacetTable.CONTENT_URI, facet.getContentValues());
             } else {
@@ -184,8 +185,8 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
         return facets;
     }
 
-    private void clearDdValues() {
-        Log.d(TAG, "clearing all database values..");
+    private void clearTopArticleDdValues() {
+        Log.d(TAG, "clearing all database values");
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(PREFERENCES_ARTICLE_ID, 0);
@@ -193,6 +194,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
 
         context.getContentResolver().delete(DatabaseContract.ArticleTable.CONTENT_URI, null, null);
         context.getContentResolver().delete(DatabaseContract.MediaTable.CONTENT_URI, null, null);
-        context.getContentResolver().delete(DatabaseContract.FacetTable.CONTENT_URI, null, null);
+        context.getContentResolver().delete(DatabaseContract.FacetTable.CONTENT_URI,
+                "story_id is not null", null);
     }
 }

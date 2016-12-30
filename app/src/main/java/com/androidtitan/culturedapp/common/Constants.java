@@ -13,6 +13,8 @@ public class Constants {
     public static final int TOP_ARTICLE_FACET_LOADER_ID = 79654;
     public static final int TRENDING_FACET_LOADER_ID = 79816;
 
+    public final static int NO_ARTICLE_ID = 1000;
+
     //shared preferences
     public static String CULTURED_PREFERENCES = "com.androidtitan.hotspots.main.culturedpreferences";
     public static String PREFERENCES_APP_FIRST_RUN = "com.androidtitan.hotspots.main.preferencesshouldonboard";

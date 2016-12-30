@@ -31,14 +31,12 @@ public class NewsProvider implements NewsMvp.Provider {
     private NewsEndpoint newsService;
 
     private ArrayList<Article> fetchArticleList = new ArrayList<>();
-    private ArrayList<Article> loadNextArticleList = new ArrayList<>();
 
     @Inject
     public NewsProvider(Context context) {
         this.context = context;
         newsService = ServiceGenerator.createService(NewsEndpoint.class);
     }
-
 
     @Override
     public List<Article> fetchArticles(String section, int limit, final CallbackListener listener) {
