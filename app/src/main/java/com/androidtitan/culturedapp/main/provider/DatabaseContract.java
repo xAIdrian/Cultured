@@ -1,6 +1,5 @@
-package com.androidtitan.culturedapp.model.provider;
+package com.androidtitan.culturedapp.main.provider;
 
-import android.content.ContentResolver;
 import android.net.Uri;
 
 /**
@@ -37,7 +36,7 @@ public class DatabaseContract {
 
     public static final class MediaTable {
 
-        public static final String TABLE_NAME = "toparticlesmedia";
+        public static final String TABLE_NAME = "media";
         public static final Uri CONTENT_URI =
                 Uri.withAppendedPath(DatabaseContract.CONTENT_URI, TABLE_NAME);
 
@@ -53,5 +52,18 @@ public class DatabaseContract {
         public static final String CAPTION = "caption";
         public static final String COPYRIGHT = "copyright";
 
+    }
+
+    public static final class FacetTable {
+
+        public static final String TABLE_NAME = "facets";
+        public static final Uri CONTENT_URI =
+                Uri.withAppendedPath(DatabaseContract.CONTENT_URI, TABLE_NAME);
+
+        public static final String _ID = "_ID";
+        public static final String STORY_ID = "story_id";
+        public static final String TYPE = "type";
+        public static final String FACET = "facet";
+        public static final String CREATED_DATE = "create_date";
     }
 }

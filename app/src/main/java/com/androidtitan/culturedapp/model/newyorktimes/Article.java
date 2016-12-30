@@ -7,7 +7,7 @@ import android.content.ContentValues;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.androidtitan.culturedapp.model.provider.DatabaseContract;
+import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -69,16 +69,16 @@ public class Article implements Parcelable {
     private String headline;
     @SerializedName("des_facet")
     @Expose
-    private List<String> desFacet = new ArrayList<String>();
+    private List<Facet> desFacet;
     @SerializedName("org_facet")
     @Expose
-    private List<String> orgFacet;
+    private List<Facet> orgFacet;
     @SerializedName("per_facet")
     @Expose
-    private List<String> perFacet;
+    private List<Facet> perFacet;
     @SerializedName("geo_facet")
     @Expose
-    private List<String> geoFacet = new ArrayList<String>();
+    private List<Facet> geoFacet;
     @SerializedName("related_urls")
     @Expose
     private List<RelatedUrl> relatedUrls;
@@ -100,8 +100,8 @@ public class Article implements Parcelable {
     }
 
     public Article(String title, String section, String _abstract, String url, Date createdDate,
-                   List<String> desFacet, List<String> orgFacet, List<String> perFacet,
-                   List<String> geoFacet, List<Multimedium> multimedia) {
+                   List<Facet> desFacet, List<Facet> orgFacet, List<Facet> perFacet,
+                   List<Facet> geoFacet, List<Multimedium> multimedia) {
 
         this.title = title;
         this.section = section;
@@ -116,8 +116,8 @@ public class Article implements Parcelable {
     }
 
     public Article(String id, String title, String section, String _abstract, String url, Date createdDate,
-                   List<String> desFacet, List<String> orgFacet, List<String> perFacet,
-                   List<String> geoFacet, List<Multimedium> multimedia) {
+                   List<Facet> desFacet, List<Facet> orgFacet, List<Facet> perFacet,
+                   List<Facet> geoFacet, List<Multimedium> multimedia) {
 
         this.id = Integer.valueOf(id);
         this.title = title;
@@ -153,14 +153,16 @@ public class Article implements Parcelable {
         kicker = in.readString();
         headline = in.readString();
 
-        desFacet = new ArrayList<String>();
+        /* todo
+        desFacet = new ArrayList<Facet>();
         in.readStringList(desFacet);
-        orgFacet = new ArrayList<String>();
+        orgFacet = new ArrayList<Facet>();
         in.readStringList(orgFacet);
-        perFacet = new ArrayList<String>();
+        perFacet = new ArrayList<Facet>();
         in.readStringList(perFacet);
-        geoFacet = new ArrayList<String>();
+        geoFacet = new ArrayList<Facet>();
         in.readStringList(geoFacet);
+        */
 
         relatedUrls = new ArrayList<RelatedUrl>();
         in.readTypedList(relatedUrls, RelatedUrl.CREATOR);
@@ -458,7 +460,7 @@ public class Article implements Parcelable {
      * @return
      * The desFacet
      */
-    public List<String> getDesFacet() {
+    public List<Facet> getDesFacet() {
         return desFacet;
     }
 
@@ -467,7 +469,7 @@ public class Article implements Parcelable {
      * @param desFacet
      * The des_facet
      */
-    public void setDesFacet(List<String> desFacet) {
+    public void setDesFacet(List<Facet> desFacet) {
         this.desFacet = desFacet;
     }
 
@@ -476,7 +478,7 @@ public class Article implements Parcelable {
      * @return
      * The orgFacet
      */
-    public List<String> getOrgFacet() {
+    public List<Facet> getOrgFacet() {
         return orgFacet;
     }
 
@@ -485,7 +487,7 @@ public class Article implements Parcelable {
      * @param orgFacet
      * The org_facet
      */
-    public void setOrgFacet(List<String> orgFacet) {
+    public void setOrgFacet(List<Facet> orgFacet) {
         this.orgFacet = orgFacet;
     }
 
@@ -494,7 +496,7 @@ public class Article implements Parcelable {
      * @return
      * The perFacet
      */
-    public List<String> getPerFacet() {
+    public List<Facet> getPerFacet() {
         return perFacet;
     }
 
@@ -503,7 +505,7 @@ public class Article implements Parcelable {
      * @param perFacet
      * The per_facet
      */
-    public void setPerFacet(List<String> perFacet) {
+    public void setPerFacet(List<Facet> perFacet) {
         this.perFacet = perFacet;
     }
 
@@ -512,7 +514,7 @@ public class Article implements Parcelable {
      * @return
      * The geoFacet
      */
-    public List<String> getGeoFacet() {
+    public List<Facet> getGeoFacet() {
         return geoFacet;
     }
 
@@ -521,7 +523,7 @@ public class Article implements Parcelable {
      * @param geoFacet
      * The geo_facet
      */
-    public void setGeoFacet(List<String> geoFacet) {
+    public void setGeoFacet(List<Facet> geoFacet) {
         this.geoFacet = geoFacet;
     }
 
@@ -626,10 +628,12 @@ public class Article implements Parcelable {
         dest.writeString(materialTypeFacet);
         dest.writeString(kicker);
         dest.writeString(headline);
+        /*todo
         dest.writeStringList(desFacet);
         dest.writeStringList(orgFacet);
         dest.writeStringList(perFacet);
         dest.writeStringList(geoFacet);
+        */
         dest.writeTypedList(relatedUrls);
         dest.writeTypedList(multimedia);
         dest.writeString(blogName);

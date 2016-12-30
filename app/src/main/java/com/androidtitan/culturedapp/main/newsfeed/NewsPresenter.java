@@ -8,6 +8,7 @@ import com.androidtitan.culturedapp.main.CulturedApp;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -46,24 +47,27 @@ public class NewsPresenter extends BasePresenter<NewsMvp.View> implements NewsMv
     }
 
     @Override
-    public void newArticleRefresh() {
+    public void newsArticlesRefresh(List<Article> articles, int limit) {
 
-        newsProvider.fetchAdditionalArticlesToInsert("world", getMvpView().getArticles(), this);
+        newsProvider.fetchAdditionalArticlesToInsert("world", articles, this);
 
     }
 
 
     //callback methods
-
     @Override
     public void appendArticleToAdapter(Article article) {
         getMvpView().appendAdapterItem(article);
-        getMvpView().updateNewsAdapter();
     }
 
     @Override
-    public void insertArticleInAdapter(int index, Article article) {
+    public void insertArticleIntoAdapter(int index, Article article) {
         getMvpView().insertAdapterItem(index, article);
+    }
+
+    @Override
+    public void insertArticlesIntoAdapter(int index, ArrayList<Article> articles) {
+        getMvpView().insertAdapterItems(index, articles);
     }
 
     @Override

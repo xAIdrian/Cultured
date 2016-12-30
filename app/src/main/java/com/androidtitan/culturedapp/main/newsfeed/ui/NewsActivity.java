@@ -8,17 +8,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -44,10 +44,8 @@ import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
-import com.androidtitan.culturedapp.model.provider.wrappers.ArticleCursorWrapper;
-import com.androidtitan.culturedapp.model.provider.DatabaseContract;
+import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.provider.wrappers.MultimediumCursorWrapper;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.iid.InstanceID;
@@ -63,15 +61,16 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
-public class NewsActivity extends BaseActivity implements NewsMvp.View {
+public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFragmentInterface {
     private final String TAG = getClass().getSimpleName();
 
     private static final String SENDER_ID = "612691836045";
     public static final String ACCOUNT_TYPE = "com.androidtitan";
     public static final String ACCOUNT = "dummyaccount";
-    // Sync interval constants
+    // Sync interval constants...one hour
     public static final long SECONDS_PER_MINUTE = 60L;
     public static final long SYNC_INTERVAL_IN_MINUTES = 180L;
     public static final long SYNC_INTERVAL =
@@ -84,6 +83,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     private static final int LOADING_ANIM_TIME = 700;
     public static final String ERROR_MESSAGE = "errorfragment.errormessage";
     public static final String ERROR_MAP = "errorfragment.errormap";
+
+    ErrorFragment errorFragment;
 
     @Inject
     NewsPresenter presenter;
@@ -99,10 +100,10 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     @Bind(R.id.culturedTitleTextView)
     TextView loadingTitleText;
 
-    @Bind(R.id.swipeRefresh)
-    SwipeRefreshLayout swipeRefreshLayout;
     @Bind(R.id.newsList)
     RecyclerView recyclerView;
+    @Bind(R.id.refreshFloatingActionButton)
+    FloatingActionButton refreshFab;
 
     @Bind(R.id.drawerLayout)
     DrawerLayout drawerLayout;
@@ -161,7 +162,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         setSupportActionBar(supportActionBar);
         getSupportActionBar().setTitle("");
 
-
         screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
         if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
@@ -177,24 +177,22 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
                     case R.id.onboarding_card_generator:
 
-                        if (!adapter.getSharedPreferences().getBoolean(adapter.PREFERENCES_SHOULD_ONBOARD, false)
+                        if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
                                 && adapter.getAboutStatus() == false) {
                             adapter.resetOnboardingCard();
                         }
-
 
                         break;
 
                     case R.id.about_card_generator:
 
-                        if (!adapter.getSharedPreferences().getBoolean(adapter.PREFERENCES_SHOULD_ONBOARD, false)
+                        if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
                                 && adapter.getAboutStatus() == false) {
                             adapter.showAboutCard();
                         }
 
                         break;
 
-                    //todo: Implicit intent with picker to send email to adrian.mohnacs@gmail.com
                     case R.id.support_mail:
 
                         Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
@@ -220,40 +218,28 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
 
         initializeRecyclerView();
 
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary, R.color.colorCaribbean, R.color.colorCrush);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-                if (!adapter.getSharedPreferences().getBoolean(adapter.PREFERENCES_SHOULD_ONBOARD, false)
-                        && adapter.getAboutStatus() == false) {
-
-                    refreshForNewArticles();
-
-                } else {
-
-                    onLoadComplete();
-                }
-
-
-            }
-        });
-
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
+                int[] array = null;
                 scrollViewParallax(dy);
 
-                if (dy > 0) {
-                    hideToolbarBy(dy);
-                } else {
-                    showToolbarBy(dy);
+                try {
+                    if (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+                        appBarLayout.setElevation(0);
+                    }
+                } catch (Exception e) {
+                    array = staggeredLayoutManager.findFirstCompletelyVisibleItemPositions(array);
+
+                    if(array[0] == 0 || array[1] == 1) {
+                        appBarLayout.setElevation(0);
+                    }
                 }
 
-                if (dy > 0) { //check for scroll
-
+                if (dy > 0) { //check for active scrolling
+                    hideToolbarBy(dy);
 
                     if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
                             getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -272,13 +258,13 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                             if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                                 loading = false;
 
-                                swipeRefreshLayout.setRefreshing(true);
                                 presenter.loadOffsetArticles(10, adapterLoadOffset);
                                 adapterLoadOffset += 10;
+
+                                showColoredSnackbar();
                             }
                         }
                     } else {
-
 
                         visibleItemCount = linearLayoutManager.getChildCount();
                         totalItemCount = linearLayoutManager.getItemCount();
@@ -294,9 +280,10 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                                     loading = false;
                                     Log.d(TAG, "appending data...");
 
-                                    swipeRefreshLayout.setRefreshing(true);
                                     presenter.loadOffsetArticles(5, adapterLoadOffset);
                                     adapterLoadOffset += 5;
+
+                                    showColoredSnackbar();
                                 }
                             }
 
@@ -309,15 +296,24 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
                                     loading = false;
                                     Log.d(TAG, "appending data...");
 
-                                    swipeRefreshLayout.setRefreshing(true);
                                     presenter.loadOffsetArticles(5, adapterLoadOffset);
                                     adapterLoadOffset += 5;
+
+                                    showColoredSnackbar();
                                 }
                             }
                         }
                     }
+                } else {
+                    showToolbarBy(dy);
                 }
             }
+        });
+
+        refreshFab.setOnClickListener(v -> {
+            presenter.newsArticlesRefresh(articles, 5);
+            loading = true;
+            showColoredSnackbar();
         });
 
     }
@@ -405,7 +401,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
     }
 
     /**
-     * Save all appropriate fragment state.
+     * Save all appropriate fragment states.
      *
      * @param outState
      */
@@ -414,8 +410,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         super.onSaveInstanceState(outState);
 
         //Let's decide if we want to keep it or not
-        outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST,
-                (ArrayList<? extends Parcelable>) articles);
+//        outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST,
+//                (ArrayList<? extends Parcelable>) articles);
     }
 
     private Account createSyncAccount(Context context) {
@@ -436,9 +432,82 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
              * or handle it internally.
              */
         }
-        return newAccount; //todo: is this the proper object to return?
+        return newAccount;
 
     }
+
+
+    @Override
+    public void onLoadComplete() {
+
+        if (firstLoad) {
+            firstLoadCompleteAnimation();
+        } else {
+            loading = true;
+        }
+
+    }
+
+    @Override
+    public void appendAdapterItem(Article article) {
+        adapter.appendToAdapter(article);
+    }
+
+
+    @Override
+    public void insertAdapterItem(int index, Article article) {
+        adapter.insertIntoAdapter(index, article);
+    }
+
+    @Override
+    public void insertAdapterItems(int index, ArrayList<Article> articles) {
+        adapter.insertIntoAdapter(index, articles);
+    }
+
+    @Override
+    public List<Article> getArticles() {
+        return articles;
+    }
+
+    @Override
+    public void displayError(String message, Map<String, Object> additionalProperties) {
+
+        Bundle args = new Bundle();
+        args.putString(ERROR_MESSAGE, message);
+
+        errorFragment = ErrorFragment.newInstance(message, additionalProperties);
+        errorFragment.setArguments(args);
+
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.main_content, errorFragment).commit();
+
+    }
+
+    @Override
+    public void restartArticleLoad() {
+        getSupportFragmentManager().beginTransaction().remove(errorFragment).commit();
+        presenter.loadArticles(10);
+    }
+
+    /*
+        Will Wikipedia's Detail Activity ever come back?
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void startDetailActivity(ArticleTable article, ImageView articleImage) {
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
+            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
+
+            Intent intent = new Intent(this, NewsDetailActivity.class);
+            intent.putExtra(ARTICLE_EXTRA, article);
+            startActivity(intent, options.toBundle());
+        } else {
+            Intent intent = new Intent(this, NewsDetailActivity.class);
+            intent.putExtra(ARTICLE_EXTRA, article);
+            startActivity(intent);
+        }
+    }*/
 
     private void initializeRecyclerView() {
 
@@ -465,68 +534,15 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         recyclerView.setAdapter(adapter);
     }
 
+//animation and UI methods
     private void scrollViewParallax(int dy) { // divided by three to scroll slower
         bgView.setTranslationY(bgView.getTranslationY() - dy / 3);
-    }
-
-    @Override
-    public void updateNewsAdapter() {
-
-        adapter.notifyDataSetChanged();
-
-    }
-
-    @Override
-    public void onLoadComplete() {
-
-        if (firstLoad) {
-            firstLoadCompleteAnimation();
-        } else {
-            onRefreshComplete();
-        }
-
-    }
-
-    @Override
-    public void appendAdapterItem(Article article) {
-        adapter.appendToAdapter(article);
-    }
-
-
-    @Override
-    public void insertAdapterItem(int index, Article article) {
-        adapter.insertToAdapter(index, article);
-    }
-
-    @Override
-    public List<Article> getArticles() {
-        return articles;
-    }
-
-    @Override
-    public void displayError(String message, Map<String, Object> additionalProperties) {
-
-        ErrorFragment errorFrag = ErrorFragment.newInstance(message, additionalProperties);
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.newsList, errorFrag);
-
-    }
-
-    private void onRefreshComplete() {
-        swipeRefreshLayout.setRefreshing(false);
-        loading = true;
     }
 
     public void initializeAnimation() {
 
         handler = new Handler();
         fadeAnim = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-
-    }
-
-    public void refreshForNewArticles() {
-        presenter.newArticleRefresh();
 
     }
 
@@ -558,26 +574,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         }, LOADING_ANIM_TIME * 2);
     }
 
-    /*
-        Will this ever come back?
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void startDetailActivity(ArticleTable article, ImageView articleImage) {
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
-
-            Intent intent = new Intent(this, NewsDetailActivity.class);
-            intent.putExtra(ARTICLE_EXTRA, article);
-            startActivity(intent, options.toBundle());
-        } else {
-            Intent intent = new Intent(this, NewsDetailActivity.class);
-            intent.putExtra(ARTICLE_EXTRA, article);
-            startActivity(intent);
-        }
-    }*/
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void initializeTranstionsAndAnimations() {
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
@@ -595,13 +591,19 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         }
     }
 
-    //parallax animation methods
     private void showToolbarBy(int dy) {
 
         if (cannotShowMore(dy)) {
             appBarLayout.setTranslationY(0);
+
         } else {
             appBarLayout.setTranslationY(appBarLayout.getTranslationY()-dy);
+
+            if(dy < 0) {
+                appBarLayout.setElevation(8);
+            } else {
+                appBarLayout.setElevation(0);
+            }
         }
 
     }
@@ -637,6 +639,16 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         }
     }
 
+    private void showColoredSnackbar() {
+        Snackbar loadingSnackbar = Snackbar.make(recyclerView,
+                getResources().getString(R.string.simple_loading),
+                Snackbar.LENGTH_LONG);
+        View snackbarView = loadingSnackbar.getView();
+        snackbarView.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
+        loadingSnackbar.show();
+    }
+
+//starting our SyncAdapter
     private class FCMRegistrationTask extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -692,11 +704,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View {
         ContentResolver.setSyncAutomatically(
                 account, DatabaseContract.AUTHORITY, true);
         ContentResolver.addPeriodicSync(
-                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, 300);
-
-        //ensure we have data for the initial viewing of pages
+                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
         ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
-
     }
 
 

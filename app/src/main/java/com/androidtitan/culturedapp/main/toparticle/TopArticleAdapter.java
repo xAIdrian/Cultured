@@ -35,8 +35,6 @@ import butterknife.ButterKnife;
 public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = getClass().getSimpleName();
 
-    // todo: shared preferences?
-
     private Context context;
     public List<Article> articleList;
 
@@ -90,10 +88,7 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                             holder.topArticleHeaderLayout.setGradientViewHeight(holder.articleImage);
                             holder.topArticleHeaderLayout.setTitleText(article.getTitle());
                             holder.topArticleHeaderLayout.setAbstractText(article.getAbstract());
-                            // todo: this will be added once we incorporate out FACET table and map it to our articles
-                            // holder.topArticleHeaderLayout.setSectionText(articleList.get(position).getGeoFacet().get(0));
                             holder.topArticleHeaderLayout.setDateText(dateFormatted);
-
 
                         }
                     });
@@ -110,6 +105,11 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         }
 
+        if(article.getGeoFacet().size() > 0) {
+            holder.facetTextView.setText(article.getGeoFacet().get(0).getFacetText());
+        }
+
+
     }
 
     public static class XLargeArticleViewHolder extends RecyclerView.ViewHolder {
@@ -117,6 +117,8 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         @Nullable
         @Bind(R.id.rippleForeground)
         RelativeLayout clickLayout;
+        @Bind(R.id.facetTitleTextView)
+        TextView facetTextView;
         @Nullable
         @Bind(R.id.articleImageView)
         ImageView articleImage;

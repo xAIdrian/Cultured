@@ -18,7 +18,6 @@ import org.robolectric.annotation.Config;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.androidtitan.culturedapp.common.Constants.TEST_LIMIT;
 import static com.androidtitan.culturedapp.common.Constants.TEST_OFFSET;
@@ -86,7 +85,7 @@ public class NewsPresenterTest {
         when(newsPresenter.getMvpView()).thenReturn(mockViewCallback);
         when(mockViewCallback.getArticles()).thenReturn(new ArrayList<Article>());
 
-        newsPresenter.newArticleRefresh();
+        newsPresenter.newsArticlesRefresh();
 
         verify(mockNewsProvider).fetchAdditionalArticlesToInsert(
                 TEST_SECTION, new ArrayList<Article>(), newsPresenter);
@@ -110,7 +109,7 @@ public class NewsPresenterTest {
         when(newsPresenter.getMvpView()).thenReturn(mockViewCallback);
         doNothing().when(mockViewCallback).insertAdapterItem(0, testArticle);
 
-        newsPresenter.insertArticleInAdapter(0, testArticle);
+        newsPresenter.insertArticleIntoAdapter(0, testArticle);
 
         verify(mockViewCallback).insertAdapterItem(0, testArticle);
     }

@@ -28,6 +28,17 @@
             android:scaleType="centerCrop"
             android:transitionName="@string/transition_news_image" />
 
+        <TextView
+            android:id="@+id/facetTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:padding="12dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
         <com.androidtitan.culturedapp.common.view.TopArticleHeaderLayout
             android:id="@+id/newsHeaderLayout"
             android:layout_width="match_parent"

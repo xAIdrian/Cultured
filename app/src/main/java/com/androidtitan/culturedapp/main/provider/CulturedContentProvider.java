@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.model.provider;
+package com.androidtitan.culturedapp.main.provider;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import static android.content.ContentResolver.CURSOR_DIR_BASE_TYPE;
-import static com.androidtitan.culturedapp.model.provider.DatabaseContract.AUTHORITY;
+import static com.androidtitan.culturedapp.main.provider.DatabaseContract.AUTHORITY;
 
 /**
  * Created by amohnacs on 7/17/16.
@@ -30,6 +30,9 @@ public class CulturedContentProvider extends android.content.ContentProvider {
     private static final int MEDIA = 3;
     private static final int MEDIA_LIST = 4;
 
+    private static final int FACET = 5;
+    private static final int FACET_LIST = 6;
+
     private static final UriMatcher uriMatcher;
 
     Context context;
@@ -43,6 +46,9 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
         uriMatcher.addURI(AUTHORITY, DatabaseContract.MediaTable.TABLE_NAME + "/#", MEDIA);
         uriMatcher.addURI(AUTHORITY, DatabaseContract.MediaTable.TABLE_NAME, MEDIA_LIST);
+
+        uriMatcher.addURI(AUTHORITY, DatabaseContract.FacetTable.TABLE_NAME + "/#", FACET);
+        uriMatcher.addURI(AUTHORITY, DatabaseContract.FacetTable.TABLE_NAME, FACET_LIST);
     }
 
     @Override
@@ -71,6 +77,12 @@ public class CulturedContentProvider extends android.content.ContentProvider {
             case MEDIA_LIST:
                 return LIST_CONTENT_TYPE + DatabaseContract.MediaTable.TABLE_NAME;
 
+            case FACET:
+                return SINGLE_CONTENT_TYPE + DatabaseContract.FacetTable.TABLE_NAME;
+
+            case FACET_LIST:
+                return LIST_CONTENT_TYPE + DatabaseContract.FacetTable.TABLE_NAME;
+
             default:
                 throw new IllegalArgumentException("unsupported Uri: " + uri);
         }
@@ -82,7 +94,7 @@ public class CulturedContentProvider extends android.content.ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
-        Log.d(TAG, "query with uri: " + uri.toString());
+       // Log.d(TAG, "query with uri: " + uri.toString());
 
         String tableName;
         Cursor cursor;
@@ -118,6 +130,18 @@ public class CulturedContentProvider extends android.content.ContentProvider {
                        .query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
                break;
 
+           case FACET_LIST:
+
+               tableName = DatabaseContract.FacetTable.TABLE_NAME;
+
+               if(TextUtils.isEmpty(sortOrder)) {
+                   sortOrder = "_ID DESC";
+
+               }
+               cursor = sqLiteHelper.getReadableDatabase()
+                       .query(tableName, projection, selection, selectionArgs, null, null, sortOrder);
+               break;
+
             default:
                 throw new IllegalArgumentException("Unsupported Uri: " + uri);
         }
@@ -128,7 +152,7 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        Log.d(TAG, "insert uri: " + uri.toString());
+        //Log.d(TAG, "insert uri: " + uri.toString());
 
         long insertedRowId = 0;
 
@@ -144,6 +168,12 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
                 insertedRowId = sqLiteHelper.getWritableDatabase()
                         .insert(DatabaseContract.MediaTable.TABLE_NAME, null, values);
+                break;
+
+            case FACET_LIST:
+
+                insertedRowId = sqLiteHelper.getWritableDatabase()
+                        .insert(DatabaseContract.FacetTable.TABLE_NAME, null, values);
                 break;
 
             default:
@@ -163,7 +193,7 @@ public class CulturedContentProvider extends android.content.ContentProvider {
     @Override
     public int update(Uri uri, ContentValues values, String selection,
                       String[] selectionArgs) {
-        Log.d(TAG, "update uri: " + uri.toString());
+        //Log.d(TAG, "update uri: " + uri.toString());
 
         int updateCount = 0;
 
@@ -180,6 +210,12 @@ public class CulturedContentProvider extends android.content.ContentProvider {
                         .delete(DatabaseContract.MediaTable.TABLE_NAME, selection, selectionArgs);
                 break;
 
+            case FACET_LIST:
+
+                updateCount = sqLiteHelper.getWritableDatabase()
+                        .delete(DatabaseContract.FacetTable.TABLE_NAME, selection, selectionArgs);
+                break;
+
             default:
                 throw new IllegalArgumentException("Unsupported uri: " + uri);
         }
@@ -193,7 +229,7 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        Log.d(TAG, "delete uri: " + uri.toString());
+        //Log.d(TAG, "delete uri: " + uri.toString());
 
         int deleteCount;
 
@@ -208,6 +244,12 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
                 deleteCount = sqLiteHelper.getWritableDatabase()
                         .delete(DatabaseContract.MediaTable.TABLE_NAME, selection, selectionArgs);
+                break;
+
+            case FACET_LIST:
+
+                deleteCount = sqLiteHelper.getWritableDatabase()
+                        .delete(DatabaseContract.FacetTable.TABLE_NAME, selection, selectionArgs);
                 break;
 
             default:

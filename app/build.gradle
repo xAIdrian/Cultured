@@ -42,15 +42,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     //testing
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:3.1.+'
-    testCompile 'org.mockito:mockito-core:2.+'
     testCompile "com.android.support:support-annotations:$rootProject.ext.supportLibraryVersion"
-    androidTestCompile 'junit:junit:4.12'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile "com.android.support:support-annotations:$rootProject.ext.supportLibraryVersion"
-    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2'
     androidTestCompile "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
     androidTestCompile "com.android.support:design:$rootProject.ext.supportLibraryVersion"
 
@@ -60,12 +54,18 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$rootProject.ext.supportLibraryVersion"
     compile "com.android.support:cardview-v7:$rootProject.ext.supportLibraryVersion"
     compile "com.android.support:palette-v7:$rootProject.ext.supportLibraryVersion"
-    compile 'com.google.android.gms:play-services:9.4.0'
 
     //firebase
-    compile 'com.google.firebase:firebase-messaging:9.0.0'
+    
 
     //square libraries
+    
+    
+    //RxJava
+    
+    //misc
+    compile 'com.google.android.gms:play-services:10.0.1'
+    compile 'com.google.firebase:firebase-messaging:10.0.1'
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'com.google.dagger:dagger:2.0'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
@@ -77,19 +77,21 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit-mock:2.0.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     compile 'com.jakewharton:butterknife:7.0.1'
-
+    compile 'io.reactivex:rxjava:1.0.10'
+    compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'com.flaviofaria:kenburnsview:1.0.7'
+    compile 'com.etsy.android.grid:library:1.0.5'
+    compile 'com.android.support:support-v4:23.4.0'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.robolectric:robolectric:3.1.+'
+    testCompile 'org.mockito:mockito-core:2.+'
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2'
     apt 'com.google.dagger:dagger-compiler:2.0'
     debugCompile 'com.squareup.haha:haha:2.0.3'
     provided 'com.google.dagger:dagger-compiler:2.0'
     provided 'org.glassfish:javax.annotation:10.0-b28'
-
-    //RxJava
-    compile 'io.reactivex:rxjava:1.0.10'
-    compile 'io.reactivex:rxandroid:1.1.0'
-
-    //misc
-    compile 'com.flaviofaria:kenburnsview:1.0.7'
-    compile 'com.etsy.android.grid:library:1.0.5'
 }
 
 apply plugin: 'com.google.gms.google-services'

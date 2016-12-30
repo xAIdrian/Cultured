@@ -15,8 +15,9 @@ import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.structure.RxHelper;
 import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
-import com.androidtitan.culturedapp.model.provider.DatabaseContract;
+import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
 
@@ -26,8 +27,9 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 
+import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
+import static com.androidtitan.culturedapp.common.Constants.NO_ARTICLE_ID;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_ARTICLE_ID;
-import static com.androidtitan.culturedapp.main.newsfeed.NewsAdapter.CULTURED_PREFERENCES;
 
 /**
  * Created by amohnacs on 8/7/16.
@@ -77,9 +79,10 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
             clean up
         */
 
-        clearDdValues();
-        Log.d(TAG, "SyncAdapter onPerformSync()");
-        List<Article> articles = fetchTopArticles(10);
+        Log.e(TAG, "Running sync adapter. onPerformSync()");
+
+        clearTopArticleDdValues();
+        fetchTopArticles(10);
 
     }
 
@@ -92,9 +95,6 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
 
         call.compose(RxHelper.applySchedulers())
                 .retry(10)
-                .doOnError(e -> {
-                    e.printStackTrace();
-                })
                 .subscribe(new Subscriber<NewsResponse>() {
                     @Override
                     public void onCompleted() {
@@ -119,8 +119,13 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
                             articleAtHand.setId(currentId);
 
                             articles.add(articleAtHand);
-                            //just a heads up this is a double for loop :/
+
                             insertMultimediumData(articleAtHand.getId(), articleAtHand.getMultimedia());
+                            insertFacetData(articleAtHand.getId(), articleAtHand.getPerFacet());
+                            insertFacetData(articleAtHand.getId(), articleAtHand.getOrgFacet());
+                            insertFacetData(articleAtHand.getId(), articleAtHand.getDesFacet());
+                            insertFacetData(articleAtHand.getId(), articleAtHand.getGeoFacet());
+
                             currentId++;
                         }
 
@@ -129,7 +134,6 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
                         editor.apply();
 
                         insertArticleData(articles);
-                        //todo: insertFacetData
                     }
                 });
 
@@ -159,11 +163,30 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
 
-        return null;
+        return multimedia;
     }
 
-    private void clearDdValues() {
-        Log.d(TAG, "clearing all database values..");
+    private List<Facet> insertFacetData(long articleId, List<Facet> facets) {
+
+
+        for(Facet facet : facets) {
+
+            if(articleId == NO_ARTICLE_ID) { //we set our articles to -1 when we are just pulling Facets for our Trending
+                facet.setStoryId(NO_ARTICLE_ID);
+                Uri insertedUri = getContext().getContentResolver()
+                        .insert(DatabaseContract.FacetTable.CONTENT_URI, facet.getContentValues());
+            } else {
+                facet.setStoryId((int) articleId + 1);
+                Uri insertedUri = getContext().getContentResolver()
+                        .insert(DatabaseContract.FacetTable.CONTENT_URI, facet.getContentValues());
+            }
+        }
+
+        return facets;
+    }
+
+    private void clearTopArticleDdValues() {
+        Log.d(TAG, "clearing all database values");
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(PREFERENCES_ARTICLE_ID, 0);
@@ -171,5 +194,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
 
         context.getContentResolver().delete(DatabaseContract.ArticleTable.CONTENT_URI, null, null);
         context.getContentResolver().delete(DatabaseContract.MediaTable.CONTENT_URI, null, null);
+        context.getContentResolver().delete(DatabaseContract.FacetTable.CONTENT_URI,
+                "story_id is not null", null);
     }
 }
