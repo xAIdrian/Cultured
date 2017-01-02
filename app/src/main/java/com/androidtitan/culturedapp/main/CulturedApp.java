@@ -5,10 +5,6 @@ import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.SystemClock;
-import android.support.annotation.RequiresApi;
 
 import com.androidtitan.culturedapp.main.inject.AppComponent;
 import com.androidtitan.culturedapp.main.inject.AppModule;
@@ -32,14 +28,14 @@ public class CulturedApp extends Application {
                 .appModule(new AppModule(this))
                 .build();
 
-        createFacetAlarm();
+        createFacetJobAndAlarm();
     }
 
     public static AppComponent getAppComponent(){
         return appComponent;
     }
 
-    public void createFacetAlarm() {
+    public void createFacetJobAndAlarm() {
 
         Intent intent = new Intent(this, FacetDownloadService.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
