@@ -38,8 +38,10 @@ public class FacetDownloadJobService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
+
         newsService = ServiceGenerator.createService(NewsEndpoint.class);
 
+        facetDownloadAsyncTask = new FacetDownloadAsyncTask();
         facetDownloadAsyncTask.execute(params);
 
         return true;

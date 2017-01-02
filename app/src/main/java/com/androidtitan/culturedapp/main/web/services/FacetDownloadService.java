@@ -42,7 +42,8 @@ public class FacetDownloadService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, TAG + " onStartCommand");
 
-
+        getContentResolver().delete(DatabaseContract.FacetTable.CONTENT_URI,
+                "story_id is null", null);
 
         return START_STICKY;
     }
