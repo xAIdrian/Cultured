@@ -13,6 +13,8 @@ public class Constants {
     public static final int TOP_ARTICLE_FACET_LOADER_ID = 79654;
     public static final int TRENDING_FACET_LOADER_ID = 79816;
 
+    public static final int FACET_JOB_SCHEDULER = 45321;
+
     public final static int NO_ARTICLE_ID = 1000;
 
     //shared preferences
