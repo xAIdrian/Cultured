@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -155,6 +156,12 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
         if (savedInstanceState != null) {
             //
+        }
+        if(getIntent() != null) {
+            Intent in = getIntent();
+            Uri deepLinkData = in.getData();
+
+            //receives 'http://www.cultured.com because that is the URL(URI) data required to launch our app from search
         }
         // Attaching the layout to the toolbar object
         supportActionBar = (Toolbar) findViewById(R.id.toolbar);
