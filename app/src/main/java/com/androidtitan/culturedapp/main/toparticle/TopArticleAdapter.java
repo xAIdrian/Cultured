@@ -105,8 +105,10 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         }
 
-        if(article.getGeoFacet().size() > 0) {
-            holder.facetTextView.setText(article.getGeoFacet().get(0).getFacetText());
+        if(article.getGeoFacet() != null) {
+            if (article.getGeoFacet().size() > 0) {
+                holder.facetTextView.setText(article.getGeoFacet().get(0).getFacetText());
+            }
         }
 
 

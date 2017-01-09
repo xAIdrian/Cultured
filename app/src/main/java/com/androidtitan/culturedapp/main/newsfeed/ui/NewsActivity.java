@@ -3,6 +3,7 @@ package com.androidtitan.culturedapp.main.newsfeed.ui;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
+import android.app.ActivityOptions;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +36,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -495,26 +497,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         getSupportFragmentManager().beginTransaction().remove(errorFragment).commit();
         presenter.loadArticles(10);
     }
-
-    /*
-        Will Wikipedia's Detail Activity ever come back?
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void startDetailActivity(ArticleTable article, ImageView articleImage) {
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
-            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
-
-            Intent intent = new Intent(this, NewsDetailActivity.class);
-            intent.putExtra(ARTICLE_EXTRA, article);
-            startActivity(intent, options.toBundle());
-        } else {
-            Intent intent = new Intent(this, NewsDetailActivity.class);
-            intent.putExtra(ARTICLE_EXTRA, article);
-            startActivity(intent);
-        }
-    }*/
 
     private void initializeRecyclerView() {
 

@@ -56,5 +56,6 @@
     <string name="title_activity_top_article">TopArticleActivity</string>
     <string name="large_text">Large Text</string>
     <string name="authenticator">TopArticleAuthenticator</string>
+    <string name="title_activity_trending">TrendingActivity</string>
 
 </resources>
