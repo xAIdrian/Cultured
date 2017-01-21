@@ -18,7 +18,7 @@ public interface NewsMvp {
 
         List<Article> fetchArticles(String section, int limit, CallbackListener listener);
         void fetchAdditionalArticles(String section, int limit, int offset, CallbackListener listener);
-        void fetchAdditionalArticlesToInsert(String section, List<Article> articlesList, CallbackListener listener);
+        void refreshForAdditionalArticlesToInsert(String section, List<Article> articlesList, CallbackListener listener);
 
         interface CallbackListener {
             void appendArticleToAdapter(Article article);

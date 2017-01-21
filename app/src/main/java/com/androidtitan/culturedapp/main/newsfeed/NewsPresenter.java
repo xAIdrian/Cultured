@@ -49,7 +49,7 @@ public class NewsPresenter extends BasePresenter<NewsMvp.View> implements NewsMv
     @Override
     public void newsArticlesRefresh(List<Article> articles, int limit) {
 
-        newsProvider.fetchAdditionalArticlesToInsert("world", articles, this);
+        newsProvider.refreshForAdditionalArticlesToInsert("world", articles, this);
 
     }
 
