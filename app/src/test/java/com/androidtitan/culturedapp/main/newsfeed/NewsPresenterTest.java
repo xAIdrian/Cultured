@@ -87,7 +87,7 @@ public class NewsPresenterTest {
 
         newsPresenter.newsArticlesRefresh();
 
-        verify(mockNewsProvider).fetchAdditionalArticlesToInsert(
+        verify(mockNewsProvider).refreshForAdditionalArticlesToInsert(
                 TEST_SECTION, new ArrayList<Article>(), newsPresenter);
     }
 

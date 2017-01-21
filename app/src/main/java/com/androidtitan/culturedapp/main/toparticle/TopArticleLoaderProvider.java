@@ -53,7 +53,8 @@ public class TopArticleLoaderProvider implements TopArticleMvp.Provider {
             case TOP_ARTICLE_FACET_LOADER_ID:
 
                 String[] projection = new String[] {DatabaseContract.FacetTable.STORY_ID,
-                        DatabaseContract.FacetTable.TYPE, DatabaseContract.FacetTable.FACET};
+                        DatabaseContract.FacetTable.TYPE, DatabaseContract.FacetTable.FACET,
+                        DatabaseContract.FacetTable.CREATED_DATE};
                 String topArticleSelection = DatabaseContract.FacetTable.STORY_ID + " IS NOT NULL";
 
                 cursorLoader = new CursorLoader(context, DatabaseContract.FacetTable.CONTENT_URI,

@@ -90,7 +90,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
             return 8;
         } else {
-            return 3;
+            return 5; //todo: we might want to start listening to the sizes of the cards display as a way to change this dynamically
         }
     }
 

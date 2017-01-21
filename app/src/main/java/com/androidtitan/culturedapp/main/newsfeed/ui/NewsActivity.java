@@ -685,6 +685,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     }
 
     private void setupPeriodicSync() {
+
         isSyncingPeriodically = true;
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, true).apply();

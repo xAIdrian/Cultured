@@ -52,12 +52,11 @@
         </service>
         <service
             android:name=".main.sync.ArticleSyncService"
-            android:exported="false"
+            android:exported="true"
             android:process=":sync">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
-
             <meta-data
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
