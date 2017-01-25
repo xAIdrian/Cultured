@@ -21,9 +21,8 @@ public interface TopArticleMvp {
 
         Loader<Cursor> createBasicCursorLoader(int loaderId);
 
-
         interface CallbackListener {
-            //void sampleImageLoadComplete(Bitmap bitmap);
+
         }
 
     }

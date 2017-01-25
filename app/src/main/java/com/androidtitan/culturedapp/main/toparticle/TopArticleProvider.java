@@ -2,15 +2,29 @@ package com.androidtitan.culturedapp.main.toparticle;
 
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.structure.RxHelper;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
+import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
+import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
+import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
 
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
+import rx.Subscriber;
+
 import static com.androidtitan.culturedapp.common.Constants.ARTICLE_LOADER_ID;
+import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_ARTICLE_ID;
 import static com.androidtitan.culturedapp.common.Constants.TOP_ARTICLE_FACET_LOADER_ID;
 import static com.androidtitan.culturedapp.common.Constants.TOP_ARTICLE_MEDIA_LOADER_ID;
 import static com.androidtitan.culturedapp.common.Constants.TRENDING_FACET_LOADER_ID;
@@ -19,18 +33,22 @@ import static com.androidtitan.culturedapp.common.Constants.TRENDING_FACET_LOADE
  * Created by amohnacs on 9/19/16.
  */
 
-public class TopArticleLoaderProvider implements TopArticleMvp.Provider {
+public class TopArticleProvider implements TopArticleMvp.Provider {
     private final String TAG = getClass().getSimpleName();
 
     @NonNull
     private Context context;
 
+    private final NewsEndpoint newsService;
+
     @Inject
-    public TopArticleLoaderProvider(Context context) {
+    public TopArticleProvider(Context context) {
         this.context = context;
+        newsService = ServiceGenerator.createService(NewsEndpoint.class);
 
     }
 
+    // we'll create a method for creating a loader with specific querying options when we cross that bridge.
     public CursorLoader createBasicCursorLoader(int loaderId) {
 
         CursorLoader cursorLoader;
@@ -76,5 +94,6 @@ public class TopArticleLoaderProvider implements TopArticleMvp.Provider {
         return cursorLoader;
     }
 
-    // we'll create a method for creating a loader with specific querying options when we cross that bridge.
+
+
 }

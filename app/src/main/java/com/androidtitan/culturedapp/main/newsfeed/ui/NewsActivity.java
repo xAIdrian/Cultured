@@ -3,7 +3,7 @@ package com.androidtitan.culturedapp.main.newsfeed.ui;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
-import android.app.ActivityOptions;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +19,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,7 +37,6 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -48,6 +48,7 @@ import com.androidtitan.culturedapp.main.newsfeed.NewsMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
+import com.androidtitan.culturedapp.main.trending.ui.TrendingActivity;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -366,6 +367,24 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
             case R.id.menu_item_toparticle:
 
                 startActivity(new Intent(this, TopArticleActivity.class));
+
+                break;
+
+            case R.id.menu_item_trending:
+
+                //synthetically generate the backstack (TaskStack) when using deep linking
+                Intent tempTrendingIntent = new Intent(this, TrendingActivity.class);
+
+                PendingIntent pendingIntent =
+                        TaskStackBuilder.create(this)
+                                .addNextIntentWithParentStack(tempTrendingIntent)           // add all of DetailsActivity's parents to the stack
+                                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);  // followed by DetailsActivity itself
+
+                try {
+                    pendingIntent.send();
+                } catch (PendingIntent.CanceledException e) {
+                    e.printStackTrace();
+                }
 
                 break;
 

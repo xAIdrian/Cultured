@@ -1,5 +1,6 @@
 package com.androidtitan.culturedapp.main.newsfeed;
 
+import com.androidtitan.culturedapp.common.structure.MvpPresenter;
 import com.androidtitan.culturedapp.common.structure.MvpView;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;

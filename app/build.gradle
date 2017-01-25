@@ -43,7 +43,6 @@ dependencies {
 
     //testing
     testCompile "com.android.support:support-annotations:$rootProject.ext.supportLibraryVersion"
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     androidTestCompile "com.android.support:support-annotations:$rootProject.ext.supportLibraryVersion"
     androidTestCompile "com.android.support:appcompat-v7:$rootProject.ext.supportLibraryVersion"
     androidTestCompile "com.android.support:design:$rootProject.ext.supportLibraryVersion"
@@ -56,14 +55,13 @@ dependencies {
     compile "com.android.support:palette-v7:$rootProject.ext.supportLibraryVersion"
 
     //firebase
-    
 
     //square libraries
-    
-    
+
     //RxJava
-    
+
     //misc
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     compile 'com.google.android.gms:play-services:10.0.1'
     compile 'com.google.firebase:firebase-messaging:10.0.1'
     compile 'javax.annotation:jsr250-api:1.0'
@@ -82,11 +80,12 @@ dependencies {
     compile 'com.flaviofaria:kenburnsview:1.0.7'
     compile 'com.etsy.android.grid:library:1.0.5'
     compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.robolectric:robolectric:3.1.+'
     testCompile 'org.mockito:mockito-core:2.+'
-    androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2'
     apt 'com.google.dagger:dagger-compiler:2.0'
     debugCompile 'com.squareup.haha:haha:2.0.3'

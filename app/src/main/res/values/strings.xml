@@ -50,6 +50,14 @@
     <string name="graph">Graph</string>
     <string name="my_facets">My Facets</string>
 
+    <string name="pager_list">list</string>
+    <string name="pager_graph">graph</string>
+
+
+
+
+
+
     <!-- Accessability Strings -->
     <string name="accessability_cardview">Select card to view news article</string>
     <string name="accessability_loading">Your articles are loading</string>
@@ -57,5 +65,9 @@
     <string name="large_text">Large Text</string>
     <string name="authenticator">TopArticleAuthenticator</string>
     <string name="title_activity_trending">TrendingActivity</string>
+    <string name="topArticlePleaseWait">Your articles did not load for some reason.  Try hitting that refresh button!</string>
+    <string name="title_activity_news">NewsActivity</string>
+    <string name="title_fragment_facet_list">TrendingFacetListActivity</string>
+    <string name="title_fragment_graph">TrendingGraphFragment</string>
 
 </resources>

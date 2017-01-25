@@ -8,9 +8,7 @@ import android.util.Log;
 
 import com.androidtitan.culturedapp.common.structure.BasePresenter;
 import com.androidtitan.culturedapp.main.CulturedApp;
-import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.main.provider.wrappers.FacetCursorWrapper;
-import com.androidtitan.culturedapp.main.toparticle.wrappers.FacetWrapper;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
@@ -67,7 +65,7 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
     private ArrayList<Facet> geoFacets = new ArrayList<>();
 
     @Inject
-    TopArticleLoaderProvider topArticleLoaderProvider;
+    TopArticleProvider topArticleProvider;
 
     CursorLoader articleCursorLoader;
     CursorLoader mediaCursorLoader;
@@ -78,9 +76,8 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
 
         CulturedApp.getAppComponent().inject(this);
 
-        articleCursorLoader = topArticleLoaderProvider.createBasicCursorLoader(ARTICLE_LOADER_ID);
+        articleCursorLoader = topArticleProvider.createBasicCursorLoader(ARTICLE_LOADER_ID);
         articleCursorLoader.registerListener(ARTICLE_LOADER_ID, this);
-        articleCursorLoader.startLoading();
     }
 
     @Override
@@ -91,20 +88,30 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
             case ARTICLE_LOADER_ID:
 
                 // this cursor loads Articles minus media
-                if (cursor != null && cursor.getCount() > 0) {
+                if(cursor != null) {
+                    if (cursor.getCount() > 0) {
 
-                    ArticleCursorWrapper wrapper = new ArticleCursorWrapper(cursor);
-                    wrapper.moveToFirst();
-                    while (!wrapper.isAfterLast()) {
+                        ArticleCursorWrapper wrapper = new ArticleCursorWrapper(cursor);
+                        wrapper.moveToFirst();
+                        while (!wrapper.isAfterLast()) {
 
-                        Article article = wrapper.getArticle();
-                        articles.add(article);
-                        //Log.e(TAG, article.getId() + " : " + article.getTitle());
-                        wrapper.moveToNext();
+                            Article article = wrapper.getArticle();
+                            articles.add(article);
+                            //Log.e(TAG, article.getId() + " : " + article.getTitle());
+                            wrapper.moveToNext();
+                        }
+                    } else {
+                        if(this.isViewAttached()) {
+                            getMvpView().cursorDataEmpty();
+                        }
+                    }
+                } else {
+                    if(isViewAttached()) {
+                        getMvpView().cursorDataNotAvailable();
                     }
                 }
 
-                facetCursorLoader = topArticleLoaderProvider.createBasicCursorLoader(TOP_ARTICLE_FACET_LOADER_ID);
+                facetCursorLoader = topArticleProvider.createBasicCursorLoader(TOP_ARTICLE_FACET_LOADER_ID);
                 facetCursorLoader.registerListener(TOP_ARTICLE_FACET_LOADER_ID, this);
 
                 facetCursorLoader.startLoading();
@@ -139,7 +146,7 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
                         wrapper.moveToNext();
                     }
 
-                    mediaCursorLoader = topArticleLoaderProvider.createBasicCursorLoader(TOP_ARTICLE_MEDIA_LOADER_ID);
+                    mediaCursorLoader = topArticleProvider.createBasicCursorLoader(TOP_ARTICLE_MEDIA_LOADER_ID);
                     mediaCursorLoader.registerListener(TOP_ARTICLE_MEDIA_LOADER_ID, this);
 
                     mediaCursorLoader.startLoading();
@@ -196,14 +203,20 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
 
                 articleList.removeAll(deletes);
 
-                getMvpView().updateArticles(articleList);
+                if(isViewAttached()) {
+                    getMvpView().updateArticles(articleList);
+                }
             } else {
-                getMvpView().cursorDataEmpty();
+                if(isViewAttached()) {
+                    getMvpView().cursorDataEmpty();
+                }
                 Log.e(TAG, "No articles were returned");
             }
         } else {
             Log.e(TAG, "Articles not instantiated");
-            getMvpView().cursorDataNotAvailable();
+            if(isViewAttached()) {
+                getMvpView().cursorDataNotAvailable();
+            }
         }
     }
 
