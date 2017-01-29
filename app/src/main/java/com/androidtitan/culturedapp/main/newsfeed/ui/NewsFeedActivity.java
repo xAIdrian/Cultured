@@ -19,6 +19,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -38,14 +39,15 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.structure.BaseActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
-import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
-import com.androidtitan.culturedapp.main.newsfeed.NewsMvp;
-import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
+import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
+import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
+import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.main.trending.ui.TrendingActivity;
@@ -68,7 +70,8 @@ import butterknife.ButterKnife;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
-public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFragmentInterface {
+public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, ErrorFragmentInterface,
+    DevConsoleDialogFragment.OnFragmentInteractionListener {
     private final String TAG = getClass().getSimpleName();
 
     private static final String SENDER_ID = "612691836045";
@@ -91,7 +94,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     ErrorFragment errorFragment;
 
     @Inject
-    NewsPresenter presenter;
+    NewsFeedPresenter presenter;
 
     private Handler handler;
     private Animation fadeAnim;
@@ -118,7 +121,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
     private LinearLayoutManager linearLayoutManager;
     private StaggeredGridLayoutManager staggeredLayoutManager;
-    private NewsAdapter adapter;
+    private NewsFeedAdapter adapter;
 
     private AppBarLayout appBarLayout;
 
@@ -130,6 +133,9 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     private int pastVisibleItems;
     private int visibleItemCount;
     private int totalItemCount;
+
+    private int devConsoleCount = 0;
+
     public int adapterLoadOffset = 6;
 
     int screenSize;
@@ -180,6 +186,23 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
             articles = presenter.loadArticles(5);
         }
 
+        navigationView.getHeaderView(0).setOnClickListener((header) -> {
+
+            if(devConsoleCount == 6) {
+                if(!navigationView.getMenu().getItem(3).isVisible()) {
+                    Toast.makeText(this, R.string.prime_dev_console_text, Toast.LENGTH_SHORT).show();
+                    navigationView.getMenu().getItem(3).setVisible(true);
+                } else {
+                    Toast.makeText(this, R.string.bye_dev_console, Toast.LENGTH_SHORT).show();
+                    navigationView.getMenu().getItem(3).setVisible(false);
+                }
+
+                devConsoleCount = 0;
+            } else {
+                devConsoleCount ++;
+            }
+        });
+
         navigationView.setNavigationItemSelectedListener((item) -> {
                 drawerLayout.closeDrawers();
 
@@ -218,6 +241,10 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
                         }
 
                         break;
+
+                    case R.id.devConsole:
+                        //display a dialog fragment
+                        showDialog();
 
                     default:
 
@@ -326,6 +353,11 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
             showColoredSnackbar();
         });
 
+    }
+
+    private void showDialog() {
+        DialogFragment newFragment = DevConsoleDialogFragment.newInstance();
+        newFragment.show(getSupportFragmentManager(), "DevConsoleDialogFragment");
     }
 
     private void sharedPreferencesSetup() {
@@ -538,7 +570,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
             recyclerView.setLayoutManager(linearLayoutManager);
         }
 
-        adapter = new NewsAdapter(this, articles);
+        adapter = new NewsFeedAdapter(this, articles);
         recyclerView.setAdapter(adapter);
     }
 
@@ -656,7 +688,12 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         loadingSnackbar.show();
     }
 
-//starting our SyncAdapter
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    //starting our SyncAdapter
     private class FCMRegistrationTask extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -667,18 +704,18 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         @Override
         protected String doInBackground(Void... params) {
 
-            if(NewsActivity.this == null) {
+            if(NewsFeedActivity.this == null) {
                 return null;
             }
 
             int googleApiAvailable = GoogleApiAvailability.getInstance()
-                    .isGooglePlayServicesAvailable(NewsActivity.this);
+                    .isGooglePlayServicesAvailable(NewsFeedActivity.this);
             if (googleApiAvailable != ConnectionResult.SUCCESS) {
                 Log.e(TAG, "Play services not available, cannot register for GCM");
                 return null;
             }
 
-            InstanceID instanceID = InstanceID.getInstance(NewsActivity.this);
+            InstanceID instanceID = InstanceID.getInstance(NewsFeedActivity.this);
 
             try {
                 String token = instanceID.getToken(SENDER_ID, FirebaseMessaging.INSTANCE_ID_SCOPE, null);
@@ -698,7 +735,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
             if (token == null) {
                 setupPeriodicSync();
             } else {
-                PreferenceStore.get(NewsActivity.this).setFcmToken(token);
+                PreferenceStore.get(NewsFeedActivity.this).setFcmToken(token);
             }
         }
     }

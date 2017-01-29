@@ -35,15 +35,16 @@ import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
-public class NewsPresenterTest {
+public class NewsFeedPresenterTest {
     private final String TAG = getClass().getSimpleName();
 
     @Mock Context mockContext;
-    @Mock NewsProvider mockNewsProvider;
-    @Mock NewsMvp.View mockViewCallback;
-    @Mock  NewsMvp.Provider.CallbackListener mockCallback;
+    @Mock
+    NewsFeedProvider mockNewsFeedProvider;
+    @Mock NewsFeedMvp.View mockViewCallback;
+    @Mock  NewsFeedMvp.Provider.CallbackListener mockCallback;
 
-    private NewsPresenter newsPresenter;
+    private NewsFeedPresenter newsFeedPresenter;
 
     private Article testArticle = new Article();
     private ApiError testApiError = new ApiError(404, "Error");
@@ -53,16 +54,16 @@ public class NewsPresenterTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        newsPresenter = spy(new NewsPresenter(mockContext));
+        newsFeedPresenter = spy(new NewsFeedPresenter(mockContext));
     }
 
     @Test
     public void loadArticles() throws Exception {
 
-        when(mockNewsProvider.fetchArticles(TEST_SECTION, TEST_LIMIT, mockCallback))
+        when(mockNewsFeedProvider.fetchArticles(TEST_SECTION, TEST_LIMIT, mockCallback))
                 .thenReturn(new ArrayList<Article>());
 
-        List<Article> expectedArray = newsPresenter.loadArticles(TEST_LIMIT);
+        List<Article> expectedArray = newsFeedPresenter.loadArticles(TEST_LIMIT);
 
         assertNotNull(expectedArray);
     }
@@ -70,35 +71,35 @@ public class NewsPresenterTest {
     @Test
     public void loadOffsetArticles() throws Exception {
 
-        newsPresenter.newsProvider = mockNewsProvider;
+        newsFeedPresenter.newsFeedProvider = mockNewsFeedProvider;
 
-        newsPresenter.loadOffsetArticles(TEST_LIMIT, TEST_OFFSET);
+        newsFeedPresenter.loadOffsetArticles(TEST_LIMIT, TEST_OFFSET);
 
-        verify(mockNewsProvider).fetchAdditionalArticles(
-                TEST_SECTION, TEST_LIMIT, TEST_OFFSET, newsPresenter);
+        verify(mockNewsFeedProvider).fetchAdditionalArticles(
+                TEST_SECTION, TEST_LIMIT, TEST_OFFSET, newsFeedPresenter);
     }
 
     @Test
     public void newArticleRefresh() throws Exception {
 
-        newsPresenter.newsProvider = mockNewsProvider;
-        when(newsPresenter.getMvpView()).thenReturn(mockViewCallback);
+        newsFeedPresenter.newsFeedProvider = mockNewsFeedProvider;
+        when(newsFeedPresenter.getMvpView()).thenReturn(mockViewCallback);
         when(mockViewCallback.getArticles()).thenReturn(new ArrayList<Article>());
 
-        newsPresenter.newsArticlesRefresh();
+        newsFeedPresenter.newsArticlesRefresh();
 
-        verify(mockNewsProvider).refreshForAdditionalArticlesToInsert(
-                TEST_SECTION, new ArrayList<Article>(), newsPresenter);
+        verify(mockNewsFeedProvider).refreshForAdditionalArticlesToInsert(
+                TEST_SECTION, new ArrayList<Article>(), newsFeedPresenter);
     }
 
     @Test
     public void appendArticleToAdapter() throws Exception {
 
-        when(newsPresenter.getMvpView()).thenReturn(mockViewCallback);
+        when(newsFeedPresenter.getMvpView()).thenReturn(mockViewCallback);
         doNothing().when(mockViewCallback).appendAdapterItem(testArticle);
         doNothing().when(mockViewCallback).updateNewsAdapter();
 
-        newsPresenter.appendArticleToAdapter(testArticle);
+        newsFeedPresenter.appendArticleToAdapter(testArticle);
 
         verify(mockViewCallback).appendAdapterItem(testArticle);
         verify(mockViewCallback).updateNewsAdapter();
@@ -106,37 +107,37 @@ public class NewsPresenterTest {
 
     @Test
     public void insertArticleInAdapter() throws Exception {
-        when(newsPresenter.getMvpView()).thenReturn(mockViewCallback);
+        when(newsFeedPresenter.getMvpView()).thenReturn(mockViewCallback);
         doNothing().when(mockViewCallback).insertAdapterItem(0, testArticle);
 
-        newsPresenter.insertArticleIntoAdapter(0, testArticle);
+        newsFeedPresenter.insertArticleIntoAdapter(0, testArticle);
 
         verify(mockViewCallback).insertAdapterItem(0, testArticle);
     }
 
     @Test
     public void onCompleted() throws Exception {
-        when(newsPresenter.getMvpView()).thenReturn(mockViewCallback);
+        when(newsFeedPresenter.getMvpView()).thenReturn(mockViewCallback);
         doNothing().when(mockViewCallback).onLoadComplete();
 
-        newsPresenter.onCompleted();
+        newsFeedPresenter.onCompleted();
 
         verify(mockViewCallback).onLoadComplete();
     }
 
     @Test
     public void responseFailed() throws Exception {
-        when(newsPresenter.getMvpView()).thenReturn(mockViewCallback);
+        when(newsFeedPresenter.getMvpView()).thenReturn(mockViewCallback);
         doNothing().when(mockViewCallback).displayError(testApiError.getMessage(), new HashMap<String, Object>());
 
-        newsPresenter.responseFailed(testApiError);
+        newsFeedPresenter.responseFailed(testApiError);
 
         verify(mockViewCallback).displayError(testApiError.getMessage(), new HashMap<String, Object>());
     }
 
     @After
     public void tearDown() throws Exception {
-        newsPresenter = null;
+        newsFeedPresenter = null;
     }
 
 }

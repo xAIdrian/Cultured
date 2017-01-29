@@ -1,0 +1,30 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:weightSum="2"
+              android:background="@color/colorAccentLight"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              tools:context="com.androidtitan.culturedapp.main.newsfeed.ui.DevConsoleDialogFragment">
+
+    <android.support.design.widget.NavigationView
+            android:id="@+id/dev_console_navigation_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:menu="@menu/dev_console_navigation_view"
+            android:background="@android:color/white"/>
+
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:textStyle="bold"
+            android:gravity="right"
+            android:layout_gravity="right"
+            android:text="@string/dev_console"
+            android:textColor="@android:color/white"/>
+
+</LinearLayout>

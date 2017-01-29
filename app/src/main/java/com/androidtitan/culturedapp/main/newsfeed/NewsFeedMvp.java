@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by amohnacs on 8/29/16.
  */
 
-public interface NewsMvp {
+public interface NewsFeedMvp {
 
     interface Provider {
 

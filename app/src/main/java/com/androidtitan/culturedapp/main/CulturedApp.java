@@ -11,6 +11,7 @@ import android.content.Intent;
 
 import com.androidtitan.culturedapp.main.inject.AppComponent;
 import com.androidtitan.culturedapp.main.inject.AppModule;
+import com.androidtitan.culturedapp.main.inject.DaggerAppComponent;
 import com.androidtitan.culturedapp.main.web.services.FacetDownloadJobService;
 import com.androidtitan.culturedapp.main.web.services.FacetDownloadService;
 
@@ -31,9 +32,9 @@ public class CulturedApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-//        appComponent = DaggerAppComponent.builder()
-//                .appModule(new AppModule(this))
-//                .build();
+        appComponent = DaggerAppComponent.builder()
+                .appModule(new AppModule(this))
+                .build();
 
         launchTrendingFacetServices();
     }

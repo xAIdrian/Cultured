@@ -24,7 +24,7 @@ import rx.*;
  */
 
 @Singleton
-public class NewsProvider implements NewsMvp.Provider {
+public class NewsFeedProvider implements NewsFeedMvp.Provider {
     private final String TAG = getClass().getSimpleName();
 
     private Context context;
@@ -33,7 +33,7 @@ public class NewsProvider implements NewsMvp.Provider {
     private ArrayList<Article> fetchArticleList = new ArrayList<>();
 
     @Inject
-    public NewsProvider(Context context) {
+    public NewsFeedProvider(Context context) {
         this.context = context;
         newsService = ServiceGenerator.createService(NewsEndpoint.class);
     }

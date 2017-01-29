@@ -30,4 +30,15 @@
 
     </group>
 
+    <group
+        android:id="@+id/devConsole_group">
+
+        <item
+            android:id="@+id/devConsole"
+            android:icon="@drawable/ic_disk_full"
+            android:title="@string/dev_console"
+            android:visible="false"/>
+
+    </group>
+
 </menu>

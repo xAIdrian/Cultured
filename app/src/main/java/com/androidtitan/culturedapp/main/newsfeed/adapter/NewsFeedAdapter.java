@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.main.newsfeed;
+package com.androidtitan.culturedapp.main.newsfeed.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -39,7 +39,7 @@ import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRS
 /**
  * Created by amohnacs on 3/23/16.
  */
-public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = getClass().getSimpleName();
 
     private int ANIMATED_ITEMS_COUNT;
@@ -59,7 +59,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean shouldShowAboutCard = false;
 
     @Inject
-    public NewsAdapter(Context context, List<Article> adapterTrackList) {
+    public NewsFeedAdapter(Context context, List<Article> adapterTrackList) {
 
         this.context = context;
         this.articleList = adapterTrackList;
@@ -296,7 +296,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsActivity) context).startDetailActivity(
+//                ((NewsFeedActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
 
             }
@@ -342,7 +342,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsActivity) context).startDetailActivity(
+//                ((NewsFeedActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
             }
         });
@@ -391,7 +391,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsActivity) context).startDetailActivity(
+//                ((NewsFeedActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
             }
         });
