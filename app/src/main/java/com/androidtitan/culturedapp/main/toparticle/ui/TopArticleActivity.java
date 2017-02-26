@@ -121,17 +121,17 @@ public class TopArticleActivity extends BaseActivity implements TopArticleMvp.Vi
     }
 
     @Override
-    public void cursorDataNotAvailable() {
-
-    }
-
-    @Override
-    public void cursorDataEmpty() {
-
-    }
-
-    @Override
     public void setLoading() {
+
+    }
+
+    @Override
+    public void displayDataNotAvailable() {
+
+    }
+
+    @Override
+    public void displayDataEmpty() {
 
     }
 

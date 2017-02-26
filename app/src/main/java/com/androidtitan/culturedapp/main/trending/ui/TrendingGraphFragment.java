@@ -1,48 +1,37 @@
 package com.androidtitan.culturedapp.main.trending.ui;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.structure.BaseFragment;
+import com.androidtitan.culturedapp.main.trending.TrendingMvp;
+import com.androidtitan.culturedapp.main.trending.TrendingPresenter;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+
+import java.util.List;
+
+import butterknife.ButterKnife;
 
 
-public class TrendingGraphFragment extends BaseFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class TrendingGraphFragment extends BaseFragment implements TrendingMvp.View{
+    private final String TAG = getClass().getSimpleName();
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    //private OnFragmentInteractionListener mListener;
+    private TrendingFragmentInterface fragmentInterface;
+    private TrendingPresenter presenter;
 
     public TrendingGraphFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment TrendingGraphFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static TrendingGraphFragment newInstance(String param1, String param2) {
+    public static TrendingGraphFragment newInstance(TrendingPresenter presenter) {
         TrendingGraphFragment fragment = new TrendingGraphFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        args.putArgs(key, value);
+//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -50,33 +39,87 @@ public class TrendingGraphFragment extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+//            mParam1 = getArguments().getString(ARG_PARAM1);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        presenter = fragmentInterface.getTrendingPresenter();
+
+        presenter.loadInitialFacets();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.trending_graph_fragment, container, false);
+        View v = inflater.inflate(R.layout.trending_graph_fragment, container, false);
+
+        ButterKnife.bind(this, v);
+
+
+
+        return v;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-//        if (context instanceof OnFragmentInteractionListener) {
-//            mListener = (OnFragmentInteractionListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
+        if (context instanceof TrendingFragmentInterface) {
+            fragmentInterface = (TrendingFragmentInterface) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        //mListener = null;
+        fragmentInterface = null;
     }
 
+    @Override
+    public void initializeGeoFacetSpark(List<Facet> geoFacetList) {
+
+
+    }
+
+    @Override
+    public void initializeOrgFacetSpark(List<Facet> orgFacetList) {
+
+
+    }
+
+    @Override
+    public void initializeDesFacetSpark(List<Facet> desFacetList) {
+
+
+    }
+
+    @Override
+    public void initializePerFacetSpark(List<Facet> perFacetList) {
+
+
+    }
+
+    @Override
+    public void setLoading() {
+
+
+    }
+
+    @Override
+    public void displayDataNotAvailable() {
+
+    }
+
+    @Override
+    public void displayDataEmpty() {
+
+    }
+
+    public interface TrendingFragmentInterface {
+        TrendingPresenter getTrendingPresenter();
+    }
 }
+
+

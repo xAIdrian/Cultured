@@ -10,6 +10,7 @@ import com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
 import com.androidtitan.culturedapp.main.trending.TrendingPresenter;
+import com.androidtitan.culturedapp.main.trending.ui.TrendingActivity;
 
 import javax.inject.Singleton;
 
@@ -29,6 +30,7 @@ public interface AppComponent {
 
     void inject(NewsFeedActivity activity);
     void inject(TopArticleActivity activity);
+    void inject(TrendingActivity activity);
 
     void inject(NewsFeedAdapter adapter);
 

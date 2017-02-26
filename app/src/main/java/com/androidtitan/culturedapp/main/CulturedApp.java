@@ -13,7 +13,7 @@ import com.androidtitan.culturedapp.main.inject.AppComponent;
 import com.androidtitan.culturedapp.main.inject.AppModule;
 import com.androidtitan.culturedapp.main.inject.DaggerAppComponent;
 import com.androidtitan.culturedapp.main.web.services.FacetDownloadJobService;
-import com.androidtitan.culturedapp.main.web.services.FacetDownloadService;
+import com.androidtitan.culturedapp.main.web.services.FacetDeleteService;
 
 import java.util.Calendar;
 
@@ -27,6 +27,7 @@ import static com.androidtitan.culturedapp.common.Constants.FACET_JOB_SCHEDULER;
 public class CulturedApp extends Application {
 
     private static AppComponent appComponent;
+    private static Context context;
 
     @Override
     public void onCreate() {
@@ -36,11 +37,17 @@ public class CulturedApp extends Application {
                 .appModule(new AppModule(this))
                 .build();
 
+        context = getBaseContext();
+
         launchTrendingFacetServices();
     }
 
     public static AppComponent getAppComponent(){
         return appComponent;
+    }
+
+    public static Context getAppContext() {
+        return context;
     }
 
     public void launchTrendingFacetServices() {
@@ -50,14 +57,14 @@ public class CulturedApp extends Application {
                 new ComponentName(getPackageName(), FacetDownloadJobService.class.getName()));
         builder.setBackoffCriteria(10000, BACKOFF_POLICY_EXPONENTIAL);
         builder.setRequiredNetworkType(NETWORK_TYPE_ANY);
-        builder.setPeriodic(AlarmManager.INTERVAL_HOUR); //every two hours
+        builder.setPeriodic(300000);// 5 minutes. (AlarmManager.INTERVAL_FIFTEEN_MINUTES); //every two hours
 
         if( jobScheduler.schedule( builder.build() ) <= 0 ) {
             //If something goes wrong
         }
         //jobscheduler.cancelall()
 
-        Intent intent = new Intent(this, FacetDownloadService.class);
+        Intent intent = new Intent(this, FacetDeleteService.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
         AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(),

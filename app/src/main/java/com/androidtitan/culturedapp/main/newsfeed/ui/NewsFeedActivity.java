@@ -402,7 +402,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
                 break;
 
-            case R.id.menu_item_trending:
+            /*case R.id.menu_item_trending:
 
                 //synthetically generate the backstack (TaskStack) when using deep linking
                 Intent tempTrendingIntent = new Intent(this, TrendingActivity.class);
@@ -418,7 +418,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
                     e.printStackTrace();
                 }
 
-                break;
+                break;*/
 
             /*case R.id.menu_item_facets:
 

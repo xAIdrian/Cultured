@@ -87,7 +87,7 @@
             </intent-filter>
         </service>
         <service
-                android:name=".main.web.services.FacetDownloadService"
+                android:name=".main.web.services.FacetDeleteService"
                 android:enabled="true"
                 android:process=":facetDeleteService"/>
         <service
