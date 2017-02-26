@@ -1,5 +1,6 @@
 package com.androidtitan.culturedapp.main.newsfeed;
 
+import com.androidtitan.culturedapp.common.structure.MvpPresenter;
 import com.androidtitan.culturedapp.common.structure.MvpView;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
@@ -12,13 +13,13 @@ import java.util.Map;
  * Created by amohnacs on 8/29/16.
  */
 
-public interface NewsMvp {
+public interface NewsFeedMvp {
 
     interface Provider {
 
         List<Article> fetchArticles(String section, int limit, CallbackListener listener);
         void fetchAdditionalArticles(String section, int limit, int offset, CallbackListener listener);
-        void fetchAdditionalArticlesToInsert(String section, List<Article> articlesList, CallbackListener listener);
+        void refreshForAdditionalArticlesToInsert(String section, List<Article> articlesList, CallbackListener listener);
 
         interface CallbackListener {
             void appendArticleToAdapter(Article article);

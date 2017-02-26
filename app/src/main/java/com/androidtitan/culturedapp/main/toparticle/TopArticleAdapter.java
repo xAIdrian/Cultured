@@ -13,9 +13,7 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.view.TopArticleHeaderLayout;
-import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;

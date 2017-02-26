@@ -1,14 +1,10 @@
-package com.androidtitan.culturedapp.main.newsfeed;
+package com.androidtitan.culturedapp.main.newsfeed.adapter;
 
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +16,6 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.view.NewsHeaderLayout;
-import com.androidtitan.culturedapp.main.TrendingActivity;
-import com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity;
 import com.androidtitan.culturedapp.main.util.Utils;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.bumptech.glide.Glide;
@@ -45,7 +39,7 @@ import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRS
 /**
  * Created by amohnacs on 3/23/16.
  */
-public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = getClass().getSimpleName();
 
     private int ANIMATED_ITEMS_COUNT;
@@ -65,7 +59,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean shouldShowAboutCard = false;
 
     @Inject
-    public NewsAdapter(Context context, List<Article> adapterTrackList) {
+    public NewsFeedAdapter(Context context, List<Article> adapterTrackList) {
 
         this.context = context;
         this.articleList = adapterTrackList;
@@ -90,7 +84,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
             return 8;
         } else {
-            return 3;
+            return 5; //todo: we might want to start listening to the sizes of the cards display as a way to change this dynamically
         }
     }
 
@@ -289,9 +283,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private void initViewholderSimple(final SimpleViewHolder holder,  int position) {
 
-        if(sharedPreferences.getBoolean(PREFERENCES_APP_FIRST_RUN, false) || shouldShowAboutCard) {
+        if (sharedPreferences.getBoolean(PREFERENCES_APP_FIRST_RUN, false) || shouldShowAboutCard) {
 
-            position ++;
+            position++;
 
         }
 
@@ -302,20 +296,9 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsActivity) context).startDetailActivity(
+//                ((NewsFeedActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
-                Intent tempTrendingIntent = new Intent(context, TrendingActivity.class);
 
-                PendingIntent pendingIntent =
-                        TaskStackBuilder.create(context)
-                                .addNextIntentWithParentStack(tempTrendingIntent)           // add all of DetailsActivity's parents to the stack
-                                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);  // followed by DetailsActivity itself
-
-                try {
-                    pendingIntent.send();
-                } catch (PendingIntent.CanceledException e) {
-                    e.printStackTrace();
-                }
             }
         });
 
@@ -359,7 +342,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsActivity) context).startDetailActivity(
+//                ((NewsFeedActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
             }
         });
@@ -408,7 +391,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsActivity) context).startDetailActivity(
+//                ((NewsFeedActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
             }
         });

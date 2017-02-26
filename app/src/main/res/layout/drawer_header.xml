@@ -11,6 +11,7 @@
         android:background="@color/colorAccent" />
 
     <ImageView
+        android:id="@+id/nyt_imageView"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_centerInParent="true"

@@ -38,6 +38,7 @@ public class FacetDownloadJobService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
+        Log.d(TAG, "onStartJob");
 
         newsService = ServiceGenerator.createService(NewsEndpoint.class);
 
@@ -54,6 +55,8 @@ public class FacetDownloadJobService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
+        Log.e(TAG, "onStartJob");
+
         facetDownloadAsyncTask.cancel(true); //should interrupt the running thread if cancel is called
         return true;
     }
@@ -69,6 +72,7 @@ public class FacetDownloadJobService extends JobService {
 
         @Override
         protected JobParameters doInBackground(JobParameters... params) {
+            Log.d(TAG, "TaskDoInBackground");
 
             final Observable<NewsResponse> call = newsService.newsWireArticles("world", 10, 0, //our offset
                     getResources().getString(R.string.nyt_api_key_newswire));
@@ -92,6 +96,7 @@ public class FacetDownloadJobService extends JobService {
 
                         @Override
                         public void onNext(NewsResponse newsResponse) {
+                            Log.e(TAG, newsResponse.toString());
 
                             fetchArticleList = (ArrayList<Article>) newsResponse.getArticles();
 

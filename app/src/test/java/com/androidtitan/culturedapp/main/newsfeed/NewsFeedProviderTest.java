@@ -36,7 +36,7 @@ import retrofit2.mock.NetworkBehavior;
  */
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
-public class NewsProviderTest extends InstrumentationTestCase {
+public class NewsFeedProviderTest extends InstrumentationTestCase {
     private final String TAG = getClass().getSimpleName();
 
     private static final String TEST_SECTION = "testsection";

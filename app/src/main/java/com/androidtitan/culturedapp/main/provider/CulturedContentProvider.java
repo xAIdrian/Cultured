@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
@@ -231,25 +232,39 @@ public class CulturedContentProvider extends android.content.ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         //Log.d(TAG, "delete uri: " + uri.toString());
 
-        int deleteCount;
+        int deleteCount = 0;
 
         switch (uriMatcher.match(uri)) {
 
             case ARTICLE_LIST:
-                deleteCount = sqLiteHelper.getWritableDatabase().delete(
-                        DatabaseContract.ArticleTable.TABLE_NAME, selection, selectionArgs);
-                break;
+
+                try {
+                    deleteCount = sqLiteHelper.getWritableDatabase().delete(
+                            DatabaseContract.ArticleTable.TABLE_NAME, selection, selectionArgs);
+                } catch (SQLiteException e) {
+                    e.printStackTrace();
+                }
+                    break;
 
             case MEDIA_LIST:
 
-                deleteCount = sqLiteHelper.getWritableDatabase()
-                        .delete(DatabaseContract.MediaTable.TABLE_NAME, selection, selectionArgs);
+                try {
+                    deleteCount = sqLiteHelper.getWritableDatabase()
+                            .delete(DatabaseContract.MediaTable.TABLE_NAME, selection, selectionArgs);
+                } catch (SQLiteException e) {
+                    e.printStackTrace();
+                }
+
                 break;
 
             case FACET_LIST:
 
-                deleteCount = sqLiteHelper.getWritableDatabase()
-                        .delete(DatabaseContract.FacetTable.TABLE_NAME, selection, selectionArgs);
+                try {
+                    deleteCount = sqLiteHelper.getWritableDatabase()
+                            .delete(DatabaseContract.FacetTable.TABLE_NAME, selection, selectionArgs);
+                } catch (SQLiteException e) {
+                    e.printStackTrace();
+                }
                 break;
 
             default:

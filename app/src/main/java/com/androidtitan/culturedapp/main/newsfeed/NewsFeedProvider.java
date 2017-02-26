@@ -24,7 +24,7 @@ import rx.*;
  */
 
 @Singleton
-public class NewsProvider implements NewsMvp.Provider {
+public class NewsFeedProvider implements NewsFeedMvp.Provider {
     private final String TAG = getClass().getSimpleName();
 
     private Context context;
@@ -33,7 +33,7 @@ public class NewsProvider implements NewsMvp.Provider {
     private ArrayList<Article> fetchArticleList = new ArrayList<>();
 
     @Inject
-    public NewsProvider(Context context) {
+    public NewsFeedProvider(Context context) {
         this.context = context;
         newsService = ServiceGenerator.createService(NewsEndpoint.class);
     }
@@ -118,51 +118,57 @@ public class NewsProvider implements NewsMvp.Provider {
     }
 
     @Override
-    public void fetchAdditionalArticlesToInsert(String section, final List<Article> articlesList,
+    public void refreshForAdditionalArticlesToInsert(String section, final List<Article> articlesList,
                                                 final CallbackListener listener) {
 
         final Observable<NewsResponse> call = newsService.newsWireArticles(section, 10, 0,
-                context.getResources().getString(R.string.nyt_api_key_newswire));
+            context.getResources().getString(R.string.nyt_api_key_newswire));
 
         call.compose(RxHelper.applySchedulers())
-                .retry(10)
-                .subscribe(new Subscriber<NewsResponse>() {
-                    @Override
-                    public void onCompleted() {
+            .retry(10)
+            .subscribe(new Subscriber<NewsResponse>() {
+                @Override
+                public void onCompleted() {
 
-                        Log.d(TAG, "response received: " + fetchArticleList.size() + " newsWireArticles received");
+                    Log.d(TAG, "response received: " + fetchArticleList.size() + " newsWireArticles received");
 
-                        listener.onCompleted();
+                    listener.onCompleted();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    e.printStackTrace();
+
+                    ApiError error = new ApiError();
+                    error.setMessage(e.getMessage());
+                    listener.responseFailed(error);
+                }
+
+                @Override
+                public void onNext(NewsResponse newsResponse) {
+
+                    if(articlesList.size() > 0) {
+                        listener.insertArticlesIntoAdapter(0, addNewArticlesToArticleList (newsResponse.getArticles(), articlesList));
                     }
+                }
+            });
+    }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
+    public ArrayList<Article> addNewArticlesToArticleList(List<Article> responseArticles, List<Article> articlesList) {
+        ArrayList<Article> newArticles = new ArrayList<Article>();
 
-                        ApiError error = new ApiError();
-                        error.setMessage(e.getMessage());
-                        listener.responseFailed(error);
-                    }
+        int tinyScopedIndex = 0;
+        while(tinyScopedIndex < responseArticles.size()) {
 
-                    @Override
-                    public void onNext(NewsResponse newsResponse) {
+            if(responseArticles.get(tinyScopedIndex).getTitle().equals(articlesList.get(0).getTitle())) {
+                return  newArticles;
+            } else {
+                newArticles.add(responseArticles.get(tinyScopedIndex));
+            }
+            tinyScopedIndex ++;
+        }
 
-                        List<Article> responseArticles = newsResponse.getArticles();
-                        ArrayList<Article> newArticles = new ArrayList<Article>();
-
-                        for(int i = 0; i < responseArticles.size() - 1; i++) {
-
-                            if(responseArticles.get(i) != null && articlesList.get(i) != null) {
-                                if (!responseArticles.get(i).getTitle()
-                                        .equals(articlesList.get(i).getTitle())) {
-                                    newArticles.add(responseArticles.get(i));
-                                }
-                            }
-                        }
-
-                        listener.insertArticlesIntoAdapter(0, newArticles);
-                    }
-                });
+        return newArticles;
     }
 
 }

@@ -2,8 +2,8 @@ package com.androidtitan.culturedapp.main.inject;
 
 import android.content.Context;
 
-import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
-import com.androidtitan.culturedapp.main.newsfeed.NewsProvider;
+import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
+import com.androidtitan.culturedapp.main.newsfeed.NewsFeedProvider;
 
 import dagger.Module;
 import dagger.Provides;
@@ -20,8 +20,8 @@ import dagger.Provides;
 public class NewsModule {
 
     @Provides
-    public NewsPresenter provideNewsPresenter(Context context) {
-        return new NewsPresenter(context);
+    public NewsFeedPresenter provideNewsPresenter(Context context) {
+        return new NewsFeedPresenter(context);
     }
 
     /*@Provides
@@ -30,7 +30,7 @@ public class NewsModule {
     }*/
 
     @Provides
-    public NewsProvider providesNewsProvider(Context context) {
-        return new NewsProvider(context);
+    public NewsFeedProvider providesNewsProvider(Context context) {
+        return new NewsFeedProvider(context);
     }
 }

@@ -19,14 +19,22 @@ public interface TopArticleMvp {
 
     interface Provider {
 
-        Loader<Cursor> createBasicCursorLoader(int loaderId);
-
+        void fetchArticles(CallbackListener listener);
 
         interface CallbackListener {
-            //void sampleImageLoadComplete(Bitmap bitmap);
+
+            void onConstructionComplete(ArrayList<Article> articleArrayList);
+
+            void cursorDataNotAvailable();
+            void cursorDataEmpty();
         }
 
     }
+    /*
+    if(getMvpView() != null) {
+                    sendDownArticlesToView(articles);
+                }
+     */
 
     interface Presenter {
 
@@ -37,9 +45,8 @@ public interface TopArticleMvp {
 
         void updateArticles(List<Article> articleList);
 
-        void cursorDataNotAvailable();
-        void cursorDataEmpty();
-
         void setLoading();
+        void displayDataNotAvailable();
+        void displayDataEmpty();
     }
 }

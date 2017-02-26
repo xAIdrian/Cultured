@@ -17,17 +17,17 @@ import javax.inject.Inject;
 /**
  * Created by amohnacs on 3/21/16.
  */
-public class NewsPresenter extends BasePresenter<NewsMvp.View> implements NewsMvp.Presenter,
-        NewsMvp.Provider.CallbackListener {
+public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implements NewsFeedMvp.Presenter,
+        NewsFeedMvp.Provider.CallbackListener {
     private final String TAG = getClass().getSimpleName();
 
     private Context context;
 
     @Inject
-    NewsProvider newsProvider;
+    NewsFeedProvider newsFeedProvider;
     
     //todo:we are going to make this switch to a live Feed Version
-    public NewsPresenter(Context context) {
+    public NewsFeedPresenter(Context context) {
         this.context = context;
 
         CulturedApp.getAppComponent().inject(this);
@@ -37,19 +37,19 @@ public class NewsPresenter extends BasePresenter<NewsMvp.View> implements NewsMv
     @Override
     public List<Article> loadArticles(int limit) {
 
-        return newsProvider.fetchArticles("world", limit, this);
+        return newsFeedProvider.fetchArticles("world", limit, this);
     }
 
     @Override
     public void loadOffsetArticles(int limit, int offset) {
 
-        newsProvider.fetchAdditionalArticles("world", limit, offset, this);
+        newsFeedProvider.fetchAdditionalArticles("world", limit, offset, this);
     }
 
     @Override
     public void newsArticlesRefresh(List<Article> articles, int limit) {
 
-        newsProvider.fetchAdditionalArticlesToInsert("world", articles, this);
+        newsFeedProvider.refreshForAdditionalArticlesToInsert("world", articles, this);
 
     }
 

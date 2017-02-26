@@ -29,7 +29,7 @@ import static com.androidtitan.culturedapp.common.Constants.NO_ARTICLE_ID;
  * Created by Adrian Mohnacs on 12/29/16.
  */
 
-public class FacetDownloadService extends Service {
+public class FacetDeleteService extends Service {
     private final String TAG = getClass().getSimpleName();
 
     @Override
