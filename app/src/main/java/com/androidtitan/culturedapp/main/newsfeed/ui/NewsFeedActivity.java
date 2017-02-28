@@ -3,7 +3,6 @@ package com.androidtitan.culturedapp.main.newsfeed.ui;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
-import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +19,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -48,9 +46,9 @@ import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
+import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
-import com.androidtitan.culturedapp.main.trending.ui.TrendingActivity;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -71,7 +69,7 @@ import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRS
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
 public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, ErrorFragmentInterface,
-    DevConsoleDialogFragment.OnFragmentInteractionListener {
+        DevConsoleDialogFragment.DevConsoleCallback {
     private final String TAG = getClass().getSimpleName();
 
     private static final String SENDER_ID = "612691836045";
@@ -106,6 +104,8 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     View bgView;
     @Bind(R.id.culturedTitleTextView)
     TextView loadingTitleText;
+    @Bind(R.id.welcomeTextView)
+    TextView welcomeText;
 
     @Bind(R.id.newsList)
     RecyclerView recyclerView;
@@ -155,6 +155,8 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         ButterKnife.bind(this);
         super.getAppComponent().inject(this);
         presenter.bindView(this);
+
+        setupUserPreferences();
 
         articles = new ArrayList<>();
 
@@ -239,6 +241,12 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
                         if (feedbackIntent.resolveActivity(getPackageManager()) != null) {
                             startActivity(chooser);
                         }
+
+                        break;
+
+                    case R.id.settings:
+
+                        startActivity(new Intent(this, PreferencesActivity.class));
 
                         break;
 
@@ -355,6 +363,13 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setWelcomeText();
+    }
+
     private void showDialog() {
         DialogFragment newFragment = DevConsoleDialogFragment.newInstance();
         newFragment.show(getSupportFragmentManager(), "DevConsoleDialogFragment");
@@ -365,6 +380,30 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         isSyncingPeriodically = sharedPreferences.getBoolean(PREFERENCES_SYNCING_PERIODICALLY, false);
+    }
+
+    private void setupUserPreferences() {
+
+        setWelcomeText();
+
+        String continentString = getString(R.string.pref_key_continent);
+        switch (sharedPreferences.getString(continentString, "")) {
+            case "North America":
+
+                break;
+
+            case "South America":
+
+                break;
+
+            default:
+//                throw new IllegalArgumentException("Invalid case for switch statement");
+        }
+    }
+
+    private void setWelcomeText() {
+        String userName = sharedPreferences.getString(getString(R.string.pref_key_name), "");
+        welcomeText.setText("Welcome " + userName);
     }
 
     @Override

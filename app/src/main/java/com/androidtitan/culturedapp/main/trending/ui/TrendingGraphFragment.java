@@ -67,7 +67,7 @@ public class TrendingGraphFragment extends BaseFragment implements TrendingMvp.V
             fragmentInterface = (TrendingFragmentInterface) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement DevConsoleCallback");
         }
     }
 

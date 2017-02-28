@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Cultured</string>
+    <string name="github">https://github.com/amohnacs15/Cultured</string>
 
     <string name="nyt_api_key_newswire">159001c8b6e4427d9ade246e52c5cf9c</string>
     <string name="nyt_api_key_topstories">159001c8b6e4427d9ade246e52c5cf9c</string>
@@ -54,6 +55,7 @@
     <string name="generate_onboarding">Show Onboarding</string>
     <string name="generate_about">Show About</string>
     <string name="support_mail">Give Feedback</string>
+    <string name="settings">Settings</string>
 
     <string name="about_intro">Cultured was developed by Adrian Mohnacs.</string>
     <string name="about_body">Third party libraries used:\n\nDagger 2. Butterknife. Retrofit 2. (Square)\n\n
@@ -65,6 +67,7 @@
     <string name="error">Error</string>
     <string name="nice_error">Your news is not loading at the moment.\nCheck your internet connection and try again.</string>
     <string name="restart_app">Click to restart the app</string>
+    <string name="welcome">Welcome</string>
 
     <string name="top_article">Top Article</string>
     <string name="graph">Graph</string>
@@ -77,5 +80,36 @@
     <string name="bye_dev_console">See you soon</string>
 
     <string name="data_view">View SQL Data</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Settings -->
+    <string name="pref_dialogTitle_pickone">Pick One </string>
+
+    <string name="pref_strong_secret">Secret Settings</string>
+    <string name="pref_strong_key_secret">pref_strong_key_secret</string>
+
+    <string name="pref_strong_continent">Your News</string>
+    <string name="pref_strong_key_continent">pref_strong_key_continent</string>
+
+    <string name="pref_key_continent">pref_continent_settings</string>
+    <string name="pref_title_continent">Continent Priority</string>
+    <string-array name="pref_entries_values_continent">
+        <item>North America</item>
+        <item>South America</item>
+        <item>Africa</item>
+        <item>Europe</item>
+        <item>Asia</item>
+        <item>Australia</item>
+    </string-array>
+    <string name="pref_default_value_continents">World</string>
+
+    <string name="pref_key_name">pref_name_settings</string>
+    <string name="pref_title_name">What\'s your name?</string>
+    <string name="default_value_name">Newcomer</string>
+
+    <string name="trending_dev">For curious developers</string>
+    <string name="trending_dev_summary">Go to Github to see how the app was built</string>
+
+
 
 </resources>

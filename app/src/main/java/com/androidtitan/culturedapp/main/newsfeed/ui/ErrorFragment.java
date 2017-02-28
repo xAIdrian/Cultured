@@ -79,7 +79,7 @@ public class ErrorFragment extends Fragment {
             errorInterface = (ErrorFragmentInterface) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement DevConsoleCallback");
         }
     }
 

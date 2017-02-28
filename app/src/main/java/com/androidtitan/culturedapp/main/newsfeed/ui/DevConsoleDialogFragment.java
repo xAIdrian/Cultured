@@ -2,31 +2,26 @@ package com.androidtitan.culturedapp.main.newsfeed.ui;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.main.developer.DataViewActivity;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
-import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 
 
 public class DevConsoleDialogFragment extends DialogFragment {
     private final String TAG = getClass().getSimpleName();
 
-    private OnFragmentInteractionListener callbackListener;
+    private DevConsoleCallback callbackListener;
 
     @Bind(R.id.dev_console_navigation_view)
     NavigationView navigationView;
@@ -67,7 +62,6 @@ public class DevConsoleDialogFragment extends DialogFragment {
 
                 case R.id.data_menu_item:
 
-                    startActivity(new Intent(getActivity(), DataViewActivity.class));
 
                     break;
 
@@ -90,11 +84,11 @@ public class DevConsoleDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            callbackListener = (OnFragmentInteractionListener) context;
+        if (context instanceof DevConsoleCallback) {
+            callbackListener = (DevConsoleCallback) context;
         } else {
             throw new RuntimeException(context.toString()
-                + " must implement OnFragmentInteractionListener");
+                + " must implement DevConsoleCallback");
         }
     }
 
@@ -114,7 +108,7 @@ public class DevConsoleDialogFragment extends DialogFragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface DevConsoleCallback {
 
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);

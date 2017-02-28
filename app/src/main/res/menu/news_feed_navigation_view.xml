@@ -8,11 +8,6 @@
             android:icon="@drawable/ic_onboarding"
             android:title="@string/generate_onboarding" />
 
-    </group>
-
-    <group
-        android:id="@+id/aboutGroup">
-
         <item
             android:id="@+id/about_card_generator"
             android:icon="@drawable/ic_waves"
@@ -27,6 +22,11 @@
             android:id="@+id/support_mail"
             android:icon="@drawable/ic_mail"
             android:title="@string/support_mail" />
+
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_settings"
+            android:title="@string/settings" />
 
     </group>
 
