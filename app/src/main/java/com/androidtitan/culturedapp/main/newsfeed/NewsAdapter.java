@@ -299,17 +299,19 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.abstractText.setText(articleList.get(position).getAbstract());
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0).getFacetText());
 
+        int finalPosition = position;
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsActivity) context).startDetailActivity(
-//                        articleList.get(position), holder.articleImage);
+                sendDetailActivity(articleList.get(finalPosition), holder.articleImage);
+
                 Intent tempTrendingIntent = new Intent(context, TrendingActivity.class);
 
+                // this adds all of {@link NewsDetailActivity}'s parents to the stack followed by the Activity itself
                 PendingIntent pendingIntent =
                         TaskStackBuilder.create(context)
-                                .addNextIntentWithParentStack(tempTrendingIntent)           // add all of DetailsActivity's parents to the stack
-                                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);  // followed by DetailsActivity itself
+                                .addNextIntentWithParentStack(tempTrendingIntent)
+                                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 try {
                     pendingIntent.send();
@@ -359,8 +361,8 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsActivity) context).startDetailActivity(
-//                        articleList.get(position), holder.articleImage);
+                sendDetailActivity(articleList.get(position), holder.articleImage);
+
             }
         });
 
@@ -408,8 +410,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsActivity) context).startDetailActivity(
-//                        articleList.get(position), holder.articleImage);
+                sendDetailActivity(articleList.get(position), holder.articleImage);
             }
         });
     }
@@ -528,6 +529,11 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemCount() {
         return articleList.size();
+    }
+
+    private void sendDetailActivity(Article article, ImageView imageView) {
+        ((NewsActivity) context).startDetailActivity(
+            article, imageView);
     }
 
 }

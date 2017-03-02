@@ -14,8 +14,9 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="tracks">Tracks</string>
     <string name="long_placeholder">WikipediaTunes is going to recommend music based on the
-        some featured article.  Why not try listening to these songs while you read the article?
-        Keep up the work Adrian.  You\'re great.</string>
+        some featured article. Why not try listening to these songs while you read the article?
+        Keep up the work Adrian. You\'re great.
+    </string>
 
     <string name="transition_news_image">transition:NEWSIMAGE</string>
 
@@ -28,8 +29,12 @@
     <string name="swipe_up">Swipe up for more info</string>
 
     <string name="onboarding_title">Welcome\nto\nCultured</string>
-    <string name="oboarding_intro">Don\'t you want to know what\'s going on in the world but don\'t want to read lengthy news articles? Cultured solves that.</string>
-    <string name="onboarding_body">Select an article that interests you and from there you\'ll be able to learn more about the people, organizations, and countries involved.\n \nHappy Travels.</string>
+    <string name="oboarding_intro">Don\'t you want to know what\'s going on in the world but don\'t want to read lengthy news articles?
+        Cultured solves that.
+    </string>
+    <string name="onboarding_body">Select an article that interests you and from there you\'ll be able to learn more about the people,
+        organizations, and countries involved.\n \nHappy Travels.
+    </string>
 
     <string name="onboarding_gotit">Got it!</string>
     <string name="generate_onboarding">Show Onboarding</string>
@@ -37,10 +42,11 @@
     <string name="support_mail">Give Feedback</string>
 
     <string name="about_intro">Cultured was developed by Adrian Mohnacs.</string>
-    <string name="about_body">Third party libraries used:\n\nDagger 2.  Butterknife.  Retrofit 2.  (Square)\n\n
-    Glide.  (Google) \n\n
-    KenBurnsView. \n\n
-    icon8.com</string>
+    <string name="about_body">Third party libraries used:\n\nDagger 2. Butterknife. Retrofit 2. (Square)\n\n
+        Glide. (Google) \n\n
+        KenBurnsView. \n\n
+        icon8.com
+    </string>
     <string name="chooser_text">Which app would you like to use?</string>
     <string name="error">Error</string>
     <string name="nice_error">Your news is not loading at the moment.\nCheck your internet connection and try again.</string>
@@ -57,5 +63,8 @@
     <string name="large_text">Large Text</string>
     <string name="authenticator">TopArticleAuthenticator</string>
     <string name="title_activity_trending">TrendingActivity</string>
+    <string name="title_activity_news_detail">NewsDetailActivity</string>
+    <string name="drawer_open">nav_drawer_open</string>
+    <string name="drawer_closed">nav_drawer_closed</string>
 
 </resources>

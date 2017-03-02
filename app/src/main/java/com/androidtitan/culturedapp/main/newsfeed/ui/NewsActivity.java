@@ -21,6 +21,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -97,6 +98,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     private Account account;
 
     Toolbar supportActionBar;
+    ActionBarDrawerToggle drawerToggle;
 
     @Bind(R.id.colorBgView)
     View bgView;
@@ -112,6 +114,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     DrawerLayout drawerLayout;
     @Bind(R.id.drawer_navigation_view)
     NavigationView navigationView;
+    @Bind(R.id.navigation_icon)
+    ImageView navImage;
 
     SharedPreferences sharedPreferences;
 
@@ -165,11 +169,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
             //receives 'http://www.cultured.com because that is the URL(URI) data required to launch our app from search
         }
-        // Attaching the layout to the toolbar object
-        supportActionBar = (Toolbar) findViewById(R.id.toolbar);
-        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
-        setSupportActionBar(supportActionBar);
-        getSupportActionBar().setTitle("");
+        setUpActionBar();
 
         screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
@@ -178,6 +178,17 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         } else {
             articles = presenter.loadArticles(5);
         }
+
+        navImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(drawerLayout.isDrawerOpen(navigationView)) {
+                    drawerLayout.closeDrawers();
+                } else {
+                    drawerLayout.openDrawer(navigationView);
+                }
+            }
+        });
 
         navigationView.setNavigationItemSelectedListener((item) -> {
                 drawerLayout.closeDrawers();
@@ -325,6 +336,47 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
             showColoredSnackbar();
         });
 
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    private void setUpActionBar() {
+        // Attaching the layout to the toolbar object
+        supportActionBar = (Toolbar) findViewById(R.id.toolbar);
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        setSupportActionBar(supportActionBar);
+        getSupportActionBar().setTitle("");
+        drawerToggle = new ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            R.string.drawer_open,
+            R.string.drawer_closed
+        ) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        // Set the drawer toggle as the DrawerListener
+        drawerLayout.addDrawerListener(drawerToggle);
+
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     private void sharedPreferencesSetup() {
@@ -637,7 +689,23 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         loadingSnackbar.show();
     }
 
-//starting our SyncAdapter
+    public void startDetailActivity(Article article, ImageView articleImage) {
+//        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+//        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+//            //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
+//            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
+//
+            Intent intent = new Intent(this, NewsDetailActivity.class);
+            intent.putExtra(ARTICLE_EXTRA, article);
+            startActivity(intent); // ,options.toBundle()
+//        } else {
+//            Intent intent = new Intent(this, NewsDetailActivity.class);
+//            intent.putExtra(ARTICLE_EXTRA, article);
+//            startActivity(intent);
+//        }
+    }
+
+    //starting our SyncAdapter
     private class FCMRegistrationTask extends AsyncTask<Void, Void, String> {
 
         @Override
