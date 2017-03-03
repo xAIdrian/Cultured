@@ -50,6 +50,7 @@ import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.iid.InstanceID;
@@ -69,23 +70,32 @@ import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRS
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
 public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFragmentInterface {
+
     private final String TAG = getClass().getSimpleName();
 
     private static final String SENDER_ID = "612691836045";
+
     public static final String ACCOUNT_TYPE = "com.androidtitan";
+
     public static final String ACCOUNT = "dummyaccount";
+
     // Sync interval constants...one hour
     public static final long SECONDS_PER_MINUTE = 60L;
+
     public static final long SYNC_INTERVAL_IN_MINUTES = 180L;
+
     public static final long SYNC_INTERVAL =
-            SYNC_INTERVAL_IN_MINUTES *
-                    SECONDS_PER_MINUTE;
+        SYNC_INTERVAL_IN_MINUTES *
+            SECONDS_PER_MINUTE;
 
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
+
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
     private static final int LOADING_ANIM_TIME = 700;
+
     public static final String ERROR_MESSAGE = "errorfragment.errormessage";
+
     public static final String ERROR_MAP = "errorfragment.errormap";
 
     ErrorFragment errorFragment;
@@ -94,33 +104,42 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     NewsPresenter presenter;
 
     private Handler handler;
+
     private Animation fadeAnim;
+
     private Account account;
 
     Toolbar supportActionBar;
+
     ActionBarDrawerToggle drawerToggle;
 
     @Bind(R.id.colorBgView)
     View bgView;
-    @Bind(R.id.culturedTitleTextView)
+
+    @Bind(R.id.loadingTextView)
     TextView loadingTitleText;
 
     @Bind(R.id.newsList)
     RecyclerView recyclerView;
+
     @Bind(R.id.refreshFloatingActionButton)
     FloatingActionButton refreshFab;
 
     @Bind(R.id.drawerLayout)
     DrawerLayout drawerLayout;
+
     @Bind(R.id.drawer_navigation_view)
     NavigationView navigationView;
+
     @Bind(R.id.navigation_icon)
     ImageView navImage;
 
     SharedPreferences sharedPreferences;
 
     private LinearLayoutManager linearLayoutManager;
+
     private StaggeredGridLayoutManager staggeredLayoutManager;
+
     private NewsAdapter adapter;
 
     private AppBarLayout appBarLayout;
@@ -128,11 +147,17 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     List<Article> articles;
 
     private boolean isSyncingPeriodically;
+
     private boolean firstLoad = true; //used for animation
+
     private boolean loading = true;
+
     private int pastVisibleItems;
+
     private int visibleItemCount;
+
     private int totalItemCount;
+
     public int adapterLoadOffset = 6;
 
     int screenSize;
@@ -163,7 +188,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         if (savedInstanceState != null) {
             //
         }
-        if(getIntent() != null) {
+        if (getIntent() != null) {
             Intent in = getIntent();
             Uri deepLinkData = in.getData();
 
@@ -182,7 +207,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         navImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(drawerLayout.isDrawerOpen(navigationView)) {
+                if (drawerLayout.isDrawerOpen(navigationView)) {
                     drawerLayout.closeDrawers();
                 } else {
                     drawerLayout.openDrawer(navigationView);
@@ -191,49 +216,49 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         });
 
         navigationView.setNavigationItemSelectedListener((item) -> {
-                drawerLayout.closeDrawers();
+            drawerLayout.closeDrawers();
 
-                switch (item.getItemId()) {
+            switch (item.getItemId()) {
 
-                    case R.id.onboarding_card_generator:
+                case R.id.onboarding_card_generator:
 
-                        if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                                && adapter.getAboutStatus() == false) {
-                            adapter.resetOnboardingCard();
-                        }
+                    if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
+                        && adapter.getAboutStatus() == false) {
+                        adapter.resetOnboardingCard();
+                    }
 
-                        break;
+                    break;
 
-                    case R.id.about_card_generator:
+                case R.id.about_card_generator:
 
-                        if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                                && adapter.getAboutStatus() == false) {
-                            adapter.showAboutCard();
-                        }
+                    if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
+                        && adapter.getAboutStatus() == false) {
+                        adapter.showAboutCard();
+                    }
 
-                        break;
+                    break;
 
-                    case R.id.support_mail:
+                case R.id.support_mail:
 
-                        Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
-                        feedbackIntent.setType("plain/text");
-                        feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"adrian.mohnacs@gmail.com"});
-                        feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "Cultured Feedback");
-                        feedbackIntent.putExtra(Intent.EXTRA_TEXT, "Hi Adrian,\nHere\'s what I think about Cultured...");
-                        //chooser
-                        String title = getResources().getString(R.string.chooser_text);
-                        Intent chooser = Intent.createChooser(feedbackIntent, title);
-                        if (feedbackIntent.resolveActivity(getPackageManager()) != null) {
-                            startActivity(chooser);
-                        }
+                    Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
+                    feedbackIntent.setType("plain/text");
+                    feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"adrian.mohnacs@gmail.com"});
+                    feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "Cultured Feedback");
+                    feedbackIntent.putExtra(Intent.EXTRA_TEXT, "Hi Adrian,\nHere\'s what I think about Cultured...");
+                    //chooser
+                    String title = getResources().getString(R.string.chooser_text);
+                    Intent chooser = Intent.createChooser(feedbackIntent, title);
+                    if (feedbackIntent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(chooser);
+                    }
 
-                        break;
+                    break;
 
-                    default:
+                default:
 
-                        Log.e(TAG, "Incorrect navigation drawer item selected");
-                }
-                return true;
+                    Log.e(TAG, "Incorrect navigation drawer item selected");
+            }
+            return true;
         });
 
         initializeRecyclerView();
@@ -246,6 +271,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
                 int[] array = null;
                 scrollViewParallax(dy);
 
+                // logic for hiding and showing the actionbar shadow when the list is fully scrolled down
                 try {
                     if (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                         appBarLayout.setElevation(0);
@@ -253,7 +279,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
                 } catch (Exception e) {
                     array = staggeredLayoutManager.findFirstCompletelyVisibleItemPositions(array);
 
-                    if(array[0] == 0 || array[1] == 1) {
+                    if (array[0] == 0 || array[1] == 1) {
                         appBarLayout.setElevation(0);
                     }
                 }
@@ -262,7 +288,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
                     hideToolbarBy(dy);
 
                     if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
-                            getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
                         visibleItemCount = staggeredLayoutManager.getChildCount();
                         totalItemCount = staggeredLayoutManager.getItemCount();
@@ -390,7 +416,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     protected void onStop() {
         super.onStop();
 
-        if(isSyncingPeriodically) {
+        if (isSyncingPeriodically) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, false).apply();
 
@@ -480,7 +506,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         Account newAccount = new Account(ACCOUNT, ACCOUNT_TYPE);
         AccountManager accountManager = (AccountManager) context.getSystemService(ACCOUNT_SERVICE);
 
-        if(accountManager.addAccountExplicitly(newAccount, null, null)) {
+        if (accountManager.addAccountExplicitly(newAccount, null, null)) {
             /*
              * If you don't set android:syncable="true" in
              * in your <provider> element in the manifest,
@@ -540,7 +566,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         errorFragment.setArguments(args);
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_content, errorFragment).commit();
+            .add(R.id.main_content, errorFragment).commit();
 
     }
 
@@ -553,13 +579,13 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     private void initializeRecyclerView() {
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
-                && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
 
             staggeredLayoutManager = new StaggeredGridLayoutManager(3, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
 
         } else if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
-                getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
             staggeredLayoutManager = new StaggeredGridLayoutManager(2, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
@@ -575,7 +601,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         recyclerView.setAdapter(adapter);
     }
 
-//animation and UI methods
+    //animation and UI methods
     private void scrollViewParallax(int dy) { // divided by three to scroll slower
         bgView.setTranslationY(bgView.getTranslationY() - dy / 3);
     }
@@ -603,7 +629,6 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
             }
         }, LOADING_ANIM_TIME);
-
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -638,9 +663,9 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
             appBarLayout.setTranslationY(0);
 
         } else {
-            appBarLayout.setTranslationY(appBarLayout.getTranslationY()-dy);
+            appBarLayout.setTranslationY(appBarLayout.getTranslationY() - dy);
 
-            if(dy < 0) {
+            if (dy < 0) {
                 appBarLayout.setElevation(8);
             } else {
                 appBarLayout.setElevation(0);
@@ -653,7 +678,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         if (cannotHideMore(dy)) {
             appBarLayout.setTranslationY(-appBarLayout.getBottom());
         } else {
-            appBarLayout.setTranslationY(appBarLayout.getTranslationY()-dy);
+            appBarLayout.setTranslationY(appBarLayout.getTranslationY() - dy);
         }
     }
 
@@ -669,12 +694,12 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         PreferenceStore preferenceStore = PreferenceStore.get(this);
         String currentToken = preferenceStore.getFcmToken();
 
-        if(currentToken == null) {
+        if (currentToken == null) {
             new FCMRegistrationTask().execute();
         } else {
             Log.d(TAG, "Have token: " + currentToken);
 
-            if(!isSyncingPeriodically) {
+            if (!isSyncingPeriodically) {
                 setupPeriodicSync();
             }
         }
@@ -682,8 +707,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
     private void showColoredSnackbar() {
         Snackbar loadingSnackbar = Snackbar.make(recyclerView,
-                getResources().getString(R.string.simple_loading),
-                Snackbar.LENGTH_LONG);
+            getResources().getString(R.string.simple_loading),
+            Snackbar.LENGTH_LONG);
         View snackbarView = loadingSnackbar.getView();
         snackbarView.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
         loadingSnackbar.show();
@@ -695,9 +720,9 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 //            //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
 //            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
 //
-            Intent intent = new Intent(this, NewsDetailActivity.class);
-            intent.putExtra(ARTICLE_EXTRA, article);
-            startActivity(intent); // ,options.toBundle()
+        Intent intent = new Intent(this, NewsDetailActivity.class);
+        intent.putExtra(ARTICLE_EXTRA, article);
+        startActivity(intent); // ,options.toBundle()
 //        } else {
 //            Intent intent = new Intent(this, NewsDetailActivity.class);
 //            intent.putExtra(ARTICLE_EXTRA, article);
@@ -716,12 +741,12 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         @Override
         protected String doInBackground(Void... params) {
 
-            if(NewsActivity.this == null) {
+            if (NewsActivity.this == null) {
                 return null;
             }
 
             int googleApiAvailable = GoogleApiAvailability.getInstance()
-                    .isGooglePlayServicesAvailable(NewsActivity.this);
+                .isGooglePlayServicesAvailable(NewsActivity.this);
             if (googleApiAvailable != ConnectionResult.SUCCESS) {
                 Log.e(TAG, "Play services not available, cannot register for GCM");
                 return null;
@@ -759,9 +784,9 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
         ContentResolver.setIsSyncable(account, DatabaseContract.AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(
-                account, DatabaseContract.AUTHORITY, true);
+            account, DatabaseContract.AUTHORITY, true);
         ContentResolver.addPeriodicSync(
-                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+            account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
         ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
     }
 
