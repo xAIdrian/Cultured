@@ -17,7 +17,8 @@
     <dimen name="wiki_negative_margin">-55dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
-    <dimen name="basic_b">8dp</dimen>
+    <dimen name="defaultt">8dp</dimen>
     <dimen name="double_default">16dp</dimen>
+    <dimen name="half_default">4dp</dimen>
 
 </resources>

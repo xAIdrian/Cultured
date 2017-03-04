@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_menu"
                         android:layout_gravity="left"
-                        android:layout_marginLeft="@dimen/basic_b"/>
+                        android:layout_marginLeft="@dimen/defaultt"/>
 
             </android.support.v7.widget.Toolbar>
 

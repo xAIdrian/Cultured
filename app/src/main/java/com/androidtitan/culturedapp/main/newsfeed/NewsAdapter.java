@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.widget.RecyclerView;
@@ -194,17 +193,17 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         switch (viewType) {
             case SIMPLE_LAYOUT:
-                View v1 = inflater.inflate(R.layout.newsfeed_row_layout_simple, parent, false);
+                View v1 = inflater.inflate(R.layout.news_row_layout_simple, parent, false);
                 viewHolder = new SimpleViewHolder(v1);
                 break;
 
             case LARGE_IMAGE_LAYOUT:
-                View v2 = inflater.inflate(R.layout.newsfeed_row_layout_large, parent, false);
+                View v2 = inflater.inflate(R.layout.news_row_layout_large, parent, false);
                 viewHolder = new LargeImageViewHolder(v2);
                 break;
 
             case MEDIUM_IMAGE_LAYOUT:
-                View v3 = inflater.inflate(R.layout.newsfeed_row_layout_medium, parent, false);
+                View v3 = inflater.inflate(R.layout.news_row_layout_medium, parent, false);
                 viewHolder = new MediumImageViewHolder(v3);
                 break;
 
@@ -219,7 +218,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 break;
 
             default:
-                View v6 = LayoutInflater.from(parent.getContext()).inflate(R.layout.newsfeed_row_layout_simple, parent, false);
+                View v6 = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_row_layout_simple, parent, false);
                 viewHolder = new SimpleViewHolder(v6);
                 break;
         }

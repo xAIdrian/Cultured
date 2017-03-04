@@ -3,7 +3,6 @@ package com.androidtitan.culturedapp.main.newsfeed.ui;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.annotation.TargetApi;
-import android.app.ActivityOptions;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +49,7 @@ import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -70,6 +70,8 @@ import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRS
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
 public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFragmentInterface {
+
+    public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
 
     private final String TAG = getClass().getSimpleName();
 
@@ -172,7 +174,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         initFCM();
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.newsfeed_activity);
+        setContentView(R.layout.news_activity);
 
         ButterKnife.bind(this);
         super.getAppComponent().inject(this);
@@ -722,6 +724,14 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 //
         Intent intent = new Intent(this, NewsDetailActivity.class);
         intent.putExtra(ARTICLE_EXTRA, article);
+
+        ArrayList<String> facets = new ArrayList<>();
+        for (Facet facet : article.getGeoFacet()) {
+            facets.add(facet.getFacetText());
+        }
+
+        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, facets);
+
         startActivity(intent); // ,options.toBundle()
 //        } else {
 //            Intent intent = new Intent(this, NewsDetailActivity.class);

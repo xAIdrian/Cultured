@@ -51,6 +51,7 @@ public class TopArticleActivity extends BaseActivity implements TopArticleMvp.Vi
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Top Articles");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
