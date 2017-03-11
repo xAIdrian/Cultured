@@ -66,5 +66,7 @@
     <string name="title_activity_news_detail">NewsDetailActivity</string>
     <string name="drawer_open">nav_drawer_open</string>
     <string name="drawer_closed">nav_drawer_closed</string>
+    <string name="file_write_error">There was a problem writing your saving...</string>
+    <string name="file_write_success">Your article is now available offline</string>
 
 </resources>

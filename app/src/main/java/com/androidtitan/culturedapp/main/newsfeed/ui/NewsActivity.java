@@ -41,6 +41,7 @@ import android.widget.TextView;
 
 
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.common.structure.BaseActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
@@ -58,6 +59,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,6 +74,8 @@ import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_
 public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFragmentInterface {
 
     public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
+
+    private static final String ARTICLE_BOOKMARKED = "newsActivity.article_bookmarked";
 
     private final String TAG = getClass().getSimpleName();
 
@@ -146,7 +150,9 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
     private AppBarLayout appBarLayout;
 
-    List<Article> articles;
+    private List<Article> articles;
+
+    private HashMap<String, Boolean> bookMarkedArticles;
 
     private boolean isSyncingPeriodically;
 
@@ -164,6 +170,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
     int screenSize;
 
+    private FileManager fileManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         initializeTranstionsAndAnimations();
@@ -180,7 +188,10 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         super.getAppComponent().inject(this);
         presenter.bindView(this);
 
+        fileManager = FileManager.getInstance(this);
+
         articles = new ArrayList<>();
+        bookMarkedArticles = fileManager.getInternalArticlesHashMap();
 
         loadingTitleText.setVisibility(View.VISIBLE);
         loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
@@ -717,27 +728,25 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     }
 
     public void startDetailActivity(Article article, ImageView articleImage) {
-//        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-//        if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-//            //Pair<View, String> pair = Pair.create((View) articleImage, getString(R.string.transition_news_image));
-//            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
-//
+
         Intent intent = new Intent(this, NewsDetailActivity.class);
         intent.putExtra(ARTICLE_EXTRA, article);
+        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, getGeoFacetArrayList(article));
+        intent.putExtra(ARTICLE_BOOKMARKED, isArticleBookmarked(article.getTitle()));
 
+        startActivity(intent);
+    }
+
+    public boolean isArticleBookmarked(String articleTitle) {
+        return bookMarkedArticles.get(articleTitle);
+    }
+
+    public ArrayList<String> getGeoFacetArrayList(Article article) {
         ArrayList<String> facets = new ArrayList<>();
         for (Facet facet : article.getGeoFacet()) {
             facets.add(facet.getFacetText());
         }
-
-        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, facets);
-
-        startActivity(intent); // ,options.toBundle()
-//        } else {
-//            Intent intent = new Intent(this, NewsDetailActivity.class);
-//            intent.putExtra(ARTICLE_EXTRA, article);
-//            startActivity(intent);
-//        }
+        return facets;
     }
 
     //starting our SyncAdapter

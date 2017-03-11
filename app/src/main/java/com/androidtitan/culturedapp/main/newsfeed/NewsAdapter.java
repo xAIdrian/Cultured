@@ -21,7 +21,7 @@ import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.view.NewsHeaderLayout;
 import com.androidtitan.culturedapp.main.TrendingActivity;
 import com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity;
-import com.androidtitan.culturedapp.main.util.Utils;
+import com.androidtitan.culturedapp.main.util.ScreenUtils;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -109,7 +109,7 @@ public class NewsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
             lastAnimatedPosition = position;
 
-            view.setTranslationY(Utils.getScreenHeight());
+            view.setTranslationY(ScreenUtils.getScreenHeight());
             view.animate()
                     .translationY(0)
                     .setInterpolator(new DecelerateInterpolator(3.f))
