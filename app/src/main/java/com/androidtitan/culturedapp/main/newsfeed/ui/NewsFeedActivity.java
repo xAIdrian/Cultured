@@ -18,6 +18,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -36,17 +37,18 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.common.structure.BaseActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
-import com.androidtitan.culturedapp.main.newsfeed.NewsAdapter;
-import com.androidtitan.culturedapp.main.newsfeed.NewsMvp;
-import com.androidtitan.culturedapp.main.newsfeed.NewsPresenter;
+import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
+import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
+import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
+import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
@@ -71,13 +73,13 @@ import butterknife.ButterKnife;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
-public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFragmentInterface {
+public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, ErrorFragmentInterface,
+        DevConsoleDialogFragment.DevConsoleCallback {
+    private final String TAG = getClass().getSimpleName();
 
     public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
 
     private static final String ARTICLE_BOOKMARKED = "newsActivity.article_bookmarked";
-
-    private final String TAG = getClass().getSimpleName();
 
     private static final String SENDER_ID = "612691836045";
 
@@ -107,7 +109,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     ErrorFragment errorFragment;
 
     @Inject
-    NewsPresenter presenter;
+    NewsFeedPresenter presenter;
 
     private Handler handler;
 
@@ -124,6 +126,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
     @Bind(R.id.loadingTextView)
     TextView loadingTitleText;
+    @Bind(R.id.welcomeTextView)
+    TextView welcomeText;
 
     @Bind(R.id.newsList)
     RecyclerView recyclerView;
@@ -145,8 +149,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     private LinearLayoutManager linearLayoutManager;
 
     private StaggeredGridLayoutManager staggeredLayoutManager;
-
-    private NewsAdapter adapter;
+    private NewsFeedAdapter adapter;
 
     private AppBarLayout appBarLayout;
 
@@ -165,6 +168,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
     private int visibleItemCount;
 
     private int totalItemCount;
+
+    private int devConsoleCount = 0;
 
     public int adapterLoadOffset = 6;
 
@@ -187,6 +192,8 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         ButterKnife.bind(this);
         super.getAppComponent().inject(this);
         presenter.bindView(this);
+
+        setupUserPreferences();
 
         fileManager = FileManager.getInstance(this);
 
@@ -225,6 +232,23 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
                 } else {
                     drawerLayout.openDrawer(navigationView);
                 }
+            }
+        });
+
+        navigationView.getHeaderView(0).setOnClickListener((header) -> {
+
+            if(devConsoleCount == 6) {
+                if(!navigationView.getMenu().getItem(3).isVisible()) {
+                    Toast.makeText(this, R.string.prime_dev_console_text, Toast.LENGTH_SHORT).show();
+                    navigationView.getMenu().getItem(3).setVisible(true);
+                } else {
+                    Toast.makeText(this, R.string.bye_dev_console, Toast.LENGTH_SHORT).show();
+                    navigationView.getMenu().getItem(3).setVisible(false);
+                }
+
+                devConsoleCount = 0;
+            } else {
+                devConsoleCount ++;
             }
         });
 
@@ -267,7 +291,17 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
 
                     break;
 
-                default:
+                    case R.id.settings:
+
+                        startActivity(new Intent(this, PreferencesActivity.class));
+
+                        break;
+
+                    case R.id.devConsole:
+                        //display a dialog fragment
+                        showDialog();
+
+                    default:
 
                     Log.e(TAG, "Incorrect navigation drawer item selected");
             }
@@ -418,11 +452,47 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         getSupportActionBar().setHomeButtonEnabled(true);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        setWelcomeText();
+    }
+
+    private void showDialog() {
+        DialogFragment newFragment = DevConsoleDialogFragment.newInstance();
+        newFragment.show(getSupportFragmentManager(), "DevConsoleDialogFragment");
+    }
+
     private void sharedPreferencesSetup() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         isSyncingPeriodically = sharedPreferences.getBoolean(PREFERENCES_SYNCING_PERIODICALLY, false);
+    }
+
+    private void setupUserPreferences() {
+
+        setWelcomeText();
+
+        String continentString = getString(R.string.pref_key_continent);
+        switch (sharedPreferences.getString(continentString, "")) {
+            case "North America":
+
+                break;
+
+            case "South America":
+
+                break;
+
+            default:
+//                throw new IllegalArgumentException("Invalid case for switch statement");
+        }
+    }
+
+    private void setWelcomeText() {
+        String userName = sharedPreferences.getString(getString(R.string.pref_key_name), "");
+        welcomeText.setText("Welcome " + userName);
     }
 
     @Override
@@ -459,6 +529,24 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
                 startActivity(new Intent(this, TopArticleActivity.class));
 
                 break;
+
+            /*case R.id.menu_item_trending:
+
+                //synthetically generate the backstack (TaskStack) when using deep linking
+                Intent tempTrendingIntent = new Intent(this, TrendingActivity.class);
+
+                PendingIntent pendingIntent =
+                        TaskStackBuilder.create(this)
+                                .addNextIntentWithParentStack(tempTrendingIntent)           // add all of DetailsActivity's parents to the stack
+                                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);  // followed by DetailsActivity itself
+
+                try {
+                    pendingIntent.send();
+                } catch (PendingIntent.CanceledException e) {
+                    e.printStackTrace();
+                }
+
+                break;*/
 
             /*case R.id.menu_item_facets:
 
@@ -610,7 +698,7 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
             recyclerView.setLayoutManager(linearLayoutManager);
         }
 
-        adapter = new NewsAdapter(this, articles);
+        adapter = new NewsFeedAdapter(this, articles);
         recyclerView.setAdapter(adapter);
     }
 
@@ -727,6 +815,12 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         loadingSnackbar.show();
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    //starting our SyncAdapter
     public void startDetailActivity(Article article, ImageView articleImage) {
 
         Intent intent = new Intent(this, NewsDetailActivity.class);
@@ -760,18 +854,18 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
         @Override
         protected String doInBackground(Void... params) {
 
-            if (NewsActivity.this == null) {
+            if(NewsFeedActivity.this == null) {
                 return null;
             }
 
             int googleApiAvailable = GoogleApiAvailability.getInstance()
-                .isGooglePlayServicesAvailable(NewsActivity.this);
+                    .isGooglePlayServicesAvailable(NewsFeedActivity.this);
             if (googleApiAvailable != ConnectionResult.SUCCESS) {
                 Log.e(TAG, "Play services not available, cannot register for GCM");
                 return null;
             }
 
-            InstanceID instanceID = InstanceID.getInstance(NewsActivity.this);
+            InstanceID instanceID = InstanceID.getInstance(NewsFeedActivity.this);
 
             try {
                 String token = instanceID.getToken(SENDER_ID, FirebaseMessaging.INSTANCE_ID_SCOPE, null);
@@ -791,12 +885,13 @@ public class NewsActivity extends BaseActivity implements NewsMvp.View, ErrorFra
             if (token == null) {
                 setupPeriodicSync();
             } else {
-                PreferenceStore.get(NewsActivity.this).setFcmToken(token);
+                PreferenceStore.get(NewsFeedActivity.this).setFcmToken(token);
             }
         }
     }
 
     private void setupPeriodicSync() {
+
         isSyncingPeriodically = true;
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, true).apply();

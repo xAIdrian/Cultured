@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:key="@string/pref_strong_key_continent"
+        android:title="@string/pref_strong_continent">
+
+        <ListPreference
+            android:defaultValue="@string/pref_default_value_continents"
+            android:entries="@array/pref_entries_values_continent"
+            android:entryValues="@array/pref_entries_values_continent"
+            android:key="@string/pref_key_continent"
+            android:title="@string/pref_title_continent" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_strong_key_secret"
+        android:title="@string/pref_strong_secret">
+
+        <EditTextPreference
+            android:defaultValue="@string/default_value_name"
+            android:key="@string/pref_key_name"
+            android:title="@string/pref_title_name"/>
+
+        <!-- Preference item opens a different activity instead of a settings screen -->
+        <Preference
+            android:title="@string/trending_dev"
+            android:summary="@string/trending_dev_summary">
+
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/github" />
+
+        </Preference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

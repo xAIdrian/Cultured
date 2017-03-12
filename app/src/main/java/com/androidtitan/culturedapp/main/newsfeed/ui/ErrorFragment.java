@@ -15,10 +15,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.Bind;
-
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity.ERROR_MAP;
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity.ERROR_MESSAGE;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ERROR_MAP;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ERROR_MESSAGE;
 
 
 public class ErrorFragment extends Fragment {
@@ -81,7 +79,7 @@ public class ErrorFragment extends Fragment {
             errorInterface = (ErrorFragmentInterface) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement DevConsoleCallback");
         }
     }
 

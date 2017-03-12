@@ -49,9 +49,9 @@ public class FacetCursorWrapper extends CursorWrapper {
 
         try {
             String facetDateString = getString(getColumnIndex(DatabaseContract.FacetTable.CREATED_DATE));
-        /*
-        Date createdDate = convert Date
-         */
+            /*
+            Date createdDate = convert Date
+             */
             DateFormat format = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
             Date date = new Date();
             try {

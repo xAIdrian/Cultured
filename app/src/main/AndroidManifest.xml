@@ -12,12 +12,12 @@
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
 
     <application
-            android:name=".main.CulturedApp"
-            android:allowBackup="true"
-            android:icon="@mipmap/cultured_app_icon"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme">
-        <activity android:name=".main.newsfeed.ui.NewsActivity">
+        android:name=".main.CulturedApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/cultured_app_icon"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity android:name=".main.newsfeed.ui.NewsFeedActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -25,10 +25,10 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".main.toparticle.ui.TopArticleActivity"
-                android:label="@string/title_activity_top_article"
-                android:parentActivityName=".main.newsfeed.ui.NewsActivity"
-                android:theme="@style/AppTheme">
+            android:name=".main.toparticle.ui.TopArticleActivity"
+            android:label="@string/title_activity_top_article"
+            android:parentActivityName=".main.newsfeed.ui.NewsFeedActivity"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
 
@@ -39,6 +39,20 @@
                         android:scheme="http"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".main.trending.ui.TrendingActivity"
+            android:label="@string/title_activity_trending"
+            android:parentActivityName=".main.newsfeed.ui.NewsFeedActivity"
+            android:theme="@style/AppTheme" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            </activity>
+
+        <activity android:name=".main.preferences.PreferencesActivity"></activity>
 
         <!-- SyncAdapter Components -->
 
@@ -83,9 +97,9 @@
             </intent-filter>
         </service>
         <service
-                android:name=".main.web.services.FacetDownloadService"
-                android:enabled="true"
-                android:process=":facetDeleteService"/>
+            android:name=".main.web.services.FacetDeleteService"
+            android:enabled="true"
+            android:process=":facetDeleteService" />
         <service
                 android:name=".main.web.services.FacetDownloadJobService"
                 android:enabled="true"
