@@ -40,7 +40,7 @@ public class NewsHeaderLayout extends RelativeLayout {
         gradientDrawable = typedArray.getDrawable(R.styleable.NewsHeaderLayout_newsGradientDrawable);
 
         LayoutInflater layoutInflater = (LayoutInflater.from(context));
-        layoutInflater.inflate(R.layout.newsfeed_header_layout, this);
+        layoutInflater.inflate(R.layout.news_header_layout, this);
 
         gradientRelativeLayout = (RelativeLayout) findViewById(R.id.gradientRelativeLayout);
         gradientRelativeLayout.setBackgroundDrawable(gradientDrawable);

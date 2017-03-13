@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/content_news_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/news_detail_activity"
+        tools:context="com.androidtitan.culturedapp.main.newsfeed.ui.NewsDetailActivity"
+        android:theme="@style/NewsHeaderStyle"
+        android:background="@color/transparent">
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#B3000000"/>
+
+
+    <ScrollView android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin">
+
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="200dp"
+                android:paddingBottom="@dimen/activity_horizontal_margin">
+
+            <TextView
+                    android:id="@+id/detailTitleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:gravity="center"
+                    android:padding="@dimen/defaultt"
+                    android:textAppearance="?android:textAppearanceLarge"/>
+
+            <TextView
+                    android:id="@+id/geoFacetTitleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:layout_below="@+id/detailTitleTextView"
+                    android:padding="@dimen/defaultt"/>
+
+            <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/geoFacetTitleTextView"
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:padding="@dimen/defaultt">
+
+                <TextView
+                        android:id="@+id/dateTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"/>
+
+                <TextView
+                        android:id="@+id/sourTextViewTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"/>
+
+
+            </LinearLayout>
+
+            <TextView
+                    android:id="@+id/storyTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linearLayout"
+                    android:padding="@dimen/defaultt"
+                    android:textAppearance="?android:textAppearanceMedium"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
