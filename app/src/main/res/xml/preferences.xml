@@ -5,12 +5,21 @@
         android:key="@string/pref_strong_key_continent"
         android:title="@string/pref_strong_continent">
 
-        <ListPreference
+        <!--<ListPreference
             android:defaultValue="@string/pref_default_value_continents"
             android:entries="@array/pref_entries_values_continent"
             android:entryValues="@array/pref_entries_values_continent"
             android:key="@string/pref_key_continent"
-            android:title="@string/pref_title_continent" />
+            android:title="@string/pref_title_continent" />-->
+
+        <com.androidtitan.culturedapp.common.view.ContinentPriorityPreference
+            android:key="your_pref"
+            android:title="@string/continent_priority"
+            android:dialogTitle="@string/continent_priority"
+            android:summary="@string/continent_priority_summary"
+            android:defaultValue="-1"
+            android:entries="@array/pref_entries_continent"
+            android:entryValues="@array/pref_entries_values_continent"/>
 
     </PreferenceCategory>
 
