@@ -11,7 +11,7 @@ import com.androidtitan.culturedapp.main.CulturedApp;
 /**
  * Created by amohnacs on 3/29/16.
  */
-public class Utils {
+public class ScreenUtils {
 
     private static int screenWidth = 0;
     private static int screenHeight = 0;
@@ -58,7 +58,4 @@ public class Utils {
         return screenWidth;
     }
 
-    public static boolean isAndroid5() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-    }
 }

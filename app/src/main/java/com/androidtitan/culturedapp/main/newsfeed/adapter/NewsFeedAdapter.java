@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.view.NewsHeaderLayout;
+import com.androidtitan.culturedapp.main.TrendingActivity;
+import com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity;
+import com.androidtitan.culturedapp.main.util.ScreenUtils;
 import com.androidtitan.culturedapp.main.util.Utils;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.bumptech.glide.Glide;
@@ -104,7 +107,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             lastAnimatedPosition = position;
 
-            view.setTranslationY(Utils.getScreenHeight());
+            view.setTranslationY(ScreenUtils.getScreenHeight());
             view.animate()
                     .translationY(0)
                     .setInterpolator(new DecelerateInterpolator(3.f))
@@ -188,17 +191,17 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         switch (viewType) {
             case SIMPLE_LAYOUT:
-                View v1 = inflater.inflate(R.layout.newsfeed_row_layout_simple, parent, false);
+                View v1 = inflater.inflate(R.layout.news_row_layout_simple, parent, false);
                 viewHolder = new SimpleViewHolder(v1);
                 break;
 
             case LARGE_IMAGE_LAYOUT:
-                View v2 = inflater.inflate(R.layout.newsfeed_row_layout_large, parent, false);
+                View v2 = inflater.inflate(R.layout.news_row_layout_large, parent, false);
                 viewHolder = new LargeImageViewHolder(v2);
                 break;
 
             case MEDIUM_IMAGE_LAYOUT:
-                View v3 = inflater.inflate(R.layout.newsfeed_row_layout_medium, parent, false);
+                View v3 = inflater.inflate(R.layout.news_row_layout_medium, parent, false);
                 viewHolder = new MediumImageViewHolder(v3);
                 break;
 
@@ -213,7 +216,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
 
             default:
-                View v6 = LayoutInflater.from(parent.getContext()).inflate(R.layout.newsfeed_row_layout_simple, parent, false);
+                View v6 = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_row_layout_simple, parent, false);
                 viewHolder = new SimpleViewHolder(v6);
                 break;
         }
@@ -293,12 +296,27 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.abstractText.setText(articleList.get(position).getAbstract());
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0).getFacetText());
 
+        int finalPosition = position;
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                ((NewsFeedActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
+                sendDetailActivity(articleList.get(finalPosition), holder.articleImage);
 
+                Intent tempTrendingIntent = new Intent(context, TrendingActivity.class);
+
+                // this adds all of {@link NewsDetailActivity}'s parents to the stack followed by the Activity itself
+                PendingIntent pendingIntent =
+                        TaskStackBuilder.create(context)
+                                .addNextIntentWithParentStack(tempTrendingIntent)
+                                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                try {
+                    pendingIntent.send();
+                } catch (PendingIntent.CanceledException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -342,8 +360,8 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsFeedActivity) context).startDetailActivity(
-//                        articleList.get(position), holder.articleImage);
+                sendDetailActivity(articleList.get(position), holder.articleImage);
+
             }
         });
 
@@ -391,8 +409,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsFeedActivity) context).startDetailActivity(
-//                        articleList.get(position), holder.articleImage);
+                sendDetailActivity(articleList.get(position), holder.articleImage);
             }
         });
     }
@@ -511,6 +528,11 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     @Override
     public int getItemCount() {
         return articleList.size();
+    }
+
+    private void sendDetailActivity(Article article, ImageView imageView) {
+        ((NewsActivity) context).startDetailActivity(
+            article, imageView);
     }
 
 }

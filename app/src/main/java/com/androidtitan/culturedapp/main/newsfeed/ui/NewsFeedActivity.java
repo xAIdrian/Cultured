@@ -21,6 +21,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -41,6 +42,7 @@ import android.widget.Toast;
 
 
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.common.structure.BaseActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
@@ -50,6 +52,8 @@ import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.iid.InstanceID;
@@ -57,6 +61,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,21 +77,33 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         DevConsoleDialogFragment.DevConsoleCallback {
     private final String TAG = getClass().getSimpleName();
 
+    public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
+
+    private static final String ARTICLE_BOOKMARKED = "newsActivity.article_bookmarked";
+
     private static final String SENDER_ID = "612691836045";
+
     public static final String ACCOUNT_TYPE = "com.androidtitan";
+
     public static final String ACCOUNT = "dummyaccount";
+
     // Sync interval constants...one hour
     public static final long SECONDS_PER_MINUTE = 60L;
+
     public static final long SYNC_INTERVAL_IN_MINUTES = 180L;
+
     public static final long SYNC_INTERVAL =
-            SYNC_INTERVAL_IN_MINUTES *
-                    SECONDS_PER_MINUTE;
+        SYNC_INTERVAL_IN_MINUTES *
+            SECONDS_PER_MINUTE;
 
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
+
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
     private static final int LOADING_ANIM_TIME = 700;
+
     public static final String ERROR_MESSAGE = "errorfragment.errormessage";
+
     public static final String ERROR_MAP = "errorfragment.errormap";
 
     ErrorFragment errorFragment;
@@ -95,43 +112,61 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     NewsFeedPresenter presenter;
 
     private Handler handler;
+
     private Animation fadeAnim;
+
     private Account account;
 
     Toolbar supportActionBar;
 
+    ActionBarDrawerToggle drawerToggle;
+
     @Bind(R.id.colorBgView)
     View bgView;
-    @Bind(R.id.culturedTitleTextView)
+
+    @Bind(R.id.loadingTextView)
     TextView loadingTitleText;
     @Bind(R.id.welcomeTextView)
     TextView welcomeText;
 
     @Bind(R.id.newsList)
     RecyclerView recyclerView;
+
     @Bind(R.id.refreshFloatingActionButton)
     FloatingActionButton refreshFab;
 
     @Bind(R.id.drawerLayout)
     DrawerLayout drawerLayout;
+
     @Bind(R.id.drawer_navigation_view)
     NavigationView navigationView;
+
+    @Bind(R.id.navigation_icon)
+    ImageView navImage;
 
     SharedPreferences sharedPreferences;
 
     private LinearLayoutManager linearLayoutManager;
+
     private StaggeredGridLayoutManager staggeredLayoutManager;
     private NewsFeedAdapter adapter;
 
     private AppBarLayout appBarLayout;
 
-    List<Article> articles;
+    private List<Article> articles;
+
+    private HashMap<String, Boolean> bookMarkedArticles;
 
     private boolean isSyncingPeriodically;
+
     private boolean firstLoad = true; //used for animation
+
     private boolean loading = true;
+
     private int pastVisibleItems;
+
     private int visibleItemCount;
+
     private int totalItemCount;
 
     private int devConsoleCount = 0;
@@ -139,6 +174,8 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     public int adapterLoadOffset = 6;
 
     int screenSize;
+
+    private FileManager fileManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,7 +187,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         initFCM();
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.newsfeed_activity);
+        setContentView(R.layout.news_activity);
 
         ButterKnife.bind(this);
         super.getAppComponent().inject(this);
@@ -158,7 +195,10 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
         setupUserPreferences();
 
+        fileManager = FileManager.getInstance(this);
+
         articles = new ArrayList<>();
+        bookMarkedArticles = fileManager.getInternalArticlesHashMap();
 
         loadingTitleText.setVisibility(View.VISIBLE);
         loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
@@ -168,17 +208,13 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         if (savedInstanceState != null) {
             //
         }
-        if(getIntent() != null) {
+        if (getIntent() != null) {
             Intent in = getIntent();
             Uri deepLinkData = in.getData();
 
             //receives 'http://www.cultured.com because that is the URL(URI) data required to launch our app from search
         }
-        // Attaching the layout to the toolbar object
-        supportActionBar = (Toolbar) findViewById(R.id.toolbar);
-        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
-        setSupportActionBar(supportActionBar);
-        getSupportActionBar().setTitle("");
+        setUpActionBar();
 
         screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
@@ -187,6 +223,17 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         } else {
             articles = presenter.loadArticles(5);
         }
+
+        navImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (drawerLayout.isDrawerOpen(navigationView)) {
+                    drawerLayout.closeDrawers();
+                } else {
+                    drawerLayout.openDrawer(navigationView);
+                }
+            }
+        });
 
         navigationView.getHeaderView(0).setOnClickListener((header) -> {
 
@@ -206,43 +253,43 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         });
 
         navigationView.setNavigationItemSelectedListener((item) -> {
-                drawerLayout.closeDrawers();
+            drawerLayout.closeDrawers();
 
-                switch (item.getItemId()) {
+            switch (item.getItemId()) {
 
-                    case R.id.onboarding_card_generator:
+                case R.id.onboarding_card_generator:
 
-                        if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                                && adapter.getAboutStatus() == false) {
-                            adapter.resetOnboardingCard();
-                        }
+                    if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
+                        && adapter.getAboutStatus() == false) {
+                        adapter.resetOnboardingCard();
+                    }
 
-                        break;
+                    break;
 
-                    case R.id.about_card_generator:
+                case R.id.about_card_generator:
 
-                        if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                                && adapter.getAboutStatus() == false) {
-                            adapter.showAboutCard();
-                        }
+                    if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
+                        && adapter.getAboutStatus() == false) {
+                        adapter.showAboutCard();
+                    }
 
-                        break;
+                    break;
 
-                    case R.id.support_mail:
+                case R.id.support_mail:
 
-                        Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
-                        feedbackIntent.setType("plain/text");
-                        feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"adrian.mohnacs@gmail.com"});
-                        feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "Cultured Feedback");
-                        feedbackIntent.putExtra(Intent.EXTRA_TEXT, "Hi Adrian,\nHere\'s what I think about Cultured...");
-                        //chooser
-                        String title = getResources().getString(R.string.chooser_text);
-                        Intent chooser = Intent.createChooser(feedbackIntent, title);
-                        if (feedbackIntent.resolveActivity(getPackageManager()) != null) {
-                            startActivity(chooser);
-                        }
+                    Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
+                    feedbackIntent.setType("plain/text");
+                    feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"adrian.mohnacs@gmail.com"});
+                    feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "Cultured Feedback");
+                    feedbackIntent.putExtra(Intent.EXTRA_TEXT, "Hi Adrian,\nHere\'s what I think about Cultured...");
+                    //chooser
+                    String title = getResources().getString(R.string.chooser_text);
+                    Intent chooser = Intent.createChooser(feedbackIntent, title);
+                    if (feedbackIntent.resolveActivity(getPackageManager()) != null) {
+                        startActivity(chooser);
+                    }
 
-                        break;
+                    break;
 
                     case R.id.settings:
 
@@ -256,9 +303,9 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
                     default:
 
-                        Log.e(TAG, "Incorrect navigation drawer item selected");
-                }
-                return true;
+                    Log.e(TAG, "Incorrect navigation drawer item selected");
+            }
+            return true;
         });
 
         initializeRecyclerView();
@@ -271,6 +318,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
                 int[] array = null;
                 scrollViewParallax(dy);
 
+                // logic for hiding and showing the actionbar shadow when the list is fully scrolled down
                 try {
                     if (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                         appBarLayout.setElevation(0);
@@ -278,7 +326,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
                 } catch (Exception e) {
                     array = staggeredLayoutManager.findFirstCompletelyVisibleItemPositions(array);
 
-                    if(array[0] == 0 || array[1] == 1) {
+                    if (array[0] == 0 || array[1] == 1) {
                         appBarLayout.setElevation(0);
                     }
                 }
@@ -287,7 +335,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
                     hideToolbarBy(dy);
 
                     if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
-                            getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
                         visibleItemCount = staggeredLayoutManager.getChildCount();
                         totalItemCount = staggeredLayoutManager.getItemCount();
@@ -364,6 +412,47 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    private void setUpActionBar() {
+        // Attaching the layout to the toolbar object
+        supportActionBar = (Toolbar) findViewById(R.id.toolbar);
+        appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+        setSupportActionBar(supportActionBar);
+        getSupportActionBar().setTitle("");
+        drawerToggle = new ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            R.string.drawer_open,
+            R.string.drawer_closed
+        ) {
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+        };
+        // Set the drawer toggle as the DrawerListener
+        drawerLayout.addDrawerListener(drawerToggle);
+
+        getSupportActionBar().setHomeButtonEnabled(true);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -410,7 +499,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     protected void onStop() {
         super.onStop();
 
-        if(isSyncingPeriodically) {
+        if (isSyncingPeriodically) {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, false).apply();
 
@@ -518,7 +607,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         Account newAccount = new Account(ACCOUNT, ACCOUNT_TYPE);
         AccountManager accountManager = (AccountManager) context.getSystemService(ACCOUNT_SERVICE);
 
-        if(accountManager.addAccountExplicitly(newAccount, null, null)) {
+        if (accountManager.addAccountExplicitly(newAccount, null, null)) {
             /*
              * If you don't set android:syncable="true" in
              * in your <provider> element in the manifest,
@@ -578,7 +667,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         errorFragment.setArguments(args);
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.main_content, errorFragment).commit();
+            .add(R.id.main_content, errorFragment).commit();
 
     }
 
@@ -591,13 +680,13 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     private void initializeRecyclerView() {
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
-                && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
 
             staggeredLayoutManager = new StaggeredGridLayoutManager(3, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
 
         } else if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
-                getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
             staggeredLayoutManager = new StaggeredGridLayoutManager(2, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
@@ -613,7 +702,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         recyclerView.setAdapter(adapter);
     }
 
-//animation and UI methods
+    //animation and UI methods
     private void scrollViewParallax(int dy) { // divided by three to scroll slower
         bgView.setTranslationY(bgView.getTranslationY() - dy / 3);
     }
@@ -641,7 +730,6 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
             }
         }, LOADING_ANIM_TIME);
-
 
         handler.postDelayed(new Runnable() {
             @Override
@@ -676,9 +764,9 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
             appBarLayout.setTranslationY(0);
 
         } else {
-            appBarLayout.setTranslationY(appBarLayout.getTranslationY()-dy);
+            appBarLayout.setTranslationY(appBarLayout.getTranslationY() - dy);
 
-            if(dy < 0) {
+            if (dy < 0) {
                 appBarLayout.setElevation(8);
             } else {
                 appBarLayout.setElevation(0);
@@ -691,7 +779,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         if (cannotHideMore(dy)) {
             appBarLayout.setTranslationY(-appBarLayout.getBottom());
         } else {
-            appBarLayout.setTranslationY(appBarLayout.getTranslationY()-dy);
+            appBarLayout.setTranslationY(appBarLayout.getTranslationY() - dy);
         }
     }
 
@@ -707,12 +795,12 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         PreferenceStore preferenceStore = PreferenceStore.get(this);
         String currentToken = preferenceStore.getFcmToken();
 
-        if(currentToken == null) {
+        if (currentToken == null) {
             new FCMRegistrationTask().execute();
         } else {
             Log.d(TAG, "Have token: " + currentToken);
 
-            if(!isSyncingPeriodically) {
+            if (!isSyncingPeriodically) {
                 setupPeriodicSync();
             }
         }
@@ -720,8 +808,8 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
     private void showColoredSnackbar() {
         Snackbar loadingSnackbar = Snackbar.make(recyclerView,
-                getResources().getString(R.string.simple_loading),
-                Snackbar.LENGTH_LONG);
+            getResources().getString(R.string.simple_loading),
+            Snackbar.LENGTH_LONG);
         View snackbarView = loadingSnackbar.getView();
         snackbarView.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
         loadingSnackbar.show();
@@ -730,6 +818,29 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     @Override
     public void onFragmentInteraction(Uri uri) {
 
+    }
+
+    //starting our SyncAdapter
+    public void startDetailActivity(Article article, ImageView articleImage) {
+
+        Intent intent = new Intent(this, NewsDetailActivity.class);
+        intent.putExtra(ARTICLE_EXTRA, article);
+        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, getGeoFacetArrayList(article));
+        intent.putExtra(ARTICLE_BOOKMARKED, isArticleBookmarked(article.getTitle()));
+
+        startActivity(intent);
+    }
+
+    public boolean isArticleBookmarked(String articleTitle) {
+        return bookMarkedArticles.get(articleTitle);
+    }
+
+    public ArrayList<String> getGeoFacetArrayList(Article article) {
+        ArrayList<String> facets = new ArrayList<>();
+        for (Facet facet : article.getGeoFacet()) {
+            facets.add(facet.getFacetText());
+        }
+        return facets;
     }
 
     //starting our SyncAdapter
@@ -787,9 +898,9 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
         ContentResolver.setIsSyncable(account, DatabaseContract.AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(
-                account, DatabaseContract.AUTHORITY, true);
+            account, DatabaseContract.AUTHORITY, true);
         ContentResolver.addPeriodicSync(
-                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+            account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
         ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
     }
 

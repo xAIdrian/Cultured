@@ -17,6 +17,9 @@
     <dimen name="wiki_negative_margin">-55dp</dimen>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">20dp</dimen>
+    <dimen name="defaultt">8dp</dimen>
+    <dimen name="double_default">16dp</dimen>
+    <dimen name="half_default">4dp</dimen>
     <dimen name="doubleDeckerActionBarHeight">112dp</dimen>
     <dimen name="default_padding">8dp</dimen>
 
