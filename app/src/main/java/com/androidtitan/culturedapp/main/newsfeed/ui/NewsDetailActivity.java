@@ -98,8 +98,8 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
             focusedArticle.setGeoFacet(focusedGeoFacets);
         } else {
             if (extras != null) {
-                focusedArticle = extras.getParcelable(NewsActivity.ARTICLE_EXTRA);
-                focusedGeoFacets = extras.getStringArrayList(NewsActivity.ARTICLE_GEO_FACETS);
+                focusedArticle = extras.getParcelable(NewsFeedActivity.ARTICLE_EXTRA);
+                focusedGeoFacets = extras.getStringArrayList(NewsFeedActivity.ARTICLE_GEO_FACETS);
 
                 focusedArticle.setGeoFacet(focusedGeoFacets);
             }

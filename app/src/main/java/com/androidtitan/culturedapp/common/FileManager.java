@@ -145,8 +145,11 @@ public class FileManager {
 
         HashMap<String, Boolean> articleHashMap = new HashMap<>();
 
-        for(Article article : getInternalArticles()) {
-            articleHashMap.put(article.getTitle(), true);
+        ArrayList<Article> internalArticles = getInternalArticles();
+        if(internalArticles != null && internalArticles.size() > 0) {
+            for (Article article : getInternalArticles()) {
+                articleHashMap.put(article.getTitle(), true);
+            }
         }
 
         return articleHashMap;

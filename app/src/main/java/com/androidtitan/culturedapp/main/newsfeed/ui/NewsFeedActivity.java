@@ -37,6 +37,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -126,6 +127,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
     @Bind(R.id.loadingTextView)
     TextView loadingTitleText;
+
     @Bind(R.id.welcomeTextView)
     TextView welcomeText;
 
@@ -187,7 +189,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         initFCM();
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.news_activity);
+        setContentView(R.layout.newsfeed_activity);
 
         ButterKnife.bind(this);
         super.getAppComponent().inject(this);

@@ -123,6 +123,11 @@
     <string name="trending_dev_summary">Go to Github to see how the app was built</string>
     <string name="continent_priority">Continent Priority</string>
     <string name="continent_priority_summary">See more news from your favorite continent</string>
+    <string name="title_activity_news_detail">NewsDetailActivity</string>
+    <string name="drawer_open">navigation_drawer_open</string>
+    <string name="drawer_closed">navigation_drawer_closed</string>
+    <string name="file_write_error">There was an error saving your file</string>
+    <string name="file_write_success">Now available offline</string>
 
 
 </resources>
