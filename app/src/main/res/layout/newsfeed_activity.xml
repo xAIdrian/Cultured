@@ -10,8 +10,7 @@
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?android:colorBackground">
+        android:layout_height="match_parent">
 
         <View
             android:id="@+id/colorBgView"
@@ -19,7 +18,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="top"
             android:layout_marginTop="-50dp"
-            android:background="@color/colorPrimary" />
+            android:background="@color/colorPrimary"/>
 
         <TextView
             android:id="@+id/welcomeTextView"
@@ -32,14 +31,14 @@
             android:text="@string/welcome"/>
 
         <TextView
-            android:id="@+id/culturedTitleTextView"
+            android:id="@+id/loadingTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/loading"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/newsList"
@@ -57,14 +56,30 @@
             android:theme="@style/AppTheme.AppBarOverlay"
             app:elevation="0dp">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:elevation="4dp"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                android:contentInsetLeft="0dp"
+                android:contentInsetStart="0dp"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"
+                android:background="@color/colorPrimary"
+                android:elevation="4dp"
+                android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+                <ImageView
+                    android:id="@+id/navigation_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_menu"
+                    android:layout_gravity="left"
+                    android:layout_marginLeft="@dimen/defaultt"/>
+
+            </android.support.v7.widget.Toolbar>
+
+
         </android.support.design.widget.AppBarLayout>
 
         <android.support.design.widget.FloatingActionButton
@@ -74,7 +89,7 @@
             android:layout_margin="@dimen/fab_margin"
             android:layout_gravity="bottom|end"
             android:background="@drawable/ripple"
-            android:src="@drawable/quantum_ic_refresh_white_24"
+            android:src="@drawable/ic_refresh"
             android:elevation="8dp"/>
 
     </android.support.design.widget.CoordinatorLayout>

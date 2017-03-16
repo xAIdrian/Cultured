@@ -1,10 +1,13 @@
 package com.androidtitan.culturedapp.main.newsfeed.adapter;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,10 +19,9 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.view.NewsHeaderLayout;
-import com.androidtitan.culturedapp.main.TrendingActivity;
-import com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity;
+import com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity;
+import com.androidtitan.culturedapp.main.trending.ui.TrendingActivity;
 import com.androidtitan.culturedapp.main.util.ScreenUtils;
-import com.androidtitan.culturedapp.main.util.Utils;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -531,7 +533,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void sendDetailActivity(Article article, ImageView imageView) {
-        ((NewsActivity) context).startDetailActivity(
+        ((NewsFeedActivity) context).startDetailActivity(
             article, imageView);
     }
 

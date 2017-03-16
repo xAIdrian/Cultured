@@ -52,6 +52,16 @@
 
             </activity>
 
+        <activity
+            android:name=".main.newsfeed.ui.NewsDetailActivity"
+            android:label="@string/title_activity_news_detail"
+            android:parentActivityName=".main.newsfeed.ui.NewsFeedActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity"/>
+        </activity>
+
         <activity android:name=".main.preferences.PreferencesActivity"></activity>
 
         <!-- SyncAdapter Components -->
@@ -106,24 +116,6 @@
                 android:permission="android.permission.BIND_JOB_SERVICE"
                 android:process=":facetDownloadJobService"/>
 
-        <activity
-                android:name=".main.TrendingActivity"
-                android:label="@string/title_activity_trending"
-                android:parentActivityName=".main.newsfeed.ui.NewsActivity"
-                android:theme="@style/AppTheme">
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity"/>
-        </activity>
-        <activity
-                android:name=".main.newsfeed.ui.NewsDetailActivity"
-                android:label="@string/title_activity_news_detail"
-                android:parentActivityName=".main.newsfeed.ui.NewsActivity"
-                android:theme="@style/AppTheme">
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.androidtitan.culturedapp.main.newsfeed.ui.NewsActivity"/>
-        </activity>
     </application>
 
 </manifest>

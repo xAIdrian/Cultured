@@ -33,7 +33,7 @@ public class CulturedApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        appComponent = DaggerAppComponent.builder()
+       appComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
 
