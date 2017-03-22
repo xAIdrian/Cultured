@@ -304,7 +304,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             public void onClick(View v) {
 //                ((NewsFeedActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
-                sendDetailActivity(articleList.get(finalPosition), holder.articleImage);
+//                sendDetailActivity(articleList.get(finalPosition), holder.articleImage);
 
                 Intent tempTrendingIntent = new Intent(context, TrendingActivity.class);
 

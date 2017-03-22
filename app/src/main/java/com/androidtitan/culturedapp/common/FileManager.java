@@ -1,5 +1,7 @@
 package com.androidtitan.culturedapp.common;
 
+import com.androidtitan.culturedapp.main.web.ArticleDeserializer;
+import com.androidtitan.culturedapp.main.web.DateDeserializer;
 import com.google.gson.Gson;
 
 import android.content.Context;
@@ -8,6 +10,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,7 +22,10 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
 
@@ -169,7 +175,7 @@ public class FileManager {
             context.deleteFile(bookmarkFile)
         */
 
-        Gson gson = new Gson();
+        Gson gson = buildArticleGson();
 
         ArrayList<Article> bookmarkedArticles = new ArrayList<>();
         FileInputStream fileInputStream;
@@ -180,7 +186,6 @@ public class FileManager {
             InputStreamReader streamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(streamReader);
 
-            StringBuilder sb = new StringBuilder();
             String readLine;
 
             while((readLine = bufferedReader.readLine()) != null) {
@@ -209,7 +214,8 @@ public class FileManager {
      * @return
      */
     public ArrayList<Article> getExternalArticles() {
-        Gson gson = new Gson();
+
+        Gson gson = buildArticleGson();
 
         ArrayList<Article> bookmarkedArticles = new ArrayList<>();
         FileInputStream fileInputStream;
@@ -223,7 +229,6 @@ public class FileManager {
             InputStreamReader streamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(streamReader);
 
-            StringBuilder sb = new StringBuilder();
             String readLine;
 
             while((readLine = bufferedReader.readLine()) != null) {
@@ -264,6 +269,19 @@ public class FileManager {
             return true;
         }
         return false;
+    }
+
+    private static Gson buildArticleGson() {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        //adding custom deserializer
+        gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+        gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
+        gsonBuilder.registerTypeAdapter(Article.class, new ArticleDeserializer());
+        gsonBuilder.serializeNulls();
+        gsonBuilder.excludeFieldsWithoutExposeAnnotation();
+
+        Gson myGson = gsonBuilder.create();
+        return myGson;
     }
 
 

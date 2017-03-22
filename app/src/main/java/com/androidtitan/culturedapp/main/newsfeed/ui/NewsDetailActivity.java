@@ -1,11 +1,14 @@
 package com.androidtitan.culturedapp.main.newsfeed.ui;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +20,7 @@ import android.widget.TextView;
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.bumptech.glide.Glide;
 
 import org.jsoup.Jsoup;
@@ -35,8 +39,9 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
     private static final String TAG = NewsDetailActivity.class.getSimpleName();
 
     private final static String SAVED_STATE_ARTICLE = "newsdetailactivity.savedstatearticle";
-
     private final static String SAVED_STATE_FACETS = "newsdetailactivity.savedstatefacets";
+    private final static String SAVED_BOOKMARK_STATUS = "newsdetailactivity.savedbookmarkstatus";
+
 
     @Bind(R.id.backgroundImageView)
     ImageView backgroundImage;
@@ -65,11 +70,11 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
     private Article focusedArticle = null;
 
-    private ArrayList focusedGeoFacets;
+    private ArrayList<String> focusedGeoFacets;
 
     private View rootViewGroup;
 
-    //todo: null checks for our focusedArticle
+    private boolean isBookmarked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,17 +100,20 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
             focusedArticle = savedInstanceState.getParcelable(SAVED_STATE_ARTICLE);
             focusedGeoFacets = savedInstanceState.getStringArrayList(SAVED_STATE_FACETS);
 
-            focusedArticle.setGeoFacet(focusedGeoFacets);
+            if(savedInstanceState.getBoolean(SAVED_BOOKMARK_STATUS)) {
+                isBookmarked = true;
+            }
+
         } else {
             if (extras != null) {
                 focusedArticle = extras.getParcelable(NewsFeedActivity.ARTICLE_EXTRA);
                 focusedGeoFacets = extras.getStringArrayList(NewsFeedActivity.ARTICLE_GEO_FACETS);
 
-                focusedArticle.setGeoFacet(focusedGeoFacets);
+                if(extras.getBoolean(NewsFeedActivity.ARTICLE_BOOKMARKED)) {
+                    isBookmarked = true;
+                }
             }
         }
-
-        setUpArticleView(focusedArticle, focusedGeoFacets);
 
         fab.setOnClickListener(view -> {
 
@@ -115,15 +123,26 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
     }
 
+
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //todo: store focuedGeoFacets and focused article. Easy.  The code is already in place to retrieve them.
+        outState.putParcelable(SAVED_STATE_ARTICLE, focusedArticle);
+        outState.putStringArrayList(SAVED_STATE_FACETS, focusedGeoFacets);
+        outState.putBoolean(SAVED_BOOKMARK_STATUS, isBookmarked);
     }
 
     @Override
     protected void onResume() {
+
+        if(isBookmarked) {
+            fab.setImageDrawable(getDrawable(R.drawable.ic_bookmark));
+        }
+
+        setUpArticleView(focusedArticle, focusedGeoFacets);
+
         super.onResume();
     }
 
