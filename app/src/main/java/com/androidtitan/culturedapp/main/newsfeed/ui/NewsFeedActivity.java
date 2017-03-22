@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -80,7 +81,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
     public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
 
-    private static final String ARTICLE_BOOKMARKED = "newsActivity.article_bookmarked";
+    public static final String ARTICLE_BOOKMARKED = "newsActivity.article_bookmarked";
 
     private static final String SENDER_ID = "612691836045";
 
@@ -833,11 +834,14 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         startActivity(intent);
     }
 
-    public boolean isArticleBookmarked(String articleTitle) {
-        return bookMarkedArticles.get(articleTitle);
+    public boolean isArticleBookmarked(@NonNull String articleTitle) {
+        if(bookMarkedArticles.get(articleTitle) != null) {
+            return bookMarkedArticles.get(articleTitle);
+        }
+        return false;
     }
 
-    public ArrayList<String> getGeoFacetArrayList(Article article) {
+    private ArrayList<String> getGeoFacetArrayList(@NonNull Article article) {
         ArrayList<String> facets = new ArrayList<>();
         for (Facet facet : article.getGeoFacet()) {
             facets.add(facet.getFacetText());
