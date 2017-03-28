@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
@@ -23,9 +22,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Transition;
@@ -35,8 +32,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -47,21 +42,13 @@ import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.common.structure.BaseActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
-import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
-import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
 import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
+import com.androidtitan.culturedapp.main.provider.FCMRegistrationTask;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.iid.InstanceID;
-import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,27 +62,21 @@ import butterknife.ButterKnife;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
-public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInterface {
+public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInterface, ScrollEffectListener, FCMRegistrationTask.FCMRegistratorCallback {
     private final String TAG = getClass().getSimpleName();
 
     public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
 
     public static final String ARTICLE_BOOKMARKED = "newsActivity.article_bookmarked";
 
-    private static final String SENDER_ID = "612691836045";
 
     public static final String ACCOUNT_TYPE = "com.androidtitan";
 
     public static final String ACCOUNT = "dummyaccount";
 
-    // Sync interval constants...one hour
-    public static final long SECONDS_PER_MINUTE = 60L;
 
-    public static final long SYNC_INTERVAL_IN_MINUTES = 180L;
 
-    public static final long SYNC_INTERVAL =
-        SYNC_INTERVAL_IN_MINUTES *
-            SECONDS_PER_MINUTE;
+
 
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
 
@@ -112,10 +93,6 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
     @Inject
     NewsFeedPresenter presenter;
 
-    private Handler handler;
-
-    private Animation fadeAnim;
-
     private Account account;
 
     Toolbar supportActionBar;
@@ -131,8 +108,7 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
     @Bind(R.id.welcomeTextView)
     TextView welcomeText;
 
-    @Bind(R.id.newsList)
-    RecyclerView recyclerView;
+
 
     @Bind(R.id.refreshFloatingActionButton)
     FloatingActionButton refreshFab;
@@ -148,10 +124,6 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
 
     SharedPreferences sharedPreferences;
 
-    private LinearLayoutManager linearLayoutManager;
-
-    private StaggeredGridLayoutManager staggeredLayoutManager;
-    private NewsFeedAdapter adapter;
 
     private AppBarLayout appBarLayout;
 
@@ -193,7 +165,6 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
 
         ButterKnife.bind(this);
         super.getAppComponent().inject(this);
-        presenter.bindView(this);
 
         setupUserPreferences();
 
@@ -204,8 +175,6 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
 
         loadingTitleText.setVisibility(View.VISIBLE);
         loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
-
-        initializeAnimation();
 
         if (savedInstanceState != null) {
             //
@@ -310,7 +279,6 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
             return true;
         });
 
-        initializeRecyclerView();
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -630,41 +598,10 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
         presenter.loadArticles(10);
     }
 
-    private void initializeRecyclerView() {
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
-            && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
-
-            staggeredLayoutManager = new StaggeredGridLayoutManager(3, 1);
-            recyclerView.setLayoutManager(staggeredLayoutManager);
-
-        } else if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
-            getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-            staggeredLayoutManager = new StaggeredGridLayoutManager(2, 1);
-            recyclerView.setLayoutManager(staggeredLayoutManager);
-
-        } else {
-
-            linearLayoutManager = new LinearLayoutManager(this);
-            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-            recyclerView.setLayoutManager(linearLayoutManager);
-        }
-
-        adapter = new NewsFeedAdapter(this, articles);
-        recyclerView.setAdapter(adapter);
-    }
-
+    //todo: put in fragment
     //animation and UI methods
     private void scrollViewParallax(int dy) { // divided by three to scroll slower
         bgView.setTranslationY(bgView.getTranslationY() - dy / 3);
-    }
-
-    public void initializeAnimation() {
-
-        handler = new Handler();
-        fadeAnim = AnimationUtils.loadAnimation(this, R.anim.fade_out);
-
     }
 
     public void firstLoadCompleteAnimation() {
@@ -748,19 +685,21 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
         PreferenceStore preferenceStore = PreferenceStore.get(this);
         String currentToken = preferenceStore.getFcmToken();
 
+        FCMRegistrationTask firebaseTokenRegistrator = new FCMRegistrationTask();
+
         if (currentToken == null) {
             new FCMRegistrationTask().execute();
         } else {
             Log.d(TAG, "Have token: " + currentToken);
 
             if (!isSyncingPeriodically) {
-                setupPeriodicSync();
+                new FCMRegistrationTask().setupPeriodicSync();
             }
         }
     }
 
     private void showColoredSnackbar() {
-        Snackbar loadingSnackbar = Snackbar.make(recyclerView,
+        Snackbar loadingSnackbar = Snackbar.make(recyclerView, //this param is view
             getResources().getString(R.string.simple_loading),
             Snackbar.LENGTH_LONG);
         View snackbarView = loadingSnackbar.getView();
@@ -768,92 +707,13 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
         loadingSnackbar.show();
     }
 
-    public void startDetailActivity(Article article, ImageView articleImage) {
-
-        Intent intent = new Intent(this, NewsDetailActivity.class);
-        intent.putExtra(ARTICLE_EXTRA, article);
-        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, getGeoFacetArrayList(article));
-        intent.putExtra(ARTICLE_BOOKMARKED, isArticleBookmarked(article.getTitle()));
-
-        startActivity(intent);
-    }
-
-    public boolean isArticleBookmarked(@NonNull String articleTitle) {
-        if(bookMarkedArticles.get(articleTitle) != null) {
-            return bookMarkedArticles.get(articleTitle);
-        }
-        return false;
-    }
-
-    private ArrayList<String> getGeoFacetArrayList(@NonNull Article article) {
-        ArrayList<String> facets = new ArrayList<>();
-        for (Facet facet : article.getGeoFacet()) {
-            facets.add(facet.getFacetText());
-        }
-        return facets;
-    }
-
-    //todo: stays in activity
-    //starting our SyncAdapter
-    private class FCMRegistrationTask extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-
-            if(NewsFeedActivity.this == null) {
-                return null;
-            }
-
-            int googleApiAvailable = GoogleApiAvailability.getInstance()
-                    .isGooglePlayServicesAvailable(NewsFeedActivity.this);
-            if (googleApiAvailable != ConnectionResult.SUCCESS) {
-                Log.e(TAG, "Play services not available, cannot register for GCM");
-                return null;
-            }
-
-            InstanceID instanceID = InstanceID.getInstance(NewsFeedActivity.this);
-
-            try {
-                String token = instanceID.getToken(SENDER_ID, FirebaseMessaging.INSTANCE_ID_SCOPE, null);
-                Log.d(TAG, "Got token: " + token);
-                return token;
-
-            } catch (IOException e) {
-                Log.e(TAG, "Failed to get token from InstanceID", e);
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String token) {
-            super.onPostExecute(token);
-
-            if (token == null) {
-                setupPeriodicSync();
-            } else {
-                PreferenceStore.get(NewsFeedActivity.this).setFcmToken(token);
-            }
-        }
-    }
-
-    private void setupPeriodicSync() {
-
-        isSyncingPeriodically = true;
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, true).apply();
-
-        ContentResolver.setIsSyncable(account, DatabaseContract.AUTHORITY, 1);
-        ContentResolver.setSyncAutomatically(
-            account, DatabaseContract.AUTHORITY, true);
-        ContentResolver.addPeriodicSync(
-            account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
-        ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
+    public NewsFeedPresenter getPresenter() {
+        return presenter;
     }
 
 
+    @Override
+    public void updateSyncingStatus(boolean syncStatus) {
+
+    }
 }

@@ -39,7 +39,7 @@ public abstract class FeedFragment extends BaseFragment {
 
     public abstract void initializeAnimation();
 
-    protected abstract void initializeRecyclerView(int screenSize, RecyclerView.LayoutManager layoutManager);
+    protected abstract void setupRecyclerView(int screenSize, RecyclerView.LayoutManager layoutManager);
 
     public abstract void startDetailActivity(Article article, ImageView articleImage);
 

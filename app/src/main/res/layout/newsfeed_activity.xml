@@ -40,11 +40,10 @@
             android:textColor="@android:color/white"
             android:visibility="gone"/>
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/newsList"
+        <FrameLayout
+            android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/wikiInfoBar"
             android:clipToPadding="false"
             android:paddingTop="@dimen/doubleDeckerActionBarHeight"/>
 

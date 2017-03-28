@@ -127,11 +127,11 @@
     <orderEntry type="library" exported="" name="firebase-crash-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-appinvite-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="robolectric-utils-3.1.4" level="project" />
     <orderEntry type="library" exported="" name="support-core-ui-24.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="exposed-instrumentation-api-publish-0.5" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="robolectric-utils-3.1.4" level="project" />
-    <orderEntry type="library" exported="" name="recyclerview-v7-24.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="icu4j-53.1" level="project" />
+    <orderEntry type="library" exported="" name="recyclerview-v7-24.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="robolectric-annotations-3.1.4" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="javax.annotation-api-1.2" level="project" />
     <orderEntry type="library" exported="" name="play-services-plus-10.0.1" level="project" />
@@ -212,8 +212,8 @@
     <orderEntry type="library" exported="" scope="TEST" name="asm-tree-5.0.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-analytics-impl-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="firebase-database-10.0.1" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="javawriter-2.1.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="maven-project-2.2.1" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="javawriter-2.1.1" level="project" />
     <orderEntry type="library" exported="" name="logging-interceptor-3.3.0" level="project" />
     <orderEntry type="library" exported="" name="okhttp-3.3.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="plexus-container-default-1.0-alpha-9-stable-1" level="project" />
