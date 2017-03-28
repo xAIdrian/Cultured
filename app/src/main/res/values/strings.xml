@@ -94,8 +94,7 @@
     <string name="pref_key_continent">pref_continent_settings</string>
     <string name="pref_title_continent">Continent Priority</string>
 
-    <string-array name="pref_entries_continent"
-        formatted="false">
+    <string-array name="pref_entries_continent" formatted="false">
         <item>Eastern United States, Mexico, Central America and the Caribbean are the most densely populated areas while Canada, Alaska and Greenland are the least populated areas. The United States and Canada are the most economically developed countries. The countries of central America and the Caribbean are less economically developed and poorer.</item>
         <item>South America is the fifth most populated continent with a total population of around 371,000,000 (2005). The north-west coastal region and the eastern coast of Brazil are the most densely populated areas while the Amazon rainforest area is the least populated. </item>
         <item>Botswana and South Africa are the most economically developed regions while Nigeria is Africa’s largest oil producing region.  About 70% of Africa’s population rely on agriculture for income and times of drought can produce severe hardship. The climate of Africa together with the effects of the Slave Trade, colonisation, international trade and internal wars and conflicts make Africa the World’s poorest continent.</item>
@@ -128,6 +127,8 @@
     <string name="drawer_closed">navigation_drawer_closed</string>
     <string name="file_write_error">There was an error saving your file</string>
     <string name="file_write_success">Now available offline</string>
+    <string name="file_remove_error">There was a problem removing from memory</string>
+    <string name="file_remove_success">This file is no longer available online</string>
 
 
 </resources>

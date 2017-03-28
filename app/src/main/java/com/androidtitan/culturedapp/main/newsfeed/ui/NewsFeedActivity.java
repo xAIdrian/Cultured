@@ -75,8 +75,7 @@ import butterknife.ButterKnife;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
-public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, ErrorFragmentInterface,
-        DevConsoleDialogFragment.DevConsoleCallback {
+public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInterface {
     private final String TAG = getClass().getSimpleName();
 
     public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
@@ -533,56 +532,6 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
                 break;
 
-            /*case R.id.menu_item_trending:
-
-                //synthetically generate the backstack (TaskStack) when using deep linking
-                Intent tempTrendingIntent = new Intent(this, TrendingActivity.class);
-
-                PendingIntent pendingIntent =
-                        TaskStackBuilder.create(this)
-                                .addNextIntentWithParentStack(tempTrendingIntent)           // add all of DetailsActivity's parents to the stack
-                                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);  // followed by DetailsActivity itself
-
-                try {
-                    pendingIntent.send();
-                } catch (PendingIntent.CanceledException e) {
-                    e.printStackTrace();
-                }
-
-                break;*/
-
-            /*case R.id.menu_item_facets:
-
-                Cursor articleCursor = getContentResolver().query(
-                        DatabaseContract.ArticleTable.CONTENT_URI, null, null, null, null
-                );
-                ArticleCursorWrapper wrapper = new ArticleCursorWrapper(articleCursor);
-                wrapper.moveToFirst();
-
-                Log.e(TAG, "retrieving ARTICLES from Content Provider...");
-                while(!wrapper.isAfterLast()) {
-
-                    Log.d(TAG, wrapper.getArticle().getTitle());
-
-                    wrapper.moveToNext();
-                }
-
-                Cursor mediaCursor = getContentResolver().query(
-                        DatabaseContract.MediaTable.CONTENT_URI, null, null, null, null
-                );
-                MultimediumCursorWrapper mwrapper = new MultimediumCursorWrapper(mediaCursor);
-                mwrapper.moveToFirst();
-
-                Log.e(TAG, "retrieving MEDIA from Content Provider...");
-                while(!mwrapper.isAfterLast()) {
-
-                    Log.d(TAG, "**media:" + mwrapper.getMultimedium().getUrl());
-
-                    mwrapper.moveToNext();
-                }
-
-                break;*/
-
             default:
                 throw new IllegalArgumentException("Invalid options item: " + item.getItemId());
 
@@ -600,6 +549,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
+        //todo: making a database call on rotation change is bad practice.  Let's save this data using a parcible G
         //Let's decide if we want to keep it or not
 //        outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST,
 //                (ArrayList<? extends Parcelable>) articles);
@@ -818,12 +768,6 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         loadingSnackbar.show();
     }
 
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    //starting our SyncAdapter
     public void startDetailActivity(Article article, ImageView articleImage) {
 
         Intent intent = new Intent(this, NewsDetailActivity.class);
@@ -849,6 +793,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         return facets;
     }
 
+    //todo: stays in activity
     //starting our SyncAdapter
     private class FCMRegistrationTask extends AsyncTask<Void, Void, String> {
 

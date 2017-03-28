@@ -19,6 +19,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -72,7 +74,7 @@ public class FileManager {
         weakFileCallback = new WeakReference<>(callback);
         FileCallback fileCallback = weakFileCallback.get();
 
-        Gson gson = new Gson();
+        Gson gson = buildArticleGson();
         FileOutputStream outputStream;
 
         String json = gson.toJson(focusedArticle) + "\n";
@@ -105,6 +107,47 @@ public class FileManager {
 
     }
 
+    public void removeArticleFromFile(FileCallback callback, Article focusedArticle)  {
+
+        weakFileCallback = new WeakReference<>(callback);
+        FileCallback fileCallback = weakFileCallback.get();
+
+
+        try {
+            File readFile = new File(context.getFilesDir().toString() + "/" + Constants.BOOKMARK_ARTICLES_FILE);
+            File tempFile = File.createTempFile(Constants.BOOKMARK_ARTICLES_FILE, ".txt", readFile.getParentFile());
+
+            //get string of what you want to remove from the file
+            String charset = "UTF-8";
+            Gson gson = buildArticleGson();
+            FileOutputStream outputStream;
+
+            String json = gson.toJson(focusedArticle) + "\n";
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(readFile), charset));
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(tempFile), charset));
+
+            for (String line; (line = reader.readLine()) != null; ) {
+                if (line.equals(json)) {
+                    line = line.replace(json, "");
+                    writer.println(line);
+                }
+            }
+
+            reader.close();
+            writer.close();
+
+            readFile.delete();
+            tempFile.renameTo(readFile);
+
+            fileCallback.onFileRemoveComplete(json, false);
+
+        } catch (IOException e) {
+            fileCallback.onFileRemoveComplete(e.toString(), true);
+            e.printStackTrace();
+        }
+    }
+
     /**
      * External storage
      * @param callback
@@ -115,7 +158,7 @@ public class FileManager {
         weakFileCallback = new WeakReference<>(callback);
         FileCallback fileCallback = weakFileCallback.get();
 
-        Gson gson = new Gson();
+        Gson gson = buildArticleGson();
 
         String json = gson.toJson(focusedArticle) + "\n";
 
@@ -190,9 +233,10 @@ public class FileManager {
 
             while((readLine = bufferedReader.readLine()) != null) {
                 //sb.append(readLine);
-
-                Article article = gson.fromJson(readLine, Article.class);
-                bookmarkedArticles.add(article);
+                if(readLine != null && readLine.length() > 0) {
+                    Article article = gson.fromJson(readLine, Article.class);
+                    bookmarkedArticles.add(article);
+                }
             }
 
             return bookmarkedArticles;
@@ -288,5 +332,6 @@ public class FileManager {
     public interface FileCallback {
 
         void onFileWriteComplete(String response, boolean hasError);
+        void onFileRemoveComplete(String response, boolean hasError);
     }
 }

@@ -1,14 +1,11 @@
 package com.androidtitan.culturedapp.main.newsfeed.ui;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +17,6 @@ import android.widget.TextView;
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.bumptech.glide.Glide;
 
 import org.jsoup.Jsoup;
@@ -117,12 +113,14 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
         fab.setOnClickListener(view -> {
 
-            fileManager.writeArticleToFile(this, focusedArticle);
-
+            if(!isBookmarked) {
+                fileManager.writeArticleToFile(this, focusedArticle);
+            } else {
+                fileManager.removeArticleFromFile(this, focusedArticle);
+            }
         });
 
     }
-
 
 
     @Override
@@ -215,8 +213,26 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
         } else {
             //response is going to be the directory where the file is located
+            isBookmarked = true;
             fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark));
             Snackbar.make(rootViewGroup, getResources().getString(R.string.file_write_success), Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onFileRemoveComplete(String response, boolean hasError) {
+
+        if(hasError) {
+            //response is going to be an error message
+            Snackbar.make(rootViewGroup, getResources().getString(R.string.file_remove_error), Snackbar.LENGTH_SHORT).show();
+
+        } else {
+            //response is going to be the directory where the file is located
+            isBookmarked = false;
+            fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_empty_bookmark));
+            Snackbar.make(rootViewGroup, getResources().getString(R.string.file_remove_success), Snackbar.LENGTH_SHORT).show();
+
+            Log.e(TAG, "remaining article count : " + fileManager.getInternalArticles().size());
         }
     }
 
