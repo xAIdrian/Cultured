@@ -157,11 +157,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         notifyDataSetChanged();
     }
 
-    public SharedPreferences getSharedPreferences() {
-        return sharedPreferences;
-    }
-
-    public boolean getAboutStatus() {
+    public boolean getAboutCardStatus() {
         return shouldShowAboutCard;
     }
 

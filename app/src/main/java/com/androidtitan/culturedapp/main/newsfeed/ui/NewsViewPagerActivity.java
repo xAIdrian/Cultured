@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -20,7 +21,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Transition;
@@ -30,6 +30,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -60,7 +62,7 @@ import butterknife.ButterKnife;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
-public class NewsViewPagerActivity extends BaseActivity implements ErrorFragmentInterface, ScrollEffectListener,
+public class NewsViewPagerActivity extends BaseActivity implements ActivityUserInterfaceInteractor,
         FCMRegistrationTask.FCMRegistratorCallback {
     private final String TAG = getClass().getSimpleName();
 
@@ -74,20 +76,14 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
     public static final String ACCOUNT = "dummyaccount";
 
 
-
-
-
+//todo: move this to the offline frgment
     private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
 
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
     private static final int LOADING_ANIM_TIME = 700;
 
-    public static final String ERROR_MESSAGE = "errorfragment.errormessage";
-
-    public static final String ERROR_MAP = "errorfragment.errormap";
-
-    ErrorFragment errorFragment;
+    NewsFeedFragment newsFeedFragment;
 
     @Inject
     NewsFeedPresenter presenter;
@@ -107,8 +103,6 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
     @Bind(R.id.welcomeTextView)
     TextView welcomeText;
 
-
-
     @Bind(R.id.refreshFloatingActionButton)
     FloatingActionButton refreshFab;
 
@@ -123,7 +117,6 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
 
     SharedPreferences sharedPreferences;
 
-
     private AppBarLayout appBarLayout;
 
     private List<Article> articles;
@@ -134,17 +127,8 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
 
     private boolean firstLoad = true; //used for animation
 
-    private boolean loading = true;
-
-    private int pastVisibleItems;
-
-    private int visibleItemCount;
-
-    private int totalItemCount;
-
     private int devConsoleCount = 0;
 
-    public int adapterLoadOffset = 6;
 
     int screenSize;
 
@@ -164,6 +148,8 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
 
         ButterKnife.bind(this);
         super.getAppComponent().inject(this);
+
+        setupViewPager();
 
         setupUserPreferences();
 
@@ -229,18 +215,18 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
 
                 case R.id.onboarding_card_generator:
 
-                    if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                        && adapter.getAboutStatus() == false) {
-                        adapter.resetOnboardingCard();
+                    if (!sharedPreferences.getBoolean(PREFERENCES_APP_FIRST_RUN, false)
+                        && newsFeedFragment.getAboutCardStatus() == false) {
+                        newsFeedFragment.resetOnboardingCard();
                     }
 
                     break;
 
                 case R.id.about_card_generator:
 
-                    if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                        && adapter.getAboutStatus() == false) {
-                        adapter.showAboutCard();
+                    if (!sharedPreferences.getBoolean(PREFERENCES_APP_FIRST_RUN, false)
+                        && newsFeedFragment.getAboutCardStatus() == false) {
+                        newsFeedFragment.showAboutCard();
                     }
 
                     break;
@@ -279,98 +265,7 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
         });
 
 
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
 
-                int[] array = null;
-                scrollViewParallax(dy);
-
-                // logic for hiding and showing the actionbar shadow when the list is fully scrolled down
-                try {
-                    if (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
-                        appBarLayout.setElevation(0);
-                    }
-                } catch (Exception e) {
-                    array = staggeredLayoutManager.findFirstCompletelyVisibleItemPositions(array);
-
-                    if (array[0] == 0 || array[1] == 1) {
-                        appBarLayout.setElevation(0);
-                    }
-                }
-
-                if (dy > 0) { //check for active scrolling
-                    hideToolbarBy(dy);
-
-                    if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
-                        getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-                        visibleItemCount = staggeredLayoutManager.getChildCount();
-                        totalItemCount = staggeredLayoutManager.getItemCount();
-                        int[] firstVisibleItems = null;
-                        firstVisibleItems = staggeredLayoutManager.findFirstVisibleItemPositions(firstVisibleItems);
-
-                        if (firstVisibleItems != null && firstVisibleItems.length > 0) {
-                            pastVisibleItems = firstVisibleItems[0];
-                        }
-
-                        if (loading) {
-
-                            if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-                                loading = false;
-
-                                presenter.loadOffsetArticles(10, adapterLoadOffset);
-                                adapterLoadOffset += 10;
-
-                                showColoredSnackbar();
-                            }
-                        }
-                    } else {
-
-                        visibleItemCount = linearLayoutManager.getChildCount();
-                        totalItemCount = linearLayoutManager.getItemCount();
-                        pastVisibleItems = linearLayoutManager.findFirstCompletelyVisibleItemPosition();
-
-                        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-
-                            if (loading) {
-
-                                if ((visibleItemCount + pastVisibleItems + 1) >= totalItemCount) {
-                                    //the +1 accounts for having one less card visible to add
-
-                                    loading = false;
-                                    Log.d(TAG, "appending data...");
-
-                                    presenter.loadOffsetArticles(5, adapterLoadOffset);
-                                    adapterLoadOffset += 5;
-
-                                    showColoredSnackbar();
-                                }
-                            }
-
-                        } else {
-
-                            if (loading) {
-
-                                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-
-                                    loading = false;
-                                    Log.d(TAG, "appending data...");
-
-                                    presenter.loadOffsetArticles(5, adapterLoadOffset);
-                                    adapterLoadOffset += 5;
-
-                                    showColoredSnackbar();
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    showToolbarBy(dy);
-                }
-            }
-        });
 
         refreshFab.setOnClickListener(v -> {
             presenter.newsArticlesRefresh(articles, 5);
@@ -378,6 +273,10 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
             showColoredSnackbar();
         });
 
+    }
+
+    private void setupViewPager() {
+        //todo: Instantiate fragments and set the ViewPager adapter
     }
 
     @Override
@@ -545,7 +444,6 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
     }
 
 
-    @Override
     public void onLoadComplete() {
 
         if (firstLoad) {
@@ -557,53 +455,14 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
     }
 
     @Override
-    public void appendAdapterItem(Article article) {
-        adapter.appendToAdapter(article);
-    }
-
-
-    @Override
-    public void insertAdapterItem(int index, Article article) {
-        adapter.insertIntoAdapter(index, article);
-    }
-
-    @Override
-    public void insertAdapterItems(int index, ArrayList<Article> articles) {
-        adapter.insertIntoAdapter(index, articles);
-    }
-
-    @Override
-    public List<Article> getArticles() {
-        return articles;
-    }
-
-    @Override
-    public void displayError(String message, Map<String, Object> additionalProperties) {
-
-        Bundle args = new Bundle();
-        args.putString(ERROR_MESSAGE, message);
-
-        errorFragment = ErrorFragment.newInstance(message, additionalProperties);
-        errorFragment.setArguments(args);
-
-        getSupportFragmentManager().beginTransaction()
-            .add(R.id.main_content, errorFragment).commit();
-
-    }
-
-    @Override
-    public void restartArticleLoad() {
-        getSupportFragmentManager().beginTransaction().remove(errorFragment).commit();
-        presenter.loadArticles(10);
-    }
-
-    //todo: put in fragment
-    //animation and UI methods
-    private void scrollViewParallax(int dy) { // divided by three to scroll slower
+    public void scrollViewParallax(int dy) { // divided by three to scroll slower
         bgView.setTranslationY(bgView.getTranslationY() - dy / 3);
     }
 
     public void firstLoadCompleteAnimation() {
+
+        Handler handler = new Handler();
+        Animation fadeAnim = AnimationUtils.loadAnimation(this, R.anim.fade_out);
 
         final ScaleAnimation scale = new ScaleAnimation((float) 1.0, (float) 1.0, (float) 1.0, (float) 0.33);
         scale.setFillAfter(true);
@@ -624,7 +483,7 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
             @Override
             public void run() {
 
-                adapter.notifyDataSetChanged();
+                newsFeedFragment.notifyDataSetChanged();
                 firstLoad = false;
             }
         }, LOADING_ANIM_TIME * 2);
@@ -647,7 +506,8 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
         }
     }
 
-    private void showToolbarBy(int dy) {
+    @Override
+    public void showToolbarBy(int dy) {
 
         if (cannotShowMore(dy)) {
             appBarLayout.setTranslationY(0);
@@ -664,7 +524,8 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
 
     }
 
-    private void hideToolbarBy(int dy) {
+    @Override
+    public void hideToolbarBy(int dy) {
         if (cannotHideMore(dy)) {
             appBarLayout.setTranslationY(-appBarLayout.getBottom());
         } else {
@@ -672,11 +533,13 @@ public class NewsViewPagerActivity extends BaseActivity implements ErrorFragment
         }
     }
 
-    private boolean cannotHideMore(int dy) {
+    @Override
+    public boolean cannotHideMore(int dy) {
         return Math.abs(appBarLayout.getTranslationY() - dy) > appBarLayout.getBottom();
     }
 
-    private boolean cannotShowMore(int dy) {
+    @Override
+    public boolean cannotShowMore(int dy) {
         return appBarLayout.getTranslationY() - dy > 0;
     }
 

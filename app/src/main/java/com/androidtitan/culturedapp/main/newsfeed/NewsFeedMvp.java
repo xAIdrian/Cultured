@@ -41,8 +41,6 @@ public interface NewsFeedMvp {
 
     interface View extends MvpView {
 
-        void onLoadComplete();
-
         void appendAdapterItem(Article article);
         void insertAdapterItem(int index, Article article);
         void insertAdapterItems(int index, ArrayList<Article> articles);
