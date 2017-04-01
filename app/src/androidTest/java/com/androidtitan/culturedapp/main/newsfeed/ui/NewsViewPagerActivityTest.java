@@ -26,12 +26,12 @@ import static org.hamcrest.Matchers.is;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class NewsFeedActivityTest {
+public class NewsViewPagerActivityTest {
     private final String TAG = getClass().getSimpleName();
 
     @Rule
-    public ActivityTestRule<NewsFeedActivity> mActivityRule =
-            new ActivityTestRule<>(NewsFeedActivity.class);
+    public ActivityTestRule<NewsViewPagerActivity> mActivityRule =
+            new ActivityTestRule<>(NewsViewPagerActivity.class);
 
 
     @Before

@@ -15,8 +15,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ERROR_MAP;
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ERROR_MESSAGE;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ERROR_MAP;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ERROR_MESSAGE;
 
 
 public class ErrorFragment extends Fragment {

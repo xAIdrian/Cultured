@@ -31,9 +31,9 @@ import java.util.Map;
 
 import butterknife.Bind;
 
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_BOOKMARKED;
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_EXTRA;
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_GEO_FACETS;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ARTICLE_BOOKMARKED;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ARTICLE_EXTRA;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ARTICLE_GEO_FACETS;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -68,7 +68,7 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View{
 
     @Override
     public BasePresenter getPresenter() {
-        presenter = ((NewsFeedActivity) getActivity()).getPresenter();
+        presenter = ((NewsViewPagerActivity) getActivity()).getPresenter();
         presenter.bindView(this);
         return presenter;
     }

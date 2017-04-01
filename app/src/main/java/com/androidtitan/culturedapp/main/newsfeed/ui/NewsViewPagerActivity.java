@@ -9,11 +9,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -62,7 +60,8 @@ import butterknife.ButterKnife;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
-public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInterface, ScrollEffectListener, FCMRegistrationTask.FCMRegistratorCallback {
+public class NewsViewPagerActivity extends BaseActivity implements ErrorFragmentInterface, ScrollEffectListener,
+        FCMRegistrationTask.FCMRegistratorCallback {
     private final String TAG = getClass().getSimpleName();
 
     public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
@@ -685,21 +684,19 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
         PreferenceStore preferenceStore = PreferenceStore.get(this);
         String currentToken = preferenceStore.getFcmToken();
 
-        FCMRegistrationTask firebaseTokenRegistrator = new FCMRegistrationTask();
-
         if (currentToken == null) {
-            new FCMRegistrationTask().execute();
+            new FCMRegistrationTask(this, sharedPreferences, account, isSyncingPeriodically).execute();
         } else {
             Log.d(TAG, "Have token: " + currentToken);
 
             if (!isSyncingPeriodically) {
-                new FCMRegistrationTask().setupPeriodicSync();
+                new FCMRegistrationTask(this, sharedPreferences, account, isSyncingPeriodically).setupPeriodicSync();
             }
         }
     }
 
     private void showColoredSnackbar() {
-        Snackbar loadingSnackbar = Snackbar.make(recyclerView, //this param is view
+        Snackbar loadingSnackbar = Snackbar.make(recyclerView, //this param is view todo: make this the fragments parent view
             getResources().getString(R.string.simple_loading),
             Snackbar.LENGTH_LONG);
         View snackbarView = loadingSnackbar.getView();
@@ -714,6 +711,6 @@ public class NewsFeedActivity extends BaseActivity implements ErrorFragmentInter
 
     @Override
     public void updateSyncingStatus(boolean syncStatus) {
-
+        isSyncingPeriodically = syncStatus;
     }
 }

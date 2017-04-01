@@ -8,8 +8,8 @@ import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ACCOUNT;
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ACCOUNT_TYPE;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ACCOUNT;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ACCOUNT_TYPE;
 
 /**
  * Created by amohnacs on 9/28/16.

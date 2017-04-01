@@ -6,7 +6,7 @@ import android.content.Context;
 
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
-import com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity;
+import com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
 import com.androidtitan.culturedapp.main.trending.TrendingPresenter;
@@ -28,7 +28,7 @@ public interface AppComponent {
     Application getApplication();
     Context getApplicationContext();
 
-    void inject(NewsFeedActivity activity);
+    void inject(NewsViewPagerActivity activity);
     void inject(TopArticleActivity activity);
     void inject(TrendingActivity activity);
 

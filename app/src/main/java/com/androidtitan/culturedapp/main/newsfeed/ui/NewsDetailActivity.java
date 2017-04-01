@@ -102,10 +102,10 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
         } else {
             if (extras != null) {
-                focusedArticle = extras.getParcelable(NewsFeedActivity.ARTICLE_EXTRA);
-                focusedGeoFacets = extras.getStringArrayList(NewsFeedActivity.ARTICLE_GEO_FACETS);
+                focusedArticle = extras.getParcelable(NewsViewPagerActivity.ARTICLE_EXTRA);
+                focusedGeoFacets = extras.getStringArrayList(NewsViewPagerActivity.ARTICLE_GEO_FACETS);
 
-                if(extras.getBoolean(NewsFeedActivity.ARTICLE_BOOKMARKED)) {
+                if(extras.getBoolean(NewsViewPagerActivity.ARTICLE_BOOKMARKED)) {
                     isBookmarked = true;
                 }
             }

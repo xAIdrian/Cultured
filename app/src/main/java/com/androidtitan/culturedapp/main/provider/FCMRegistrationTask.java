@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
-import com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.iid.InstanceID;
@@ -25,6 +24,8 @@ import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_
 
 public class FCMRegistrationTask extends AsyncTask<Void, Void, String> {
     private static final String TAG = FCMRegistrationTask.class.getSimpleName();
+
+    FCMRegistratorCallback callback;
 
     private static final String SENDER_ID = "612691836045";
     // Sync interval constants...one hour
@@ -44,6 +45,13 @@ public class FCMRegistrationTask extends AsyncTask<Void, Void, String> {
         this.sharedPreferences = sharedPreferences;
         this.account = account;
         this.isSyncingPeriodically = isSyncingPeriodically;
+
+        if(context instanceof FCMRegistratorCallback) {
+            callback = (FCMRegistratorCallback) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement FCMRegistrationCallback");
+        }
     }
 
     @Override
@@ -92,7 +100,7 @@ public class FCMRegistrationTask extends AsyncTask<Void, Void, String> {
     public void setupPeriodicSync() {
 
         isSyncingPeriodically = true;
-        //todo: interface callback to Activity updating the syncstatus
+        callback.updateSyncingStatus(true);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(PREFERENCES_SYNCING_PERIODICALLY, true).apply();
 

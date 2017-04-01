@@ -17,7 +17,7 @@
         android:icon="@mipmap/cultured_app_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <activity android:name=".main.newsfeed.ui.NewsFeedActivity">
+        <activity android:name=".main.newsfeed.ui.NewsViewPagerActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -27,7 +27,7 @@
         <activity
             android:name=".main.toparticle.ui.TopArticleActivity"
             android:label="@string/title_activity_top_article"
-            android:parentActivityName=".main.newsfeed.ui.NewsFeedActivity"
+            android:parentActivityName=".main.newsfeed.ui.NewsViewPagerActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -42,7 +42,7 @@
         <activity
             android:name=".main.trending.ui.TrendingActivity"
             android:label="@string/title_activity_trending"
-            android:parentActivityName=".main.newsfeed.ui.NewsFeedActivity"
+            android:parentActivityName=".main.newsfeed.ui.NewsViewPagerActivity"
             android:theme="@style/AppTheme" >
 
             <intent-filter>
@@ -55,11 +55,11 @@
         <activity
             android:name=".main.newsfeed.ui.NewsDetailActivity"
             android:label="@string/title_activity_news_detail"
-            android:parentActivityName=".main.newsfeed.ui.NewsFeedActivity"
+            android:parentActivityName=".main.newsfeed.ui.NewsViewPagerActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity"/>
+                android:value="com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity"/>
         </activity>
 
         <activity android:name=".main.preferences.PreferencesActivity"></activity>

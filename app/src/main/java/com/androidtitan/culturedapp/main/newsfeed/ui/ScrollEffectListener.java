@@ -9,5 +9,5 @@ public interface ScrollEffectListener {
     void showToolbarBy(int dy);
     void hideToolbarBy(int dy);
     boolean cannotHideMore(int dy);
-    boolean cannotShowMore(int dy)
+    boolean cannotShowMore(int dy);
 }

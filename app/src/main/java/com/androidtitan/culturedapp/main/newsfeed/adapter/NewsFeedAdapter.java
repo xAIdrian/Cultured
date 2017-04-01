@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.view.NewsHeaderLayout;
-import com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity;
+import com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity;
 import com.androidtitan.culturedapp.main.trending.ui.TrendingActivity;
 import com.androidtitan.culturedapp.main.util.ScreenUtils;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
@@ -302,7 +302,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ((NewsFeedActivity) context).startDetailActivity(
+//                ((NewsViewPagerActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
 //                sendDetailActivity(articleList.get(finalPosition), holder.articleImage);
 
@@ -533,7 +533,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void sendDetailActivity(Article article, ImageView imageView) {
-        ((NewsFeedActivity) context).startDetailActivity(
+        ((NewsViewPagerActivity) context).startDetailActivity(
             article, imageView);
     }
 
