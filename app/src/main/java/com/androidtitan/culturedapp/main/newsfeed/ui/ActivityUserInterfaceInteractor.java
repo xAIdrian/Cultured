@@ -11,4 +11,6 @@ public interface ActivityUserInterfaceInteractor {
     boolean cannotHideMore(int dy);
     boolean cannotShowMore(int dy);
     void scrollViewParallax(int dy);
+    void showColoredSnackbar();
+    void setAppBarElevation(int ele);
 }

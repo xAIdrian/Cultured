@@ -28,6 +28,7 @@ import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +60,9 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
     private StaggeredGridLayoutManager staggeredLayoutManager;
     private NewsFeedAdapter adapter;
 
+    private List<Article> articles;
+    private HashMap<String, Boolean> bookmarkedArticles;
+
     private boolean loading = true;
     private int pastVisibleItems;
     private int visibleItemCount;
@@ -88,6 +92,20 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        bookmarkedArticles = presenter.getBookmarkedArticles();
+        articles = new ArrayList<>();
+
+        if (((NewsViewPagerActivity)getActivity()).getScreenSize() == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+            articles = presenter.loadArticles(10);
+        } else {
+            articles = presenter.loadArticles(5);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -102,20 +120,20 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
                 // logic for hiding and showing the actionbar shadow when the list is fully scrolled down
                 try {
                     if (linearLayoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
-                        appBarLayout.setElevation(0);
+                        activityUserInterfaceInteractor.setAppBarElevation(0);
                     }
                 } catch (Exception e) {
                     array = staggeredLayoutManager.findFirstCompletelyVisibleItemPositions(array);
 
                     if (array[0] == 0 || array[1] == 1) {
-                        appBarLayout.setElevation(0);
+                        activityUserInterfaceInteractor.setAppBarElevation(0);
                     }
                 }
 
                 if (dy > 0) { //check for active scrolling
-                    hideToolbarBy(dy);
+                    activityUserInterfaceInteractor.hideToolbarBy(dy);
 
-                    if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
+                    if (((NewsViewPagerActivity)getActivity()).getScreenSize() == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
                             getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
                         visibleItemCount = staggeredLayoutManager.getChildCount();
@@ -135,7 +153,7 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
                                 presenter.loadOffsetArticles(10, adapterLoadOffset);
                                 adapterLoadOffset += 10;
 
-                                showColoredSnackbar();
+                                activityUserInterfaceInteractor.showColoredSnackbar();
                             }
                         }
                     } else {
@@ -157,7 +175,7 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
                                     presenter.loadOffsetArticles(5, adapterLoadOffset);
                                     adapterLoadOffset += 5;
 
-                                    showColoredSnackbar();
+                                    activityUserInterfaceInteractor.showColoredSnackbar();
                                 }
                             }
 
@@ -173,16 +191,18 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
                                     presenter.loadOffsetArticles(5, adapterLoadOffset);
                                     adapterLoadOffset += 5;
 
-                                    showColoredSnackbar();
+                                    activityUserInterfaceInteractor.showColoredSnackbar();
                                 }
                             }
                         }
                     }
                 } else {
-                    showToolbarBy(dy);
+                    activityUserInterfaceInteractor.showToolbarBy(dy);
                 }
             }
         });
+
+        return getView();
     }
 
     @Override
@@ -209,44 +229,30 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
     @Override
     public void initializeAnimation() {
         handler = new Handler();
-        fadeAnim = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        fadeAnim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
     }
 
     @Override
-    protected void setupRecyclerView(int screenSize, RecyclerView.LayoutManager layoutManager) {
+    protected void setupRecyclerView() {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
-                && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+                && ((NewsViewPagerActivity)getActivity()).getScreenSize() == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
 
+                staggeredLayoutManager = new StaggeredGridLayoutManager(3, 1);
+                recyclerView.setLayoutManager(staggeredLayoutManager);
 
-            if (layoutManager instanceof StaggeredGridLayoutManager) {
-                layoutManager = new StaggeredGridLayoutManager(3, 1);
-                recyclerView.setLayoutManager(layoutManager);
-            } else {
-                throw new IllegalArgumentException("Inappropriate layout manager used for this condition");
-            }
-
-        } else if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
+        } else if (((NewsViewPagerActivity)getActivity()).getScreenSize() == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
                 getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
-            if (layoutManager instanceof StaggeredGridLayoutManager) {
-                layoutManager = new StaggeredGridLayoutManager(2, 1);
-                recyclerView.setLayoutManager(layoutManager);
-            } else {
-                throw new IllegalArgumentException("Inappropriate layout manager used for this condition");
-            }
+                staggeredLayoutManager = new StaggeredGridLayoutManager(2, 1);
+                recyclerView.setLayoutManager(staggeredLayoutManager);
 
         } else {
-
-            if (layoutManager instanceof LinearLayoutManager) {
-                layoutManager = new LinearLayoutManager(getActivity());
-                ((LinearLayoutManager)layoutManager).setOrientation(LinearLayoutManager.VERTICAL);
-                recyclerView.setLayoutManager(layoutManager);
-            } else {
-                throw new IllegalArgumentException("Inappropriate layout manager used for this condition");
-            }
+                linearLayoutManager = new LinearLayoutManager(getActivity());
+                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                recyclerView.setLayoutManager(linearLayoutManager);
         }
 
-        adapter = new NewsFeedAdapter(this, articles);
+        adapter = new NewsFeedAdapter(getActivity(), articles);
         recyclerView.setAdapter(adapter);
     }
 
@@ -273,8 +279,8 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
 
     @Override
     public boolean isArticleBookmarked(@NonNull String articleTitle) {
-        if(bookMarkedArticles.get(articleTitle) != null) {
-            return bookMarkedArticles.get(articleTitle);
+        if(bookmarkedArticles.get(articleTitle) != null) {
+            return bookmarkedArticles.get(articleTitle);
         }
         return false;
     }

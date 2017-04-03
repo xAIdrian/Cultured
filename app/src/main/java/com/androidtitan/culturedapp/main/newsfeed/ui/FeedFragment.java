@@ -22,6 +22,7 @@ public abstract class FeedFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
 
         initializeAnimation();
+        setupRecyclerView();
     }
 
     @Override
@@ -39,7 +40,7 @@ public abstract class FeedFragment extends BaseFragment {
 
     public abstract void initializeAnimation();
 
-    protected abstract void setupRecyclerView(int screenSize, RecyclerView.LayoutManager layoutManager);
+    protected abstract void setupRecyclerView();
 
     public abstract void startDetailActivity(Article article, ImageView articleImage);
 

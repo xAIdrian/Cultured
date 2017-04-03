@@ -39,7 +39,6 @@ import android.widget.Toast;
 
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.common.structure.BaseActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
@@ -47,12 +46,6 @@ import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
 import com.androidtitan.culturedapp.main.provider.FCMRegistrationTask;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
-import com.androidtitan.culturedapp.model.newyorktimes.Article;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -119,24 +112,18 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
 
     private AppBarLayout appBarLayout;
 
-    private List<Article> articles;
-
-    private HashMap<String, Boolean> bookMarkedArticles;
-
     private boolean isSyncingPeriodically;
 
     private boolean firstLoad = true; //used for animation
 
     private int devConsoleCount = 0;
 
-
     int screenSize;
 
-    private FileManager fileManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        initializeTranstionsAndAnimations();
+        initializeTransitionsAndAnimations();
         //initialize dummy account
         account = createSyncAccount(this);
 
@@ -153,10 +140,6 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
 
         setupUserPreferences();
 
-        fileManager = FileManager.getInstance(this);
-
-        articles = new ArrayList<>();
-        bookMarkedArticles = fileManager.getInternalArticlesHashMap();
 
         loadingTitleText.setVisibility(View.VISIBLE);
         loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
@@ -173,12 +156,6 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
         setUpActionBar();
 
         screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-
-        if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
-            articles = presenter.loadArticles(10);
-        } else {
-            articles = presenter.loadArticles(5);
-        }
 
         navImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -490,7 +467,7 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void initializeTranstionsAndAnimations() {
+    private void initializeTransitionsAndAnimations() {
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
         if (currentapiVersion >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             // inside your activity (if you did not enable transitions in your theme)
@@ -558,13 +535,19 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
         }
     }
 
-    private void showColoredSnackbar() {
+    @Override
+    public void showColoredSnackbar() {
         Snackbar loadingSnackbar = Snackbar.make(recyclerView, //this param is view todo: make this the fragments parent view
             getResources().getString(R.string.simple_loading),
             Snackbar.LENGTH_LONG);
         View snackbarView = loadingSnackbar.getView();
         snackbarView.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
         loadingSnackbar.show();
+    }
+
+    @Override
+    public void setAppBarElevation(int ele) {
+        appBarLayout.setElevation(ele);
     }
 
     public NewsFeedPresenter getPresenter() {
@@ -575,5 +558,9 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
     @Override
     public void updateSyncingStatus(boolean syncStatus) {
         isSyncingPeriodically = syncStatus;
+    }
+
+    public int getScreenSize() {
+        return screenSize;
     }
 }

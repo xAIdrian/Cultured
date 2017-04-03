@@ -3,12 +3,14 @@ package com.androidtitan.culturedapp.main.newsfeed;
 import android.content.Context;
 import android.util.Log;
 
+import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.common.structure.BasePresenter;
 import com.androidtitan.culturedapp.main.CulturedApp;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -23,6 +25,8 @@ public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implement
 
     private Context context;
 
+    private FileManager fileManager;
+
     @Inject
     NewsFeedProvider newsFeedProvider;
     
@@ -31,6 +35,7 @@ public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implement
         this.context = context;
 
         CulturedApp.getAppComponent().inject(this);
+        fileManager = FileManager.getInstance(context);
     }
 
 
@@ -80,6 +85,10 @@ public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implement
         Log.d(TAG, apiError.getMessage());
         getMvpView().displayError(apiError.getMessage(), apiError.getAdditionalProperties());
 
+    }
+
+    public HashMap<String,Boolean> getBookmarkedArticles() {
+        return fileManager.getInternalArticlesHashMap();
     }
 }
 
