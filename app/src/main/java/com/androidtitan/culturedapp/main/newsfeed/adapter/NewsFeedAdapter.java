@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.widget.RecyclerView;
@@ -19,10 +20,12 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.view.NewsHeaderLayout;
+import com.androidtitan.culturedapp.main.newsfeed.ui.NewsDetailActivity;
 import com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity;
 import com.androidtitan.culturedapp.main.trending.ui.TrendingActivity;
 import com.androidtitan.culturedapp.main.util.ScreenUtils;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -31,6 +34,7 @@ import com.bumptech.glide.request.target.BitmapImageViewTarget;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -40,6 +44,9 @@ import butterknife.ButterKnife;
 
 import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ARTICLE_BOOKMARKED;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ARTICLE_EXTRA;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ARTICLE_GEO_FACETS;
 
 /**
  * Created by amohnacs on 3/23/16.
@@ -57,6 +64,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private Context context;
     private List<Article> articleList;
+    private HashMap<String, Boolean> bookmarkedArticles;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
@@ -64,10 +72,11 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private boolean shouldShowAboutCard = false;
 
     @Inject
-    public NewsFeedAdapter(Context context, List<Article> adapterTrackList) {
+    public NewsFeedAdapter(Context context, List<Article> adapterTrackList, HashMap<String, Boolean> bookmarkedArticles) {
 
         this.context = context;
         this.articleList = adapterTrackList;
+        this.bookmarkedArticles = bookmarkedArticles;
 
         sharedPreferences = context.getSharedPreferences(CULTURED_PREFERENCES, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -358,7 +367,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendDetailActivity(articleList.get(position), holder.articleImage);
+                startDetailActivity(articleList.get(position), holder.articleImage);
 
             }
         });
@@ -407,7 +416,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendDetailActivity(articleList.get(position), holder.articleImage);
+                startDetailActivity(articleList.get(position), holder.articleImage);
             }
         });
     }
@@ -528,9 +537,28 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return articleList.size();
     }
 
-    private void sendDetailActivity(Article article, ImageView imageView) {
-        ((NewsViewPagerActivity) context).startDetailActivity(
-            article, imageView);
+    public void startDetailActivity(Article article, ImageView articleImage) {
+        Intent intent = new Intent(context, NewsDetailActivity.class);
+        intent.putExtra(ARTICLE_EXTRA, article);
+        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, getGeoFacetArrayList(article));
+        intent.putExtra(ARTICLE_BOOKMARKED, isArticleBookmarked(article.getTitle()));
+
+        context.startActivity(intent);
+    }
+
+    public ArrayList<String> getGeoFacetArrayList(@NonNull Article article) {
+        ArrayList<String> facets = new ArrayList<>();
+        for (Facet facet : article.getGeoFacet()) {
+            facets.add(facet.getFacetText());
+        }
+        return facets;
+    }
+
+    public boolean isArticleBookmarked(@NonNull String articleTitle) {
+        if(bookmarkedArticles.get(articleTitle) != null) {
+            return bookmarkedArticles.get(articleTitle);
+        }
+        return false;
     }
 
 }

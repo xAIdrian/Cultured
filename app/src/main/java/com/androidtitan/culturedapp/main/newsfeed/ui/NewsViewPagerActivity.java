@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -107,6 +108,9 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
 
     @Bind(R.id.navigation_icon)
     ImageView navImage;
+
+    @Bind(R.id.main_content)
+    CoordinatorLayout baseLayout;
 
     SharedPreferences sharedPreferences;
 
@@ -245,8 +249,8 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
 
 
         refreshFab.setOnClickListener(v -> {
-            presenter.newsArticlesRefresh(articles, 5);
-            loading = true;
+            presenter.newsArticlesRefresh(newsFeedFragment.getArticles(), 5);
+            newsFeedFragment.setLoadingStatus(true);
             showColoredSnackbar();
         });
 
@@ -420,13 +424,13 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
 
     }
 
-
+    @Override
     public void onLoadComplete() {
 
         if (firstLoad) {
             firstLoadCompleteAnimation();
         } else {
-            loading = true;
+            newsFeedFragment.setLoadingStatus(true);
         }
 
     }
@@ -537,7 +541,7 @@ public class NewsViewPagerActivity extends BaseActivity implements ActivityUserI
 
     @Override
     public void showColoredSnackbar() {
-        Snackbar loadingSnackbar = Snackbar.make(recyclerView, //this param is view todo: make this the fragments parent view
+        Snackbar loadingSnackbar = Snackbar.make(baseLayout, //this param is view todo: make this the fragments parent view
             getResources().getString(R.string.simple_loading),
             Snackbar.LENGTH_LONG);
         View snackbarView = loadingSnackbar.getView();

@@ -2,18 +2,12 @@ package com.androidtitan.culturedapp.main.newsfeed.ui;
 
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.androidtitan.culturedapp.common.structure.BaseFragment;
-import com.androidtitan.culturedapp.model.newyorktimes.Article;
-
-import java.util.ArrayList;
 
 public abstract class FeedFragment extends BaseFragment {
 
@@ -41,10 +35,4 @@ public abstract class FeedFragment extends BaseFragment {
     public abstract void initializeAnimation();
 
     protected abstract void setupRecyclerView();
-
-    public abstract void startDetailActivity(Article article, ImageView articleImage);
-
-    public abstract ArrayList<String> getGeoFacetArrayList(@NonNull Article article);
-
-    public abstract boolean isArticleBookmarked(@NonNull String articleTitle);
 }

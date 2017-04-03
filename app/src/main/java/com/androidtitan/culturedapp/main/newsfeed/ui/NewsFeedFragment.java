@@ -25,7 +25,6 @@ import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,10 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
-
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ARTICLE_BOOKMARKED;
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ARTICLE_EXTRA;
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsViewPagerActivity.ARTICLE_GEO_FACETS;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -252,37 +247,8 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
                 recyclerView.setLayoutManager(linearLayoutManager);
         }
 
-        adapter = new NewsFeedAdapter(getActivity(), articles);
+        adapter = new NewsFeedAdapter(getActivity(), articles, bookmarkedArticles);
         recyclerView.setAdapter(adapter);
-    }
-
-
-
-    @Override
-    public void startDetailActivity(Article article, ImageView articleImage) {
-        Intent intent = new Intent(getActivity(), NewsDetailActivity.class);
-        intent.putExtra(ARTICLE_EXTRA, article);
-        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, getGeoFacetArrayList(article));
-        intent.putExtra(ARTICLE_BOOKMARKED, isArticleBookmarked(article.getTitle()));
-
-        startActivity(intent);
-    }
-
-    @Override
-    public ArrayList<String> getGeoFacetArrayList(@NonNull Article article) {
-        ArrayList<String> facets = new ArrayList<>();
-        for (Facet facet : article.getGeoFacet()) {
-            facets.add(facet.getFacetText());
-        }
-        return facets;
-    }
-
-    @Override
-    public boolean isArticleBookmarked(@NonNull String articleTitle) {
-        if(bookmarkedArticles.get(articleTitle) != null) {
-            return bookmarkedArticles.get(articleTitle);
-        }
-        return false;
     }
 
     @Override
@@ -298,6 +264,11 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
     @Override
     public void insertAdapterItems(int index, ArrayList<Article> articles) {
         adapter.insertIntoAdapter(index, articles);
+    }
+
+    @Override
+    public void onLoadComplete() {
+        activityUserInterfaceInteractor.onLoadComplete();
     }
 
     @Override
@@ -317,19 +288,19 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
                 .add(R.id.main_content, errorFragment).commit();
     }
 
-    public void notifyDataSetChanged() {
+    protected void notifyDataSetChanged() {
         adapter.notifyDataSetChanged();
     }
 
-    public boolean getAboutCardStatus() {
+    protected boolean getAboutCardStatus() {
         return adapter.getAboutCardStatus();
     }
 
-    public void resetOnboardingCard() {
+    protected void resetOnboardingCard() {
         adapter.resetOnboardingCard();
     }
 
-    public void showAboutCard() {
+    protected void showAboutCard() {
         adapter.showAboutCard();
     }
 
@@ -338,5 +309,13 @@ public class NewsFeedFragment extends FeedFragment implements NewsFeedMvp.View, 
         getActivity().getSupportFragmentManager()
                 .beginTransaction().remove(errorFragment).commit();
         presenter.loadArticles(10);
+    }
+
+    protected boolean getLoadingStatus() {
+        return loading;
+    }
+
+    protected void setLoadingStatus(boolean isLoading) {
+        loading = isLoading;
     }
 }

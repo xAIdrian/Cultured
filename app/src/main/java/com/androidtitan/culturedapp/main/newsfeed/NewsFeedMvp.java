@@ -45,6 +45,8 @@ public interface NewsFeedMvp {
         void insertAdapterItem(int index, Article article);
         void insertAdapterItems(int index, ArrayList<Article> articles);
 
+        void onLoadComplete();
+
         List<Article> getArticles();
 
         void displayError(String message, Map<String, Object> additionalProperties);

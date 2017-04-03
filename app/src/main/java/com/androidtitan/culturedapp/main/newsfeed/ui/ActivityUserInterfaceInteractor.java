@@ -13,4 +13,6 @@ public interface ActivityUserInterfaceInteractor {
     void scrollViewParallax(int dy);
     void showColoredSnackbar();
     void setAppBarElevation(int ele);
+
+    void onLoadComplete();
 }
