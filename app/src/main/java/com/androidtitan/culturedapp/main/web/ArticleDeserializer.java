@@ -65,11 +65,13 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         tempArticle.setMaterialTypeFacet(obj.getAsJsonObject().get("material_type_facet").getAsString());
         tempArticle.setKicker(obj.getAsJsonObject().get("kicker").getAsString());
 
-        if(obj.getAsJsonObject().get("headline") != null) {
+        if(obj.getAsJsonObject().get("headline") != null
+                && !obj.getAsJsonObject().get("headline").isJsonNull()) {
             tempArticle.setheadline(obj.getAsJsonObject().get("headline").getAsString());
         }
 
-        if(obj.getAsJsonObject().get("blog_name") != null) {
+        if(obj.getAsJsonObject().get("blog_name") != null
+                && !obj.getAsJsonObject().get("blog_name").isJsonNull()) {
             tempArticle.setBlogName(obj.getAsJsonObject().get("blog_name").getAsString());
         } else {
             tempArticle.setBlogName("");
@@ -88,7 +90,7 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         }
 
         List<Facet> desList = new ArrayList<Facet>();
-        if (obj.get("des_facet") instanceof JsonArray) {
+        if (obj.get("des_facet") instanceof JsonArray && !obj.get("des_facet").isJsonNull()) {
             for(JsonElement ele : obj.get("des_facet").getAsJsonArray()) {
                 Facet facet = new Facet(FacetType.DES, ele.getAsString(), tempArticle.getCreatedDate());
                 desList.add(facet);
@@ -99,7 +101,7 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         tempArticle.setDesFacet(desList);
 
         List<Facet> orgList = new ArrayList<Facet>();
-        if (obj.get("org_facet") instanceof JsonArray) {
+        if (obj.get("org_facet") instanceof JsonArray && !obj.get("org_facet").isJsonNull()) {
             for(JsonElement ele : obj.get("org_facet").getAsJsonArray()) {
                 Facet facet = new Facet(FacetType.ORG, ele.getAsString(), tempArticle.getCreatedDate());
                 orgList.add(facet);
@@ -110,7 +112,7 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         tempArticle.setOrgFacet(orgList);
 
         List<Facet> perList = new ArrayList<Facet>();
-        if (obj.get("per_facet") instanceof JsonArray) {
+        if (obj.get("per_facet") instanceof JsonArray && !obj.get("per_facet").isJsonNull()) {
             for(JsonElement ele : obj.get("per_facet").getAsJsonArray()) {
                 Facet facet = new Facet(FacetType.PER, ele.getAsString(), tempArticle.getCreatedDate());
                 perList.add(facet);
@@ -121,7 +123,7 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         tempArticle.setPerFacet(perList);
 
         List<Facet> geoList = new ArrayList<Facet>();
-        if (obj.get("geo_facet") instanceof JsonArray) {
+        if (obj.get("geo_facet") instanceof JsonArray && !obj.get("per_facet").isJsonNull()) {
             for(JsonElement ele : obj.get("geo_facet").getAsJsonArray()) {
                 Facet facet = new Facet(FacetType.GEO, ele.getAsString(), tempArticle.getCreatedDate());
                 geoList.add(facet);
@@ -140,14 +142,4 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
 
         return tempArticle;
     }
-
-
-    /*private ArticleTable getOrCreate(final String name) {
-        ArticleTable author = cache.get().get(name);
-        if (author == null) {
-            author = new ArticleTable();
-            cache.get().put(name, author);
-        }
-        return author;
-    }*/
 }

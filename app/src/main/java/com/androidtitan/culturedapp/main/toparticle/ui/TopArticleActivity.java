@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.structure.BaseActivity;
+import com.androidtitan.culturedapp.main.CulturedApp;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleAdapter;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleMvp;
 import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
@@ -52,7 +53,7 @@ public class TopArticleActivity extends BaseActivity implements TopArticleMvp.Vi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.top_article_activity);
 
-        super.getAppComponent().inject(this);
+        CulturedApp.getAppComponent().inject(this);
         ButterKnife.bind(this);
         presenter.bindView(this);
 

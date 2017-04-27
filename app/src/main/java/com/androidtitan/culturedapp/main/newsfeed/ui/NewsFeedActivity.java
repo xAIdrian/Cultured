@@ -227,14 +227,11 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
             articles = presenter.loadArticles(5);
         }
 
-        navImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawerLayout.isDrawerOpen(navigationView)) {
-                    drawerLayout.closeDrawers();
-                } else {
-                    drawerLayout.openDrawer(navigationView);
-                }
+        navImage.setOnClickListener(view -> {
+            if (drawerLayout.isDrawerOpen(navigationView)) {
+                drawerLayout.closeDrawers();
+            } else {
+                drawerLayout.openDrawer(navigationView);
             }
         });
 

@@ -17,6 +17,7 @@
         android:icon="@mipmap/cultured_app_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+        <!-- Activities -->
         <activity android:name=".main.newsfeed.ui.NewsFeedActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -61,7 +62,13 @@
         </activity>
         <activity android:name=".main.preferences.PreferencesActivity" />
 
-        <!-- SyncAdapter Components -->
+        <activity android:name=".widget.ImageAppWidgetProviderConfigureActivity">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- SyncAdapter and ContentProvider Components -->
 
         <service android:name=".main.sync.ArticleAuthenticatorService">
             <intent-filter>
@@ -113,6 +120,8 @@
             android:permission="android.permission.BIND_JOB_SERVICE"
             android:process=":facetDownloadJobService" />
 
+        <!-- App Widget Components-->
+
         <receiver android:name=".widget.ImageAppWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -132,11 +141,6 @@
                 android:resource="@xml/image_app_widget_provider_info" />
         </receiver>
 
-        <activity android:name=".widget.ImageAppWidgetProviderConfigureActivity">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

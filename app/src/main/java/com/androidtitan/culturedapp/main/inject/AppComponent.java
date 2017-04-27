@@ -11,6 +11,7 @@ import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
 import com.androidtitan.culturedapp.main.trending.TrendingPresenter;
 import com.androidtitan.culturedapp.main.trending.ui.TrendingActivity;
+import com.androidtitan.culturedapp.widget.ImageAppWidgetProvider;
 
 import javax.inject.Singleton;
 
@@ -38,4 +39,5 @@ public interface AppComponent {
     void inject(TopArticlePresenter topArticlePresenter);
     void inject(TrendingPresenter trendingPresenter);
 
+    void inject(ImageAppWidgetProvider appWidgetProvider);
 }

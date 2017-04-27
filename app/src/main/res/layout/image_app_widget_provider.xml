@@ -2,7 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#09C"
-    android:padding="@dimen/widget_margin">
+    android:padding="@dimen/default_padding">
 
         <ImageView
             android:id="@+id/articleImageView"
@@ -13,66 +13,24 @@
             android:transitionName="@string/transition_news_image" />
 
         <TextView
-            android:id="@+id/facetTitleTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentTop="true"
-            android:padding="12dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
-
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/gradientRelativeLayout"
+            android:id="@+id/titleTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:theme="@style/NewsHeaderStyle">
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:textColor="@android:color/white"
+            android:gravity="right"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Widget Title!"/>
 
-            <TextView
-                android:id="@+id/titleTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/abstractTextView"
-                android:layout_alignParentStart="true"
-                android:gravity="bottom"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/abstractTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/moreDetailLinearLayout"
-                android:padding="8dp" />
-
-            <LinearLayout
-                android:id="@+id/moreDetailLinearLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:orientation="horizontal"
-                android:padding="8dp"
-                android:weightSum="2">
-
-                <TextView
-                    android:id="@+id/dateTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|start" />
-
-                <TextView
-                    android:id="@+id/sectionTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="end|center_vertical" />
-
-            </LinearLayout>
-        </RelativeLayout>
+         <TextView
+             android:id="@+id/facetTitleTextView"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_alignParentEnd="true"
+             android:layout_above="@+id/titleTextView"
+             android:textColor="@android:color/white"
+             android:paddingBottom="@dimen/defaultt"
+             android:text="Widget Facet!"/>
 
 </RelativeLayout>
