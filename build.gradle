@@ -13,7 +13,7 @@ buildscript {
     }
 
     ext {
-        supportLibraryVersion = '24.2.0'
+        supportLibraryVersion = '24.0.0'
     }
 }
 

@@ -30,7 +30,7 @@ import javax.inject.Inject;
  * Implementation of App Widget functionality.
  * App Widget Configuration implemented in {@link ImageAppWidgetProviderConfigureActivity ImageAppWidgetProviderConfigureActivity}
  */
-public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArticleMvp.View{
+public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArticleMvp.View {
     private final static String TAG = ImageAppWidgetProvider.class.getCanonicalName();
 
     @Inject
@@ -44,15 +44,20 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
     private TextView titleTextView;
     private TextView facetTextView;
 
+    private Context context;
+    private AppWidgetManager appWidgetManager;
+    private int[] appWidgetIds;
+
     @Override
     public void onEnabled(Context context) { //think of this as your onCreate()
         Log.e(TAG, "onEnabled()");
 
         CulturedApp.getAppComponent().inject(this);
+        this.context = context;
+
         presenter.bindView(this);
 
         presenter.loadArticles();
-        articleBitmap = fetchImage(context, providerTopArticle.getMultimedia().get(0).getUrl());
     }
 
     @Override
@@ -64,11 +69,14 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.e(TAG, "onUpdate()");
 
+        this.appWidgetManager = appWidgetManager;
+        this.appWidgetIds = appWidgetIds;
+
         // Pull data for the top article from our Content Provider
 
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
-           updateAppWidget(context, appWidgetManager, appWidgetId);
+            updateAppWidget(context, appWidgetManager, appWidgetId);
         }
     }
 
@@ -77,6 +85,7 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
         Log.e(TAG, "onDeleted()");
         //Null out all that we have used
         presenter.unbindView();
+        this.context = null;
 
         // When the user deletes the widget, delete the preference associated with it.
         for (int appWidgetId : appWidgetIds) {
@@ -93,7 +102,9 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
 
     public void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
-
+        if (providerTopArticle == null) {
+            return;
+        }
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.image_app_widget_provider);
@@ -108,32 +119,45 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
 
     /**
      * An instance of Glide is spun up and fetches the image formatted as a bitmap
+     *
      * @param url Multimedium url
      * @return Bitmap associated with Article formatted by Glide
      */
     private Bitmap fetchImage(Context context, String url) {
-        try {
-            Bitmap theBitmap = Glide.
-                    with(context).
-                    load(url).
-                    asBitmap().
-                    into(110, 180)
-                    .get();
-            return theBitmap;
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
+        final Bitmap[] theBitmap = new Bitmap[1];
+
+        new Thread(() -> {
+            try {
+                theBitmap[0] = Glide.
+                        with(context).
+                        load(url).
+                        asBitmap().
+                        into(110, 180)
+                        .get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        });
+        return theBitmap[0];
     }
 
     @Override
     public void updateArticles(List<Article> articleList) {
 
-        if(articleList.size() > 0) {
-            providerTopArticle = articleList.get(0);
+        Log.e(TAG, "updateArticles(List<Article>)");
+
+        if (articleList.size() > 0) {
+            for (Article article : articleList) {
+                if (article.getMultimedia().size() > 0) {
+                    providerTopArticle = article;
+                }
+            }
         }
+
+        articleBitmap = fetchImage(context, providerTopArticle.getMultimedia().get(0).getUrl());
+        this.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
     @Override
