@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.CacheDockingStation;
 import com.androidtitan.culturedapp.main.CulturedApp;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleMvp;
 import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
@@ -25,6 +27,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
+
+import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
 
 /**
  * Implementation of App Widget functionality.
@@ -48,6 +52,8 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
     private AppWidgetManager appWidgetManager;
     private int[] appWidgetIds;
 
+    private CacheDockingStation<String, String, Bitmap> cacheDockingStation;
+
     @Override
     public void onEnabled(Context context) { //think of this as your onCreate()
         Log.e(TAG, "onEnabled()");
@@ -57,7 +63,7 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
 
         presenter.bindView(this);
 
-        presenter.loadArticles();
+        getCachedArticle();
     }
 
     @Override
@@ -98,6 +104,7 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
         Log.e(TAG, "onDisabled()");
 
         presenter.unbindView();
+        cacheDockingStation = null;
     }
 
     public void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
@@ -146,7 +153,7 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
     @Override
     public void updateArticles(List<Article> articleList) {
 
-        Log.e(TAG, "updateArticles(List<Article>)");
+        /*Log.e(TAG, "updateArticles(List<Article>)");
 
         if (articleList.size() > 0) {
             for (Article article : articleList) {
@@ -157,7 +164,7 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
         }
 
         articleBitmap = fetchImage(context, providerTopArticle.getMultimedia().get(0).getUrl());
-        this.onUpdate(context, appWidgetManager, appWidgetIds);
+        this.onUpdate(context, appWidgetManager, appWidgetIds);*/
     }
 
     @Override
@@ -173,6 +180,17 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
     @Override
     public void displayDataEmpty() {
 
+    }
+
+    public void getCachedArticle() {
+        SharedPreferences preferences = context.getSharedPreferences(CULTURED_PREFERENCES, Context.MODE_PRIVATE);
+        cacheDockingStation = new CacheDockingStation(context, CacheDockingStation.BITMAP_STATION_SIZE.PLANETARY);
+
+        String articleTitle = preferences.getString(CacheDockingStation.TOP_ARTICLE_TITLE_CACHE, "");
+        String articleFacet = preferences.getString(CacheDockingStation.TOP_ARTICLE_FACET_CACHE, "");
+        Bitmap articleBitmap = cacheDockingStation.getBitmapFromMemCache(CacheDockingStation.TOP_ARTICLE_BITMAP_CACHE);
+
+        this.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 }
 

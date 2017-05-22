@@ -5,13 +5,21 @@ package com.androidtitan.culturedapp.common;
  */
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.util.LruCache;
+
+import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
 
 /**
  * Class used to docking, loading, and departing of caches on external or disk storage
  */
-public class CacheDockingStation<K, J> {
+public class CacheDockingStation<K, J, L> {
+    private static final String TAG = CacheDockingStation.class.getCanonicalName();
+
+    public static final String TOP_ARTICLE_TITLE_CACHE = "cachedockingstation.toparticletitlecache";
+    public static final String TOP_ARTICLE_FACET_CACHE = "cachedockingstation.toparticlefacetcache";
+    public static final String TOP_ARTICLE_BITMAP_CACHE = "cachedockingstation.toparticlebitmapcache";
 
     public enum BITMAP_STATION_SIZE {
         PLANETARY,
@@ -21,9 +29,12 @@ public class CacheDockingStation<K, J> {
 
     private Context context;
     private LruCache<String, Bitmap> bitmapLruCache;
+    private SharedPreferences preferences;
 
-    private CacheDockingStation(Context context, BITMAP_STATION_SIZE size) {
+    public CacheDockingStation(Context context, BITMAP_STATION_SIZE size) {
         this.context = context;
+
+        preferences = context.getSharedPreferences(CULTURED_PREFERENCES, Context.MODE_PRIVATE);
 
         switch (size) {
             case PLANETARY:
@@ -59,6 +70,18 @@ public class CacheDockingStation<K, J> {
         };
     }
 
+    public void cacheTopArticleBasics(K title, J widgetFacet, L bitmap) {
+
+        SharedPreferences.Editor editor = preferences.edit();
+
+        editor.putString(TOP_ARTICLE_TITLE_CACHE, (String) title);
+        editor.putString(TOP_ARTICLE_FACET_CACHE, (String) widgetFacet);
+        editor.apply();
+
+        addBitmapToMemoryCache(
+                CacheDockingStation.TOP_ARTICLE_BITMAP_CACHE, (Bitmap) bitmap);
+    }
+
     public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
         if (getBitmapFromMemCache(key) == null) {
             bitmapLruCache.put(key, bitmap);
@@ -83,5 +106,6 @@ public class CacheDockingStation<K, J> {
             task.execute(resId);
             */
         }
+        return null;
     }
 }
