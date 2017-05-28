@@ -11,7 +11,6 @@ import android.content.Intent;
 
 import com.androidtitan.culturedapp.main.inject.AppComponent;
 import com.androidtitan.culturedapp.main.inject.AppModule;
-import com.androidtitan.culturedapp.main.inject.DaggerAppComponent;
 import com.androidtitan.culturedapp.main.web.services.FacetDownloadJobService;
 import com.androidtitan.culturedapp.main.web.services.FacetDeleteService;
 
