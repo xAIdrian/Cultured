@@ -1,42 +1,53 @@
 package com.androidtitan.culturedapp.common.structure;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
+
 
 /**
  * Base class that implements the MainPresenter interface and provides a base implementation for
- * bindView() and unbindView(). It also handles keeping a reference to the mvpView that
+ * subscribe() and unsubscribe(). It also handles keeping a reference to the mvpView that
  * can be accessed from the children classes by calling getMvpView().
  */
-public class BasePresenter<T extends MvpView> implements MvpPresenter<T> {
+public abstract class BasePresenter<V> implements MvpPresenter<V> {
 
-    private T mMvpView;
+    private V mMvpView;
 
-    // Methods tied to the View lifecycle
+    /**
+     * Lifecycle methods
+     */
 
-    @Override
-    public void onCreate(@Nullable Bundle androidBundle) {
-
+    @UiThread
+    public void onCreate(){
     }
 
-    @Override
-    public void onSavedInstanceState(@NonNull Bundle androidBundle) {
-
+    @UiThread
+    public void onResume() {
     }
 
-    @Override
+    @UiThread
+    public void onPause() {
+    }
+
+    @UiThread
+    public void onStop() {
+    }
+
+    @UiThread
+    public void onStart() {
+    }
+
+    @UiThread
     public void onDestroy() {
-
     }
 
     @Override
-    public void bindView(T mvpView) {
+    public void subscribe(@NonNull V mvpView) {
         mMvpView = mvpView;
     }
 
     @Override
-    public void unbindView() {
+    public void unsubscribe(@NonNull V view) {
         mMvpView = null;
     }
 
@@ -48,7 +59,7 @@ public class BasePresenter<T extends MvpView> implements MvpPresenter<T> {
         return mMvpView != null;
     }
 
-    public T getMvpView() {
+    public V getMvpView() {
         return mMvpView;
     }
 
@@ -58,7 +69,7 @@ public class BasePresenter<T extends MvpView> implements MvpPresenter<T> {
 
     public static class MvpViewNotAttachedException extends RuntimeException {
         public MvpViewNotAttachedException() {
-            super("Please call MainPresenter.bindView(MvpView) before" +
+            super("Please call MainPresenter.subscribe(MvpView) before" +
                     " requesting data to the MainPresenter");
         }
     }

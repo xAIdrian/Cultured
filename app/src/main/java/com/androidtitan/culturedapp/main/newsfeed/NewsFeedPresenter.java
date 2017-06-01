@@ -4,14 +4,11 @@ import android.content.Context;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.common.structure.BasePresenter;
-import com.androidtitan.culturedapp.main.CulturedApp;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
 
 
 /**
@@ -23,14 +20,12 @@ public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implement
 
     private Context context;
 
-    @Inject
     NewsFeedProvider newsFeedProvider;
     
     //todo:we are going to make this switch to a live Feed Version
     public NewsFeedPresenter(Context context) {
         this.context = context;
-
-        CulturedApp.getAppComponent().inject(this);
+        this.newsFeedProvider = new NewsFeedProvider(context);
     }
 
 

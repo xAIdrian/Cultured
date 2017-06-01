@@ -1,22 +1,14 @@
 package com.androidtitan.culturedapp.common.structure;
 
-import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 /**
  * Every presenter in the app must either implement this interface or extend BasePresenter
  * indicating the MvpView type that wants to be attached with.
  */
-public interface MvpPresenter<V extends MvpView> {
+public interface MvpPresenter<V> {
 
-    void onCreate(@Nullable Bundle androidBundle);
+    void subscribe(@NonNull V mvpView);
 
-    void onSavedInstanceState(@NonNull Bundle androidBundle);
-
-    void onDestroy();
-
-    void bindView(V mvpView);
-
-    void unbindView();
+    void unsubscribe(@NonNull V view);
 }

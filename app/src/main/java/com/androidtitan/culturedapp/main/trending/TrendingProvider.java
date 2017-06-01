@@ -6,7 +6,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.util.Log;
 
-import com.androidtitan.culturedapp.common.Constants;
 import com.androidtitan.culturedapp.common.FacetGenerator;
 import com.androidtitan.culturedapp.main.provider.LoaderHelper;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
@@ -14,8 +13,6 @@ import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 
 import java.util.HashMap;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import static com.androidtitan.culturedapp.common.Constants.ARTICLE_LOADER_ID;
 import static com.androidtitan.culturedapp.common.Constants.TOP_ARTICLE_FACET_LOADER_ID;
@@ -47,8 +44,6 @@ public class TrendingProvider implements TrendingMvp.Provider, Loader.OnLoadComp
 
     private LoaderHelper loaderHelepr;
 
-
-    @Inject
     public TrendingProvider(Context context) {
         this.context = context;
 

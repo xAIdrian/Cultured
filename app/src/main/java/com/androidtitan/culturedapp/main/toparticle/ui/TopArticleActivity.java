@@ -9,11 +9,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.structure.BaseActivity;
+import com.androidtitan.culturedapp.common.structure.MvpActivity;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleAdapter;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleMvp;
 import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
@@ -22,15 +21,12 @@ import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class TopArticleActivity extends BaseActivity implements TopArticleMvp.View {
+public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArticleMvp.View> implements TopArticleMvp.View {
     private final String TAG = getClass().getSimpleName();
 
-    @Inject
     TopArticlePresenter presenter;
 
     @Bind(R.id.topArticleRecyclerView)
@@ -52,9 +48,8 @@ public class TopArticleActivity extends BaseActivity implements TopArticleMvp.Vi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.top_article_activity);
 
-        super.getAppComponent().inject(this);
+        presenter = new TopArticlePresenter(this);
         ButterKnife.bind(this);
-        presenter.bindView(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -96,9 +91,13 @@ public class TopArticleActivity extends BaseActivity implements TopArticleMvp.Vi
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.unbindView();
+    public TopArticlePresenter getPresenter() {
+        return null;
+    }
+
+    @Override
+    public TopArticleMvp.View getMvpView() {
+        return null;
     }
 
     @Override

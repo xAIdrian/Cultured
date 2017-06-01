@@ -45,7 +45,7 @@ import android.widget.Toast;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.FileManager;
-import com.androidtitan.culturedapp.common.structure.BaseActivity;
+import com.androidtitan.culturedapp.common.structure.MvpActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
@@ -67,15 +67,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 
-public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, ErrorFragmentInterface,
+public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp.View> implements NewsFeedMvp.View, ErrorFragmentInterface,
         DevConsoleDialogFragment.DevConsoleCallback {
     private final String TAG = getClass().getSimpleName();
 
@@ -110,7 +108,6 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
     ErrorFragment errorFragment;
 
-    @Inject
     NewsFeedPresenter presenter;
 
     private Handler handler;
@@ -193,8 +190,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
         setContentView(R.layout.newsfeed_activity);
 
         ButterKnife.bind(this);
-        super.getAppComponent().inject(this);
-        presenter.bindView(this);
+        presenter = new NewsFeedPresenter(this);
 
         setupUserPreferences();
 
@@ -456,7 +452,17 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     }
 
     @Override
-    protected void onResume() {
+    public NewsFeedPresenter getPresenter() {
+        return null;
+    }
+
+    @Override
+    public NewsFeedMvp.View getMvpView() {
+        return null;
+    }
+
+    @Override
+    public void onResume() {
         super.onResume();
 
         setWelcomeText();
@@ -499,7 +505,7 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
     }
 
     @Override
-    protected void onStop() {
+    public void onStop() {
         super.onStop();
 
         if (isSyncingPeriodically) {
@@ -508,12 +514,6 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
 
             ContentResolver.removePeriodicSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.unbindView();
     }
 
     @Override
@@ -532,56 +532,6 @@ public class NewsFeedActivity extends BaseActivity implements NewsFeedMvp.View, 
                 startActivity(new Intent(this, TopArticleActivity.class));
 
                 break;
-
-            /*case R.id.menu_item_trending:
-
-                //synthetically generate the backstack (TaskStack) when using deep linking
-                Intent tempTrendingIntent = new Intent(this, TrendingActivity.class);
-
-                PendingIntent pendingIntent =
-                        TaskStackBuilder.create(this)
-                                .addNextIntentWithParentStack(tempTrendingIntent)           // add all of DetailsActivity's parents to the stack
-                                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);  // followed by DetailsActivity itself
-
-                try {
-                    pendingIntent.send();
-                } catch (PendingIntent.CanceledException e) {
-                    e.printStackTrace();
-                }
-
-                break;*/
-
-            /*case R.id.menu_item_facets:
-
-                Cursor articleCursor = getContentResolver().query(
-                        DatabaseContract.ArticleTable.CONTENT_URI, null, null, null, null
-                );
-                ArticleCursorWrapper wrapper = new ArticleCursorWrapper(articleCursor);
-                wrapper.moveToFirst();
-
-                Log.e(TAG, "retrieving ARTICLES from Content Provider...");
-                while(!wrapper.isAfterLast()) {
-
-                    Log.d(TAG, wrapper.getArticle().getTitle());
-
-                    wrapper.moveToNext();
-                }
-
-                Cursor mediaCursor = getContentResolver().query(
-                        DatabaseContract.MediaTable.CONTENT_URI, null, null, null, null
-                );
-                MultimediumCursorWrapper mwrapper = new MultimediumCursorWrapper(mediaCursor);
-                mwrapper.moveToFirst();
-
-                Log.e(TAG, "retrieving MEDIA from Content Provider...");
-                while(!mwrapper.isAfterLast()) {
-
-                    Log.d(TAG, "**media:" + mwrapper.getMultimedium().getUrl());
-
-                    mwrapper.moveToNext();
-                }
-
-                break;*/
 
             default:
                 throw new IllegalArgumentException("Invalid options item: " + item.getItemId());

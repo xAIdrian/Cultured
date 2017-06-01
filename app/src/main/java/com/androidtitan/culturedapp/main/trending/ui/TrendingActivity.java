@@ -1,30 +1,22 @@
 package com.androidtitan.culturedapp.main.trending.ui;
 
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.structure.BaseActivity;
-import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
+import com.androidtitan.culturedapp.common.structure.MvpActivity;
 import com.androidtitan.culturedapp.main.trending.TrendingMvp;
 import com.androidtitan.culturedapp.main.trending.TrendingPresenter;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 
-import javax.inject.Inject;
+import java.util.List;
 
-import butterknife.Bind;
-import butterknife.ButterKnife;
-
-public class TrendingActivity extends BaseActivity implements TrendingGraphFragment.TrendingFragmentInterface {
+public class TrendingActivity extends MvpActivity<TrendingPresenter, TrendingMvp.View> implements TrendingMvp.View, TrendingGraphFragment.TrendingFragmentInterface {
     private final String TAG = getClass().getSimpleName();
 
-    @Inject
     TrendingPresenter presenter;
 
     @Override
@@ -32,7 +24,7 @@ public class TrendingActivity extends BaseActivity implements TrendingGraphFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.trending_activity);
 
-        super.getAppComponent().inject(this);
+        presenter = new TrendingPresenter(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -41,8 +33,8 @@ public class TrendingActivity extends BaseActivity implements TrendingGraphFragm
 
         TrendingGraphFragment tgf = new TrendingGraphFragment();
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.fragment_container, tgf).addToBackStack(null).commit();
+        //FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        //ft.add(R.id.fragment_container, tgf).addToBackStack(null).commit();
     }
 
     @Override
@@ -60,5 +52,50 @@ public class TrendingActivity extends BaseActivity implements TrendingGraphFragm
     @Override
     public TrendingPresenter getTrendingPresenter() {
         return presenter;
+    }
+
+    @Override
+    public TrendingPresenter getPresenter() {
+        return presenter;
+    }
+
+    @Override
+    public TrendingMvp.View getMvpView() {
+        return this;
+    }
+
+    @Override
+    public void initializeGeoFacetSpark(List<Facet> geoFacetList) {
+
+    }
+
+    @Override
+    public void initializeOrgFacetSpark(List<Facet> orgFacetList) {
+
+    }
+
+    @Override
+    public void initializeDesFacetSpark(List<Facet> desFacetList) {
+
+    }
+
+    @Override
+    public void initializePerFacetSpark(List<Facet> perFacetList) {
+
+    }
+
+    @Override
+    public void setLoading() {
+
+    }
+
+    @Override
+    public void displayDataNotAvailable() {
+
+    }
+
+    @Override
+    public void displayDataEmpty() {
+
     }
 }

@@ -16,27 +16,25 @@ public class ScreenUtils {
     private static int screenWidth = 0;
     private static int screenHeight = 0;
 
-    public static float getDensity(){
-        float scale = CulturedApp.getAppComponent().getApplicationContext()
-                .getResources().getDisplayMetrics().density;
+    public static float getDensity(Context context){
+        float scale = context.getResources().getDisplayMetrics().density;
         return scale;
     }
 
-    public static int convertDiptoPix(int dip){
-        float scale = getDensity();
+    public static int convertDiptoPix(Context context, int dip){
+        float scale = getDensity(context);
         return (int) (dip * scale + 0.5f);
     }
 
-    public static int convertPixtoDip(int pixel){
-        float scale = getDensity();
+    public static int convertPixtoDip(Context context, int pixel){
+        float scale = getDensity(context);
         return (int)((pixel - 0.5f)/scale);
     }
 
-    public static int getScreenHeight() {
+    public static int getScreenHeight(Context context) {
         if(screenHeight == 0) {
 
-            WindowManager wm = (WindowManager) CulturedApp.getAppComponent().getApplicationContext()
-                    .getSystemService(Context.WINDOW_SERVICE);
+            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
@@ -45,11 +43,10 @@ public class ScreenUtils {
         return screenHeight;
     }
 
-    public static int getScreenWidth() {
+    public static int getScreenWidth(Context context) {
         if(screenWidth == 0) {
 
-            WindowManager wm = (WindowManager) CulturedApp.getAppComponent().getApplicationContext()
-                    .getSystemService(Context.WINDOW_SERVICE);
+            WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
             Point size = new Point();
             display.getSize(size);
