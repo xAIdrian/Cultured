@@ -15,12 +15,9 @@ import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import javax.inject.Inject;
 
 import static com.androidtitan.culturedapp.common.Constants.ARTICLE_LOADER_ID;
 import static com.androidtitan.culturedapp.common.Constants.TOP_ARTICLE_FACET_LOADER_ID;
@@ -63,7 +60,6 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
     CursorLoader mediaCursorLoader;
     CursorLoader facetCursorLoader;
 
-    @Inject
     public TopArticleProvider(Context context) {
         this.context = context;
 

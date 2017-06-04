@@ -33,8 +33,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -63,7 +61,6 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private int lastAnimatedPosition = -1;
     private boolean shouldShowAboutCard = false;
 
-    @Inject
     public NewsFeedAdapter(Context context, List<Article> adapterTrackList) {
 
         this.context = context;
@@ -109,7 +106,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             lastAnimatedPosition = position;
 
-            view.setTranslationY(ScreenUtils.getScreenHeight());
+            view.setTranslationY(ScreenUtils.getScreenHeight(context));
             view.animate()
                     .translationY(0)
                     .setInterpolator(new DecelerateInterpolator(3.f))

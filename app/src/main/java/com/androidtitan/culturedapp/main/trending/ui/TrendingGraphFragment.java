@@ -2,12 +2,13 @@ package com.androidtitan.culturedapp.main.trending.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.structure.BaseFragment;
+import com.androidtitan.culturedapp.common.structure.MvpFragment;
 import com.androidtitan.culturedapp.main.trending.TrendingMvp;
 import com.androidtitan.culturedapp.main.trending.TrendingPresenter;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
@@ -17,7 +18,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 
 
-public class TrendingGraphFragment extends BaseFragment implements TrendingMvp.View{
+public class TrendingGraphFragment extends MvpFragment<TrendingPresenter, TrendingMvp.View> implements TrendingMvp.View{
     private final String TAG = getClass().getSimpleName();
 
     private TrendingFragmentInterface fragmentInterface;
@@ -44,7 +45,7 @@ public class TrendingGraphFragment extends BaseFragment implements TrendingMvp.V
         }
 
         presenter = fragmentInterface.getTrendingPresenter();
-
+        presenter.subscribe(this);
         presenter.loadInitialFacets();
     }
 
@@ -75,6 +76,12 @@ public class TrendingGraphFragment extends BaseFragment implements TrendingMvp.V
     public void onDetach() {
         super.onDetach();
         fragmentInterface = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.unsubscribe(this);
     }
 
     @Override
@@ -115,6 +122,16 @@ public class TrendingGraphFragment extends BaseFragment implements TrendingMvp.V
     @Override
     public void displayDataEmpty() {
 
+    }
+
+    @Override
+    public TrendingPresenter getPresenter() {
+        return presenter;
+    }
+
+    @Override
+    public TrendingMvp.View getMvpView() {
+        return this;
     }
 
     public interface TrendingFragmentInterface {

@@ -1,10 +1,8 @@
 package com.androidtitan.culturedapp.main.trending;
 
-import com.androidtitan.culturedapp.common.structure.MvpView;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,7 +30,7 @@ public interface TrendingMvp {
         void loadInitialFacets();
     }
 
-    interface View extends MvpView {
+    interface View {
 
         void initializeGeoFacetSpark(List<Facet> geoFacetList);
         void initializeOrgFacetSpark(List<Facet> orgFacetList);

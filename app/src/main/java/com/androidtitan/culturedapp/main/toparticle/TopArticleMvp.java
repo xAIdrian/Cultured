@@ -1,11 +1,5 @@
 package com.androidtitan.culturedapp.main.toparticle;
 
-import android.app.LoaderManager;
-import android.content.Loader;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-
-import com.androidtitan.culturedapp.common.structure.MvpView;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 
 import java.util.ArrayList;
@@ -30,18 +24,13 @@ public interface TopArticleMvp {
         }
 
     }
-    /*
-    if(getMvpView() != null) {
-                    sendDownArticlesToView(articles);
-                }
-     */
 
     interface Presenter {
 
         void loadArticles();
     }
 
-    interface View extends MvpView {
+    interface View {
 
         void updateArticles(List<Article> articleList);
 

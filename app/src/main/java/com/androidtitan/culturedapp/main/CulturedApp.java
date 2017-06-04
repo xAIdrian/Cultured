@@ -9,9 +9,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
-import com.androidtitan.culturedapp.main.inject.AppComponent;
-import com.androidtitan.culturedapp.main.inject.AppModule;
-import com.androidtitan.culturedapp.main.inject.DaggerAppComponent;
 import com.androidtitan.culturedapp.main.web.services.FacetDownloadJobService;
 import com.androidtitan.culturedapp.main.web.services.FacetDeleteService;
 
@@ -26,24 +23,15 @@ import static com.androidtitan.culturedapp.common.Constants.FACET_JOB_SCHEDULER;
  */
 public class CulturedApp extends Application {
 
-    private static AppComponent appComponent;
     private static Context context;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-       appComponent = DaggerAppComponent.builder()
-                .appModule(new AppModule(this))
-                .build();
-
         context = getBaseContext();
 
         launchTrendingFacetServices();
-    }
-
-    public static AppComponent getAppComponent(){
-        return appComponent;
     }
 
     public static Context getAppContext() {

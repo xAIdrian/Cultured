@@ -1,34 +1,12 @@
 package com.androidtitan.culturedapp.main.toparticle;
 
 import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.common.structure.BasePresenter;
-import com.androidtitan.culturedapp.main.CulturedApp;
-import com.androidtitan.culturedapp.main.provider.wrappers.FacetCursorWrapper;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.newyorktimes.Facet;
-import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
-import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
-import com.androidtitan.culturedapp.main.provider.wrappers.ArticleCursorWrapper;
-import com.androidtitan.culturedapp.main.provider.wrappers.MultimediumCursorWrapper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import static com.androidtitan.culturedapp.common.Constants.ARTICLE_LOADER_ID;
-import static com.androidtitan.culturedapp.common.Constants.TOP_ARTICLE_MEDIA_LOADER_ID;
-import static com.androidtitan.culturedapp.common.Constants.TOP_ARTICLE_FACET_LOADER_ID;
-import static com.androidtitan.culturedapp.model.newyorktimes.FacetType.DES;
-import static com.androidtitan.culturedapp.model.newyorktimes.FacetType.GEO;
-import static com.androidtitan.culturedapp.model.newyorktimes.FacetType.ORG;
-import static com.androidtitan.culturedapp.model.newyorktimes.FacetType.PER;
 
 /**
  * Created by amohnacs on 9/19/16.
@@ -43,13 +21,11 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
 
     private Context context;
 
-    @Inject
     TopArticleProvider topArticleProvider;
 
     public TopArticlePresenter(Context context) {
         this.context = context;
-
-        CulturedApp.getAppComponent().inject(this);
+        this.topArticleProvider = new TopArticleProvider(context);
 
     }
 

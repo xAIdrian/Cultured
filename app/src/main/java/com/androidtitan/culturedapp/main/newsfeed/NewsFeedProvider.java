@@ -14,16 +14,12 @@ import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import rx.*;
 
 /**
  * Created by amohnacs on 8/29/16.
  */
 
-@Singleton
 public class NewsFeedProvider implements NewsFeedMvp.Provider {
     private final String TAG = getClass().getSimpleName();
 
@@ -32,7 +28,6 @@ public class NewsFeedProvider implements NewsFeedMvp.Provider {
 
     private ArrayList<Article> fetchArticleList = new ArrayList<>();
 
-    @Inject
     public NewsFeedProvider(Context context) {
         this.context = context;
         newsService = ServiceGenerator.createService(NewsEndpoint.class);
