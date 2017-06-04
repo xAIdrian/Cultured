@@ -179,18 +179,16 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        presenter = new NewsFeedPresenter(this);
         initializeTranstionsAndAnimations();
         //initialize dummy account
         account = createSyncAccount(this);
-
         sharedPreferencesSetup();
         initFCM();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.newsfeed_activity);
-
         ButterKnife.bind(this);
-        presenter = new NewsFeedPresenter(this);
 
         setupUserPreferences();
 
@@ -453,12 +451,12 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     @Override
     public NewsFeedPresenter getPresenter() {
-        return null;
+        return presenter;
     }
 
     @Override
     public NewsFeedMvp.View getMvpView() {
-        return null;
+        return this;
     }
 
     @Override

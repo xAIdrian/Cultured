@@ -67,7 +67,9 @@ public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implement
 
     @Override
     public void onCompleted() {
-        getMvpView().onLoadComplete();
+        if(isViewAttached()) {
+            getMvpView().onLoadComplete();
+        }
     }
 
     @Override

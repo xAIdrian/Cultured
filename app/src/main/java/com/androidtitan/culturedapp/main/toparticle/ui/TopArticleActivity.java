@@ -92,12 +92,12 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
 
     @Override
     public TopArticlePresenter getPresenter() {
-        return null;
+        return presenter;
     }
 
     @Override
     public TopArticleMvp.View getMvpView() {
-        return null;
+        return this;
     }
 
     @Override

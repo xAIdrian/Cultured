@@ -16,24 +16,23 @@ public abstract class MvpActivity <P extends BasePresenter<V>, V> extends AppCom
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         if(getPresenter() != null) {
             getPresenter().subscribe(getMvpView());
             getPresenter().onCreate();
         }
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onResume() {
-        super.onResume();
         if(getPresenter() != null) {
             getPresenter().onResume();
         }
+        super.onResume();
     }
 
     @Override
     public void onPause() {
-        super.onPause();
         if(getPresenter() != null) {
             getPresenter().onPause();
         }
@@ -42,19 +41,17 @@ public abstract class MvpActivity <P extends BasePresenter<V>, V> extends AppCom
 
     @Override
     public void onStop() {
-        super.onStop();
         if(getPresenter() != null) {
             getPresenter().onStop();
-            getPresenter().unsubscribe(getMvpView());
         }
         super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         if(getPresenter() != null) {
             getPresenter().onDestroy();
+            getPresenter().unsubscribe(getMvpView());
         }
         super.onDestroy();
     }

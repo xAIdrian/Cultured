@@ -63,13 +63,16 @@ public abstract class BasePresenter<V> implements MvpPresenter<V> {
         return mMvpView;
     }
 
+    /**
+     * If the view is not attached throw a custom error
+     */
     public void checkViewAttached() {
         if (!isViewAttached()) throw new MvpViewNotAttachedException();
     }
 
     public static class MvpViewNotAttachedException extends RuntimeException {
         public MvpViewNotAttachedException() {
-            super("Please call MainPresenter.subscribe(MvpView) before" +
+            super("Please call your presenter's .subscribe(MvpView) before" +
                     " requesting data to the MainPresenter");
         }
     }
