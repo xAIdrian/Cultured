@@ -4,6 +4,7 @@ package com.androidtitan.culturedapp.model.newyorktimes;
  * Created by amohnacs on 3/21/16.
  */
 import android.content.ContentValues;
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -95,6 +96,8 @@ public class Article implements Parcelable {
     private String singleGeoFacet;
     private Multimedium singleMedia;
 
+    private Bitmap imageBitmap;
+
     public Article() {
 
     }
@@ -170,6 +173,14 @@ public class Article implements Parcelable {
         in.readTypedList(multimedia, Multimedium.CREATOR);
         blogName = in.readString();
 
+    }
+
+    public Article(String articleTitle, String articleFacet, Bitmap articleBitmap) {
+        this.title = articleTitle;
+        ArrayList<Facet> temp = new ArrayList<>();
+        temp.add(new Facet(articleFacet));
+        this.geoFacet = temp;
+        this.imageBitmap = articleBitmap;
     }
 
 
@@ -589,6 +600,13 @@ public class Article implements Parcelable {
         this._abstract = _abstract;
     }
 
+    public Bitmap getImageBitmap() {
+        return imageBitmap;
+    }
+
+    public void setImageBitmap(Bitmap imageBitmap) {
+        this.imageBitmap = imageBitmap;
+    }
 
     /**
      * Describe the kinds of special objects contained in this Parcelable's
