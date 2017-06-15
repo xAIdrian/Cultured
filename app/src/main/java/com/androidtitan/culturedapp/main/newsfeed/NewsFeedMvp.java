@@ -18,6 +18,7 @@ public interface NewsFeedMvp {
         List<Article> fetchArticles(String section, int limit, CallbackListener listener);
         void fetchAdditionalArticles(String section, int limit, int offset, CallbackListener listener);
         void refreshForAdditionalArticlesToInsert(String section, List<Article> articlesList, CallbackListener listener);
+        void getTopArticlesFromCP(CallbackListener listener);
 
         interface CallbackListener {
             void appendArticleToAdapter(Article article);
@@ -26,6 +27,8 @@ public interface NewsFeedMvp {
 
             void responseFailed(ApiError error);
             void onCompleted();
+
+            void returnedTopArticles(List<Article> articles);
         }
     }
 
@@ -34,7 +37,7 @@ public interface NewsFeedMvp {
         List<Article> loadArticles(int limit);
         void loadOffsetArticles(int limit, int offset);
         void newsArticlesRefresh(List<Article> articles, int limit);
-
+        void checkTopArticlesPresent();
     }
 
     interface View {
@@ -48,6 +51,8 @@ public interface NewsFeedMvp {
         List<Article> getArticles();
 
         void displayError(String message, Map<String, Object> additionalProperties);
+
+        void doTopArticlesExist(boolean articlesExist);
     }
 
 }

@@ -34,7 +34,6 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
      */
     @Override
     public void loadArticles() {
-
         topArticleProvider.fetchArticles(this);
     }
 

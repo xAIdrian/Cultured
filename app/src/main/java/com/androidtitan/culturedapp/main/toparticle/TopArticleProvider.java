@@ -48,6 +48,7 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
     @NonNull
     private Context context;
 
+    //todo: this needs to changed to a WeakReference at some point
     private CallbackListener reservedCallback;
 
     private ArrayList<Article> articles = new ArrayList<>();
@@ -242,7 +243,6 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
     }
 
 
-    /*
     public void onDestroy() {
         // Stop the cursor loader
         if (articleCursorLoader != null) {
@@ -251,6 +251,6 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
             articleCursorLoader.stopLoading();
         }
     }
-     */
+
 
 }
