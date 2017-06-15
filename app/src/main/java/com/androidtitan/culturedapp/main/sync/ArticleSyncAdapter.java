@@ -7,11 +7,13 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.CacheDockingStation;
 import com.androidtitan.culturedapp.common.structure.RxHelper;
 import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
@@ -20,9 +22,11 @@ import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.NewsResponse;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -43,6 +47,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
     private final NewsEndpoint newsService;
     private ContentResolver contentResolver;
     private SharedPreferences preferences;
+    private CacheDockingStation<String, String, Bitmap> cacheDockingStation;
 
     int currentId;
 
@@ -54,6 +59,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
         contentResolver = context.getContentResolver();
         newsService = ServiceGenerator.createService(NewsEndpoint.class);
         preferences = context.getSharedPreferences(CULTURED_PREFERENCES, Context.MODE_PRIVATE);
+        cacheDockingStation = new CacheDockingStation(context, CacheDockingStation.BITMAP_STATION_SIZE.PLANETARY);
 
         currentId = 0;
 
@@ -134,6 +140,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
                         editor.apply();
 
                         insertArticleData(articles);
+                        cacheSingleArticle(articles.get(0));
                     }
                 });
 
@@ -196,5 +203,32 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
         context.getContentResolver().delete(DatabaseContract.MediaTable.CONTENT_URI, null, null);
         context.getContentResolver().delete(DatabaseContract.FacetTable.CONTENT_URI,
                 "story_id is not null", null);
+    }
+
+    /**
+     * Caches the "most recent" article
+     *
+     * @param article
+     */
+    private void cacheSingleArticle(Article article) {
+        //cache the most recent article for use quick access
+        if(article.getMultimedia().get(0) != null) {
+            Multimedium cachingMedia = article.getMultimedia().get(0);
+            try {
+                Bitmap bitmap = Glide.with(context)
+                        .load(cachingMedia.getUrl())
+                        .asBitmap()
+                        .into(cachingMedia.getWidth(), cachingMedia.getHeight())
+                        .get();
+                cacheDockingStation.cacheTopArticleBasics(article.getTitle(),
+                        article.getGeoFacet().get(0).getFacetText(), bitmap);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
+
+        }
     }
 }

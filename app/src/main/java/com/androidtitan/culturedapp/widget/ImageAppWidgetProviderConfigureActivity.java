@@ -14,6 +14,14 @@ import com.androidtitan.culturedapp.R;
 
 /**
  * The configuration screen for the {@link ImageAppWidgetProvider ImageAppWidgetProvider} AppWidget.
+ * <p>
+ * It is the responsibility of the configuration Activity to request an update from the
+ * AppWidgetManager when the App Widget is first created. However, onUpdate() will be called
+ * for subsequent updates—it is only skipped the first time.
+ * <p>
+ * When an App Widget uses a configuration Activity, it is the responsibility of the Activity to
+ * update the App Widget when configuration is complete. You can do so by requesting an update
+ * directly from the AppWidgetManager.
  */
 public class ImageAppWidgetProviderConfigureActivity extends Activity implements View.OnClickListener{
 
