@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -52,7 +51,6 @@ import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
 import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
-import com.androidtitan.culturedapp.main.provider.CulturedContentProvider;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
@@ -74,7 +72,6 @@ import butterknife.ButterKnife;
 
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
-import static com.androidtitan.culturedapp.main.provider.DatabaseContract.AUTHORITY;
 
 public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp.View> implements NewsFeedMvp.View, ErrorFragmentInterface,
         DevConsoleDialogFragment.DevConsoleCallback {
@@ -199,6 +196,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         articles = new ArrayList<>();
         bookMarkedArticles = fileManager.getInternalArticlesHashMap();
+        presenter.checkTopArticlesPresent();
 
         loadingTitleText.setVisibility(View.VISIBLE);
         loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
@@ -625,17 +623,14 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     }
 
+    // todo: this might be getting called too much onResume(). take a look at it when convenient
     @Override
     public void doTopArticlesExist(boolean articlesExist) {
         if(articlesExist) {
             //do nothing
         } else {
             //sync now
-            Bundle bundle = new Bundle();
-            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
-            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
-            bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
-            ContentResolver.requestSync(null, AUTHORITY, bundle);
+            getTopArticlesOnIntialLaunch();
         }
     }
 
@@ -873,6 +868,14 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         ContentResolver.addPeriodicSync(
             account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
         ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
+    }
+
+    private void getTopArticlesOnIntialLaunch() {
+        //todo: check to ensure that it is the first launch...we should have this in shared preferences
+        Bundle bundle = new Bundle();bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(null, DatabaseContract.AUTHORITY, bundle);
     }
 
 

@@ -27,8 +27,6 @@ public interface NewsFeedMvp {
 
             void responseFailed(ApiError error);
             void onCompleted();
-
-            void returnedTopArticles(List<Article> articles);
         }
     }
 

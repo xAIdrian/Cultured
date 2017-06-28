@@ -18,8 +18,7 @@ import java.util.List;
  * Created by amohnacs on 3/21/16.
  */
 public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implements NewsFeedMvp.Presenter,
-        TopArticleMvp.Provider.CallbackListener,
-        NewsFeedMvp.Provider.CallbackListener {
+        TopArticleMvp.Provider.CallbackListener, NewsFeedMvp.Provider.CallbackListener {
     private final String TAG = getClass().getSimpleName();
 
     private Context context;
@@ -63,17 +62,23 @@ public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implement
     //callback methods
     @Override
     public void appendArticleToAdapter(Article article) {
-        getMvpView().appendAdapterItem(article);
+        if (isViewAttached()) {
+            getMvpView().appendAdapterItem(article);
+        }
     }
 
     @Override
     public void insertArticleIntoAdapter(int index, Article article) {
-        getMvpView().insertAdapterItem(index, article);
+        if (isViewAttached()) {
+            getMvpView().insertAdapterItem(index, article);
+        }
     }
 
     @Override
     public void insertArticlesIntoAdapter(int index, ArrayList<Article> articles) {
-        getMvpView().insertAdapterItems(index, articles);
+        if (isViewAttached()) {
+            getMvpView().insertAdapterItems(index, articles);
+        }
     }
 
     @Override
@@ -84,21 +89,19 @@ public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implement
     }
 
     @Override
-    public void returnedTopArticles(List<Article> articles) {
-
-    }
-
-    @Override
     public void responseFailed(ApiError apiError) {
         Log.d(TAG, apiError.getMessage());
-        getMvpView().displayError(apiError.getMessage(), apiError.getAdditionalProperties());
+        if (isViewAttached()) {
+            getMvpView().displayError(apiError.getMessage(), apiError.getAdditionalProperties());
+        }
 
     }
 
     @Override
     public void onConstructionComplete(ArrayList<Article> articleArrayList) {
+        boolean doArticlesExist = !articleArrayList.isEmpty();
         if(isViewAttached()) {
-            getMvpView().doTopArticlesExist(!articleArrayList.isEmpty());
+            getMvpView().doTopArticlesExist(doArticlesExist);
         }
     }
 

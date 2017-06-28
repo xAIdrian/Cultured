@@ -39,7 +39,7 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
 
     @Override
     public void onDestroy() {
-
+        //no op
     }
 
     @Override
@@ -88,7 +88,9 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
     }
 
     /**
-     * We only want to work with Articles that have images to display
+     * Removes articles from the list of Articles that do not have {@link com.androidtitan.culturedapp.model.newyorktimes.Multimedium}
+     * objects associated with them
+     *
      * @param articleListToStrip
      * @return A list of articles that does not contain any articles without media
      */

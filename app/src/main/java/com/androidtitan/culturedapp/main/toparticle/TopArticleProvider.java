@@ -5,6 +5,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.androidtitan.culturedapp.main.provider.LoaderHelper;
 import com.androidtitan.culturedapp.main.provider.wrappers.ArticleCursorWrapper;
@@ -31,12 +32,10 @@ import static com.androidtitan.culturedapp.model.newyorktimes.FacetType.PER;
  * Created by amohnacs on 9/19/16.
  */
 
-/*
-    https://github.com/googlesamples/android-architecture/tree/todo-mvp-contentproviders
-
+/**
     Because we do not need to tie our Loader to the lifecycle of activities and fragments , which is why we use
     LoaderManager, we can interact directly with the Loader in the Provider.
-
+<p>
     The Provider will be created well before our activity before it is being manufactured by Dagger 2.
     We will store the list of Articles inside the provider and they are handed down to the presenter and activity
     when it is ready.
@@ -75,6 +74,8 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
         articleCursorLoader.startLoading();
         loaderHelper = new LoaderHelper();
     }
+
+
 
     @Override
     public void onLoadComplete(Loader<Cursor> loader, Cursor cursor) {
@@ -193,10 +194,15 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
                 article.setMultimedia(tempMultimedium);
             }
 
-            article.setDesFacet(facetMap.get(DES).get((int) article.getId()));
-            article.setPerFacet(facetMap.get(PER).get((int) article.getId()));
-            article.setOrgFacet(facetMap.get(ORG).get((int) article.getId()));
-            article.setGeoFacet(facetMap.get(GEO).get((int) article.getId()));
+            //todo: there is a better way to do this than try/catch we're breaking best practices
+            try {
+                article.setDesFacet(facetMap.get(DES).get((int) article.getId()));
+                article.setPerFacet(facetMap.get(PER).get((int) article.getId()));
+                article.setOrgFacet(facetMap.get(ORG).get((int) article.getId()));
+                article.setGeoFacet(facetMap.get(GEO).get((int) article.getId()));
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
 
         }
         return articles;
