@@ -30,7 +30,7 @@ public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implement
     public NewsFeedPresenter(Context context) {
         this.context = context;
         this.newsFeedProvider = new NewsFeedProvider(context);
-        this.topArticleProvider = new TopArticleProvider(context);
+        this.topArticleProvider = TopArticleProvider.getInstance(context);
     }
 
 

@@ -96,8 +96,6 @@ public class Article implements Parcelable {
     private String singleGeoFacet;
     private Multimedium singleMedia;
 
-    private Bitmap imageBitmap;
-
     public Article() {
 
     }
@@ -174,15 +172,6 @@ public class Article implements Parcelable {
         blogName = in.readString();
 
     }
-
-    public Article(String articleTitle, String articleFacet, Bitmap articleBitmap) {
-        this.title = articleTitle;
-        ArrayList<Facet> temp = new ArrayList<>();
-        temp.add(new Facet(articleFacet));
-        this.geoFacet = temp;
-        this.imageBitmap = articleBitmap;
-    }
-
 
     public ContentValues getArticleContentValues() {
 
@@ -598,14 +587,6 @@ public class Article implements Parcelable {
 
     public void set_abstract(String _abstract) {
         this._abstract = _abstract;
-    }
-
-    public Bitmap getImageBitmap() {
-        return imageBitmap;
-    }
-
-    public void setImageBitmap(Bitmap imageBitmap) {
-        this.imageBitmap = imageBitmap;
     }
 
     /**

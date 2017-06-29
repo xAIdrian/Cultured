@@ -1,36 +1,42 @@
 package com.androidtitan.culturedapp.widget;
 
-import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.CacheDockingStation;
+import com.androidtitan.culturedapp.main.CulturedApp;
+import com.androidtitan.culturedapp.main.toparticle.TopArticleMvp;
+import com.androidtitan.culturedapp.main.toparticle.TopArticleProvider;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 
-import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Implementation of App Widget functionality.
  * App Widget Configuration implemented in {@link ImageAppWidgetProviderConfigureActivity ImageAppWidgetProviderConfigureActivity}
  */
-public class ImageAppWidgetProvider extends AppWidgetProvider {
+public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArticleMvp.Provider.CallbackListener {
     private final static String TAG = ImageAppWidgetProvider.class.getCanonicalName();
 
     private Context context;
     private AppWidgetManager appWidgetManager;
     private int[] appWidgetIds;
 
-    private CacheDockingStation<String, String, Bitmap> cacheDockingStation;
+    private TopArticleProvider provider;
     private Article providerArticle;
+
+    SimpleTarget mediaGlideTarget;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -42,12 +48,15 @@ public class ImageAppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onEnabled(Context context) {
         this.context = context;
-        providerArticle = updateViewWithCache();
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Log.e(TAG, "onUpdate()");
+        provider = TopArticleProvider.getInstance(CulturedApp.getAppContext());
+        if(providerArticle == null) {
+            provider.fetchArticles(this);
+        }
 
         this.appWidgetManager = appWidgetManager;
         this.appWidgetIds = appWidgetIds;
@@ -55,7 +64,7 @@ public class ImageAppWidgetProvider extends AppWidgetProvider {
         if (appWidgetIds != null && appWidgetIds.length > 0) {
             // There may be multiple widgets active, so update all of them
             for (int appWidgetId : appWidgetIds) {
-                updateAppWidget(context, appWidgetManager, appWidgetId);
+                updateAppWidget(appWidgetId, providerArticle);
             }
         }
     }
@@ -76,38 +85,87 @@ public class ImageAppWidgetProvider extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    private Article updateViewWithCache() {
-        SharedPreferences preferences = context.getSharedPreferences(CULTURED_PREFERENCES, Context.MODE_PRIVATE);
-        cacheDockingStation = new CacheDockingStation(context, CacheDockingStation.BITMAP_STATION_SIZE.PLANETARY);
-
-        String articleTitle = preferences.getString(CacheDockingStation.TOP_ARTICLE_TITLE_CACHE, "");
-        String articleFacet = preferences.getString(CacheDockingStation.TOP_ARTICLE_FACET_CACHE, "");
-        Bitmap articleBitmap = cacheDockingStation.getBitmapFromMemCache(CacheDockingStation.TOP_ARTICLE_BITMAP_CACHE);
-
-        providerArticle = new Article(articleTitle, articleFacet, articleBitmap);
-
-        this.onUpdate(context, appWidgetManager, appWidgetIds);
-        return providerArticle;
-    }
-
-    private void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int appWidgetId) {
+    private void updateAppWidget(int appWidgetId, Article providerArticle) {
 
         if (providerArticle == null) {
             return;
         }
 
         // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.image_app_widget_provider);
-        //views.setTextViewText(R.id.appwidget_text, widgetText);
+        RemoteViews views = new RemoteViews(CulturedApp.getAppContext().getPackageName(), R.layout.image_app_widget_provider);
+
         views.setTextViewText(R.id.titleTextView, providerArticle.getTitle());
-        views.setTextViewText(R.id.facetTitleTextView, providerArticle.getGeoFacet().get(0).getFacetText());
-        views.setImageViewBitmap(R.id.articleImageView, providerArticle.getImageBitmap());
+        if (providerArticle.getGeoFacet() != null && providerArticle.getGeoFacet().size() > 0) {
+            views.setTextViewText(R.id.facetTitleTextView, providerArticle.getGeoFacet().get(0).getFacetText());
+        }
+
+        if (providerArticle.getMultimedia() != null && providerArticle.getMultimedia().size() > 0) {
+            Multimedium imageMedia = providerArticle.getMultimedia().get(0);
+
+            if(imageMedia != null) {
+
+                mediaGlideTarget = new SimpleTarget<Bitmap>(imageMedia.getWidth(), imageMedia.getHeight()) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        views.setImageViewBitmap(R.id.articleImageView, resource);
+                        appWidgetManager.updateAppWidget(appWidgetId, views); //todo: maybe we want to block the update until this process is finished
+                    }
+                };
+
+                Glide.with(CulturedApp.getAppContext())
+                        .load(imageMedia.getUrl())
+                        .asBitmap()
+                        .into(mediaGlideTarget);
+            }
+        }
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 
+    @Override
+    public void onConstructionComplete(ArrayList<Article> articleArrayList) {
 
+        if (articleArrayList.size() > 0) {
+            providerArticle = articleArrayList.get(3);
+            this.onUpdate(context, appWidgetManager, appWidgetIds);
+        }
+    }
+
+    @Override
+    public void cursorDataNotAvailable() {
+        //no-op
+    }
+
+    @Override
+    public void cursorDataEmpty() {
+        //no-op
+    }
+
+    /*
+    private void getArticleBitmap(Multimedium cachingMedia) {
+        final Bitmap[] bitmap = new Bitmap[1];
+
+        if(cachingMedia != null) {
+            AsyncTask.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        bitmap[0] = Glide.with(CulturedApp.getAppContext())
+                                .load(cachingMedia.getUrl())
+                                .asBitmap()
+                                .into(cachingMedia.getWidth(), cachingMedia.getHeight())
+                                .get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        return bitmap[0];
+    }
+    */
 }
 

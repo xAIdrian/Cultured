@@ -25,7 +25,7 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
 
     public TopArticlePresenter(Context context) {
         this.context = context;
-        this.topArticleProvider = new TopArticleProvider(context);
+        this.topArticleProvider = TopArticleProvider.getInstance(context);
 
     }
 

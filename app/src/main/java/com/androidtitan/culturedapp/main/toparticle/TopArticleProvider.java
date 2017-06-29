@@ -44,6 +44,7 @@ import static com.androidtitan.culturedapp.model.newyorktimes.FacetType.PER;
 public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoadCompleteListener<Cursor> {
     private final String TAG = getClass().getSimpleName();
 
+    private volatile static TopArticleProvider instance;
     @NonNull
     private Context context;
 
@@ -60,16 +61,29 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
     CursorLoader mediaCursorLoader;
     CursorLoader facetCursorLoader;
 
-    public TopArticleProvider(Context context) {
+    public static TopArticleProvider getInstance(Context context) {
+        if(instance == null) {
+            synchronized (TopArticleProvider.class) {
+                if(instance== null) {
+                    instance = new TopArticleProvider(context);
+                }
+            }
+        }
+        return instance;
+    }
+
+    private TopArticleProvider(Context context) {
         this.context = context;
 
-        LoaderHelper loaderHelper = new LoaderHelper();
-        articleCursorLoader =  loaderHelper.createBasicCursorLoader(ARTICLE_LOADER_ID);
-        articleCursorLoader.registerListener(ARTICLE_LOADER_ID, this);
+        loaderHelper = new LoaderHelper();
     }
 
     @Override
     public void fetchArticles(CallbackListener listener) {
+
+        //todo: hopefully this will help us deal with trying to access the cursor that has been closed by the TopArticle syncadapter
+        articleCursorLoader =  loaderHelper.createBasicCursorLoader(ARTICLE_LOADER_ID);
+        articleCursorLoader.registerListener(ARTICLE_LOADER_ID, this);
         reservedCallback = listener;
         articleCursorLoader.startLoading();
         loaderHelper = new LoaderHelper();
@@ -85,7 +99,7 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
             case ARTICLE_LOADER_ID:
 
                 // this cursor loads Articles minus media
-                if(cursor != null) {
+                if(cursor != null && !cursor.isClosed()) {
                     if (cursor.getCount() > 0) {
 
                         ArticleCursorWrapper wrapper = new ArticleCursorWrapper(cursor);
@@ -171,7 +185,7 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
                 articles = getMergedArticles(articles, media, facetMap);
 
                 if(reservedCallback != null) {
-                    reservedCallback.onConstructionComplete(articles);
+                   reservedCallback.onConstructionComplete(articles);
                 }
 
                 break;

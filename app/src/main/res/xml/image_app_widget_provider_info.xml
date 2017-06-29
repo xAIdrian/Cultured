@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="com.androidtitan.culturedapp.widget.ImageAppWidgetProviderConfigureActivity"
     android:initialKeyguardLayout="@layout/image_app_widget_provider"
     android:initialLayout="@layout/image_app_widget_provider"
     android:minHeight="180dp"
