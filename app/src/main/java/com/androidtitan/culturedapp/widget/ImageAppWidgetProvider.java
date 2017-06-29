@@ -1,19 +1,24 @@
 package com.androidtitan.culturedapp.widget;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.main.CulturedApp;
+import com.androidtitan.culturedapp.main.newsfeed.ui.NewsDetailActivity;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleMvp;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleProvider;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -21,6 +26,9 @@ import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_EXTRA;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_GEO_FACETS;
 
 /**
  * Implementation of App Widget functionality.
@@ -61,11 +69,18 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
         this.appWidgetManager = appWidgetManager;
         this.appWidgetIds = appWidgetIds;
 
+        RemoteViews views = new RemoteViews(CulturedApp.getAppContext().getPackageName(), R.layout.image_app_widget_provider);
+
         if (appWidgetIds != null && appWidgetIds.length > 0) {
             // There may be multiple widgets active, so update all of them
             for (int appWidgetId : appWidgetIds) {
-                updateAppWidget(appWidgetId, providerArticle);
+                updateAppWidget(views, appWidgetId, providerArticle);
             }
+        }
+
+        if(providerArticle != null) {
+            PendingIntent detailArticlePendingIntent = buildPendingIntent();
+            views.setOnClickPendingIntent(R.id.articleImageView, detailArticlePendingIntent);
         }
     }
 
@@ -85,14 +100,11 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
         // Enter relevant functionality for when the last widget is disabled
     }
 
-    private void updateAppWidget(int appWidgetId, Article providerArticle) {
+    private void updateAppWidget(RemoteViews views, int appWidgetId, Article providerArticle) {
 
         if (providerArticle == null) {
             return;
         }
-
-        // Construct the RemoteViews object
-        RemoteViews views = new RemoteViews(CulturedApp.getAppContext().getPackageName(), R.layout.image_app_widget_provider);
 
         views.setTextViewText(R.id.titleTextView, providerArticle.getTitle());
         if (providerArticle.getGeoFacet() != null && providerArticle.getGeoFacet().size() > 0) {
@@ -108,27 +120,41 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         views.setImageViewBitmap(R.id.articleImageView, resource);
-                        appWidgetManager.updateAppWidget(appWidgetId, views); //todo: maybe we want to block the update until this process is finished
+                        appWidgetManager.updateAppWidget(appWidgetId, views);
                     }
                 };
 
                 Glide.with(CulturedApp.getAppContext())
                         .load(imageMedia.getUrl())
                         .asBitmap()
+                        .centerCrop()
                         .into(mediaGlideTarget);
             }
         }
-
-        // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+
+    private PendingIntent buildPendingIntent() {
+        Intent intent = new Intent(CulturedApp.getAppContext(), NewsDetailActivity.class);
+        intent.putExtra(ARTICLE_EXTRA, providerArticle);
+        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, getGeoFacetArrayList(providerArticle));
+
+        return PendingIntent.getActivity(CulturedApp.getAppContext(), 200, intent, 0);
     }
 
     @Override
     public void onConstructionComplete(ArrayList<Article> articleArrayList) {
 
         if (articleArrayList.size() > 0) {
-            providerArticle = articleArrayList.get(3);
-            this.onUpdate(context, appWidgetManager, appWidgetIds);
+            providerArticle = articleArrayList.get(0);
+            for(Article article : articleArrayList) {
+                if(!providerArticle.getMultimedia().isEmpty()) {
+                    providerArticle = article;
+                    this.onUpdate(context, appWidgetManager, appWidgetIds);
+                    return;
+                }
+            }
         }
     }
 
@@ -142,30 +168,12 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
         //no-op
     }
 
-    /*
-    private void getArticleBitmap(Multimedium cachingMedia) {
-        final Bitmap[] bitmap = new Bitmap[1];
-
-        if(cachingMedia != null) {
-            AsyncTask.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        bitmap[0] = Glide.with(CulturedApp.getAppContext())
-                                .load(cachingMedia.getUrl())
-                                .asBitmap()
-                                .into(cachingMedia.getWidth(), cachingMedia.getHeight())
-                                .get();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+    private ArrayList<String> getGeoFacetArrayList(@NonNull Article article) {
+        ArrayList<String> facets = new ArrayList<>();
+        for (Facet facet : article.getGeoFacet()) {
+            facets.add(facet.getFacetText());
         }
-        return bitmap[0];
+        return facets;
     }
-    */
 }
 
