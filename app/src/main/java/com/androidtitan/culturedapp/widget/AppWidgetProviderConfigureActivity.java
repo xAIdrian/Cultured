@@ -2,18 +2,16 @@ package com.androidtitan.culturedapp.widget;
 
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.RemoteViews;
 
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.widget.ui.ImageWidgetProvider;
 
 /**
- * The configuration screen for the {@link ImageAppWidgetProvider ImageAppWidgetProvider} AppWidget.
+ * The configuration screen for the {@link ImageWidgetProvider ImageWidgetProvider} AppWidget.
  * <p>
  * It is the responsibility of the configuration Activity to request an update from the
  * AppWidgetManager when the App Widget is first created. However, onUpdate() will be called
@@ -23,14 +21,14 @@ import com.androidtitan.culturedapp.R;
  * update the App Widget when configuration is complete. You can do so by requesting an update
  * directly from the AppWidgetManager.
  */
-public class ImageAppWidgetProviderConfigureActivity extends Activity implements View.OnClickListener{
+public class AppWidgetProviderConfigureActivity extends Activity implements View.OnClickListener{
 
-    private static final String PREFS_NAME = "com.androidtitan.culturedapp.widget.ImageAppWidgetProvider";
+    private static final String PREFS_NAME = "com.androidtitan.culturedapp.widget.ui.ImageWidgetProvider";
     private static final String PREF_PREFIX_KEY = "appwidget_";
     int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
 
 
-    public ImageAppWidgetProviderConfigureActivity() {
+    public AppWidgetProviderConfigureActivity() {
         super();
     }
 
@@ -41,7 +39,7 @@ public class ImageAppWidgetProviderConfigureActivity extends Activity implements
         // Set the result to CANCELED.  This will cause the widget host to cancel
         // out of the widget placement if the user presses the back button.
         setResult(RESULT_CANCELED);
-        setContentView(R.layout.image_app_widget_provider);
+        setContentView(R.layout.image_widget_provider);
 
         // Find the widget id from the intent.
         Intent intent = getIntent();
@@ -58,13 +56,13 @@ public class ImageAppWidgetProviderConfigureActivity extends Activity implements
         }
 
         //setting up our views which we received from the AppWidgetProvider
-        //mAppWidgetText.setText(loadTitlePref(ImageAppWidgetProviderConfigureActivity.this, mAppWidgetId));
+        //mAppWidgetText.setText(loadTitlePref(AppWidgetProviderConfigureActivity.this, mAppWidgetId));
 
 
 
         //updating the app widget from the configuration activity
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-        RemoteViews views = new RemoteViews(this.getPackageName(), R.layout.image_app_widget_provider);
+        RemoteViews views = new RemoteViews(this.getPackageName(), R.layout.image_widget_provider);
         appWidgetManager.updateAppWidget(mAppWidgetId, views);
 
         //return Intent being sent back to the AppWidgetProvider

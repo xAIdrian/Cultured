@@ -1,4 +1,4 @@
-package com.androidtitan.culturedapp.widget;
+package com.androidtitan.culturedapp.widget.ui;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -6,8 +6,6 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -20,22 +18,22 @@ import com.androidtitan.culturedapp.main.toparticle.TopArticleProvider;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
+import com.androidtitan.culturedapp.widget.AppWidgetProviderConfigureActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_EXTRA;
 import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_GEO_FACETS;
 
 /**
  * Implementation of App Widget functionality.
- * App Widget Configuration implemented in {@link ImageAppWidgetProviderConfigureActivity ImageAppWidgetProviderConfigureActivity}
+ * App Widget Configuration implemented in {@link AppWidgetProviderConfigureActivity AppWidgetProviderConfigureActivity}
  */
-public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArticleMvp.Provider.CallbackListener {
-    private final static String TAG = ImageAppWidgetProvider.class.getCanonicalName();
+public class ImageWidgetProvider extends AppWidgetProvider implements TopArticleMvp.Provider.CallbackListener {
+    private final static String TAG = ImageWidgetProvider.class.getCanonicalName();
 
     private Context context;
     private AppWidgetManager appWidgetManager;
@@ -69,7 +67,7 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
         this.appWidgetManager = appWidgetManager;
         this.appWidgetIds = appWidgetIds;
 
-        RemoteViews views = new RemoteViews(CulturedApp.getAppContext().getPackageName(), R.layout.image_app_widget_provider);
+        RemoteViews views = new RemoteViews(CulturedApp.getAppContext().getPackageName(), R.layout.image_widget_provider);
 
         if (appWidgetIds != null && appWidgetIds.length > 0) {
             // There may be multiple widgets active, so update all of them
@@ -82,6 +80,7 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
             PendingIntent detailArticlePendingIntent = buildPendingIntent();
             views.setOnClickPendingIntent(R.id.articleImageView, detailArticlePendingIntent);
         }
+
     }
 
     @Override
@@ -90,7 +89,7 @@ public class ImageAppWidgetProvider extends AppWidgetProvider implements TopArti
 
         // When the user deletes the widget, delete the preference associated with it.
         for (int appWidgetId : appWidgetIds) {
-            //ImageAppWidgetProviderConfigureActivity.deleteTitlePref(context, appWidgetId);
+            //AppWidgetProviderConfigureActivity.deleteTitlePref(context, appWidgetId);
         }
     }
 
