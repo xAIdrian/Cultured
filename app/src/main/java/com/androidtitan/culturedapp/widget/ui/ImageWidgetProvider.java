@@ -17,6 +17,7 @@ import com.androidtitan.culturedapp.main.toparticle.TopArticleMvp;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleProvider;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.androidtitan.culturedapp.widget.AppWidgetProviderConfigureActivity;
 import com.bumptech.glide.Glide;
@@ -24,6 +25,8 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_EXTRA;
 import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_GEO_FACETS;
@@ -143,7 +146,7 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
     }
 
     @Override
-    public void onConstructionComplete(ArrayList<Article> articleArrayList) {
+    public void onArticleConstructionComplete(ArrayList<Article> articleArrayList) {
 
         if (articleArrayList.size() > 0) {
             providerArticle = articleArrayList.get(0);
@@ -155,6 +158,11 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
                 }
             }
         }
+    }
+
+    @Override
+    public void onFacetConstructionComplete(HashMap<FacetType, HashMap<Integer, List<Facet>>> facetArrayList) {
+        //
     }
 
     @Override

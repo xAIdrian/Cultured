@@ -5,8 +5,12 @@ import android.util.Log;
 
 import com.androidtitan.culturedapp.common.structure.BasePresenter;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by amohnacs on 9/19/16.
@@ -43,8 +47,13 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
     }
 
     @Override
-    public void onConstructionComplete(ArrayList<Article> articleArrayList) {
+    public void onArticleConstructionComplete(ArrayList<Article> articleArrayList) {
         sendDownArticlesToView(articleArrayList);
+    }
+
+    @Override
+    public void onFacetConstructionComplete(HashMap<FacetType, HashMap<Integer, List<Facet>>> facetArrayList) {
+        //
     }
 
     @Override

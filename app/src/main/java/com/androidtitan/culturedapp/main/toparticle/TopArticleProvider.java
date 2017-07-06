@@ -5,7 +5,6 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.androidtitan.culturedapp.main.provider.LoaderHelper;
 import com.androidtitan.culturedapp.main.provider.wrappers.ArticleCursorWrapper;
@@ -64,7 +63,7 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
     public static TopArticleProvider getInstance(Context context) {
         if(instance == null) {
             synchronized (TopArticleProvider.class) {
-                if(instance== null) {
+                if(instance == null) {
                     instance = new TopArticleProvider(context);
                 }
             }
@@ -81,14 +80,19 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
     @Override
     public void fetchArticles(CallbackListener listener) {
 
-        //todo: hopefully this will help us deal with trying to access the cursor that has been closed by the TopArticle syncadapter
         articleCursorLoader =  loaderHelper.createBasicCursorLoader(ARTICLE_LOADER_ID);
         articleCursorLoader.registerListener(ARTICLE_LOADER_ID, this);
         reservedCallback = listener;
         articleCursorLoader.startLoading();
-        loaderHelper = new LoaderHelper();
     }
 
+    @Override
+    public void fetchFacets(CallbackListener listener) {
+        facetCursorLoader = loaderHelper.createBasicCursorLoader(TOP_ARTICLE_FACET_LOADER_ID);
+        facetCursorLoader.registerListener(TOP_ARTICLE_FACET_LOADER_ID, this);
+
+        facetCursorLoader.startLoading();
+    }
 
 
     @Override
@@ -97,21 +101,11 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
         switch (loader.getId()) {
 
             case ARTICLE_LOADER_ID:
-
                 // this cursor loads Articles minus media
                 if(cursor != null && !cursor.isClosed()) {
                     if (cursor.getCount() > 0) {
 
-                        ArticleCursorWrapper wrapper = new ArticleCursorWrapper(cursor);
-                        wrapper.moveToFirst();
-                        while (!wrapper.isAfterLast()) {
-
-                            Article article = wrapper.getArticle();
-                            articles.add(article);
-                            //Log.e(TAG, article.getId() + " : " + article.getTitle());
-                            wrapper.moveToNext();
-                        }
-                        cursor.close();
+                        loadArticlesMinusMedia(cursor, articles);
                     } else {
                         if(reservedCallback != null) {
                             reservedCallback.cursorDataEmpty();
@@ -133,36 +127,18 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
             case TOP_ARTICLE_FACET_LOADER_ID:
 
                 if(cursor != null && cursor.getCount() > 0) {
-                    FacetCursorWrapper wrapper = new FacetCursorWrapper(cursor);
-                    wrapper.moveToFirst();
-                    while(!wrapper.isAfterLast()) {
-                        Facet facet = wrapper.getFacet();
 
-                        switch (facet.getFacetType()) {
-                            case DES:
-                                updateFacetMap(facetMap, null, DES, facet);
-                                break;
-                            case ORG:
-                                updateFacetMap(facetMap, null, ORG, facet);
-                                break;
-                            case PER:
-                                updateFacetMap(facetMap, null, PER, facet);
-                                break;
-                            case GEO:
-                                updateFacetMap(facetMap, null, GEO, facet);
-                                break;
-                            default:
-                                throw new IllegalArgumentException("Invalid FacetType");
-                        }
+                    updateFacetMapDelegation(cursor, facetMap);
 
-                        wrapper.moveToNext();
+                    //we have already processed the articles and the facets will then be added to them
+                    if(articles != null && !articles.isEmpty()) {
+                        mediaCursorLoader = loaderHelper.createBasicCursorLoader(TOP_ARTICLE_MEDIA_LOADER_ID);
+                        mediaCursorLoader.registerListener(TOP_ARTICLE_MEDIA_LOADER_ID, this);
+
+                        mediaCursorLoader.startLoading();
+                    } else {
+                        reservedCallback.onFacetConstructionComplete(facetMap);
                     }
-                    cursor.close();
-
-                    mediaCursorLoader = loaderHelper.createBasicCursorLoader(TOP_ARTICLE_MEDIA_LOADER_ID);
-                    mediaCursorLoader.registerListener(TOP_ARTICLE_MEDIA_LOADER_ID, this);
-
-                    mediaCursorLoader.startLoading();
                 }
                 break;
 
@@ -185,7 +161,7 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
                 articles = getMergedArticles(articles, media, facetMap);
 
                 if(reservedCallback != null) {
-                   reservedCallback.onConstructionComplete(articles);
+                   reservedCallback.onArticleConstructionComplete(articles);
                 }
 
                 break;
@@ -193,6 +169,55 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
             default:
                 throw new IllegalArgumentException("You have passed in an illegal Loader ID : " + loader.getId());
         }
+    }
+
+    /**
+     *
+     * @param cursor
+     * @param articles
+     */
+    private void loadArticlesMinusMedia(Cursor cursor, ArrayList<Article> articles) {
+
+        ArticleCursorWrapper wrapper = new ArticleCursorWrapper(cursor);
+        wrapper.moveToFirst();
+        while (!wrapper.isAfterLast()) {
+
+            Article article = wrapper.getArticle();
+            articles.add(article);
+            //Log.e(TAG, article.getId() + " : " + article.getTitle());
+            wrapper.moveToNext();
+        }
+        cursor.close();
+    }
+
+    private void updateFacetMapDelegation(Cursor cursor, HashMap<FacetType, HashMap<Integer, List<Facet>>> facetMap) {
+
+        FacetCursorWrapper wrapper = new FacetCursorWrapper(cursor);
+        wrapper.moveToFirst();
+        while(!wrapper.isAfterLast()) {
+            Facet facet = wrapper.getFacet();
+
+            switch (facet.getFacetType()) {
+                case DES:
+                    updateFacetMap(facetMap, null, DES, facet);
+                    break;
+                case ORG:
+                    updateFacetMap(facetMap, null, ORG, facet);
+                    break;
+                case PER:
+                    updateFacetMap(facetMap, null, PER, facet);
+                    break;
+                case GEO:
+                    updateFacetMap(facetMap, null, GEO, facet);
+                    break;
+
+
+            }
+
+            wrapper.moveToNext();
+        }
+        cursor.close();
+
     }
 
 
@@ -261,7 +286,6 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
             updateFacetMap(facetMap, storyIdMap, facetType, facet);
         }
     }
-
 
     public void onDestroy() {
         // Stop the cursor loader

@@ -8,9 +8,12 @@ import com.androidtitan.culturedapp.main.toparticle.TopArticleMvp;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleProvider;
 import com.androidtitan.culturedapp.model.ApiError;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -98,11 +101,16 @@ public class NewsFeedPresenter extends BasePresenter<NewsFeedMvp.View> implement
     }
 
     @Override
-    public void onConstructionComplete(ArrayList<Article> articleArrayList) {
+    public void onArticleConstructionComplete(ArrayList<Article> articleArrayList) {
         boolean doArticlesExist = !articleArrayList.isEmpty();
         if(isViewAttached()) {
             getMvpView().doTopArticlesExist(doArticlesExist);
         }
+    }
+
+    @Override
+    public void onFacetConstructionComplete(HashMap<FacetType, HashMap<Integer, List<Facet>>> facetArrayList) {
+        //
     }
 
     @Override

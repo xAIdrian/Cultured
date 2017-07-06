@@ -1,8 +1,11 @@
 package com.androidtitan.culturedapp.main.toparticle;
 
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,10 +17,12 @@ public interface TopArticleMvp {
     interface Provider {
 
         void fetchArticles(CallbackListener listener);
+        void fetchFacets(CallbackListener listener);
 
         interface CallbackListener {
 
-            void onConstructionComplete(ArrayList<Article> articleArrayList);
+            void onArticleConstructionComplete(ArrayList<Article> articleArrayList);
+            void onFacetConstructionComplete(HashMap<FacetType, HashMap<Integer, List<Facet>>> facetArrayList);
 
             void cursorDataNotAvailable();
             void cursorDataEmpty();
