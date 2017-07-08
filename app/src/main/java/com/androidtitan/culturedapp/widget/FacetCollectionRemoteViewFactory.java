@@ -1,8 +1,11 @@
 package com.androidtitan.culturedapp.widget;
 
 import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -12,6 +15,7 @@ import com.androidtitan.culturedapp.main.toparticle.TopArticleProvider;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
+import com.androidtitan.culturedapp.widget.ui.FacetCollectionWidgetProvider;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +24,7 @@ import java.util.List;
 
 /**
  * Serves its purpose as the collection widget's adapter.  It connects the collection items with the data set.
- *
+ * <p>
  * Created by Adrian Mohnacs on 7/1/17.
  */
 
@@ -41,13 +45,10 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
                 AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
-    /**
-     * Called when your factory is first constructed. The same factory may be shared across multiple
-     * RemoteViewAdapters depending on the intent passed.
-     * <p>
-     * In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
-     * for example downloading or creating content etc, should be deferred to onDataSetChanged()
-     * or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
+    /*
+     In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
+     for example downloading or creating content etc, should be deferred to onDataSetChanged()
+     or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
      */
     @Override
     public void onCreate() {
@@ -59,11 +60,12 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
     @Override
     public void onDataSetChanged() {
         //todo :
+        Log.e(TAG, "onDataSetChanged");
     }
 
     @Override
     public void onDestroy() {
-
+        provider = null;
     }
 
     @Override
@@ -71,13 +73,35 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
         return facetList.size();
     }
 
+    /*
+     Given the position (index) of a WidgetItem in the array, use the item's text value in
+     combination with the app widget item XML file to construct a RemoteViews object.
+     */
     @Override
     public RemoteViews getViewAt(int position) {
         //todo : how do we know which remote view to load when it comes to light/dark
+        /*
+         Construct a RemoteViews item based on the app widget item XML file, and set the
+         text based on the position.
+         */
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.facet_collection_widget_light_item);
 
         remoteViews.setTextViewText(R.id.widget_facet_title, (CharSequence) facetList.get(position));
         remoteViews.setTextViewText(R.id.widget_facet_date, (CharSequence) facetList.get(position));
+
+        /*
+         Next, set a fill-intent, which will be used to fill in the pending intent template
+         that is set on the collection view in FacetCollectionWidgetProvider
+         */
+        Bundle extras = new Bundle();
+        extras.putInt(FacetCollectionWidgetProvider.EXTRA_ITEM, position);
+        Intent fillInIntent = new Intent();
+        fillInIntent.putExtras(extras);
+
+        /*
+         Make it possible to distinguish the individual on-click action of a given item
+         */
+        remoteViews.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
 
         return remoteViews;
     }
@@ -99,7 +123,7 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
 
     @Override
     public boolean hasStableIds() {
-        return true;
+        return false;
     }
 
     @Override
@@ -110,12 +134,13 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
     @Override
     public void onFacetConstructionComplete(HashMap<FacetType, HashMap<Integer, List<Facet>>> facetMap) {
 
-        for(FacetType facetType : facetMap.keySet()) {
-            for(List<Facet> collection : facetMap.get(facetType).values()) {
-                facetList.addAll(collection);
-            }
-        }
-        Collections.shuffle(facetList);
+        this.facetList = transformFacets(facetMap);
+
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
+                new ComponentName(context, FacetCollectionWidgetProvider.class));
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.facet_collection_listview);
+
     }
 
     @Override
@@ -126,5 +151,15 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
     @Override
     public void cursorDataEmpty() {
         //todo: display empty page
+    }
+
+    private List<Facet> transformFacets(HashMap<FacetType, HashMap<Integer, List<Facet>>> facetMap) {
+        for (FacetType facetType : facetMap.keySet()) {
+            for (List<Facet> collection : facetMap.get(facetType).values()) {
+                facetList.addAll(collection);
+            }
+        }
+        Collections.shuffle(facetList);
+        return facetList;
     }
 }

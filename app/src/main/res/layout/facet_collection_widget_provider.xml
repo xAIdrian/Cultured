@@ -9,4 +9,15 @@
         android:layout_height="match_parent"
         android:gravity="center"/>
 
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/empty_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@android:color/white"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        android:text="@string/widget_empty_state"
+        android:textSize="20sp" />
+
 </FrameLayout>
