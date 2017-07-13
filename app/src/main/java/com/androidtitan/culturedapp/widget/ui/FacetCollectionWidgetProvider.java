@@ -27,6 +27,7 @@ public class FacetCollectionWidgetProvider extends AppWidgetProvider {
         super();
     }
 
+    /*
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -50,6 +51,7 @@ public class FacetCollectionWidgetProvider extends AppWidgetProvider {
 
         super.onReceive(context, intent);
     }
+    */
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -69,13 +71,13 @@ public class FacetCollectionWidgetProvider extends AppWidgetProvider {
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.facet_collection_widget_provider);
-            rv.setRemoteAdapter(appWidgetIds[i], intent);
+            rv.setRemoteAdapter(R.id.facet_collection_listview, intent);
 
             /*
              The empty view is displayed when the collection has no items. It should be a sibling
              of the collection view.
              */
-            rv.setEmptyView(R.id.facet_collection_listview, R.id.empty_view);
+            //rv.setEmptyView(R.id.facet_collection_listview, R.id.empty_view);
 
             /*
              This section makes it possible for items to have individualized behavior.
@@ -84,13 +86,14 @@ public class FacetCollectionWidgetProvider extends AppWidgetProvider {
              up a pending intent template, and the individual items set a fillInIntent
              to create unique behavior on an item-by-item basis.
              */
-            Intent intentAction = new Intent(context, FacetCollectionWidgetProvider.class);
+            //Intent intentAction = new Intent(context, FacetCollectionWidgetProvider.class);
 
             /*
              Set the action for the intent.
              When the user touches a particular view, it will have the effect of
              broadcasting TOAST_ACTION.
              */
+            /*
             intentAction.setAction(FacetCollectionWidgetProvider.TOAST_ACTION);
             intentAction.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
@@ -99,7 +102,7 @@ public class FacetCollectionWidgetProvider extends AppWidgetProvider {
                     PendingIntent.FLAG_UPDATE_CURRENT);
 
             rv.setPendingIntentTemplate(R.id.facet_collection_listview, pendingIntent);
-
+            */
 
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
         }

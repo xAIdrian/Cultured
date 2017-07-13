@@ -5,6 +5,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.androidtitan.culturedapp.main.provider.LoaderHelper;
 import com.androidtitan.culturedapp.main.provider.wrappers.ArticleCursorWrapper;
@@ -90,7 +91,7 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
     public void fetchFacets(CallbackListener listener) {
         facetCursorLoader = loaderHelper.createBasicCursorLoader(TOP_ARTICLE_FACET_LOADER_ID);
         facetCursorLoader.registerListener(TOP_ARTICLE_FACET_LOADER_ID, this);
-
+        reservedCallback = listener;
         facetCursorLoader.startLoading();
     }
 
@@ -137,6 +138,7 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
 
                         mediaCursorLoader.startLoading();
                     } else {
+                        Log.e(TAG, String.valueOf(facetMap.size()));
                         reservedCallback.onFacetConstructionComplete(facetMap);
                     }
                 }

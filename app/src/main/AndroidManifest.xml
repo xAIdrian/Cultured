@@ -106,22 +106,14 @@
         <service
             android:name=".main.web.services.FacetDeleteService"
             android:enabled="true"
-            android:process=":facetDeleteService" />
+            android:process=":facetServices" />
         <service
             android:name=".main.web.services.FacetDownloadJobService"
             android:enabled="true"
             android:permission="android.permission.BIND_JOB_SERVICE"
-            android:process=":facetDownloadJobService" />
+            android:process=":facetServices" />
 
-        <receiver android:name=".widget.ui.ImageWidgetProvider">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/image_widget_provider_info" />
-        </receiver>
+        <!-- AppWidgets -->
         <receiver android:name=".widget.ui.ImageWidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -136,13 +128,14 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/facet_collection_widget_provider_info" />
         </receiver>
+
         <service android:name=".widget.FacetCollectionWidgetService"
-            android:enabled="true"
             android:permission="android.permission.BIND_REMOTEVIEWS"
-            android:process="facetCollectionWidgetService"/>
+            android:process=":collectionWidgetService"/>
 
     </application>
 

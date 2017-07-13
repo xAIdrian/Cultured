@@ -153,6 +153,9 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
             for(Article article : articleArrayList) {
                 if(!providerArticle.getMultimedia().isEmpty()) {
                     providerArticle = article;
+
+                    Log.e(TAG, "onArticleConstruction Complete");
+
                     this.onUpdate(context, appWidgetManager, appWidgetIds);
                     return;
                 }

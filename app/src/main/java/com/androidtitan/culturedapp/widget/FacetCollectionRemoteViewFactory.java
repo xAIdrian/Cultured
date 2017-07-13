@@ -43,6 +43,7 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
         this.context = context;
         this.appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
+        this.provider = provider.getInstance(context);
     }
 
     /*
@@ -52,19 +53,19 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
      */
     @Override
     public void onCreate() {
+        Log.e(TAG, "onCreate()");
 
-        provider.getInstance(context);
         provider.fetchFacets(this);
     }
 
     @Override
     public void onDataSetChanged() {
-        //todo :
-        Log.e(TAG, "onDataSetChanged");
+        Log.e(TAG, "onDataSetChanged()");
     }
 
     @Override
     public void onDestroy() {
+        Log.e(TAG, "onDestroy()");
         provider = null;
     }
 
@@ -79,6 +80,8 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
      */
     @Override
     public RemoteViews getViewAt(int position) {
+        Log.e(TAG, "getViewAt()");
+
         //todo : how do we know which remote view to load when it comes to light/dark
         /*
          Construct a RemoteViews item based on the app widget item XML file, and set the
@@ -86,22 +89,23 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
          */
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.facet_collection_widget_light_item);
 
-        remoteViews.setTextViewText(R.id.widget_facet_title, (CharSequence) facetList.get(position));
-        remoteViews.setTextViewText(R.id.widget_facet_date, (CharSequence) facetList.get(position));
+        remoteViews.setTextViewText(R.id.widget_facet_title, (CharSequence) facetList.get(position).getFacetText());
+        remoteViews.setTextViewText(R.id.widget_facet_date, (CharSequence) facetList.get(position).getCreatedDate().toString());
 
         /*
          Next, set a fill-intent, which will be used to fill in the pending intent template
          that is set on the collection view in FacetCollectionWidgetProvider
          */
+        /*
         Bundle extras = new Bundle();
         extras.putInt(FacetCollectionWidgetProvider.EXTRA_ITEM, position);
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
-
+        */
         /*
          Make it possible to distinguish the individual on-click action of a given item
          */
-        remoteViews.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+        //remoteViews.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
 
         return remoteViews;
     }
@@ -118,7 +122,10 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
 
     @Override
     public long getItemId(int position) {
-        return facetList.get(position).getStoryId();
+        if (facetList.size() > 0) {
+            return facetList.get(position).getStoryId();
+        }
+        return 0;
     }
 
     @Override
@@ -133,12 +140,13 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
 
     @Override
     public void onFacetConstructionComplete(HashMap<FacetType, HashMap<Integer, List<Facet>>> facetMap) {
+        Log.e(TAG, "onFacetConstructionComplete()");
 
         this.facetList = transformFacets(facetMap);
 
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(
-                new ComponentName(context, FacetCollectionWidgetProvider.class));
+        int appWidgetIds[] = appWidgetManager.getAppWidgetIds(new ComponentName(context, FacetCollectionWidgetProvider.class));
+
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.facet_collection_listview);
 
     }

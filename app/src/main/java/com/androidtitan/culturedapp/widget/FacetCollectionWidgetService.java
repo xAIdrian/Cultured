@@ -1,6 +1,7 @@
 package com.androidtitan.culturedapp.widget;
 
 import android.content.Intent;
+import android.util.Log;
 import android.widget.RemoteViewsService;
 
 /**
@@ -10,6 +11,9 @@ import android.widget.RemoteViewsService;
 public class FacetCollectionWidgetService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return new FacetCollectionRemoteViewFactory(this.getApplicationContext(), intent);
+
+        Log.e("FacetWidgetService", "getViewFactory()");
+
+        return new FacetCollectionRemoteViewFactory(this, intent);
     }
 }
