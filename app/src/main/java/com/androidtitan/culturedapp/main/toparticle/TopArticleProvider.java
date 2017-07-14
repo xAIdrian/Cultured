@@ -138,7 +138,6 @@ public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoad
 
                         mediaCursorLoader.startLoading();
                     } else {
-                        Log.e(TAG, String.valueOf(facetMap.size()));
                         reservedCallback.onFacetConstructionComplete(facetMap);
                     }
                 }

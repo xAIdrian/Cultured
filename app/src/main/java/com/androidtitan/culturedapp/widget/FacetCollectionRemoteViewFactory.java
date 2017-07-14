@@ -17,10 +17,13 @@ import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 import com.androidtitan.culturedapp.widget.ui.FacetCollectionWidgetProvider;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Serves its purpose as the collection widget's adapter.  It connects the collection items with the data set.
@@ -80,7 +83,8 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
      */
     @Override
     public RemoteViews getViewAt(int position) {
-        Log.e(TAG, "getViewAt()");
+
+        Facet workingFacet = facetList.get(position);
 
         //todo : how do we know which remote view to load when it comes to light/dark
         /*
@@ -89,25 +93,52 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
          */
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.facet_collection_widget_light_item);
 
-        remoteViews.setTextViewText(R.id.widget_facet_title, (CharSequence) facetList.get(position).getFacetText());
-        remoteViews.setTextViewText(R.id.widget_facet_date, (CharSequence) facetList.get(position).getCreatedDate().toString());
+        remoteViews.setTextViewText(R.id.widget_facet_title, (CharSequence) workingFacet.getFacetText());
+
+        String betterDate = condenseCreateDate(workingFacet.getCreatedDate());
+        remoteViews.setTextViewText(R.id.widget_facet_date, betterDate);
+
+        switch (workingFacet.getFacetType()) {
+
+            case DES:
+                remoteViews.setImageViewResource(R.id.widget_facet_logo, R.drawable.ic_topic_des);
+                break;
+
+            case PER:
+                remoteViews.setImageViewResource(R.id.widget_facet_logo, R.drawable.ic_topic_per);
+                break;
+
+            case GEO:
+                remoteViews.setImageViewResource(R.id.widget_facet_logo, R.drawable.ic_topic_geo);
+                break;
+
+            case ORG:
+                remoteViews.setImageViewResource(R.id.widget_facet_logo, R.drawable.ic_topic_org);
+                break;
+        }
 
         /*
          Next, set a fill-intent, which will be used to fill in the pending intent template
          that is set on the collection view in FacetCollectionWidgetProvider
          */
-        /*
         Bundle extras = new Bundle();
         extras.putInt(FacetCollectionWidgetProvider.EXTRA_ITEM, position);
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
-        */
+
         /*
          Make it possible to distinguish the individual on-click action of a given item
          */
-        //remoteViews.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+        remoteViews.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
 
         return remoteViews;
+    }
+
+    private String condenseCreateDate(Date createdDate) {
+
+        SimpleDateFormat spf = new SimpleDateFormat("EEE MMM d HH:mm:ss", Locale.ENGLISH);
+        String newDateString = spf.format(createdDate);
+        return newDateString;
     }
 
     @Override
