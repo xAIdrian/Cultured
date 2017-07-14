@@ -626,10 +626,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     // todo: this might be getting called too much onResume(). take a look at it when convenient
     @Override
     public void doTopArticlesExist(boolean articlesExist) {
-        if(articlesExist) {
-            //do nothing
-        } else {
-            //sync now
+        if(!articlesExist) {
             getTopArticlesOnIntialLaunch();
         }
     }

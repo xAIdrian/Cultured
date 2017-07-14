@@ -36,7 +36,7 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
     private static final UriMatcher uriMatcher;
 
-    private volatile static CulturedContentProvider instance;
+    private static volatile CulturedContentProvider instance;
 
     Context context;
     SQLiteHelper sqLiteHelper;

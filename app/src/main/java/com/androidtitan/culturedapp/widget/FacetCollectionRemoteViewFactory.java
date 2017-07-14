@@ -86,7 +86,6 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
 
         Facet workingFacet = facetList.get(position);
 
-        //todo : how do we know which remote view to load when it comes to light/dark
         /*
          Construct a RemoteViews item based on the app widget item XML file, and set the
          text based on the position.
@@ -118,20 +117,26 @@ public class FacetCollectionRemoteViewFactory implements RemoteViewsService.Remo
         }
 
         /*
-         Next, set a fill-intent, which will be used to fill in the pending intent template
-         that is set on the collection view in FacetCollectionWidgetProvider
+         Make it possible to distinguish the individual on-click action of a given item
          */
+        remoteViews.setOnClickFillInIntent(R.id.widget_item, buildFillInIntent(position));
+
+        return remoteViews;
+    }
+
+    /**
+     * set a fill-intent, which will be used to fill in the pending intent template
+     * that is set on the collection view in FacetCollectionWidgetProvider
+     *
+     * @param position
+     * @return
+     */
+    private Intent buildFillInIntent(int position) {
         Bundle extras = new Bundle();
         extras.putInt(FacetCollectionWidgetProvider.EXTRA_ITEM, position);
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
-
-        /*
-         Make it possible to distinguish the individual on-click action of a given item
-         */
-        remoteViews.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
-
-        return remoteViews;
+        return fillInIntent;
     }
 
     private String condenseCreateDate(Date createdDate) {

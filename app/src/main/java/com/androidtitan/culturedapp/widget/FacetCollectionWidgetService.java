@@ -11,9 +11,6 @@ import android.widget.RemoteViewsService;
 public class FacetCollectionWidgetService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-
-        Log.e("FacetWidgetService", "getViewFactory()");
-
         return new FacetCollectionRemoteViewFactory(this, intent);
     }
 }

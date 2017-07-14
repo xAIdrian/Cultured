@@ -4,7 +4,6 @@ package com.androidtitan.culturedapp.model.newyorktimes;
  * Created by amohnacs on 3/21/16.
  */
 import android.content.ContentValues;
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 

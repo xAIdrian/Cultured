@@ -44,7 +44,7 @@ import static com.androidtitan.culturedapp.model.newyorktimes.FacetType.PER;
 public class TopArticleProvider implements TopArticleMvp.Provider, Loader.OnLoadCompleteListener<Cursor> {
     private final String TAG = getClass().getSimpleName();
 
-    private volatile static TopArticleProvider instance;
+    private static volatile TopArticleProvider instance;
     @NonNull
     private Context context;
 
