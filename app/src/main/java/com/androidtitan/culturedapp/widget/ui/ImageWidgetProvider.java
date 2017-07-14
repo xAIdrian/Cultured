@@ -1,11 +1,13 @@
 package com.androidtitan.culturedapp.widget.ui;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -19,6 +21,7 @@ import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
 import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
+import com.androidtitan.culturedapp.widget.AlarmBroadcastReceiver;
 import com.androidtitan.culturedapp.widget.AppWidgetProviderConfigureActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -38,6 +41,8 @@ import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ART
 public class ImageWidgetProvider extends AppWidgetProvider implements TopArticleMvp.Provider.CallbackListener {
     private final static String TAG = ImageWidgetProvider.class.getCanonicalName();
 
+    private static final int ALARM_INTERVAL = 300000;
+
     private Context context;
     private AppWidgetManager appWidgetManager;
     private int[] appWidgetIds;
@@ -56,7 +61,16 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
     //Think of this as your onCreate()
     @Override
     public void onEnabled(Context context) {
+
+        super.onEnabled(context);
         this.context = context;
+
+        //AlarmManager is one way to periodically update your widget.  android:updatePeriodMillis in the xml resource does the same
+        AlarmManager timeCop = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+        PendingIntent broadcastPendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        timeCop.setRepeating(AlarmManager.RTC_WAKEUP, ALARM_INTERVAL, ALARM_INTERVAL, broadcastPendingIntent);
+
     }
 
     @Override
@@ -99,7 +113,11 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
     @Override
     public void onDisabled(Context context) {
         Log.e(TAG, "onDisabled()");
-        // Enter relevant functionality for when the last widget is disabled
+
+        AlarmManager timeCop = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+        PendingIntent broadcastPendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+        timeCop.cancel(broadcastPendingIntent);
     }
 
     private void updateAppWidget(RemoteViews views, int appWidgetId, Article providerArticle) {
