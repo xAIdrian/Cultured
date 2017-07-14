@@ -25,7 +25,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArticleMvp.View> implements TopArticleMvp.View {
-    private final String TAG = getClass().getSimpleName();
+    private final String TAG = TopArticleActivity.class.getSimpleName();
 
     TopArticlePresenter presenter;
 
@@ -45,10 +45,11 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        presenter = new TopArticlePresenter(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.top_article_activity);
 
-        presenter = new TopArticlePresenter(this);
         ButterKnife.bind(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

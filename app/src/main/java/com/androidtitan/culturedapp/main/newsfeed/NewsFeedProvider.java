@@ -1,10 +1,14 @@
 package com.androidtitan.culturedapp.main.newsfeed;
 
 import android.content.Context;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.structure.RxHelper;
+import com.androidtitan.culturedapp.main.provider.LoaderHelper;
 import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
 import com.androidtitan.culturedapp.model.ApiError;
@@ -16,6 +20,8 @@ import java.util.List;
 
 import rx.*;
 
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_LOADER_ID;
+
 /**
  * Created by amohnacs on 8/29/16.
  */
@@ -25,6 +31,8 @@ public class NewsFeedProvider implements NewsFeedMvp.Provider {
 
     private Context context;
     private NewsEndpoint newsService;
+
+    private CursorLoader articleCursorLoader;
 
     private ArrayList<Article> fetchArticleList = new ArrayList<>();
 
@@ -149,6 +157,12 @@ public class NewsFeedProvider implements NewsFeedMvp.Provider {
             });
     }
 
+    @Override
+    public void getTopArticlesFromCP(CallbackListener listener) {
+        articleCursorLoader.startLoading();
+
+    }
+
     public ArrayList<Article> addNewArticlesToArticleList(List<Article> responseArticles, List<Article> articlesList) {
         ArrayList<Article> newArticles = new ArrayList<Article>();
 
@@ -165,5 +179,4 @@ public class NewsFeedProvider implements NewsFeedMvp.Provider {
 
         return newArticles;
     }
-
 }

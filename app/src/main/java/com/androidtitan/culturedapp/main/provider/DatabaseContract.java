@@ -6,6 +6,11 @@ import android.net.Uri;
  * Created by amohnacs on 9/25/16.
  */
 
+
+/**
+ * Relational structure fo storing articles for display in the {@link com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity}
+ *
+ */
 public class DatabaseContract {
     private final String TAG = getClass().getSimpleName();
 

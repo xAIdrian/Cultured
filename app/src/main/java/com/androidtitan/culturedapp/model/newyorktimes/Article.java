@@ -172,7 +172,6 @@ public class Article implements Parcelable {
 
     }
 
-
     public ContentValues getArticleContentValues() {
 
         ContentValues cv = new ContentValues();
@@ -588,7 +587,6 @@ public class Article implements Parcelable {
     public void set_abstract(String _abstract) {
         this._abstract = _abstract;
     }
-
 
     /**
      * Describe the kinds of special objects contained in this Parcelable's

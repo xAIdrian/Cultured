@@ -5,8 +5,12 @@ import android.util.Log;
 
 import com.androidtitan.culturedapp.common.structure.BasePresenter;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
+import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by amohnacs on 9/19/16.
@@ -25,7 +29,7 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
 
     public TopArticlePresenter(Context context) {
         this.context = context;
-        this.topArticleProvider = new TopArticleProvider(context);
+        this.topArticleProvider = TopArticleProvider.getInstance(context);
 
     }
 
@@ -34,18 +38,22 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
      */
     @Override
     public void loadArticles() {
-
         topArticleProvider.fetchArticles(this);
     }
 
     @Override
     public void onDestroy() {
-
+        //no op
     }
 
     @Override
-    public void onConstructionComplete(ArrayList<Article> articleArrayList) {
+    public void onArticleConstructionComplete(ArrayList<Article> articleArrayList) {
         sendDownArticlesToView(articleArrayList);
+    }
+
+    @Override
+    public void onFacetConstructionComplete(HashMap<FacetType, HashMap<Integer, List<Facet>>> facetArrayList) {
+        //
     }
 
     @Override
@@ -89,7 +97,9 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
     }
 
     /**
-     * We only want to work with Articles that have images to display
+     * Removes articles from the list of Articles that do not have {@link com.androidtitan.culturedapp.model.newyorktimes.Multimedium}
+     * objects associated with them
+     *
      * @param articleListToStrip
      * @return A list of articles that does not contain any articles without media
      */

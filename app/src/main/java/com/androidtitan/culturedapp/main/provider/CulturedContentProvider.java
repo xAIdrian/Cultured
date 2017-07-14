@@ -36,6 +36,8 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
     private static final UriMatcher uriMatcher;
 
+    private static volatile CulturedContentProvider instance;
+
     Context context;
     SQLiteHelper sqLiteHelper;
 
@@ -50,6 +52,18 @@ public class CulturedContentProvider extends android.content.ContentProvider {
 
         uriMatcher.addURI(AUTHORITY, DatabaseContract.FacetTable.TABLE_NAME + "/#", FACET);
         uriMatcher.addURI(AUTHORITY, DatabaseContract.FacetTable.TABLE_NAME, FACET_LIST);
+    }
+
+    //double checked locking Singleton
+    public static CulturedContentProvider getInstance() {
+        if(instance == null) {
+            synchronized (CulturedContentProvider.class) {
+                if(instance == null) {
+                    instance = new CulturedContentProvider();
+                }
+            }
+        }
+        return instance;
     }
 
     @Override

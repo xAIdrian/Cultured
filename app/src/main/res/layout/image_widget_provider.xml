@@ -1,0 +1,37 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/transparent">
+
+    <ImageView
+        android:id="@+id/articleImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
+        android:transitionName="@string/transition_news_image" />
+
+    <TextView
+        android:id="@+id/titleTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:padding="@dimen/half_default"
+        android:textColor="@android:color/white"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Widget Title!"/>
+
+    <TextView
+        android:id="@+id/facetTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/titleTextView"
+        android:padding="@dimen/half_default"
+        android:textColor="@android:color/white"
+        android:paddingBottom="@dimen/defaultt"
+        android:text="Widget Facet!"/>
+
+</RelativeLayout>

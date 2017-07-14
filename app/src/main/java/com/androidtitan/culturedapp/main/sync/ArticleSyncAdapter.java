@@ -197,4 +197,6 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
         context.getContentResolver().delete(DatabaseContract.FacetTable.CONTENT_URI,
                 "story_id is not null", null);
     }
+
+
 }

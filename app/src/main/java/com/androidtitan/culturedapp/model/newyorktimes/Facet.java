@@ -39,6 +39,10 @@ public class Facet {
         this.facetText = facetText;
     }
 
+    public Facet(String articleFacet) {
+        this.facetText = articleFacet;
+    }
+
     public ContentValues getContentValues() {
 
         ContentValues cv = new ContentValues();

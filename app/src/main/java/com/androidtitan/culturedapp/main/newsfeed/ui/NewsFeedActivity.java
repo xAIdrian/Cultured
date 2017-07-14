@@ -196,6 +196,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         articles = new ArrayList<>();
         bookMarkedArticles = fileManager.getInternalArticlesHashMap();
+        presenter.checkTopArticlesPresent();
 
         loadingTitleText.setVisibility(View.VISIBLE);
         loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
@@ -622,6 +623,14 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     }
 
+    // todo: this might be getting called too much onResume(). take a look at it when convenient
+    @Override
+    public void doTopArticlesExist(boolean articlesExist) {
+        if(!articlesExist) {
+            getTopArticlesOnIntialLaunch();
+        }
+    }
+
     @Override
     public void restartArticleLoad() {
         getSupportFragmentManager().beginTransaction().remove(errorFragment).commit();
@@ -856,6 +865,14 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         ContentResolver.addPeriodicSync(
             account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
         ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
+    }
+
+    private void getTopArticlesOnIntialLaunch() {
+        //todo: check to ensure that it is the first launch...we should have this in shared preferences
+        Bundle bundle = new Bundle();bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
+        ContentResolver.requestSync(null, DatabaseContract.AUTHORITY, bundle);
     }
 
 
