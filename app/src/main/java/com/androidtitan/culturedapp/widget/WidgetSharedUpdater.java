@@ -43,7 +43,7 @@ public class WidgetSharedUpdater {
         if (providerArticle.getMultimedia() != null && providerArticle.getMultimedia().size() > 0) {
             Multimedium imageMedia = providerArticle.getMultimedia().get(0);
 
-            if(imageMedia != null) {
+            if(imageMedia != null && appWidgetId >= 0) {
 
                 mediaGlideTarget = new SimpleTarget<Bitmap>(imageMedia.getWidth(), imageMedia.getHeight()) {
                     @Override
