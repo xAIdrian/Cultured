@@ -99,6 +99,10 @@ public class Article implements Parcelable {
 
     }
 
+    public Article(String string) {
+        this.title = string;
+    }
+
     public Article(String title, String section, String _abstract, String url, Date createdDate,
                    List<Facet> desFacet, List<Facet> orgFacet, List<Facet> perFacet,
                    List<Facet> geoFacet, List<Multimedium> multimedia) {
