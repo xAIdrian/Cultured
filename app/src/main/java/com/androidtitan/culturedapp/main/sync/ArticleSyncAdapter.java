@@ -1,18 +1,24 @@
 package com.androidtitan.culturedapp.main.sync;
 
 import android.accounts.Account;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SyncResult;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.structure.RxHelper;
+import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
@@ -37,6 +43,8 @@ import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_ARTICLE_
 
 public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
     private final String TAG = getClass().getSimpleName();
+
+    private static final int BASIC_NOTIFICATION_ID = 101;
 
     private Context context;
 
@@ -137,13 +145,89 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                 });
 
+        if(articles.size() > 0) {
+            deployNotifications(articles);
+        }
+
         return articles;
 
     }
 
+    private void deployNotifications(ArrayList<Article> articles) {
+
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.drawable.ic_notification_jet)
+                        .setContentTitle(context.getResources().getString(R.string.widget_new_articles))
+                        .setContentText(context.getResources().getString(R.string.widget_new_articles_text));
+
+        Intent actionIntent = new Intent(context, TopArticleActivity.class);
+        PendingIntent resultPendingIntent = buildBackStackAndObtainIntent(actionIntent);
+
+        builder.setContentIntent(resultPendingIntent)
+                .setAutoCancel(true)
+                .setStyle(buildInboxStyle(articles));
+
+        notificationManager.notify(BASIC_NOTIFICATION_ID, builder.build());
+
+    }
+
+    /*
+    private void updateNotifications() {
+        mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // Sets an ID for the notification, so it can be updated
+        int notifyID = 1;
+        mNotifyBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("New Message")
+                .setContentText("You've received new messages.")
+                .setSmallIcon(R.drawable.ic_notify_status)
+        numMessages = 0;
+
+        // Start of a loop that processes data and then notifies the user
+        mNotifyBuilder.setContentText(currentText)
+                .setNumber(++numMessages);
+
+        // Because the ID remains unchanged, the existing notification is
+        // updated.
+        mNotificationManager.notify(
+                notifyID,
+                mNotifyBuilder.build());
+
+    }
+    */
+
+    private NotificationCompat.InboxStyle buildInboxStyle(ArrayList<Article> articles) {
+
+
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+
+        inboxStyle.setBigContentTitle(context.getResources().getString(R.string.widget_new_articles_expantext));
+
+        articles.add(new Article("test article"));
+        for (Article article : articles) {
+            inboxStyle.addLine(article.getTitle());
+        }
+        return inboxStyle;
+    }
+
+    private PendingIntent buildBackStackAndObtainIntent(Intent senderIntent) {
+
+        TaskStackBuilder backStackBuilder = TaskStackBuilder.create(context);
+
+        backStackBuilder.addParentStack(TopArticleActivity.class);
+        backStackBuilder.addNextIntent(senderIntent);
+
+        return backStackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
     private List<Article> insertArticleData(List<Article> articles) {
 
-        for(Article article : articles) {
+        for (Article article : articles) {
 
             Uri insertedUri = getContext().getContentResolver()
                     .insert(DatabaseContract.ArticleTable.CONTENT_URI, article.getArticleContentValues());
@@ -155,7 +239,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
 
     private List<Multimedium> insertMultimediumData(long articleId, List<Multimedium> multimedia) {
 
-        for(Multimedium multimedium : multimedia) {
+        for (Multimedium multimedium : multimedia) {
 
             multimedium.setStoryId(articleId + 1);
             Uri insertedUri = getContext().getContentResolver()
@@ -169,9 +253,9 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
     private List<Facet> insertFacetData(long articleId, List<Facet> facets) {
 
 
-        for(Facet facet : facets) {
+        for (Facet facet : facets) {
 
-            if(articleId == NO_ARTICLE_ID) { //we set our articles to -1 when we are just pulling Facets for our Trending
+            if (articleId == NO_ARTICLE_ID) { //we set our articles to -1 when we are just pulling Facets for our Trending
                 facet.setStoryId(NO_ARTICLE_ID);
                 Uri insertedUri = getContext().getContentResolver()
                         .insert(DatabaseContract.FacetTable.CONTENT_URI, facet.getContentValues());
