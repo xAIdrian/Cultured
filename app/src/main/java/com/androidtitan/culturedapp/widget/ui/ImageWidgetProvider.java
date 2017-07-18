@@ -6,8 +6,6 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.os.PowerManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -23,9 +21,7 @@ import com.androidtitan.culturedapp.model.newyorktimes.FacetType;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.androidtitan.culturedapp.widget.AlarmBroadcastReceiver;
 import com.androidtitan.culturedapp.widget.AppWidgetProviderConfigureActivity;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.androidtitan.culturedapp.widget.WidgetSharedUpdater;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +37,13 @@ import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ART
 public class ImageWidgetProvider extends AppWidgetProvider implements TopArticleMvp.Provider.CallbackListener {
     private final static String TAG = ImageWidgetProvider.class.getCanonicalName();
 
-    private static final int ALARM_INTERVAL = 300000;
+    public static final String ALARM_BROADCAST_TITLE = "ImageWidgetProvider.alarmBroadcastTitle";
+    public static final String ALARM_BROADCAST_GEO_FACET = "ImageWidgetProvider.alarmBroadcastGeoFacet";
+    public static final String ALARM_BROADCAST_WIDTH = "ImageWidgetProvider.width";
+    public static final String ALARM_BROADCAST_HEIGHT = "ImageWidgetProvider.height";
+    public static final String ALARM_BROADCAST_URL = "ImageWidgetProvider.url";
+
+    private static final int ALARM_INTERVAL = 5000; //300000;
 
     private Context context;
     private AppWidgetManager appWidgetManager;
@@ -49,8 +51,6 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
 
     private TopArticleProvider provider;
     private Article providerArticle;
-
-    SimpleTarget mediaGlideTarget;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -64,12 +64,6 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
 
         super.onEnabled(context);
         this.context = context;
-
-        //AlarmManager is one way to periodically update your widget.  android:updatePeriodMillis in the xml resource does the same
-        AlarmManager timeCop = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
-        PendingIntent broadcastPendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
-        timeCop.setRepeating(AlarmManager.RTC_WAKEUP, ALARM_INTERVAL, ALARM_INTERVAL, broadcastPendingIntent);
 
     }
 
@@ -89,12 +83,14 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
         if (appWidgetIds != null && appWidgetIds.length > 0) {
             // There may be multiple widgets active, so update all of them
             for (int appWidgetId : appWidgetIds) {
-                updateAppWidget(views, appWidgetId, providerArticle);
+                WidgetSharedUpdater.updateAppWidget(views, appWidgetManager, appWidgetId, providerArticle);
             }
         }
 
         if(providerArticle != null) {
-            PendingIntent detailArticlePendingIntent = buildPendingIntent();
+            updateRepeatingAlarm(context);
+
+            PendingIntent detailArticlePendingIntent = buildOnClickPendingIntent();
             views.setOnClickPendingIntent(R.id.articleImageView, detailArticlePendingIntent);
         }
 
@@ -120,42 +116,8 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
         timeCop.cancel(broadcastPendingIntent);
     }
 
-    private void updateAppWidget(RemoteViews views, int appWidgetId, Article providerArticle) {
 
-        if (providerArticle == null) {
-            return;
-        }
-
-        views.setTextViewText(R.id.titleTextView, providerArticle.getTitle());
-        if (providerArticle.getGeoFacet() != null && providerArticle.getGeoFacet().size() > 0) {
-            views.setTextViewText(R.id.facetTitleTextView, providerArticle.getGeoFacet().get(0).getFacetText());
-        }
-
-        if (providerArticle.getMultimedia() != null && providerArticle.getMultimedia().size() > 0) {
-            Multimedium imageMedia = providerArticle.getMultimedia().get(0);
-
-            if(imageMedia != null) {
-
-                mediaGlideTarget = new SimpleTarget<Bitmap>(imageMedia.getWidth(), imageMedia.getHeight()) {
-                    @Override
-                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                        views.setImageViewBitmap(R.id.articleImageView, resource);
-                        appWidgetManager.updateAppWidget(appWidgetId, views);
-                    }
-                };
-
-                Glide.with(CulturedApp.getAppContext())
-                        .load(imageMedia.getUrl())
-                        .asBitmap()
-                        .centerCrop()
-                        .into(mediaGlideTarget);
-            }
-        }
-        appWidgetManager.updateAppWidget(appWidgetId, views);
-    }
-
-
-    private PendingIntent buildPendingIntent() {
+    private PendingIntent buildOnClickPendingIntent() {
         Intent intent = new Intent(CulturedApp.getAppContext(), NewsDetailActivity.class);
         intent.putExtra(ARTICLE_EXTRA, providerArticle);
         intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, getGeoFacetArrayList(providerArticle));
@@ -194,6 +156,32 @@ public class ImageWidgetProvider extends AppWidgetProvider implements TopArticle
     @Override
     public void cursorDataEmpty() {
         //no-op
+    }
+
+    /**
+     * AlarmManager is one way to periodically update your widget.
+     * android:updatePeriodMillis in the xml resource does the same
+     *
+     * @param context
+     */
+    private void updateRepeatingAlarm(Context context) {
+
+        if(context != null) {
+            AlarmManager timeCop = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
+
+            Facet workingFacet = providerArticle.getGeoFacet().get(0);
+            Multimedium workingMultimedium = providerArticle.getMultimedia().get(0);
+
+            intent.putExtra(ALARM_BROADCAST_TITLE, providerArticle.getTitle());
+            intent.putExtra(ALARM_BROADCAST_GEO_FACET, workingFacet.getFacetText());
+            intent.putExtra(ALARM_BROADCAST_URL, workingMultimedium.getUrl());
+            intent.putExtra(ALARM_BROADCAST_WIDTH, workingMultimedium.getWidth());
+            intent.putExtra(ALARM_BROADCAST_HEIGHT, workingMultimedium.getHeight());
+
+            PendingIntent broadcastPendingIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+            timeCop.setRepeating(AlarmManager.RTC_WAKEUP, ALARM_INTERVAL, ALARM_INTERVAL, broadcastPendingIntent);
+        }
     }
 
     private ArrayList<String> getGeoFacetArrayList(@NonNull Article article) {

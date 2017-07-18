@@ -630,16 +630,15 @@ public class Article implements Parcelable {
         dest.writeString(materialTypeFacet);
         dest.writeString(kicker);
         dest.writeString(headline);
-        /*todo
-        dest.writeStringList(desFacet);
-        dest.writeStringList(orgFacet);
-        dest.writeStringList(perFacet);
-        dest.writeStringList(geoFacet);
-        */
+
+        dest.writeTypedList(desFacet);
+        dest.writeTypedList(orgFacet);
+        dest.writeTypedList(perFacet);
+        dest.writeTypedList(geoFacet);
+
         dest.writeTypedList(relatedUrls);
         dest.writeTypedList(multimedia);
         dest.writeString(blogName);
-
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
