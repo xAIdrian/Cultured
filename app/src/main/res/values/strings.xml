@@ -134,6 +134,9 @@
     <string name="widget_new_articles">New articles on deck</string>
     <string name="widget_new_articles_text">You have a few waiting for you. Check em out</string>
     <string name="widget_new_articles_expantext">Articles served fresh daily</string>
+    <string name="title_activity_offline">NewsOffline</string>
+    <string name="offline_title">Here you can view the articles that you have deemed worthy enough to be viewable offline.  We/\'re only showing you the three most recent but the rest are viewable on the next page!</string>
+    <string name="offline_article_count">Offline article count</string>
 
 
 </resources>

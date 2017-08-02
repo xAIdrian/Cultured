@@ -114,9 +114,13 @@ public class Facet implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(storyId);
-        dest.writeString(facetType.toString());
+        if (facetType != null) {
+            dest.writeString(facetType.toString());
+        }
         dest.writeString(facetText);
-        dest.writeString(createdDate.toString());
+        if (createdDate != null) {
+            dest.writeString(createdDate.toString());
+        }
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

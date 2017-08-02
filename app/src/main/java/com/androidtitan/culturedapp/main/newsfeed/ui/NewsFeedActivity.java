@@ -50,6 +50,7 @@ import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
+import com.androidtitan.culturedapp.main.offline.OfflineActivity;
 import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
@@ -529,6 +530,12 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
             case R.id.menu_item_toparticle:
 
                 startActivity(new Intent(this, TopArticleActivity.class));
+
+                break;
+
+            case R.id.menu_item_offline:
+
+                startActivity(new Intent(this, OfflineActivity.class));
 
                 break;
 
