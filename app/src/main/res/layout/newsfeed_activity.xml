@@ -40,6 +40,7 @@
             android:textColor="@android:color/white"
             android:visibility="gone"/>
 
+        <!-- RecyclerView layout.  A little bit more than just a common one -->
         <android.support.v7.widget.RecyclerView
             android:id="@+id/newsList"
             android:layout_width="match_parent"
