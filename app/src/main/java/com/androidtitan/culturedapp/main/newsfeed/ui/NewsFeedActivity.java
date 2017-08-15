@@ -642,6 +642,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
             && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
 
+            // using StaggeredGrid as the layout manager    
             staggeredLayoutManager = new StaggeredGridLayoutManager(3, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
 
@@ -658,6 +659,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
             recyclerView.setLayoutManager(linearLayoutManager);
         }
 
+        // specify an adapter to use with your RecyclerView    
         adapter = new NewsFeedAdapter(this, articles);
         recyclerView.setAdapter(adapter);
     }
