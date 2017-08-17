@@ -422,6 +422,9 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
+    /*
+    Navigation Drawer listening for open and close event with the app icon
+    */            
     private void setUpActionBar() {
         // Attaching the layout to the toolbar object
         supportActionBar = (Toolbar) findViewById(R.id.toolbar);
