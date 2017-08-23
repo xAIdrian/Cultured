@@ -422,6 +422,9 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         drawerToggle.onConfigurationChanged(newConfig);
     }
 
+    /*
+    Navigation Drawer listening for open and close event with the app icon
+    */            
     private void setUpActionBar() {
         // Attaching the layout to the toolbar object
         supportActionBar = (Toolbar) findViewById(R.id.toolbar);
@@ -642,6 +645,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
             && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
 
+            // using StaggeredGrid as the layout manager    
             staggeredLayoutManager = new StaggeredGridLayoutManager(3, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
 
@@ -658,6 +662,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
             recyclerView.setLayoutManager(linearLayoutManager);
         }
 
+        // specify an adapter to use with your RecyclerView    
         adapter = new NewsFeedAdapter(this, articles);
         recyclerView.setAdapter(adapter);
     }

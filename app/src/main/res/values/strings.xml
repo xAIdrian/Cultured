@@ -131,6 +131,9 @@
     <string name="configure">Configure</string>
     <string name="add_widget">Add widget</string>
     <string name="widget_empty_state">Sorry, we have nothing to display</string>
+    <string name="widget_new_articles">New articles on deck</string>
+    <string name="widget_new_articles_text">You have a few waiting for you. Check em out</string>
+    <string name="widget_new_articles_expantext">Articles served fresh daily</string>
 
 
 </resources>
