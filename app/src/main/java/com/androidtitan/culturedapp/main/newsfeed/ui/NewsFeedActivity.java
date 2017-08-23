@@ -535,6 +535,12 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
                 break;
 
+            case R.id.menu_item_offline:
+
+                startActivity(new Intent(this, OfflineActivity.class));
+
+                break;
+
             default:
                 throw new IllegalArgumentException("Invalid options item: " + item.getItemId());
 
