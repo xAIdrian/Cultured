@@ -147,6 +147,12 @@ public class FileManager {
 
     }
 
+    /**
+     * Returns a hashmap containing the title of the cached article as the key and a boolean value
+     * indicating the cached status of that specific article
+     *
+     * @return
+     */
     public HashMap<String, Boolean> getInternalArticlesHashMap() {
 
         HashMap<String, Boolean> articleHashMap = new HashMap<>();

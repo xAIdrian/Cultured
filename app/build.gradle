@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
 
 
+
 android {
     compileSdkVersion 24
     buildToolsVersion '25.0.0'
