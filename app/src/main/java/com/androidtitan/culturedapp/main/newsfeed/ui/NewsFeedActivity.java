@@ -537,7 +537,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
             case R.id.menu_item_offline:
 
-                startActivity(new Intent(this, OfflineActivity.class));
+                //startActivity(new Intent(this, OfflineActivity.class));
 
                 break;
 
