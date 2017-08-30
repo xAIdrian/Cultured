@@ -51,6 +51,7 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
     }
 
     private Article buildArticle(Intent intent) {
+        // TODO: 8/29/17 Unable to start receiver com.androidtitan.culturedapp.widget.AlarmBroadcastReceiver: java.lang.NullPointerException: println needs a message
 
         String articleTitle = intent.getStringExtra(ALARM_BROADCAST_TITLE);
         String articleFacet = intent.getStringExtra(ALARM_BROADCAST_GEO_FACET);
@@ -59,13 +60,13 @@ public class AlarmBroadcastReceiver extends BroadcastReceiver {
         int articleMediaWidth = intent.getIntExtra(ALARM_BROADCAST_WIDTH, 0);
         int articleMediaHeight = intent.getIntExtra(ALARM_BROADCAST_HEIGHT, 0);
 
-        ///////
+        /*
         Log.e(TAG, articleTitle);
         Log.e(TAG, articleFacet);
         Log.e(TAG, articleMediaUrl);
         Log.e(TAG, String.valueOf(articleMediaWidth));
         Log.e(TAG, String.valueOf(articleMediaHeight));
-        ////////
+        */
 
         return null;
 

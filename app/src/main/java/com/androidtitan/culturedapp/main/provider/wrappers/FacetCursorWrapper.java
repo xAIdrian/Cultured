@@ -27,6 +27,7 @@ public class FacetCursorWrapper extends CursorWrapper {
     }
 
     public Facet getFacet() {
+        // TODO: 8/29/17  this gives us a missing row exception, informing us that we need to instantiate our Cursor
         String storyId = getString(getColumnIndex(DatabaseContract.FacetTable.STORY_ID));
         FacetType facetType;
         switch (getString(getColumnIndex(DatabaseContract.FacetTable.TYPE))) {

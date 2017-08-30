@@ -21,6 +21,7 @@ import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.bumptech.glide.Glide;
 
 import org.jsoup.Jsoup;
@@ -162,12 +163,14 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
             int mediaSize = article.getMultimedia().size();
             if (mediaSize > 0) {
-                String focusedImageUrl = article.getMultimedia().get(mediaSize - 1).getUrl();
+                Multimedium focusedImage = article.getMultimedia().get(mediaSize - 1);
+                if (focusedImage != null && !focusedImage.getUrl().isEmpty()) {
 
-                Glide.with(this).load(focusedImageUrl)
-                    .crossFade()
-                    .centerCrop()
-                    .into(backgroundImage);
+                    Glide.with(this).load(focusedImage.getUrl())
+                            .crossFade()
+                            .centerCrop()
+                            .into(backgroundImage);
+                }
             }
 
             detailTitle.setText(article.getTitle());

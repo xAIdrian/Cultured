@@ -19,8 +19,10 @@
                 android:id="@+id/title_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/text_margin"
+                android:padding="@dimen/text_margin"
                 android:gravity="center"
+                android:background="@color/colorPrimary"
+                android:textColor="@android:color/white"
                 android:text="@{title.title}"/>
 
     </android.support.v4.widget.NestedScrollView>

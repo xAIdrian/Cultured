@@ -17,8 +17,8 @@ public class CollectionUtils {
      */
     public static <T> boolean isEmpty(ArrayList<T> listToCheck) {
         if(listToCheck == null || listToCheck.size() <= 0) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }
