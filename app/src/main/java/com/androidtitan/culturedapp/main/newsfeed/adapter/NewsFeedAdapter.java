@@ -248,31 +248,25 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             case ONBOARDING_LAYOUT:
                 OnboardingViewHolder onboardingViewHolder = (OnboardingViewHolder) holder;
 
-                onboardingViewHolder.gotitText.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        editor.putBoolean(PREFERENCES_APP_FIRST_RUN, false);
-                        editor.commit();
+                onboardingViewHolder.gotitText.setOnClickListener(v -> {
+                    editor.putBoolean(PREFERENCES_APP_FIRST_RUN, false);
+                    editor.commit();
 
-                        articleList.remove(0);
-                        notifyItemRemoved(0);
-                        //notifyDataSetChanged();
-                    }
+                    articleList.remove(0);
+                    notifyItemRemoved(0);
+                    //notifyDataSetChanged();
                 });
                 break;
 
             case ABOUT_LAYOUT:
                 AboutViewHolder aboutViewHolder = (AboutViewHolder) holder;
 
-                aboutViewHolder.gotitText.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        shouldShowAboutCard = false;
+                aboutViewHolder.gotitText.setOnClickListener(v -> {
+                    shouldShowAboutCard = false;
 
-                        articleList.remove(0);
-                        notifyItemRemoved(0);
-                        //notifyDataSetChanged();
-                    }
+                    articleList.remove(0);
+                    notifyItemRemoved(0);
+                    //notifyDataSetChanged();
                 });
                 break;
 
@@ -296,26 +290,24 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.globalText.setText(articleList.get(position).getGeoFacet().get(0).getFacetText());
 
         int finalPosition = position;
-        holder.clickLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.clickLayout.setOnClickListener(v -> {
+            // TODO: 8/30/17 Clicking into this does not give us article text or a BG
 //                ((NewsFeedActivity) context).startDetailActivity(
 //                        articleList.get(position), holder.articleImage);
 //                sendDetailActivity(articleList.get(finalPosition), holder.articleImage);
 
-                Intent tempTrendingIntent = new Intent(context, TrendingActivity.class);
+            Intent tempTrendingIntent = new Intent(context, TrendingActivity.class);
 
-                // this adds all of {@link NewsDetailActivity}'s parents to the stack followed by the Activity itself
-                PendingIntent pendingIntent =
-                        TaskStackBuilder.create(context)
-                                .addNextIntentWithParentStack(tempTrendingIntent)
-                                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+            // this adds all of {@link NewsDetailActivity}'s parents to the stack followed by the Activity itself
+            PendingIntent pendingIntent =
+                    TaskStackBuilder.create(context)
+                            .addNextIntentWithParentStack(tempTrendingIntent)
+                            .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-                try {
-                    pendingIntent.send();
-                } catch (PendingIntent.CanceledException e) {
-                    e.printStackTrace();
-                }
+            try {
+                pendingIntent.send();
+            } catch (PendingIntent.CanceledException e) {
+                e.printStackTrace();
             }
         });
 

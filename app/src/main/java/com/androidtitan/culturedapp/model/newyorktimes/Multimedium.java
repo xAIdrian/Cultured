@@ -296,6 +296,7 @@ public class Multimedium implements Parcelable {
          */
         @Override
         public Multimedium createFromParcel(Parcel source) {
+            // TODO: 8/30/17 this is looping indefinitely from the write line method
             return new Multimedium(source);
         }
 

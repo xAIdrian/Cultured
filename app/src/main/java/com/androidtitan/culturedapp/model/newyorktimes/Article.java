@@ -170,8 +170,8 @@ public class Article implements Parcelable {
 
         relatedUrls = new ArrayList<RelatedUrl>();
         in.readTypedList(relatedUrls, RelatedUrl.CREATOR);
-        multimedia = new ArrayList<Multimedium>();
-        in.readTypedList(multimedia, Multimedium.CREATOR);
+        // TODO: 8/30/17  multimedia = new ArrayList<Multimedium>();
+        //in.readTypedList(multimedia, Multimedium.CREATOR);
         blogName = in.readString();
 
     }
@@ -637,7 +637,7 @@ public class Article implements Parcelable {
         dest.writeTypedList(geoFacet);
 
         dest.writeTypedList(relatedUrls);
-        dest.writeTypedList(multimedia);
+        //dest.writeTypedList(multimedia);
         dest.writeString(blogName);
     }
 
