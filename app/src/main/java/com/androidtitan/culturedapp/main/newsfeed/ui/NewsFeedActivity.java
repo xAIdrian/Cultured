@@ -44,22 +44,26 @@ import android.widget.Toast;
 
 
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.CollectionUtils;
 import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.common.structure.MvpActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
+import com.androidtitan.culturedapp.main.offline.NoInternetActivity;
 import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,6 +76,7 @@ import butterknife.ButterKnife;
 
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
+import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsDetailActivity.SAVED_MULTIMEDIA;
 
 public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp.View> implements NewsFeedMvp.View, ErrorFragmentInterface,
         DevConsoleDialogFragment.DevConsoleCallback {
@@ -535,6 +540,12 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
                 break;
 
+            case R.id.menu_item_offline:
+
+                startActivity(new Intent(this, NoInternetActivity.class));
+
+                break;
+
             default:
                 throw new IllegalArgumentException("Invalid options item: " + item.getItemId());
 
@@ -793,7 +804,21 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, getGeoFacetArrayList(article));
         intent.putExtra(ARTICLE_BOOKMARKED, isArticleBookmarked(article.getTitle()));
 
+        intent.putExtra(SAVED_MULTIMEDIA, multimediaToJsonString(article.getMultimedia()));
+
         startActivity(intent);
+    }
+
+    private String multimediaToJsonString(List<Multimedium> mulit) {
+        Gson gson = new Gson();
+
+        if (!CollectionUtils.isEmpty(mulit)) {
+            Multimedium ourGuy = mulit.get(mulit.size() - 1);
+            if(ourGuy != null) {
+                return gson.toJson(ourGuy);
+            }
+        }
+        return "";
     }
 
     public boolean isArticleBookmarked(@NonNull String articleTitle) {

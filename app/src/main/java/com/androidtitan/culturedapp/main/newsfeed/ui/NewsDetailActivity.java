@@ -1,14 +1,13 @@
 package com.androidtitan.culturedapp.main.newsfeed.ui;
 
-import android.content.Context;
+import com.google.gson.Gson;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ import android.widget.TextView;
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.newyorktimes.Facet;
+import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 import com.bumptech.glide.Glide;
 
 import org.jsoup.Jsoup;
@@ -41,6 +40,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
     private final static String SAVED_STATE_ARTICLE = "newsdetailactivity.savedstatearticle";
     private final static String SAVED_STATE_FACETS = "newsdetailactivity.savedstatefacets";
     private final static String SAVED_BOOKMARK_STATUS = "newsdetailactivity.savedbookmarkstatus";
+    public final static String SAVED_MULTIMEDIA = "newsdetailactivity.savedmultimedia";
 
 
     @Bind(R.id.backgroundImageView)
@@ -70,6 +70,8 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
     private Article focusedArticle = null;
 
+    private Multimedium focusedImage;
+
     private ArrayList<String> focusedGeoFacets;
 
     private View rootViewGroup;
@@ -86,7 +88,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
         fileManager = new FileManager(this);
 
         rootViewGroup = ((ViewGroup) this
-            .findViewById(android.R.id.content)).getChildAt(0);
+                .findViewById(android.R.id.content)).getChildAt(0);
 
         fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
 
@@ -100,7 +102,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
             focusedArticle = savedInstanceState.getParcelable(SAVED_STATE_ARTICLE);
             focusedGeoFacets = savedInstanceState.getStringArrayList(SAVED_STATE_FACETS);
 
-            if(savedInstanceState.getBoolean(SAVED_BOOKMARK_STATUS)) {
+            if (savedInstanceState.getBoolean(SAVED_BOOKMARK_STATUS)) {
                 isBookmarked = true;
             }
 
@@ -109,7 +111,10 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
                 focusedArticle = extras.getParcelable(NewsFeedActivity.ARTICLE_EXTRA);
                 focusedGeoFacets = extras.getStringArrayList(NewsFeedActivity.ARTICLE_GEO_FACETS);
 
-                if(extras.getBoolean(NewsFeedActivity.ARTICLE_BOOKMARKED)) {
+                Gson gson = new Gson();
+                focusedImage = gson.fromJson(extras.getString(SAVED_MULTIMEDIA), Multimedium.class);
+
+                if (extras.getBoolean(NewsFeedActivity.ARTICLE_BOOKMARKED)) {
                     isBookmarked = true;
                 }
             }
@@ -124,7 +129,6 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
     }
 
 
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -137,7 +141,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
     @Override
     protected void onResume() {
 
-        if(isBookmarked) {
+        if (isBookmarked) {
             fab.setImageDrawable(getDrawable(R.drawable.ic_bookmark));
         }
 
@@ -160,14 +164,12 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
                 new ParseUrl().execute(focusedString);
             }
 
-            int mediaSize = article.getMultimedia().size();
-            if (mediaSize > 0) {
-                String focusedImageUrl = article.getMultimedia().get(mediaSize - 1).getUrl();
+            if (focusedImage != null && !focusedImage.getUrl().isEmpty()) {
 
-                Glide.with(this).load(focusedImageUrl)
-                    .crossFade()
-                    .centerCrop()
-                    .into(backgroundImage);
+                Glide.with(this).load(focusedImage.getUrl())
+                        .crossFade()
+                        .centerCrop()
+                        .into(backgroundImage);
             }
 
             detailTitle.setText(article.getTitle());
@@ -209,7 +211,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
     @Override
     public void onFileWriteComplete(String response, boolean hasError) {
 
-        if(hasError) {
+        if (hasError) {
             //response is going to be an error message
             Snackbar.make(rootViewGroup, getResources().getString(R.string.file_write_error), Snackbar.LENGTH_SHORT).show();
 
