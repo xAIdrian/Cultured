@@ -171,5 +171,7 @@
     <string name="offline_article_count">Offline article count</string>
     <string name="title_activity_no_internet">NoInternetActivity</string>
 
+    <string name="empty_string"></string>
+
 
 </resources>

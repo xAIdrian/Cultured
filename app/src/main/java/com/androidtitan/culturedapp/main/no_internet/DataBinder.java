@@ -16,6 +16,7 @@ public class DataBinder {
         //NO-OP
     }
 
+    @SuppressWarnings("unchecked")
     @BindingAdapter("imageUrl")
     public static void setImageUrl(ImageView imageView, String url) {
         Context context = imageView.getContext();

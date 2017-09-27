@@ -29,6 +29,7 @@ import org.jsoup.select.Elements;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -108,15 +109,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
         } else {
             if (extras != null) {
-                focusedArticle = extras.getParcelable(NewsFeedActivity.ARTICLE_EXTRA);
-                focusedGeoFacets = extras.getStringArrayList(NewsFeedActivity.ARTICLE_GEO_FACETS);
-
-                Gson gson = new Gson();
-                focusedImage = gson.fromJson(extras.getString(SAVED_MULTIMEDIA), Multimedium.class);
-
-                if (extras.getBoolean(NewsFeedActivity.ARTICLE_BOOKMARKED)) {
-                    isBookmarked = true;
-                }
+                buildArticleObject(extras);
             }
         }
 
@@ -126,6 +119,26 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
         });
 
+    }
+
+    private void buildArticleObject(Bundle extras) {
+        focusedArticle = extras.getParcelable(NewsFeedActivity.ARTICLE_EXTRA);
+        focusedGeoFacets = extras.getStringArrayList(NewsFeedActivity.ARTICLE_GEO_FACETS);
+
+        Gson gson = new Gson();
+        focusedImage = gson.fromJson(extras.getString(SAVED_MULTIMEDIA), Multimedium.class);
+        addImageToArticle(focusedImage);
+
+        if (extras.getBoolean(NewsFeedActivity.ARTICLE_BOOKMARKED)) {
+            isBookmarked = true;
+        }
+    }
+
+    private void addImageToArticle(Multimedium focusedImage) {
+
+        List<Multimedium> arr = new ArrayList<>();
+        arr.add(focusedImage);
+        focusedArticle.setMultimedia(arr);
     }
 
 
