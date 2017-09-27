@@ -144,7 +144,7 @@
                 android:process=".alarmBroadcastReceiver"/>
 
         <activity
-                android:name=".main.offline.NoInternetActivity"
+                android:name=".main.no_internet.NoInternetActivity"
                 android:label="@string/title_activity_no_internet"
                 android:theme="@style/AppTheme">
         </activity>
