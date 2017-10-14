@@ -32,7 +32,7 @@ public interface TopArticleMvp {
 
     interface Presenter {
 
-        void loadArticles();
+        void loadArticles(boolean isTopArticles);
     }
 
     interface View {

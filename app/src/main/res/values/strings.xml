@@ -172,6 +172,8 @@
     <string name="title_activity_no_internet">NoInternetActivity</string>
 
     <string name="empty_string"></string>
+    <string name="offline_string">Offline Articles</string>
+    <string name="top_article_string">Top Articles</string>
 
 
 </resources>

@@ -51,7 +51,6 @@ import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedPresenter;
-import com.androidtitan.culturedapp.main.no_internet.NoInternetActivity;
 import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
@@ -83,32 +82,28 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     private final String TAG = getClass().getSimpleName();
 
     public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
-
     public static final String ARTICLE_BOOKMARKED = "newsActivity.article_bookmarked";
 
     private static final String SENDER_ID = "612691836045";
-
     public static final String ACCOUNT_TYPE = "com.androidtitan";
-
     public static final String ACCOUNT = "dummyaccount";
 
     // Sync interval constants...one hour
     public static final long SECONDS_PER_MINUTE = 60L;
-
     public static final long SYNC_INTERVAL_IN_MINUTES = 180L;
-
     public static final long SYNC_INTERVAL =
-        SYNC_INTERVAL_IN_MINUTES *
-            SECONDS_PER_MINUTE;
-
-    private static final String SAVED_STATE_ARTICLE_LIST = "newsactivity.savedstatearticles";
+            SYNC_INTERVAL_IN_MINUTES *
+                    SECONDS_PER_MINUTE;
 
     public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
+
+    public static final String TOP_ARTICLE_MODE = "newsactivity.toparticlemode";
+    public static final int TOP_ARTICLE_TOP = 100;
+    public static final int TOP_ARTICLE_OFFLINE = 101;
 
     private static final int LOADING_ANIM_TIME = 700;
 
     public static final String ERROR_MESSAGE = "errorfragment.errormessage";
-
     public static final String ERROR_MAP = "errorfragment.errormap";
 
     ErrorFragment errorFragment;
@@ -240,8 +235,8 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         navigationView.getHeaderView(0).setOnClickListener((header) -> {
 
-            if(devConsoleCount == 6) {
-                if(!navigationView.getMenu().getItem(3).isVisible()) {
+            if (devConsoleCount == 6) {
+                if (!navigationView.getMenu().getItem(3).isVisible()) {
                     Toast.makeText(this, R.string.prime_dev_console_text, Toast.LENGTH_SHORT).show();
                     navigationView.getMenu().getItem(3).setVisible(true);
                 } else {
@@ -251,7 +246,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
                 devConsoleCount = 0;
             } else {
-                devConsoleCount ++;
+                devConsoleCount++;
             }
         });
 
@@ -263,7 +258,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
                 case R.id.onboarding_card_generator:
 
                     if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                        && adapter.getAboutStatus() == false) {
+                            && adapter.getAboutStatus() == false) {
                         adapter.resetOnboardingCard();
                     }
 
@@ -272,7 +267,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
                 case R.id.about_card_generator:
 
                     if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                        && adapter.getAboutStatus() == false) {
+                            && adapter.getAboutStatus() == false) {
                         adapter.showAboutCard();
                     }
 
@@ -294,17 +289,17 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
                     break;
 
-                    case R.id.settings:
+                case R.id.settings:
 
-                        startActivity(new Intent(this, PreferencesActivity.class));
+                    startActivity(new Intent(this, PreferencesActivity.class));
 
-                        break;
+                    break;
 
-                    case R.id.devConsole:
-                        //display a dialog fragment
-                        showDialog();
+                case R.id.devConsole:
+                    //display a dialog fragment
+                    showDialog();
 
-                    default:
+                default:
 
                     Log.e(TAG, "Incorrect navigation drawer item selected");
             }
@@ -338,7 +333,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
                     hideToolbarBy(dy);
 
                     if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
-                        getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                            getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
                         visibleItemCount = staggeredLayoutManager.getChildCount();
                         totalItemCount = staggeredLayoutManager.getItemCount();
@@ -429,7 +424,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     /*
     Navigation Drawer listening for open and close event with the app icon
-    */            
+    */
     private void setUpActionBar() {
         // Attaching the layout to the toolbar object
         supportActionBar = (Toolbar) findViewById(R.id.toolbar);
@@ -437,10 +432,10 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         setSupportActionBar(supportActionBar);
         getSupportActionBar().setTitle("");
         drawerToggle = new ActionBarDrawerToggle(
-            this,
-            drawerLayout,
-            R.string.drawer_open,
-            R.string.drawer_closed
+                this,
+                drawerLayout,
+                R.string.drawer_open,
+                R.string.drawer_closed
         ) {
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -542,7 +537,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
             case R.id.menu_item_offline:
 
-                startActivity(new Intent(this, NoInternetActivity.class));
+                startActivity(new Intent(this, TopArticleActivity.class));
 
                 break;
 
@@ -556,8 +551,6 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     /**
      * Save all appropriate fragment states.
-     *
-     * @param outState
      */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -633,14 +626,14 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         errorFragment.setArguments(args);
 
         getSupportFragmentManager().beginTransaction()
-            .add(R.id.main_content, errorFragment).commit();
+                .add(R.id.main_content, errorFragment).commit();
 
     }
 
     // todo: this might be getting called too much onResume(). take a look at it when convenient
     @Override
     public void doTopArticlesExist(boolean articlesExist) {
-        if(!articlesExist) {
+        if (!articlesExist) {
             getTopArticlesOnIntialLaunch();
         }
     }
@@ -654,14 +647,14 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     private void initializeRecyclerView() {
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE
-            && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+                && screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
 
             // using StaggeredGrid as the layout manager    
             staggeredLayoutManager = new StaggeredGridLayoutManager(3, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
 
         } else if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE ||
-            getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 
             staggeredLayoutManager = new StaggeredGridLayoutManager(2, 1);
             recyclerView.setLayoutManager(staggeredLayoutManager);
@@ -784,8 +777,8 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     private void showColoredSnackbar() {
         Snackbar loadingSnackbar = Snackbar.make(recyclerView,
-            getResources().getString(R.string.simple_loading),
-            Snackbar.LENGTH_LONG);
+                getResources().getString(R.string.simple_loading),
+                Snackbar.LENGTH_LONG);
         View snackbarView = loadingSnackbar.getView();
         snackbarView.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.colorPrimary));
         loadingSnackbar.show();
@@ -814,7 +807,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         if (!CollectionUtils.isEmpty(mulit)) {
             Multimedium ourGuy = mulit.get(mulit.size() - 1);
-            if(ourGuy != null) {
+            if (ourGuy != null) {
                 return gson.toJson(ourGuy);
             }
         }
@@ -822,7 +815,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     }
 
     public boolean isArticleBookmarked(@NonNull String articleTitle) {
-        if(bookMarkedArticles.get(articleTitle) != null) {
+        if (bookMarkedArticles.get(articleTitle) != null) {
             return bookMarkedArticles.get(articleTitle);
         }
         return false;
@@ -847,7 +840,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         @Override
         protected String doInBackground(Void... params) {
 
-            if(NewsFeedActivity.this == null) {
+            if (NewsFeedActivity.this == null) {
                 return null;
             }
 
@@ -891,15 +884,16 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         ContentResolver.setIsSyncable(account, DatabaseContract.AUTHORITY, 1);
         ContentResolver.setSyncAutomatically(
-            account, DatabaseContract.AUTHORITY, true);
+                account, DatabaseContract.AUTHORITY, true);
         ContentResolver.addPeriodicSync(
-            account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
+                account, DatabaseContract.AUTHORITY, Bundle.EMPTY, SYNC_INTERVAL);
         ContentResolver.requestSync(account, DatabaseContract.AUTHORITY, Bundle.EMPTY);
     }
 
     private void getTopArticlesOnIntialLaunch() {
         //todo: check to ensure that it is the first launch...we should have this in shared preferences
-        Bundle bundle = new Bundle();bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(null, DatabaseContract.AUTHORITY, bundle);

@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.structure.MvpActivity;
+import com.androidtitan.culturedapp.main.newsfeed.ui.NewsDetailActivity;
+import com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleAdapter;
 import com.androidtitan.culturedapp.main.toparticle.TopArticleMvp;
 import com.androidtitan.culturedapp.main.toparticle.TopArticlePresenter;
@@ -41,7 +43,8 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
     private LinearLayoutManager linearLayoutManager;
     private TopArticleAdapter topArticleAdapter;
 
-    List<Article> adapterArticleList;
+    private List<Article> adapterArticleList;
+    private boolean isTopArticleMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,26 +55,36 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
 
         ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Top Articles");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // TODO: 10/14/17 we need to pass out `isTopArticleMode` value in savedInstanceState
 
-        linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(linearLayoutManager);
-
-        adapterArticleList = new ArrayList<>();
-        topArticleAdapter = new TopArticleAdapter(this, adapterArticleList);
-        presenter.loadArticles();
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            if (extras.getInt(NewsFeedActivity.TOP_ARTICLE_MODE) == NewsFeedActivity.TOP_ARTICLE_TOP) {
+                isTopArticleMode = true;
+                setupTopArticle();
+            } else {
+                isTopArticleMode = false;
+                setupOfflineMode();
+            }
+        }
 
         refreshFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.loadArticles();
+                presenter.loadArticles(isTopArticleMode);
             }
         });
 
+    }
+
+    private void setupTopArticle() {
+        setupToolbar(getString(R.string.top_article_string));
+        setupRecyclerView(true);
+    }
+
+    private void setupOfflineMode() {
+        setupToolbar(getString(R.string.offline_string));
+        setupRecyclerView(false);
     }
 
     @Override
@@ -122,17 +135,34 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
 
     @Override
     public void setLoading() {
-
+// TODO: 10/14/17
     }
 
     @Override
     public void displayDataNotAvailable() {
-
+// TODO: 10/14/17
     }
 
     @Override
     public void displayDataEmpty() {
-
+// TODO: 10/14/17
     }
 
+    public void setupToolbar(String upToolbar) {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(upToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    public void setupRecyclerView(boolean isTopArticleMode) {
+
+        linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+        adapterArticleList = new ArrayList<>();
+        topArticleAdapter = new TopArticleAdapter(this, adapterArticleList);
+        presenter.loadArticles(isTopArticleMode);
+    }
 }

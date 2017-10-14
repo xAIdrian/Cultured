@@ -3,6 +3,7 @@ package com.androidtitan.culturedapp.main.toparticle;
 import android.content.Context;
 import android.util.Log;
 
+import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.common.structure.BasePresenter;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Facet;
@@ -25,20 +26,26 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
 
     private Context context;
 
-    TopArticleProvider topArticleProvider;
+    private TopArticleProvider topArticleProvider;
+
+    private FileManager fileManager;
 
     public TopArticlePresenter(Context context) {
         this.context = context;
         this.topArticleProvider = TopArticleProvider.getInstance(context);
-
+        this.fileManager = FileManager.getInstance(context);
     }
 
     /**
      * We will always have fresh data from remote, the Loaders handle the local data
      */
     @Override
-    public void loadArticles() {
-        topArticleProvider.fetchArticles(this);
+    public void loadArticles(boolean isTopArticles) {
+        if (isTopArticles) {
+            topArticleProvider.fetchArticles(this);
+        } else {
+            sendDownArticlesToView(fileManager.getInternalArticles());
+        }
     }
 
     @Override
@@ -53,7 +60,7 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
 
     @Override
     public void onFacetConstructionComplete(HashMap<FacetType, HashMap<Integer, List<Facet>>> facetArrayList) {
-        //
+        //no op
     }
 
     @Override

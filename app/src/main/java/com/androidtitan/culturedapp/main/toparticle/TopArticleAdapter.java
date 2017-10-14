@@ -57,7 +57,7 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         XLargeArticleViewHolder holder2 = (XLargeArticleViewHolder) holder;
-        initViewHolder(holder2, position, articleList.get(position));
+        initViewHolder(holder2, articleList.get(position));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return articleList.size();
     }
 
-    private void initViewHolder(final XLargeArticleViewHolder holder, int position, Article article) {
+    private void initViewHolder(final XLargeArticleViewHolder holder, Article article) {
 
         DateFormat formatter = new SimpleDateFormat("MMM dd h:mm a");
         final String dateFormatted = formatter.format(article.getCreatedDate());
