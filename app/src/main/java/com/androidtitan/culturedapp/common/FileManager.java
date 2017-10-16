@@ -280,7 +280,7 @@ public class FileManager {
     private static Gson buildArticleGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         //adding custom deserializer
-        gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+        //gsonBuilder.setDateFormat("MMM dd, yyyy hh:mm:ss Z");
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
         gsonBuilder.registerTypeAdapter(Article.class, new ArticleDeserializer());
         gsonBuilder.serializeNulls();

@@ -55,7 +55,7 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
 
         ButterKnife.bind(this);
 
-        // TODO: 10/14/17 we need to pass out `isTopArticleMode` value in savedInstanceState
+        // TODO: 10/14/17 we need to pass out `isTopArticleMode` value in savedInstanceState on rotation
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {

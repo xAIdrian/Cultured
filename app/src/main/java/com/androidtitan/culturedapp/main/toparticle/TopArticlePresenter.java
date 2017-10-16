@@ -44,7 +44,9 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
         if (isTopArticles) {
             topArticleProvider.fetchArticles(this);
         } else {
-            sendDownArticlesToView(fileManager.getInternalArticles());
+            ArrayList<Article> tempArticleList = new ArrayList<>();
+            tempArticleList.addAll(fileManager.getInternalArticles()); // TODO: 10/15/17 this is post FileManager
+            sendDownArticlesToView(tempArticleList);
         }
     }
 
