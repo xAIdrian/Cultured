@@ -25,8 +25,10 @@ public class Constants {
     public static final String PREFERENCES_SYNCING_PERIODICALLY = "sharedpreferences.syncingperiodically";
     public static final String PREFERENCES_ARTICLE_ID = "sharedpreferences.articleid";
 
-    //for testing
-    public static final String TEST_SECTION = "world";
-    public static final int TEST_LIMIT = 1;
-    public static final int TEST_OFFSET = 2;
+    //passing articles to detail activity
+    public static final String ARTICLE_EXTRA = "constant.articleextra";
+    public static final String ARTICLE_GEO_FACETS = "constant.article_geo_facets";
+    public static final String ARTICLE_BOOKMARKED = "constant.article_bookmarked";
+
+
 }

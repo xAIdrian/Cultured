@@ -43,9 +43,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.androidtitan.culturedapp.ArticleHelper;
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.CollectionUtils;
-import com.androidtitan.culturedapp.common.FileManager;
+import com.androidtitan.culturedapp.common.SessionManager;
 import com.androidtitan.culturedapp.common.structure.MvpActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
@@ -73,16 +74,16 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_BOOKMARKED;
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_EXTRA;
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_GEO_FACETS;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_APP_FIRST_RUN;
 import static com.androidtitan.culturedapp.common.Constants.PREFERENCES_SYNCING_PERIODICALLY;
 import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsDetailActivity.SAVED_MULTIMEDIA;
 
 public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp.View> implements NewsFeedMvp.View, ErrorFragmentInterface,
-        DevConsoleDialogFragment.DevConsoleCallback {
+        DevConsoleDialogFragment.DevConsoleCallback, NewsFeedAdapter.OnClick {
     private final String TAG = getClass().getSimpleName();
-
-    public static final String ARTICLE_GEO_FACETS = "newsActivity.article_geo_facets";
-    public static final String ARTICLE_BOOKMARKED = "newsActivity.article_bookmarked";
 
     private static final String SENDER_ID = "612691836045";
     public static final String ACCOUNT_TYPE = "com.androidtitan";
@@ -94,8 +95,6 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     public static final long SYNC_INTERVAL =
             SYNC_INTERVAL_IN_MINUTES *
                     SECONDS_PER_MINUTE;
-
-    public static final String ARTICLE_EXTRA = "newsactivity.articleextra";
 
     public static final String TOP_ARTICLE_MODE = "newsactivity.toparticlemode";
     public static final int TOP_ARTICLE_TOP = 100;
@@ -175,7 +174,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     int screenSize;
 
-    private FileManager fileManager;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -192,10 +191,10 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         setupUserPreferences();
 
-        fileManager = FileManager.getInstance(this);
+        sessionManager = SessionManager.getInstance();
 
         articles = new ArrayList<>();
-        bookMarkedArticles = fileManager.getInternalArticlesHashMap();
+        bookMarkedArticles = sessionManager.getBookmarkedArticles();
         presenter.checkTopArticlesPresent();
 
         loadingTitleText.setVisibility(View.VISIBLE);
@@ -669,7 +668,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         }
 
         // specify an adapter to use with your RecyclerView    
-        adapter = new NewsFeedAdapter(this, articles);
+        adapter = new NewsFeedAdapter(this, this, articles);
         recyclerView.setAdapter(adapter);
     }
 
@@ -791,44 +790,17 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     }
 
-    //starting our SyncAdapter
-    public void startDetailActivity(Article article, ImageView articleImage) {
+    @Override
+    public void sendDetailActivity(Article article, ImageView imageView) {
 
         Intent intent = new Intent(this, NewsDetailActivity.class);
         intent.putExtra(ARTICLE_EXTRA, article);
-        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, getGeoFacetArrayList(article));
-        intent.putExtra(ARTICLE_BOOKMARKED, isArticleBookmarked(article.getTitle()));
+        intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, ArticleHelper.getGeoFacetArrayList(article));
+        intent.putExtra(ARTICLE_BOOKMARKED, ArticleHelper.isArticleBookmarked(bookMarkedArticles, article.getTitle()));
 
-        intent.putExtra(SAVED_MULTIMEDIA, multimediaToJsonString(article.getMultimedia()));
+        intent.putExtra(SAVED_MULTIMEDIA, ArticleHelper.multimediaToJsonString(article.getMultimedia()));
 
         startActivity(intent);
-    }
-
-    private String multimediaToJsonString(List<Multimedium> mulit) {
-        Gson gson = new Gson();
-
-        if (!CollectionUtils.isEmpty(mulit)) {
-            Multimedium ourGuy = mulit.get(mulit.size() - 1);
-            if (ourGuy != null) {
-                return gson.toJson(ourGuy);
-            }
-        }
-        return "";
-    }
-
-    public boolean isArticleBookmarked(@NonNull String articleTitle) {
-        if (bookMarkedArticles.get(articleTitle) != null) {
-            return bookMarkedArticles.get(articleTitle);
-        }
-        return false;
-    }
-
-    private ArrayList<String> getGeoFacetArrayList(@NonNull Article article) {
-        ArrayList<String> facets = new ArrayList<>();
-        for (Facet facet : article.getGeoFacet()) {
-            facets.add(facet.getFacetText());
-        }
-        return facets;
     }
 
     //starting our SyncAdapter
