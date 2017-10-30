@@ -44,38 +44,40 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
 
         tempArticle.setAbstract(obj.getAsJsonObject().get("abstract").getAsString());
         tempArticle.setUrl(obj.getAsJsonObject().get("url").getAsString());
-        tempArticle.setByline(obj.getAsJsonObject().get("byline").getAsString());
+        tempArticle.setByline(obj.getAsJsonObject().get("byline").isJsonNull() ? "" : obj.getAsJsonObject().get("byline").getAsString());
 
-        if(obj.getAsJsonObject().get("thumbnail_standard") != null) {
+        if (obj.getAsJsonObject().get("thumbnail_standard") != null) {
             tempArticle.setThumbnailStandard(obj.getAsJsonObject().get("thumbnail_standard").getAsString());
         }
 
         tempArticle.setItemType(obj.getAsJsonObject().get("item_type").getAsString());
 
-        if(obj.getAsJsonObject().get("source") != null) {
+        if (obj.getAsJsonObject().get("source") != null && obj.getAsJsonObject().get("source").isJsonNull()) {
             tempArticle.setSource(obj.getAsJsonObject().get("source").getAsString());
-        } else {
-            tempArticle.setSource("");
         }
 
-        tempArticle.setUpdatedDate((Date) context.deserialize(obj.getAsJsonObject().get("updated_date"), Date.class));
-        tempArticle.setCreatedDate((Date) context.deserialize(obj.getAsJsonObject().get("created_date"), Date.class));
-        tempArticle.setPublishedDate((Date) context.deserialize(obj.getAsJsonObject().get("published_date"), Date.class));
+
+        tempArticle.setUpdatedDate(context.deserialize(obj.getAsJsonObject().get("updated_date"), Date.class));
+        tempArticle.setCreatedDate(context.deserialize(obj.getAsJsonObject().get("created_date"), Date.class));
+        tempArticle.setPublishedDate(context.deserialize(obj.getAsJsonObject().get("published_date"), Date.class));
 
         tempArticle.setMaterialTypeFacet(obj.getAsJsonObject().get("material_type_facet").getAsString());
-        tempArticle.setKicker(obj.getAsJsonObject().get("kicker").getAsString());
 
-        if(obj.getAsJsonObject().get("headline") != null && !obj.getAsJsonObject().get("headline").isJsonNull()) {
+        if (obj.getAsJsonObject().get("kicker") != null && !obj.getAsJsonObject().get("kicker").isJsonNull()) {
+            tempArticle.setKicker(obj.getAsJsonObject().get("kicker").getAsString());
+        }
+
+        if (obj.getAsJsonObject().get("headline") != null && !obj.getAsJsonObject().get("headline").isJsonNull()) {
             tempArticle.setheadline(obj.getAsJsonObject().get("headline").getAsString());
         }
 
-        if(obj.getAsJsonObject().get("blog_name") != null && !obj.getAsJsonObject().get("blog_name").isJsonNull()) {
+        if (obj.getAsJsonObject().get("blog_name") != null && !obj.getAsJsonObject().get("blog_name").isJsonNull()) {
             tempArticle.setBlogName(obj.getAsJsonObject().get("blog_name").getAsString());
         } else {
             tempArticle.setBlogName("");
         }
 
-        if(obj.getAsJsonObject().get("related_urls") != null) {
+        if (obj.getAsJsonObject().get("related_urls") != null) {
             if (obj.getAsJsonObject().get("related_urls") instanceof JsonObject) {
                 RelatedUrl tempRelatedUrl = new RelatedUrl();
                 tempRelatedUrl.setSuggestedLinkText((obj.getAsJsonObject().get("related_urls")).getAsJsonObject().get("suggested_link_text").getAsString());
@@ -89,7 +91,7 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
 
         List<Facet> desList = new ArrayList<Facet>();
         if (obj.get("des_facet") instanceof JsonArray && !obj.get("des_facet").isJsonNull()) {
-            for(JsonElement ele : obj.get("des_facet").getAsJsonArray()) {
+            for (JsonElement ele : obj.get("des_facet").getAsJsonArray()) {
                 Facet facet = new Facet(FacetType.DES, ele.getAsString(), tempArticle.getCreatedDate());
                 desList.add(facet);
             }
@@ -100,7 +102,7 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
 
         List<Facet> orgList = new ArrayList<Facet>();
         if (obj.get("org_facet") instanceof JsonArray && !obj.get("org_facet").isJsonNull()) {
-            for(JsonElement ele : obj.get("org_facet").getAsJsonArray()) {
+            for (JsonElement ele : obj.get("org_facet").getAsJsonArray()) {
                 Facet facet = new Facet(FacetType.ORG, ele.getAsString(), tempArticle.getCreatedDate());
                 orgList.add(facet);
             }
@@ -111,7 +113,7 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
 
         List<Facet> perList = new ArrayList<Facet>();
         if (obj.get("per_facet") instanceof JsonArray && !obj.get("per_facet").isJsonNull()) {
-            for(JsonElement ele : obj.get("per_facet").getAsJsonArray()) {
+            for (JsonElement ele : obj.get("per_facet").getAsJsonArray()) {
                 Facet facet = new Facet(FacetType.PER, ele.getAsString(), tempArticle.getCreatedDate());
                 perList.add(facet);
             }
@@ -122,7 +124,7 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
 
         List<Facet> geoList = new ArrayList<Facet>();
         if (obj.get("geo_facet") instanceof JsonArray && !obj.get("geo_facet").isJsonNull()) {
-            for(JsonElement ele : obj.get("geo_facet").getAsJsonArray()) {
+            for (JsonElement ele : obj.get("geo_facet").getAsJsonArray()) {
                 Facet facet = new Facet(FacetType.GEO, ele.getAsString(), tempArticle.getCreatedDate());
                 geoList.add(facet);
             }

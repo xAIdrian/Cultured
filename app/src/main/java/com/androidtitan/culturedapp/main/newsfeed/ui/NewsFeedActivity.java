@@ -528,16 +528,20 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
+        Intent passingIntent = new Intent(this, TopArticleActivity.class);
+
         switch (item.getItemId()) {
             case R.id.menu_item_toparticle:
 
-                startActivity(new Intent(this, TopArticleActivity.class));
+                passingIntent.putExtra(TOP_ARTICLE_MODE, TOP_ARTICLE_TOP);
+                startActivity(passingIntent);
 
                 break;
 
             case R.id.menu_item_offline:
 
-                startActivity(new Intent(this, TopArticleActivity.class));
+                passingIntent.putExtra(TOP_ARTICLE_MODE, TOP_ARTICLE_OFFLINE);
+                startActivity(passingIntent);
 
                 break;
 

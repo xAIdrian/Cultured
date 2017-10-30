@@ -55,6 +55,11 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
 
         ButterKnife.bind(this);
 
+        adapterArticleList = new ArrayList<>();
+
+        linearLayoutManager = new LinearLayoutManager(this);
+        topArticleAdapter = new TopArticleAdapter(this, adapterArticleList);
+
         // TODO: 10/14/17 we need to pass out `isTopArticleMode` value in savedInstanceState
 
         Bundle extras = getIntent().getExtras();
@@ -68,13 +73,7 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
             }
         }
 
-        refreshFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.loadArticles(isTopArticleMode);
-            }
-        });
-
+        refreshFab.setOnClickListener(v -> presenter.loadArticles(isTopArticleMode));
     }
 
     private void setupTopArticle() {
@@ -157,12 +156,9 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
 
     public void setupRecyclerView(boolean isTopArticleMode) {
 
-        linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        adapterArticleList = new ArrayList<>();
-        topArticleAdapter = new TopArticleAdapter(this, adapterArticleList);
         presenter.loadArticles(isTopArticleMode);
     }
 }
