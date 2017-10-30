@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.Constants;
 import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
@@ -33,6 +34,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_BOOKMARKED;
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_EXTRA;
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_GEO_FACETS;
 
 public class NewsDetailActivity extends AppCompatActivity implements FileManager.FileCallback {
 
@@ -122,14 +127,14 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
     }
 
     private void buildArticleObject(Bundle extras) {
-        focusedArticle = extras.getParcelable(NewsFeedActivity.ARTICLE_EXTRA);
-        focusedGeoFacets = extras.getStringArrayList(NewsFeedActivity.ARTICLE_GEO_FACETS);
+        focusedArticle = extras.getParcelable(ARTICLE_EXTRA);
+        focusedGeoFacets = extras.getStringArrayList(ARTICLE_GEO_FACETS);
 
         Gson gson = new Gson();
         focusedImage = gson.fromJson(extras.getString(SAVED_MULTIMEDIA), Multimedium.class);
         addImageToArticle(focusedImage);
 
-        if (extras.getBoolean(NewsFeedActivity.ARTICLE_BOOKMARKED)) {
+        if (extras.getBoolean(ARTICLE_BOOKMARKED)) {
             isBookmarked = true;
         }
     }

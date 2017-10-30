@@ -28,6 +28,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -58,13 +59,16 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
+    private WeakReference<OnClick> weakOnClick;
+
     private int lastAnimatedPosition = -1;
     private boolean shouldShowAboutCard = false;
 
-    public NewsFeedAdapter(Context context, List<Article> adapterTrackList) {
+    public NewsFeedAdapter(OnClick callback, Context context, List<Article> adapterTrackList) {
 
         this.context = context;
         this.articleList = adapterTrackList;
+        this.weakOnClick = new WeakReference<>(callback);
 
         sharedPreferences = context.getSharedPreferences(CULTURED_PREFERENCES, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
@@ -351,7 +355,10 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendDetailActivity(articleList.get(position), holder.articleImage);
+
+                if (weakOnClick.get() != null) {
+                    weakOnClick.get().sendDetailActivity(articleList.get(position), holder.articleImage);
+                }
 
             }
         });
@@ -400,7 +407,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.clickLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendDetailActivity(articleList.get(position), holder.articleImage);
+                if (weakOnClick.get() != null) {
+                    weakOnClick.get().sendDetailActivity(articleList.get(position), holder.articleImage);
+                }
             }
         });
     }
@@ -521,9 +530,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return articleList.size();
     }
 
-    private void sendDetailActivity(Article article, ImageView imageView) {
-        ((NewsFeedActivity) context).startDetailActivity(
-            article, imageView);
+    public interface OnClick {
+        void sendDetailActivity(Article article, ImageView imageView);
     }
-
 }
