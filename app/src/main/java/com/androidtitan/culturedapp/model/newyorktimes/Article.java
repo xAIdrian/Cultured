@@ -136,46 +136,6 @@ public class Article implements Parcelable {
         this.multimedia = multimedia;
     }
 
-
-    //must be read these in the same order as your wrote them
-    public Article(Parcel in) {
-        section = in.readString();
-        subsection = in.readString();
-        title = in.readString();
-        _abstract = in.readString();
-        url = in.readString();
-        byline = in.readString();
-        thumbnailStandard = in.readString();
-        itemType = in.readString();
-        source = in.readString();
-
-        updatedDate = (java.util.Date) in.readSerializable();
-        createdDate = (java.util.Date) in.readSerializable();
-        publishedDate = (java.util.Date) in.readSerializable();
-
-        materialTypeFacet = in.readString();
-        kicker = in.readString();
-        headline = in.readString();
-
-        /* todo
-        desFacet = new ArrayList<Facet>();
-        in.readStringList(desFacet);
-        orgFacet = new ArrayList<Facet>();
-        in.readStringList(orgFacet);
-        perFacet = new ArrayList<Facet>();
-        in.readStringList(perFacet);
-        geoFacet = new ArrayList<Facet>();
-        in.readStringList(geoFacet);
-        */
-
-        relatedUrls = new ArrayList<RelatedUrl>();
-        in.readTypedList(relatedUrls, RelatedUrl.CREATOR);
-        // TODO: 8/30/17  multimedia = new ArrayList<Multimedium>();
-        //in.readTypedList(multimedia, Multimedium.CREATOR);
-        blogName = in.readString();
-
-    }
-
     public ContentValues getArticleContentValues() {
 
         ContentValues cv = new ContentValues();
@@ -631,14 +591,33 @@ public class Article implements Parcelable {
         dest.writeString(kicker);
         dest.writeString(headline);
 
-        dest.writeTypedList(desFacet);
-        dest.writeTypedList(orgFacet);
-        dest.writeTypedList(perFacet);
-        dest.writeTypedList(geoFacet);
-
         dest.writeTypedList(relatedUrls);
-        //dest.writeTypedList(multimedia);
         dest.writeString(blogName);
+    }
+
+    //must be read these in the same order as your wrote them
+    public Article(Parcel in) {
+        section = in.readString();
+        subsection = in.readString();
+        title = in.readString();
+        _abstract = in.readString();
+        url = in.readString();
+        byline = in.readString();
+        thumbnailStandard = in.readString();
+        itemType = in.readString();
+        source = in.readString();
+
+        updatedDate = (java.util.Date) in.readSerializable();
+        createdDate = (java.util.Date) in.readSerializable();
+        publishedDate = (java.util.Date) in.readSerializable();
+
+        materialTypeFacet = in.readString();
+        kicker = in.readString();
+        headline = in.readString();
+
+        relatedUrls = new ArrayList<RelatedUrl>();
+        in.readTypedList(relatedUrls, RelatedUrl.CREATOR);
+        blogName = in.readString();
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {

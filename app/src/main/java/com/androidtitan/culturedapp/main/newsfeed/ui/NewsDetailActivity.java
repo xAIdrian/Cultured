@@ -17,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.Constants;
 import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
@@ -118,11 +117,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
             }
         }
 
-        fab.setOnClickListener(view -> {
-
-            fileManager.writeArticleToFile(this, focusedArticle);
-
-        });
+        fab.setOnClickListener(view -> fileManager.writeArticleToFile(this, focusedArticle));
 
     }
 

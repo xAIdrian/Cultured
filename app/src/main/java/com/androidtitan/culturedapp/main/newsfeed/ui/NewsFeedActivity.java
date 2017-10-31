@@ -795,6 +795,8 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     public void sendDetailActivity(Article article, ImageView imageView) {
 
         Intent intent = new Intent(this, NewsDetailActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
         intent.putExtra(ARTICLE_EXTRA, article);
         intent.putStringArrayListExtra(ARTICLE_GEO_FACETS, ArticleHelper.getGeoFacetArrayList(article));
         intent.putExtra(ARTICLE_BOOKMARKED, ArticleHelper.isArticleBookmarked(bookMarkedArticles, article.getTitle()));
