@@ -1,10 +1,14 @@
 package com.androidtitan.culturedapp.main.toparticle.ui;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +19,7 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.ArticleHelper;
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.FileManager;
 import com.androidtitan.culturedapp.common.SessionManager;
 import com.androidtitan.culturedapp.common.structure.MvpActivity;
 import com.androidtitan.culturedapp.main.newsfeed.ui.NewsDetailActivity;
@@ -37,7 +42,7 @@ import static com.androidtitan.culturedapp.common.Constants.ARTICLE_GEO_FACETS;
 import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsDetailActivity.SAVED_MULTIMEDIA;
 
 public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArticleMvp.View>
-        implements TopArticleMvp.View, TopArticleAdapter.OnClick {
+        implements TopArticleMvp.View, TopArticleAdapter.OnClick, FileManager.FileCallback {
     private final String TAG = TopArticleActivity.class.getSimpleName();
 
     TopArticlePresenter presenter;
@@ -82,18 +87,37 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
                 setupOfflineMode();
             }
         }
-
-        refreshFab.setOnClickListener(v -> presenter.loadArticles(isTopArticleMode));
     }
 
     private void setupTopArticle() {
         setupToolbar(getString(R.string.top_article_string));
         setupRecyclerView(true);
+
+        refreshFab.setOnClickListener(v -> presenter.loadArticles(isTopArticleMode));
     }
 
     private void setupOfflineMode() {
         setupToolbar(getString(R.string.offline_string));
         setupRecyclerView(false);
+
+        refreshFab.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_delete, null));
+        refreshFab.setOnClickListener(v -> buildAlertDialogue(this).show());
+    }
+
+    private AlertDialog buildAlertDialogue(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(R.string.offline_delete_title);
+        builder.setMessage(R.string.offline_delete_message);
+        builder.setPositiveButton(R.string.offline_delete_confirm, (dialog, which) -> {
+            //clears our text file containing our offline articles
+            FileManager.getInstance(TopArticleActivity.this).deleteFile(TopArticleActivity.this, TopArticleActivity.this);
+            dialog.dismiss();
+            finish();
+        });
+        builder.setNegativeButton(R.string.offline_delete_cancel, (dialog, which) -> {
+            dialog.dismiss();
+        });
+        return builder.create();
     }
 
     @Override
@@ -185,5 +209,15 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
         intent.putExtra(SAVED_MULTIMEDIA, ArticleHelper.multimediaToJsonString(article.getMultimedia()));
 
         startActivity(intent);
+    }
+
+    @Override
+    public void onFileWriteComplete(String response, boolean hasError) {
+        //no op
+    }
+
+    @Override
+    public void onFileDeleteComplete() {
+        topArticleAdapter.notifyDataSetChanged();
     }
 }

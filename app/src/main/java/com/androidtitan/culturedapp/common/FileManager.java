@@ -290,9 +290,19 @@ public class FileManager {
         return myGson;
     }
 
+    public void deleteFile(FileCallback callback, Context context) {
+
+        weakFileCallback = new WeakReference<>(callback);
+        FileCallback fileCallback = weakFileCallback.get();
+
+        context.deleteFile(Constants.BOOKMARK_ARTICLES_FILE);
+        fileCallback.onFileDeleteComplete();
+    }
+
 
     public interface FileCallback {
 
         void onFileWriteComplete(String response, boolean hasError);
+        void onFileDeleteComplete();
     }
 }

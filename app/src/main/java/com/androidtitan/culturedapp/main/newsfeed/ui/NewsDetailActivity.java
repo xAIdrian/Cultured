@@ -235,6 +235,11 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
         }
     }
 
+    @Override
+    public void onFileDeleteComplete() {
+        //no op
+    }
+
 
     // handling our web scraping on a background thread
     private class ParseUrl extends AsyncTask<String, Integer, String> {
