@@ -34,6 +34,10 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_BOOKMARKED;
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_EXTRA;
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_GEO_FACETS;
+
 public class NewsDetailActivity extends AppCompatActivity implements FileManager.FileCallback {
 
     private static final String TAG = NewsDetailActivity.class.getSimpleName();
@@ -113,23 +117,19 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
             }
         }
 
-        fab.setOnClickListener(view -> {
-
-            fileManager.writeArticleToFile(this, focusedArticle);
-
-        });
+        fab.setOnClickListener(view -> fileManager.writeArticleToFile(this, focusedArticle));
 
     }
 
     private void buildArticleObject(Bundle extras) {
-        focusedArticle = extras.getParcelable(NewsFeedActivity.ARTICLE_EXTRA);
-        focusedGeoFacets = extras.getStringArrayList(NewsFeedActivity.ARTICLE_GEO_FACETS);
+        focusedArticle = extras.getParcelable(ARTICLE_EXTRA);
+        focusedGeoFacets = extras.getStringArrayList(ARTICLE_GEO_FACETS);
 
         Gson gson = new Gson();
         focusedImage = gson.fromJson(extras.getString(SAVED_MULTIMEDIA), Multimedium.class);
         addImageToArticle(focusedImage);
 
-        if (extras.getBoolean(NewsFeedActivity.ARTICLE_BOOKMARKED)) {
+        if (extras.getBoolean(ARTICLE_BOOKMARKED)) {
             isBookmarked = true;
         }
     }
@@ -233,6 +233,11 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
             fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_bookmark));
             Snackbar.make(rootViewGroup, getResources().getString(R.string.file_write_success), Snackbar.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onFileDeleteComplete() {
+        //no op
     }
 
 

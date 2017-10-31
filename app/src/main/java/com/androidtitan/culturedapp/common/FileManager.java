@@ -280,7 +280,7 @@ public class FileManager {
     private static Gson buildArticleGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         //adding custom deserializer
-        gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+        //gsonBuilder.setDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
         gsonBuilder.registerTypeAdapter(Article.class, new ArticleDeserializer());
         gsonBuilder.serializeNulls();
@@ -290,9 +290,19 @@ public class FileManager {
         return myGson;
     }
 
+    public void deleteFile(FileCallback callback, Context context) {
+
+        weakFileCallback = new WeakReference<>(callback);
+        FileCallback fileCallback = weakFileCallback.get();
+
+        context.deleteFile(Constants.BOOKMARK_ARTICLES_FILE);
+        fileCallback.onFileDeleteComplete();
+    }
+
 
     public interface FileCallback {
 
         void onFileWriteComplete(String response, boolean hasError);
+        void onFileDeleteComplete();
     }
 }

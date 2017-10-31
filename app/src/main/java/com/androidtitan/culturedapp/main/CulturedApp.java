@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
+import com.androidtitan.culturedapp.common.SessionManager;
 import com.androidtitan.culturedapp.main.web.services.FacetDownloadJobService;
 import com.androidtitan.culturedapp.main.web.services.FacetDeleteService;
 
@@ -36,6 +37,10 @@ public class CulturedApp extends Application {
 
     public static Context getAppContext() {
         return context;
+    }
+
+    public static SessionManager getSessionManager() {
+        return SessionManager.getInstance();
     }
 
     public void launchTrendingFacetServices() {

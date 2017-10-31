@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_EXTRA;
-import static com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity.ARTICLE_GEO_FACETS;
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_EXTRA;
+import static com.androidtitan.culturedapp.common.Constants.ARTICLE_GEO_FACETS;
 
 /**
  * Implementation of App Widget functionality.

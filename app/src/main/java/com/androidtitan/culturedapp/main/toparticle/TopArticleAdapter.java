@@ -13,12 +13,15 @@ import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.view.TopArticleHeaderLayout;
+import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
+import com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.BitmapImageViewTarget;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -36,9 +39,13 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private Context context;
     public List<Article> articleList;
 
-    public TopArticleAdapter(Context context, List<Article> articleList) {
+    private WeakReference<TopArticleAdapter.OnClick> weakOnClick;
+
+
+    public TopArticleAdapter(OnClick callback, Context context, List<Article> articleList) {
         this.context = context;
         this.articleList = articleList;
+        this.weakOnClick = new WeakReference<>(callback);
     }
 
     @Override
@@ -57,7 +64,7 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         XLargeArticleViewHolder holder2 = (XLargeArticleViewHolder) holder;
-        initViewHolder(holder2, position, articleList.get(position));
+        initViewHolder(holder2, articleList.get(position));
     }
 
     @Override
@@ -65,7 +72,7 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         return articleList.size();
     }
 
-    private void initViewHolder(final XLargeArticleViewHolder holder, int position, Article article) {
+    private void initViewHolder(final XLargeArticleViewHolder holder, Article article) {
 
         DateFormat formatter = new SimpleDateFormat("MMM dd h:mm a");
         final String dateFormatted = formatter.format(article.getCreatedDate());
@@ -109,6 +116,11 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             }
         }
 
+        holder.clickLayout.setOnClickListener(v -> {
+            if (weakOnClick.get() != null) {
+                weakOnClick.get().sendDetailActivity(article, holder.articleImage);
+            }
+        });
 
     }
 
@@ -134,5 +146,9 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 e.printStackTrace();
             }
         }
+    }
+
+    public interface OnClick {
+        void sendDetailActivity(Article article, ImageView imageView);
     }
 }

@@ -172,6 +172,12 @@
     <string name="title_activity_no_internet">NoInternetActivity</string>
 
     <string name="empty_string"></string>
+    <string name="offline_string">Offline Articles</string>
+    <string name="top_article_string">Top Articles</string>
+    <string name="offline_delete_message">Confirming this action will delete all of your Offline Articles.  Are you sure this is what you want?</string>
+    <string name="offline_delete_title">Delete Articles?</string>
+    <string name="offline_delete_confirm">Delete</string>
+    <string name="offline_delete_cancel">Cancel</string>
 
 
 </resources>
