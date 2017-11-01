@@ -676,6 +676,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     //animation and UI methods
     private void scrollViewParallax(int dy) { // divided by three to scroll slower
         bgView.setTranslationY(bgView.getTranslationY() - dy / 3);
+        welcomeText.setTranslationY(welcomeText.getTranslationY() - dy / 2);
     }
 
     public void initializeAnimation() {
@@ -693,22 +694,12 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         loadingTitleText.setVisibility(View.GONE);
         loadingTitleText.startAnimation(fadeAnim);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        handler.postDelayed(() -> bgView.startAnimation(scale), LOADING_ANIM_TIME);
 
-                bgView.startAnimation(scale);
+        handler.postDelayed(() -> {
 
-            }
-        }, LOADING_ANIM_TIME);
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                adapter.notifyDataSetChanged();
-                firstLoad = false;
-            }
+            adapter.notifyDataSetChanged();
+            firstLoad = false;
         }, LOADING_ANIM_TIME * 2);
     }
 
