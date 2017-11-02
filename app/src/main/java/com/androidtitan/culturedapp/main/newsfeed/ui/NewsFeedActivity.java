@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -45,7 +44,6 @@ import android.widget.Toast;
 
 import com.androidtitan.culturedapp.ArticleHelper;
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.CollectionUtils;
 import com.androidtitan.culturedapp.common.SessionManager;
 import com.androidtitan.culturedapp.common.structure.MvpActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
@@ -56,14 +54,11 @@ import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.newyorktimes.Facet;
-import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;

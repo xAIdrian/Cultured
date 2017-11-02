@@ -11,12 +11,14 @@
         android:id="@+id/errorTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="154dp"
         android:gravity="center"
         android:padding="8dp"
-        android:textColor="@android:color/white"
+        android:text="@string/nice_error"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/nice_error" />
+        android:textColor="@android:color/white" />
 
     <TextView
         android:id="@+id/extraInfoTextView"
@@ -30,6 +32,18 @@
         android:text="@string/restart_app" />
 
     <TextView
+        android:id="@+id/viewOfflineTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/restartTextView"
+        android:layout_alignParentEnd="true"
+        android:padding="16dp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/view_offline" />
+
+    <TextView
         android:id="@+id/restartTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -37,8 +51,7 @@
         android:layout_alignParentEnd="true"
         android:padding="16dp"
         android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/restart_app" />
 
 </RelativeLayout>

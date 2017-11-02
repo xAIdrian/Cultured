@@ -178,6 +178,7 @@
     <string name="offline_delete_title">Delete Articles?</string>
     <string name="offline_delete_confirm">Delete</string>
     <string name="offline_delete_cancel">Cancel</string>
+    <string name="view_offline">View offline articles</string>
 
 
 </resources>

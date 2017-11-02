@@ -78,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/linearLayout"
                     android:padding="@dimen/defaultt"
-                    android:textAppearance="?android:textAppearanceMedium"/>
+                    android:text="@string/loading"/>
 
         </RelativeLayout>
 
