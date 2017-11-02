@@ -275,13 +275,12 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 break;
 
             default:
-                //
-                break;
+                throw new IllegalArgumentException("Incorrect argument.  Please implement button.");
         }
 
     }
 
-    private void initViewholderSimple(final SimpleViewHolder holder,  int position) {
+    private void initViewholderSimple(final SimpleViewHolder holder, int position) {
 
         if (sharedPreferences.getBoolean(PREFERENCES_APP_FIRST_RUN, false) || shouldShowAboutCard) {
 
@@ -295,23 +294,9 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         int finalPosition = position;
         holder.clickLayout.setOnClickListener(v -> {
-            // TODO: 8/30/17 Clicking into this does not give us article text or a BG
-//                ((NewsFeedActivity) context).startDetailActivity(
-//                        articleList.get(position), holder.articleImage);
-//                sendDetailActivity(articleList.get(finalPosition), holder.articleImage);
 
-            Intent tempTrendingIntent = new Intent(context, TrendingActivity.class);
-
-            // this adds all of {@link NewsDetailActivity}'s parents to the stack followed by the Activity itself
-            PendingIntent pendingIntent =
-                    TaskStackBuilder.create(context)
-                            .addNextIntentWithParentStack(tempTrendingIntent)
-                            .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            try {
-                pendingIntent.send();
-            } catch (PendingIntent.CanceledException e) {
-                e.printStackTrace();
+            if (weakOnClick.get() != null) {
+                weakOnClick.get().sendDetailActivity(articleList.get(finalPosition), holder.articleImage);
             }
         });
 
@@ -352,15 +337,12 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.newsHeaderLayout.setDateText(dateFormatted);
         }
 
-        holder.clickLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.clickLayout.setOnClickListener(v -> {
 
-                if (weakOnClick.get() != null) {
-                    weakOnClick.get().sendDetailActivity(articleList.get(position), holder.articleImage);
-                }
-
+            if (weakOnClick.get() != null) {
+                weakOnClick.get().sendDetailActivity(articleList.get(position), holder.articleImage);
             }
+
         });
 
     }

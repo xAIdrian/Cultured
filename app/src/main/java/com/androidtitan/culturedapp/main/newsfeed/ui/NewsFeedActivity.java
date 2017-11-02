@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -45,7 +44,6 @@ import android.widget.Toast;
 
 import com.androidtitan.culturedapp.ArticleHelper;
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.CollectionUtils;
 import com.androidtitan.culturedapp.common.SessionManager;
 import com.androidtitan.culturedapp.common.structure.MvpActivity;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
@@ -56,14 +54,11 @@ import com.androidtitan.culturedapp.main.preferences.PreferencesActivity;
 import com.androidtitan.culturedapp.main.toparticle.ui.TopArticleActivity;
 import com.androidtitan.culturedapp.main.provider.DatabaseContract;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
-import com.androidtitan.culturedapp.model.newyorktimes.Facet;
-import com.androidtitan.culturedapp.model.newyorktimes.Multimedium;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -676,6 +671,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     //animation and UI methods
     private void scrollViewParallax(int dy) { // divided by three to scroll slower
         bgView.setTranslationY(bgView.getTranslationY() - dy / 3);
+        welcomeText.setTranslationY(welcomeText.getTranslationY() - dy / 2);
     }
 
     public void initializeAnimation() {
@@ -693,22 +689,12 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         loadingTitleText.setVisibility(View.GONE);
         loadingTitleText.startAnimation(fadeAnim);
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        handler.postDelayed(() -> bgView.startAnimation(scale), LOADING_ANIM_TIME);
 
-                bgView.startAnimation(scale);
+        handler.postDelayed(() -> {
 
-            }
-        }, LOADING_ANIM_TIME);
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                adapter.notifyDataSetChanged();
-                firstLoad = false;
-            }
+            adapter.notifyDataSetChanged();
+            firstLoad = false;
         }, LOADING_ANIM_TIME * 2);
     }
 
