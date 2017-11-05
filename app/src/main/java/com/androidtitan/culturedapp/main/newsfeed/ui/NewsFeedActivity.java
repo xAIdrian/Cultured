@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -83,6 +84,8 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     private static final String SENDER_ID = "612691836045";
     public static final String ACCOUNT_TYPE = "com.androidtitan";
     public static final String ACCOUNT = "dummyaccount";
+
+    private static final String SAVED_INSTANCE_STATE_ARTICLES = "newsfeedactivity.savedinstancestatearticles";
 
     // Sync interval constants...one hour
     public static final long SECONDS_PER_MINUTE = 60L;
@@ -196,34 +199,27 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
 
         initializeAnimation();
-
-        if (savedInstanceState != null) {
-            //
-        }
-        if (getIntent() != null) {
-            Intent in = getIntent();
-            Uri deepLinkData = in.getData();
-
-            //receives 'http://www.cultured.com because that is the URL(URI) data required to launch our app from search
-        }
         setUpActionBar();
 
         screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
-        if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
-            articles = presenter.loadArticles(10);
+        if (savedInstanceState != null) {
+            articles = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_STATE_ARTICLES);
+            firstLoadCompleteAnimation();
+
         } else {
-            articles = presenter.loadArticles(5);
+            if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
+                articles = presenter.loadArticles(10);
+            } else {
+                articles = presenter.loadArticles(5);
+            }
         }
 
-        navImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (drawerLayout.isDrawerOpen(navigationView)) {
-                    drawerLayout.closeDrawers();
-                } else {
-                    drawerLayout.openDrawer(navigationView);
-                }
+        navImage.setOnClickListener(v -> {
+            if (drawerLayout.isDrawerOpen(navigationView)) {
+                drawerLayout.closeDrawers();
+            } else {
+                drawerLayout.openDrawer(navigationView);
             }
         });
 
@@ -252,7 +248,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
                 case R.id.onboarding_card_generator:
 
                     if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                            && adapter.getAboutStatus() == false) {
+                            && !adapter.getAboutStatus()) {
                         adapter.resetOnboardingCard();
                     }
 
@@ -261,7 +257,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
                 case R.id.about_card_generator:
 
                     if (!adapter.getSharedPreferences().getBoolean(PREFERENCES_APP_FIRST_RUN, false)
-                            && adapter.getAboutStatus() == false) {
+                            && !adapter.getAboutStatus()) {
                         adapter.showAboutCard();
                     }
 
@@ -269,17 +265,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
                 case R.id.support_mail:
 
-                    Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
-                    feedbackIntent.setType("plain/text");
-                    feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"adrian.mohnacs@gmail.com"});
-                    feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "Cultured Feedback");
-                    feedbackIntent.putExtra(Intent.EXTRA_TEXT, "Hi Adrian,\nHere\'s what I think about Cultured...");
-                    //chooser
-                    String title = getResources().getString(R.string.chooser_text);
-                    Intent chooser = Intent.createChooser(feedbackIntent, title);
-                    if (feedbackIntent.resolveActivity(getPackageManager()) != null) {
-                        startActivity(chooser);
-                    }
+                    launchMailIntent();
 
                     break;
 
@@ -403,6 +389,21 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     }
 
+    private void launchMailIntent() {
+        Intent feedbackIntent = new Intent(Intent.ACTION_SEND);
+        feedbackIntent.setType("plain/text");
+        feedbackIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"adrian.mohnacs@gmail.com"});
+        feedbackIntent.putExtra(Intent.EXTRA_SUBJECT, "Cultured Feedback");
+        feedbackIntent.putExtra(Intent.EXTRA_TEXT, "Hi Adrian,\nHere\'s what I think about Cultured...");
+        //chooser
+        String title = getResources().getString(R.string.chooser_text);
+        Intent chooser = Intent.createChooser(feedbackIntent, title);
+        if (feedbackIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(chooser);
+        }
+    }
+
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -423,6 +424,11 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         // Attaching the layout to the toolbar object
         supportActionBar = (Toolbar) findViewById(R.id.toolbar);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
+
+        if(getSupportActionBar() == null) {
+            return;
+        }
+
         setSupportActionBar(supportActionBar);
         getSupportActionBar().setTitle("");
         drawerToggle = new ActionBarDrawerToggle(
@@ -479,7 +485,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     private void setupUserPreferences() {
 
         setWelcomeText();
-
+/*
         String continentString = getString(R.string.pref_key_continent);
         switch (sharedPreferences.getString(continentString, "")) {
             case "North America":
@@ -493,6 +499,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
             default:
 //                throw new IllegalArgumentException("Invalid case for switch statement");
         }
+        */
     }
 
     private void setWelcomeText() {
@@ -556,6 +563,9 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         //Let's decide if we want to keep it or not
 //        outState.putParcelableArrayList(SAVED_STATE_ARTICLE_LIST,
 //                (ArrayList<? extends Parcelable>) articles);
+
+        outState.putParcelableArrayList(SAVED_INSTANCE_STATE_ARTICLES,
+                (ArrayList<? extends Parcelable>) articles);
     }
 
     private Account createSyncAccount(Context context) {
