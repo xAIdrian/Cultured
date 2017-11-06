@@ -26,6 +26,8 @@ public class CulturedApp extends Application {
 
     private static Context context;
 
+    public static boolean newsFeedFirstLoad = true;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -62,6 +64,22 @@ public class CulturedApp extends Application {
         AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(),
                 AlarmManager.INTERVAL_DAY * 14, pendingIntent); //every two weeks
+    }
+
+    public static Context getContext() {
+        return context;
+    }
+
+    public static void setContext(Context context) {
+        CulturedApp.context = context;
+    }
+
+    public static boolean isNewsFeedFirstLoad() {
+        return newsFeedFirstLoad;
+    }
+
+    public static void setNewsFeedFirstLoad(boolean newsFeedFirstLoad) {
+        newsFeedFirstLoad = newsFeedFirstLoad;
     }
 }
 

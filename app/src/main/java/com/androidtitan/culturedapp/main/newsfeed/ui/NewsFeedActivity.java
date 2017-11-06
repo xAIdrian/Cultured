@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -38,6 +39,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +49,7 @@ import com.androidtitan.culturedapp.ArticleHelper;
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.SessionManager;
 import com.androidtitan.culturedapp.common.structure.MvpActivity;
+import com.androidtitan.culturedapp.main.CulturedApp;
 import com.androidtitan.culturedapp.main.firebase.PreferenceStore;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.NewsFeedMvp;
@@ -156,8 +159,6 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     private boolean isSyncingPeriodically;
 
-    private boolean firstLoad = true; //used for animation
-
     private boolean loading = true;
 
     private int pastVisibleItems;
@@ -199,9 +200,9 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
 
         initializeAnimation();
-        setUpActionBar();
 
         screenSize = getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+        setUpActionBar();
 
         if (savedInstanceState != null) {
             articles = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_STATE_ARTICLES);
@@ -425,10 +426,6 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         supportActionBar = (Toolbar) findViewById(R.id.toolbar);
         appBarLayout = (AppBarLayout) findViewById(R.id.app_bar);
 
-        if(getSupportActionBar() == null) {
-            return;
-        }
-
         setSupportActionBar(supportActionBar);
         getSupportActionBar().setTitle("");
         drawerToggle = new ActionBarDrawerToggle(
@@ -594,11 +591,10 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
     @Override
     public void onLoadComplete() {
 
-        if (firstLoad) {
+        if (CulturedApp.isNewsFeedFirstLoad()) {
             firstLoadCompleteAnimation();
-        } else {
-            loading = true;
         }
+        CulturedApp.setNewsFeedFirstLoad(false);
 
     }
 
@@ -704,7 +700,6 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         handler.postDelayed(() -> {
 
             adapter.notifyDataSetChanged();
-            firstLoad = false;
         }, LOADING_ANIM_TIME * 2);
     }
 

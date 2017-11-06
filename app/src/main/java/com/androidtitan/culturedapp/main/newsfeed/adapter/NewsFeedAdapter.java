@@ -1,6 +1,7 @@
 package com.androidtitan.culturedapp.main.newsfeed.adapter;
 
 import android.content.Context;
+
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
