@@ -135,7 +135,7 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         ImageView articleImage;
         @Nullable
         @Bind(R.id.newsHeaderLayout)
-        NewsHeaderLayout topArticleHeaderLayout;
+        TopArticleHeaderLayout topArticleHeaderLayout;
 
         public XLargeArticleViewHolder(View itemView) {
             super(itemView);
