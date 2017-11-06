@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="top"
             android:layout_marginTop="-50dp"
-            android:background="@color/colorPrimary"/>
+            android:background="@color/colorPrimary" />
 
         <TextView
             android:id="@+id/welcomeTextView"
@@ -26,9 +26,9 @@
             android:layout_height="?android:attr/actionBarSize"
             android:layout_marginTop="?android:attr/actionBarSize"
             android:padding="@dimen/default_padding"
+            android:text="@string/welcome"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="@android:color/white"
-            android:text="@string/welcome"/>
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/loadingTextView"
@@ -38,7 +38,7 @@
             android:text="@string/loading"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@android:color/white"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <!-- RecyclerView layout.  A little bit more than just a common one -->
         <android.support.v7.widget.RecyclerView
@@ -47,7 +47,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/wikiInfoBar"
             android:clipToPadding="false"
-            android:paddingTop="@dimen/doubleDeckerActionBarHeight"/>
+            android:paddingTop="@dimen/doubleDeckerActionBarHeight" />
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/app_bar"
@@ -61,22 +61,22 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?android:attr/actionBarSize"
+                android:background="@color/colorPrimary"
                 android:contentInsetLeft="0dp"
                 android:contentInsetStart="0dp"
-                app:contentInsetLeft="0dp"
-                app:contentInsetStart="0dp"
-                android:background="@color/colorPrimary"
                 android:elevation="4dp"
                 android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
                 <ImageView
                     android:id="@+id/navigation_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_menu"
                     android:layout_gravity="left"
-                    android:layout_marginLeft="@dimen/defaultt"/>
+                    android:layout_marginLeft="@dimen/defaultt"
+                    android:src="@drawable/ic_menu" />
 
             </android.support.v7.widget.Toolbar>
 
@@ -87,11 +87,11 @@
             android:id="@+id/refreshFloatingActionButton"
             android:layout_width="@dimen/fab_size"
             android:layout_height="@dimen/fab_size"
-            android:layout_margin="@dimen/fab_margin"
             android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
             android:background="@drawable/ripple"
-            android:src="@drawable/ic_refresh"
-            android:elevation="8dp"/>
+            android:elevation="8dp"
+            android:src="@drawable/ic_refresh" />
 
     </android.support.design.widget.CoordinatorLayout>
 
@@ -101,6 +101,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/drawer_header"
-        app:menu="@menu/news_feed_navigation_view"/>
+        app:menu="@menu/news_feed_navigation_view" />
 
 </android.support.v4.widget.DrawerLayout>

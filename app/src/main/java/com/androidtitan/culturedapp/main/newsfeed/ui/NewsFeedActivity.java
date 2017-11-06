@@ -35,6 +35,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -206,7 +207,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         if (savedInstanceState != null) {
             articles = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_STATE_ARTICLES);
-            firstLoadCompleteAnimation();
+            hiddenFirstLoadAnimation();
 
         } else {
             if (screenSize == Configuration.SCREENLAYOUT_SIZE_XLARGE) {
@@ -388,6 +389,34 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
             showColoredSnackbar();
         });
 
+    }
+
+    /**
+     * Calculates the completion height our scaling background view and animation and immediately sets it.
+     * Informing the user that no loading has taken place.
+     */
+    private void hiddenFirstLoadAnimation() {
+        ViewTreeObserver viewTreeObserver = bgView.getViewTreeObserver();
+        if (viewTreeObserver.isAlive()) {
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    bgView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    int viewWidth = bgView.getWidth();
+                    int viewHeight = bgView.getHeight();
+
+                    Log.e(TAG, "X : " + viewWidth + " , Y : " + viewHeight);
+
+                    final int bgViewHeight = viewHeight / 3;
+
+                    Log.e(TAG, "modified Y : " + bgViewHeight);
+
+                    CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) bgView.getLayoutParams();
+                    params.height = bgViewHeight;
+                    bgView.setLayoutParams(params);
+                }
+            });
+        }
     }
 
     private void launchMailIntent() {
