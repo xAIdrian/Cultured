@@ -112,7 +112,7 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
         if(article.getGeoFacet() != null) {
             if (article.getGeoFacet().size() > 0) {
-                holder.facetTextView.setText(article.getGeoFacet().get(0).getFacetText());
+                holder.topArticleHeaderLayout.setSectionText(article.getGeoFacet().get(0).getFacetText());
             }
         }
 
@@ -129,8 +129,6 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         @Nullable
         @Bind(R.id.rippleForeground)
         RelativeLayout clickLayout;
-        @Bind(R.id.facetTitleTextView)
-        TextView facetTextView;
         @Nullable
         @Bind(R.id.articleImageView)
         ImageView articleImage;
