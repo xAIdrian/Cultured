@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
+import com.androidtitan.culturedapp.common.view.NewsHeaderLayout;
 import com.androidtitan.culturedapp.common.view.TopArticleHeaderLayout;
 import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
 import com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity;
@@ -134,7 +135,7 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         ImageView articleImage;
         @Nullable
         @Bind(R.id.newsHeaderLayout)
-        TopArticleHeaderLayout topArticleHeaderLayout;
+        NewsHeaderLayout topArticleHeaderLayout;
 
         public XLargeArticleViewHolder(View itemView) {
             super(itemView);

@@ -51,7 +51,7 @@ public class NewsHeaderLayout extends RelativeLayout {
         dateTextView = (TextView) findViewById(R.id.dateTextView);
         dateTextView.setText(dateText);
 
-        sectionTextView = (TextView) findViewById(R.id.sectionTextView);
+        sectionTextView = (TextView) findViewById(R.id.facetTextView);
         sectionTextView.setText(sectionText);
 
     }

@@ -52,7 +52,7 @@ public class TopArticleHeaderLayout extends RelativeLayout{
         titleTextView = (TextView) findViewById(R.id.titleTextView);
         abstractTextView = (TextView) findViewById(R.id.abstractTextView);
         dateTextView = (TextView) findViewById(R.id.dateTextView);
-        sectionTextView = (TextView) findViewById(R.id.sectionTextView);
+        sectionTextView = (TextView) findViewById(R.id.facetTextView);
 
         gradientRelativeLayout.setBackgroundDrawable(gradientDrawable);
         titleTextView.setText(titleText);
