@@ -66,7 +66,7 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
 
     @Override
     public void onArticleConstructionComplete(ArrayList<Article> articleArrayList) {
-        sendDownArticlesToView(articleArrayList);
+        sendDownArticlesToView(articleArrayList.subList(0, 9));
     }
 
     @Override
@@ -90,7 +90,7 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
         Log.e(TAG, "No articles were returned");
     }
 
-    public void sendDownArticlesToView(ArrayList<Article> articleList) {
+    public void sendDownArticlesToView(List<Article> articleList) {
 
         if (articleList != null) {
             if (articleList.size() > 0) {
@@ -121,10 +121,10 @@ public class TopArticlePresenter extends BasePresenter<TopArticleMvp.View> imple
      * @param articleListToStrip
      * @return A list of articles that does not contain any articles without media
      */
-    private ArrayList<Article> stripArticlesWithoutMedia(ArrayList<Article> articleListToStrip) {
+    private List<Article> stripArticlesWithoutMedia(List<Article> articleListToStrip) {
         //we are using an array here because we were getting a ConcurrentModificationException
         //when we just removed the article while we were iterating through the list
-        ArrayList<Article> deletes = new ArrayList<>();
+        List<Article> deletes = new ArrayList<>();
 
         for(int i = 0; i < articleListToStrip.size(); i++) {
             if(articleListToStrip.get(i).getMultimedia().size() <= 0) {
