@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Cultured</string>
-    <string name="github">https://github.com/amohnacs15/Cultured</string>
+    <string name="github" translatable="false">https://github.com/amohnacs15/Cultured</string>
 
     <string name="nyt_api_key_newswire">159001c8b6e4427d9ade246e52c5cf9c</string>
     <string name="nyt_api_key_topstories">159001c8b6e4427d9ade246e52c5cf9c</string>
@@ -10,27 +10,27 @@
     <string name="ACCOUNT_TYPE">com.androidtitan</string>
 
     <!-- Accessability Strings -->
-    <string name="accessability_cardview">Select card to view news article</string>
-    <string name="accessability_loading">Your articles are loading</string>
-    <string name="title_activity_top_article">TopArticleActivity</string>
-    <string name="large_text">Large Text</string>
-    <string name="authenticator">TopArticleAuthenticator</string>
-    <string name="title_activity_trending">TrendingActivity</string>
-    <string name="topArticlePleaseWait">Your articles did not load for some reason. Try hitting that
+    <string name="accessability_cardview" translatable="false">Select card to view news article</string>
+    <string name="accessability_loading" translatable="false">Your articles are loading</string>
+    <string name="title_activity_top_article" translatable="false">TopArticleActivity</string>
+    <string name="large_text" translatable="false">Large Text</string>
+    <string name="authenticator" translatable="false">TopArticleAuthenticator</string>
+    <string name="title_activity_trending" translatable="false">TrendingActivity</string>
+    <string name="topArticlePleaseWait" translatable="false">Your articles did not load for some reason. Try hitting that
         refresh button!
     </string>
-    <string name="title_activity_news">NewsActivity</string>
-    <string name="title_fragment_facet_list">TrendingFacetListActivity</string>
-    <string name="title_fragment_graph">TrendingGraphFragment</string>
-    <string name="dev_console_text">2 more clicks!</string>
+    <string name="title_activity_news" translatable="false">NewsActivity</string>
+    <string name="title_fragment_facet_list" translatable="false">TrendingFacetListActivity</string>
+    <string name="title_fragment_graph" translatable="false">TrendingGraphFragment</string>
+    <string name="dev_console_text" translatable="false">2 more clicks!</string>
     <!-- -->
 
     <string name="hello_world">I think you are missing something…</string>
     <string name="action_settings">Settings</string>
     <string name="placeholder">PlaceHolder</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="tracks">Tracks</string>
-    <string name="long_placeholder">WikipediaTunes is going to recommend music based on the
+    <string name="tracks" translatable="false">Tracks</string>
+    <string name="long_placeholder" translatable="false">WikipediaTunes is going to recommend music based on the
         some featured article. Why not try listening to these songs while you read the article?
         Keep up the work Adrian. You\'re great.
     </string>
@@ -38,10 +38,10 @@
     <string name="transition_news_image">transition:NEWSIMAGE</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="view_article">View Article</string>
 
-    <string name="simple_loading">Loading...</string>
+    <string name="simple_loading" translatable="false">Loading...</string>
     <string name="loading">Cultured is loading ...</string>
     <string name="swipe_up">Swipe up for more info</string>
 
@@ -59,7 +59,7 @@
     <string name="generate_onboarding">Show Onboarding</string>
     <string name="generate_about">Show About</string>
     <string name="support_mail">Give Feedback</string>
-    <string name="settings">Settings</string>
+    <string name="settings" translatable="false">Settings</string>
 
     <string name="about_intro">Cultured was developed by Adrian Mohnacs.</string>
     <string name="about_body">Third party libraries used:\n\nDagger 2. Butterknife. Retrofit 2.
@@ -70,38 +70,38 @@
     </string>
     <string name="chooser_text">Which app would you like to use?</string>
     <string name="error">Error</string>
-    <string name="nice_error">Your news is not loading at the moment.\nCheck your internet
+    <string name="nice_error" translatable="false">Your news is not loading at the moment.\nCheck your internet
         connection and try again.
     </string>
     <string name="restart_app">Click to restart the app</string>
-    <string name="welcome">Welcome</string>
+    <string name="welcome" translatable="false">Welcome</string>
 
-    <string name="top_article">Top Article</string>
+    <string name="top_article" translatable="false">Top Article</string>
     <string name="graph">Graph</string>
     <string name="my_facets">My Facets</string>
 
-    <string name="pager_list">list</string>
-    <string name="pager_graph">graph</string>
-    <string name="dev_console">Developer\'s Console</string>
-    <string name="prime_dev_console_text">You\'ve unlocked the Developer\'s Console</string>
-    <string name="bye_dev_console">See you soon</string>
+    <string name="pager_list" translatable="false">list</string>
+    <string name="pager_graph" translatable="false">graph</string>
+    <string name="dev_console" translatable="false">Developer\'s Console</string>
+    <string name="prime_dev_console_text" translatable="false">You\'ve unlocked the Developer\'s Console</string>
+    <string name="bye_dev_console" translatable="false">See you soon</string>
 
-    <string name="data_view">View SQL Data</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="data_view" translatable="false">View SQL Data</string>
+    <string name="title_activity_settings" translatable="false">Settings</string>
 
     <!-- Settings -->
-    <string name="pref_dialogTitle_pickone">Pick One</string>
+    <string name="pref_dialogTitle_pickone" translatable="false">Pick One</string>
 
-    <string name="pref_strong_secret">Secret Settings</string>
-    <string name="pref_strong_key_secret">pref_strong_key_secret</string>
+    <string name="pref_strong_secret" translatable="false">Secret Settings</string>
+    <string name="pref_strong_key_secret" translatable="false">pref_strong_key_secret</string>
 
-    <string name="pref_strong_continent">Your News</string>
-    <string name="pref_strong_key_continent">pref_strong_key_continent</string>
+    <string name="pref_strong_continent" translatable="false">Your News</string>
+    <string name="pref_strong_key_continent" translatable="false">pref_strong_key_continent</string>
 
-    <string name="pref_key_continent">pref_continent_settings</string>
-    <string name="pref_title_continent">Continent Priority</string>
+    <string name="pref_key_continent" translatable="false">pref_continent_settings</string>
+    <string name="pref_title_continent" translatable="false">Continent Priority</string>
 
-    <string-array name="pref_entries_continent" formatted="false">
+    <string-array name="pref_entries_continent" formatted="false" translatable="false">
         <item>Eastern United States, Mexico, Central America and the Caribbean are the most densely
             populated areas while Canada, Alaska and Greenland are the least populated areas. The
             United States and Canada are the most economically developed countries. The countries of
@@ -132,7 +132,7 @@
         </item>
     </string-array>
 
-    <string-array name="pref_entries_values_continent">
+    <string-array name="pref_entries_values_continent" translatable="false">
         <item>North America</item>
         <item>South America</item>
         <item>Africa</item>
@@ -141,44 +141,44 @@
         <item>Australia</item>
     </string-array>
 
-    <string name="pref_default_value_continents">World</string>
+    <string name="pref_default_value_continents" translatable="false">World</string>
 
-    <string name="pref_key_name">pref_name_settings</string>
-    <string name="pref_title_name">What\'s your name?</string>
-    <string name="default_value_name">Newcomer</string>
+    <string name="pref_key_name" translatable="false">pref_name_settings</string>
+    <string name="pref_title_name" translatable="false">What\'s your name?</string>
+    <string name="default_value_name" translatable="false">Newcomer</string>
 
-    <string name="trending_dev">For curious developers</string>
-    <string name="trending_dev_summary">Go to Github to see how the app was built</string>
-    <string name="continent_priority">Continent Priority</string>
-    <string name="continent_priority_summary">See more news from your favorite continent</string>
-    <string name="title_activity_news_detail">NewsDetailActivity</string>
-    <string name="drawer_open">navigation_drawer_open</string>
-    <string name="drawer_closed">navigation_drawer_closed</string>
-    <string name="file_write_error">There was an error saving your file</string>
-    <string name="file_write_success">Now available offline</string>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="configure">Configure</string>
-    <string name="add_widget">Add widget</string>
-    <string name="widget_empty_state">Sorry, we have nothing to display</string>
-    <string name="widget_new_articles">New articles on deck</string>
-    <string name="widget_new_articles_text">You have a few waiting for you. Check em out</string>
-    <string name="widget_new_articles_expantext">Articles served fresh daily</string>
-    <string name="title_activity_offline">OfflineActivity</string>
-    <string name="offline_title">Here you can view the articles that you have deemed worthy enough
+    <string name="trending_dev" translatable="false">For curious developers</string>
+    <string name="trending_dev_summary" translatable="false">Go to Github to see how the app was built</string>
+    <string name="continent_priority" translatable="false">Continent Priority</string>
+    <string name="continent_priority_summary" translatable="false">See more news from your favorite continent</string>
+    <string name="title_activity_news_detail" translatable="false">NewsDetailActivity</string>
+    <string name="drawer_open" translatable="false">navigation_drawer_open</string>
+    <string name="drawer_closed" translatable="false">navigation_drawer_closed</string>
+    <string name="file_write_error" translatable="false">There was an error saving your file</string>
+    <string name="file_write_success" translatable="false">Now available offline</string>
+    <string name="appwidget_text" translatable="false">EXAMPLE</string>
+    <string name="configure" translatable="false">Configure</string>
+    <string name="add_widget" translatable="false">Add widget</string>
+    <string name="widget_empty_state" translatable="false">Sorry, we have nothing to display</string>
+    <string name="widget_new_articles" translatable="false">New articles on deck</string>
+    <string name="widget_new_articles_text" translatable="false">You have a few waiting for you. Check em out</string>
+    <string name="widget_new_articles_expantext" translatable="false">Articles served fresh daily</string>
+    <string name="title_activity_offline" translatable="false">OfflineActivity</string>
+    <string name="offline_title" translatable="false">Here you can view the articles that you have deemed worthy enough
         to be viewable offline. We/\'re only showing you the three most recent but the rest are
         viewable on the next page!
     </string>
-    <string name="offline_article_count">Offline article count</string>
-    <string name="title_activity_no_internet">NoInternetActivity</string>
+    <string name="offline_article_count" translatable="false">Offline article count</string>
+    <string name="title_activity_no_internet" translatable="false">NoInternetActivity</string>
 
-    <string name="empty_string"></string>
-    <string name="offline_string">Offline Articles</string>
-    <string name="top_article_string">Top Articles</string>
-    <string name="offline_delete_message">Confirming this action will delete all of your Offline Articles.  Are you sure this is what you want?</string>
-    <string name="offline_delete_title">Delete Articles?</string>
-    <string name="offline_delete_confirm">Delete</string>
-    <string name="offline_delete_cancel">Cancel</string>
-    <string name="view_offline">View offline articles</string>
+    <string name="empty_string" translatable="false"></string>
+    <string name="offline_string" translatable="false">Offline Articles</string>
+    <string name="top_article_string" translatable="false">Top Articles</string>
+    <string name="offline_delete_message" translatable="false">Confirming this action will delete all of your Offline Articles.  Are you sure this is what you want?</string>
+    <string name="offline_delete_title" translatable="false">Delete Articles?</string>
+    <string name="offline_delete_confirm" translatable="false">Delete</string>
+    <string name="offline_delete_cancel" translatable="false">Cancel</string>
+    <string name="view_offline" translatable="false">View offline articles</string>
 
 
 </resources>

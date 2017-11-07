@@ -5,3 +5,7 @@
 .DS_Store
 /build
 /captures
+/keystore.properties
+/build.gradle
+/app/build.gradle
+/app/app-release.apk
