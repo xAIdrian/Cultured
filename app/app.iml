@@ -120,7 +120,6 @@
     <orderEntry type="library" exported="" scope="TEST" name="nekohtml:xercesMinimal:1.9.6.2@jar" level="project" />
     <orderEntry type="library" exported="" name="com.google.firebase:firebase-appindexing-10.0.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="com.ximpleware:vtd-xml:2.11@jar" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="org.mockito:mockito-core:2.12.0@jar" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="com.google.code.findbugs:jsr305:2.0.1@jar" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-instantapps-10.0.1" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-panorama-10.0.1" level="project" />
@@ -232,6 +231,7 @@
     <orderEntry type="library" exported="" scope="TEST" name="com.thoughtworks.xstream:xstream:1.4.8@jar" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="org.objenesis:objenesis:2.6@jar" level="project" />
     <orderEntry type="library" exported="" name="com.google.android.gms:play-services-basement-10.0.1" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="org.mockito:mockito-core:2.15.0@jar" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="com.almworks.sqlite4java:sqlite4java:0.282@jar" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="net.bytebuddy:byte-buddy-agent:1.7.9@jar" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="org.apache.maven.wagon:wagon-provider-api:1.0-beta-6@jar" level="project" />
