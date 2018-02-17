@@ -45,6 +45,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
     private final static String SAVED_STATE_ARTICLE = "newsdetailactivity.savedstatearticle";
     private final static String SAVED_STATE_FACETS = "newsdetailactivity.savedstatefacets";
     private final static String SAVED_BOOKMARK_STATUS = "newsdetailactivity.savedbookmarkstatus";
+    private final static String SAVED_MULTIMEDIA_URL = "newsdetailactivity.savedmultimediaurl";
     public final static String SAVED_MULTIMEDIA = "newsdetailactivity.savedmultimedia";
 
 
@@ -81,6 +82,8 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
 
     private View rootViewGroup;
 
+    private String multimediaUrl;
+
     private boolean isBookmarked;
 
     @Override
@@ -106,6 +109,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
         if (savedInstanceState != null) {
             focusedArticle = savedInstanceState.getParcelable(SAVED_STATE_ARTICLE);
             focusedGeoFacets = savedInstanceState.getStringArrayList(SAVED_STATE_FACETS);
+            multimediaUrl = savedInstanceState.getString(SAVED_MULTIMEDIA_URL);
 
             if (savedInstanceState.getBoolean(SAVED_BOOKMARK_STATUS)) {
                 isBookmarked = true;
@@ -149,6 +153,7 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
         outState.putParcelable(SAVED_STATE_ARTICLE, focusedArticle);
         outState.putStringArrayList(SAVED_STATE_FACETS, focusedGeoFacets);
         outState.putBoolean(SAVED_BOOKMARK_STATUS, isBookmarked);
+        outState.putString(SAVED_MULTIMEDIA_URL, multimediaUrl);
     }
 
     @Override
@@ -177,13 +182,13 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
                 new ParseUrl().execute(focusedString);
             }
 
-            if (focusedImage != null && !focusedImage.getUrl().isEmpty()) {
-
-                Glide.with(this).load(focusedImage.getUrl())
-                        .crossFade()
-                        .centerCrop()
-                        .into(backgroundImage);
+            if (multimediaUrl == null || multimediaUrl.isEmpty()) {
+                multimediaUrl = focusedImage.getUrl();
             }
+            Glide.with(this).load(multimediaUrl)
+                    .crossFade()
+                    .centerCrop()
+                    .into(backgroundImage);
 
             detailTitle.setText(article.getTitle());
             sourText.setText(article.getSource());
