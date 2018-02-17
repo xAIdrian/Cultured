@@ -38,12 +38,17 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
 
         Article tempArticle = new Article();
 
-        tempArticle.setSection(obj.getAsJsonObject().get("section").getAsString());
-        tempArticle.setSubsection(obj.getAsJsonObject().get("subsection").getAsString());
-        tempArticle.setTitle(obj.getAsJsonObject().get("title").getAsString());
+        tempArticle.setSection(!obj.getAsJsonObject().get("section").isJsonNull() ?
+                obj.getAsJsonObject().get("section").getAsString() : "");
+        tempArticle.setSubsection(!obj.getAsJsonObject().get("subsection").isJsonNull() ?
+                obj.getAsJsonObject().get("subsection").getAsString() : "");
+        tempArticle.setTitle(!obj.getAsJsonObject().get("title").isJsonNull() ?
+                obj.getAsJsonObject().get("title").getAsString() : "");
 
-        tempArticle.setAbstract(obj.getAsJsonObject().get("abstract").getAsString());
-        tempArticle.setUrl(obj.getAsJsonObject().get("url").getAsString());
+        tempArticle.setAbstract(!obj.getAsJsonObject().get("abstract").isJsonNull() ?
+                obj.getAsJsonObject().get("abstract").getAsString() : "");
+        tempArticle.setUrl(!obj.getAsJsonObject().get("url").isJsonNull() ?
+                obj.getAsJsonObject().get("url").getAsString() : "");
 
         tempArticle.setByline(!obj.getAsJsonObject().get("byline").isJsonNull()
                 ? obj.getAsJsonObject().get("byline").getAsString() : "");
@@ -51,7 +56,8 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
             tempArticle.setThumbnailStandard(obj.getAsJsonObject().get("thumbnail_standard").getAsString());
         }
 
-        tempArticle.setItemType(obj.getAsJsonObject().get("item_type").getAsString());
+        tempArticle.setItemType(!obj.getAsJsonObject().get("item_type").isJsonNull() ?
+                obj.getAsJsonObject().get("item_type").getAsString() : "");
 
         if (obj.getAsJsonObject().has("source")) {
             tempArticle.setSource(!obj.getAsJsonObject().get("source").isJsonNull()
@@ -63,7 +69,8 @@ public class ArticleDeserializer implements JsonDeserializer<Article> {
         tempArticle.setCreatedDate(context.deserialize(obj.getAsJsonObject().get("created_date"), Date.class));
         tempArticle.setPublishedDate(context.deserialize(obj.getAsJsonObject().get("published_date"), Date.class));
 
-        tempArticle.setMaterialTypeFacet(obj.getAsJsonObject().get("material_type_facet").getAsString());
+        tempArticle.setMaterialTypeFacet(!obj.getAsJsonObject().get("material_type_facet").isJsonNull() ?
+                obj.getAsJsonObject().get("material_type_facet").getAsString() : "");
 
         if (obj.getAsJsonObject().has("kicker")) {
             tempArticle.setKicker(!obj.getAsJsonObject().get("kicker").isJsonNull()

@@ -40,7 +40,6 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.ScaleAnimation;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -198,7 +197,9 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         presenter.checkTopArticlesPresent();
 
         loadingTitleText.setVisibility(View.VISIBLE);
-        loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.DONUT) {
+            loadingTitleText.setContentDescription(this.getResources().getString(R.string.accessability_loading));
+        }
 
         initializeAnimation();
 

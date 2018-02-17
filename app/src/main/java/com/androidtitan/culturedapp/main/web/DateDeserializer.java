@@ -33,12 +33,14 @@ public class DateDeserializer implements JsonDeserializer<Date> {
     public Date deserialize(JsonElement element, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
 
-        String date = element.getAsString();
+        if (!element.isJsonNull()) {
+            String date = element.getAsString();
 
-        Date transferDate = parse(date);
-        //Log.e(TAG, transferDate != null ? "Successfully parsed the value of " + transferDate.toString() : "date is null");
+            Date transferDate = parse(date);
 
-        return transferDate;
+            return transferDate;
+        }
+        return new Date();
     }
 
     /*
