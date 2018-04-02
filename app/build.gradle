@@ -28,7 +28,7 @@ android {
         applicationId "com.androidtitan.culturedapp"
         minSdkVersion 21
         targetSdkVersion 24
-        versionCode 2
+        versionCode 3
         versionName "2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
