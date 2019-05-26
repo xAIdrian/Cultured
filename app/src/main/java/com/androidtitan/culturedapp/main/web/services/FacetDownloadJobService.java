@@ -75,7 +75,7 @@ public class FacetDownloadJobService extends JobService {
             Log.d(TAG, "TaskDoInBackground");
 
             final Observable<NewsResponse> call = newsService.newsWireArticles("world", 10, 0, //our offset
-                    getResources().getString(R.string.nyt_api_key_newswire));
+                    getResources().getString(R.string.nyt_api_key));
 
             call.compose(RxHelper.applySchedulers())
                     .retry(10)

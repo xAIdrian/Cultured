@@ -99,7 +99,7 @@ public class ArticleSyncAdapter extends AbstractThreadedSyncAdapter {
         currentId = preferences.getInt(PREFERENCES_ARTICLE_ID, 0);
 
         final ArrayList<Article> articles = new ArrayList<>();
-        final Observable<NewsResponse> call = newsService.topStories("world", context.getResources().getString(R.string.nyt_api_key_topstories));
+        final Observable<NewsResponse> call = newsService.topStories("world", context.getResources().getString(R.string.nyt_api_secret));
 
         call.compose(RxHelper.applySchedulers())
                 .retry(10)

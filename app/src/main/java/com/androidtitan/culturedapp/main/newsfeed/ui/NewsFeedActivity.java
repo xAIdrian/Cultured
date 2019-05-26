@@ -557,12 +557,12 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         Intent passingIntent = new Intent(this, TopArticleActivity.class);
 
         switch (item.getItemId()) {
-            case R.id.menu_item_toparticle:
-
-                passingIntent.putExtra(TOP_ARTICLE_MODE, TOP_ARTICLE_TOP);
-                startActivity(passingIntent);
-
-                break;
+//            case R.id.menu_item_toparticle:
+//
+//                passingIntent.putExtra(TOP_ARTICLE_MODE, TOP_ARTICLE_TOP);
+//                startActivity(passingIntent);
+//
+//                break;
 
             case R.id.menu_item_offline:
 

@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Culto</string>
 
-    <string name="nyt_api_key_newswire">81d9fdae8dbc6db887857f0bedad3a92:19:74775241</string>
-    <string name="nyt_api_key_topstories">159001c8b6e4427d9ade246e52c5cf9c</string>
+    <string name="nyt_api_key">B2EdM91NWKQ0XDjHmcNKOyHaoSfutEuZ</string>
+    <string name="nyt_api_secret">159001c8b6e4427d9ade246e52c5cf9c</string>
 
     <string name="AUTHORITY">com.androidtitan.culturedapp.provider</string>
     <string name="CONTENT_AUTHORITY">com.androidtitan.culturedapp.provider</string>

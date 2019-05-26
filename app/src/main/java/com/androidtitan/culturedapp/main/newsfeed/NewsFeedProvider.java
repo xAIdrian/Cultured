@@ -2,13 +2,10 @@ package com.androidtitan.culturedapp.main.newsfeed;
 
 import android.content.Context;
 import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
 import android.util.Log;
 
 import com.androidtitan.culturedapp.R;
 import com.androidtitan.culturedapp.common.structure.RxHelper;
-import com.androidtitan.culturedapp.main.provider.LoaderHelper;
 import com.androidtitan.culturedapp.main.web.retrofit.NewsEndpoint;
 import com.androidtitan.culturedapp.main.web.retrofit.ServiceGenerator;
 import com.androidtitan.culturedapp.model.ApiError;
@@ -19,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.*;
-
-import static com.androidtitan.culturedapp.common.Constants.ARTICLE_LOADER_ID;
 
 /**
  * Created by amohnacs on 8/29/16.
@@ -46,7 +41,7 @@ public class NewsFeedProvider implements NewsFeedMvp.Provider {
 
 
         final Observable<NewsResponse> call = newsService.newsWireArticles(section, limit, 0, //our offset
-                context.getResources().getString(R.string.nyt_api_key_newswire));
+                context.getResources().getString(R.string.nyt_api_key));
 
         call.compose(RxHelper.applySchedulers())
                 .retry(10)
@@ -86,7 +81,7 @@ public class NewsFeedProvider implements NewsFeedMvp.Provider {
                                         final CallbackListener listener) {
 
         final Observable<NewsResponse> call = newsService.newsWireArticles(section, limit, offset,
-                context.getResources().getString(R.string.nyt_api_key_newswire));
+                context.getResources().getString(R.string.nyt_api_key));
 
         call.compose(RxHelper.applySchedulers())
                 .retry(10)
@@ -125,7 +120,7 @@ public class NewsFeedProvider implements NewsFeedMvp.Provider {
                                                 final CallbackListener listener) {
 
         final Observable<NewsResponse> call = newsService.newsWireArticles(section, 10, 0,
-            context.getResources().getString(R.string.nyt_api_key_newswire));
+            context.getResources().getString(R.string.nyt_api_key));
 
         call.compose(RxHelper.applySchedulers())
             .retry(10)
