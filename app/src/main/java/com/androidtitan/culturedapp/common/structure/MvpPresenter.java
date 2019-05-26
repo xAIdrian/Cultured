@@ -1,6 +1,6 @@
 package com.androidtitan.culturedapp.common.structure;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Every presenter in the app must either implement this interface or extend BasePresenter

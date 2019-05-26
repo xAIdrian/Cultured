@@ -8,7 +8,7 @@
               xmlns:app="http://schemas.android.com/apk/res-auto"
               tools:context="com.androidtitan.culturedapp.main.newsfeed.ui.DevConsoleDialogFragment">
 
-    <android.support.design.widget.NavigationView
+    <com.google.android.material.navigation.NavigationView
             android:id="@+id/dev_console_navigation_view"
             android:layout_width="0dp"
             android:layout_height="match_parent"

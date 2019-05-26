@@ -4,9 +4,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.DialogFragment;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import androidx.fragment.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.androidtitan.culturedapp.R;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
@@ -23,7 +23,7 @@ public class DevConsoleDialogFragment extends DialogFragment {
 
     private DevConsoleCallback callbackListener;
 
-    @Bind(R.id.dev_console_navigation_view)
+    @BindView(R.id.dev_console_navigation_view)
     NavigationView navigationView;
 
     public DevConsoleDialogFragment() {

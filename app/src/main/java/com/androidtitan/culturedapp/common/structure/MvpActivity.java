@@ -1,8 +1,8 @@
 package com.androidtitan.culturedapp.common.structure;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Created by Adrian Mohnacs on 5/31/17.

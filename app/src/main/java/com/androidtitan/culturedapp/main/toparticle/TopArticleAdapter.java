@@ -2,20 +2,16 @@ package com.androidtitan.culturedapp.main.toparticle;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.androidtitan.culturedapp.R;
-import com.androidtitan.culturedapp.common.view.NewsHeaderLayout;
 import com.androidtitan.culturedapp.common.view.TopArticleHeaderLayout;
-import com.androidtitan.culturedapp.main.newsfeed.adapter.NewsFeedAdapter;
-import com.androidtitan.culturedapp.main.newsfeed.ui.NewsFeedActivity;
 import com.androidtitan.culturedapp.model.newyorktimes.Article;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -27,7 +23,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
@@ -128,13 +124,13 @@ public class TopArticleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public static class XLargeArticleViewHolder extends RecyclerView.ViewHolder {
 
         @Nullable
-        @Bind(R.id.rippleForeground)
+        @BindView(R.id.rippleForeground)
         RelativeLayout clickLayout;
         @Nullable
-        @Bind(R.id.articleImageView)
+        @BindView(R.id.articleImageView)
         ImageView articleImage;
         @Nullable
-        @Bind(R.id.newsHeaderLayout)
+        @BindView(R.id.newsHeaderLayout)
         TopArticleHeaderLayout topArticleHeaderLayout;
 
         public XLargeArticleViewHolder(View itemView) {

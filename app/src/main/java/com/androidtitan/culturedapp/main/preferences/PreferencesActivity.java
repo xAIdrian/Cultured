@@ -1,14 +1,13 @@
 package com.androidtitan.culturedapp.main.preferences;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
-import android.view.Menu;
+import androidx.appcompat.app.ActionBar;
+
 import android.view.MenuItem;
 
 import com.androidtitan.culturedapp.R;

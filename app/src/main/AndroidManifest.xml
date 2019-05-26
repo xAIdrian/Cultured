@@ -83,18 +83,6 @@
                 android:enabled="true"
                 android:exported="false"
                 android:syncable="true"/>
-
-        <!-- Firebase Services -->
-        <service android:name=".main.firebase.FbMessagingService">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
-        <service android:name=".main.firebase.FbInstanceIDService">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
         <service
                 android:name=".main.web.services.FacetDeleteService"
                 android:enabled="true"
@@ -133,12 +121,6 @@
         <receiver
                 android:name=".widget.AlarmBroadcastReceiver"
                 android:process=".alarmBroadcastReceiver"/>
-
-        <activity
-                android:name=".main.no_internet.NoInternetActivity"
-                android:label="@string/title_activity_no_internet"
-                android:theme="@style/AppTheme">
-        </activity>
     </application>
 
 </manifest>

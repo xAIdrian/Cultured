@@ -3,7 +3,7 @@ package com.androidtitan.culturedapp.main.sync;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Created by amohnacs on 8/7/16.

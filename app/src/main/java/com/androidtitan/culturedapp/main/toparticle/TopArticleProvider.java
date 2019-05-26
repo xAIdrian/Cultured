@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
-import android.support.annotation.NonNull;
-import android.util.Log;
+import androidx.annotation.NonNull;
 
 import com.androidtitan.culturedapp.main.provider.LoaderHelper;
 import com.androidtitan.culturedapp.main.provider.wrappers.ArticleCursorWrapper;

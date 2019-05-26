@@ -15,19 +15,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.appbar.AppBarLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.fragment.app.DialogFragment;
+import androidx.core.content.ContextCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.appcompat.widget.Toolbar;
 import android.transition.Explode;
 import android.transition.Transition;
 import android.util.Log;
@@ -61,7 +61,6 @@ import com.androidtitan.culturedapp.model.newyorktimes.Article;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
@@ -824,10 +823,6 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
         @Override
         protected String doInBackground(Void... params) {
 
-            if (NewsFeedActivity.this == null) {
-                return null;
-            }
-
             int googleApiAvailable = GoogleApiAvailability.getInstance()
                     .isGooglePlayServicesAvailable(NewsFeedActivity.this);
             if (googleApiAvailable != ConnectionResult.SUCCESS) {
@@ -835,7 +830,7 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
                 return null;
             }
 
-            InstanceID instanceID = InstanceID.getInstance(NewsFeedActivity.this);
+            /*InstanceID instanceID = InstanceID.getInstance(NewsFeedActivity.this);
 
             try {
                 String token = instanceID.getToken(SENDER_ID, FirebaseMessaging.INSTANCE_ID_SCOPE, null);
@@ -845,7 +840,8 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
             } catch (IOException e) {
                 Log.e(TAG, "Failed to get token from InstanceID", e);
                 return null;
-            }
+            }*/
+            return null;
         }
 
         @Override
