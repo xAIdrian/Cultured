@@ -30,7 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.androidtitan.culturedapp.common.Constants.CULTURED_PREFERENCES;
@@ -396,13 +396,13 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static class LargeImageViewHolder extends RecyclerView.ViewHolder {
 
         @Nullable
-        @Bind(R.id.rippleForeground)
+        @BindView(R.id.rippleForeground)
         RelativeLayout clickLayout;
         @Nullable
-        @Bind(R.id.articleImageView)
+        @BindView(R.id.articleImageView)
         ImageView articleImage;
         @Nullable
-        @Bind(R.id.newsHeaderLayout)
+        @BindView(R.id.newsHeaderLayout)
         NewsHeaderLayout newsHeaderLayout;
 
         public LargeImageViewHolder(View itemView) {
@@ -419,13 +419,13 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static class MediumImageViewHolder extends RecyclerView.ViewHolder {
 
         @Nullable
-        @Bind(R.id.rippleForeground)
+        @BindView(R.id.rippleForeground)
         RelativeLayout clickLayout;
         @Nullable
-        @Bind(R.id.articleImageView)
+        @BindView(R.id.articleImageView)
         ImageView articleImage;
         @Nullable
-        @Bind(R.id.newsHeaderLayout)
+        @BindView(R.id.newsHeaderLayout)
         NewsHeaderLayout newsHeaderLayout;
 
 
@@ -443,19 +443,19 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
 
         @Nullable
-        @Bind(R.id.rippleForeground)
+        @BindView(R.id.rippleForeground)
         RelativeLayout clickLayout;
         @Nullable
-        @Bind(R.id.articleImageView)
+        @BindView(R.id.articleImageView)
         ImageView articleImage;
         @Nullable
-        @Bind(R.id.titleTextView)
+        @BindView(R.id.titleTextView)
         TextView titleText;
         @Nullable
-        @Bind(R.id.abstractTextView)
+        @BindView(R.id.abstractTextView)
         TextView abstractText;
         @Nullable
-        @Bind(R.id.globalTextView)
+        @BindView(R.id.globalTextView)
         TextView globalText;
 
         public SimpleViewHolder(View itemView) {
@@ -473,7 +473,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static class OnboardingViewHolder extends RecyclerView.ViewHolder {
 
         @Nullable
-        @Bind(R.id.gotitTextView)
+        @BindView(R.id.gotitTextView)
         TextView gotitText;
 
         public OnboardingViewHolder(View itemView) {
@@ -490,7 +490,7 @@ public class NewsFeedAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static class AboutViewHolder extends RecyclerView.ViewHolder {
 
         @Nullable
-        @Bind(R.id.gotitTextView)
+        @BindView(R.id.gotitTextView)
         TextView gotitText;
 
         public AboutViewHolder(View itemView) {

@@ -3,10 +3,11 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.google.gms:google-services:3.0.0'
+        classpath 'com.android.tools.build:gradle:3.5.0-beta02'
+        classpath 'com.google.gms:google-services:4.2.0'
         classpath 'me.tatarka:gradle-retrolambda:3.2.0'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -14,13 +15,14 @@ buildscript {
     }
 
     ext {
-        supportLibraryVersion = '24.0.0'
+        supportLibraryVersion = '28.0.0'
     }
 }
 
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 

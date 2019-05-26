@@ -31,7 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.androidtitan.culturedapp.common.Constants.ARTICLE_BOOKMARKED;
@@ -49,25 +49,25 @@ public class NewsDetailActivity extends AppCompatActivity implements FileManager
     public final static String SAVED_MULTIMEDIA = "newsdetailactivity.savedmultimedia";
 
 
-    @Bind(R.id.backgroundImageView)
+    @BindView(R.id.backgroundImageView)
     ImageView backgroundImage;
 
-    @Bind(R.id.detailTitleTextView)
+    @BindView(R.id.detailTitleTextView)
     TextView detailTitle;
 
-    @Bind(R.id.geoFacetTitleTextView)
+    @BindView(R.id.geoFacetTitleTextView)
     TextView geoFacetTitle;
 
-    @Bind(R.id.dateTextView)
+    @BindView(R.id.dateTextView)
     TextView dateText;
 
-    @Bind(R.id.sourTextViewTextView)
+    @BindView(R.id.sourTextViewTextView)
     TextView sourText;
 
-    @Bind(R.id.storyTextView)
+    @BindView(R.id.storyTextView)
     TextView storyText;
 
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton fab;
 
     private FileManager fileManager;

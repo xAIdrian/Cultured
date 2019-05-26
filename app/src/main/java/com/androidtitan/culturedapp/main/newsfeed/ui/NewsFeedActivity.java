@@ -70,7 +70,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.androidtitan.culturedapp.common.Constants.ARTICLE_BOOKMARKED;
@@ -120,28 +120,28 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
     ActionBarDrawerToggle drawerToggle;
 
-    @Bind(R.id.colorBgView)
+    @BindView(R.id.colorBgView)
     View bgView;
 
-    @Bind(R.id.loadingTextView)
+    @BindView(R.id.loadingTextView)
     TextView loadingTitleText;
 
-    @Bind(R.id.welcomeTextView)
+    @BindView(R.id.welcomeTextView)
     TextView welcomeText;
 
-    @Bind(R.id.newsList)
+    @BindView(R.id.newsList)
     RecyclerView recyclerView;
 
-    @Bind(R.id.refreshFloatingActionButton)
+    @BindView(R.id.refreshFloatingActionButton)
     FloatingActionButton refreshFab;
 
-    @Bind(R.id.drawerLayout)
+    @BindView(R.id.drawerLayout)
     DrawerLayout drawerLayout;
 
-    @Bind(R.id.drawer_navigation_view)
+    @BindView(R.id.drawer_navigation_view)
     NavigationView navigationView;
 
-    @Bind(R.id.navigation_icon)
+    @BindView(R.id.navigation_icon)
     ImageView navImage;
 
     SharedPreferences sharedPreferences;
@@ -599,20 +599,6 @@ public class NewsFeedActivity extends MvpActivity<NewsFeedPresenter, NewsFeedMvp
 
         Account newAccount = new Account(ACCOUNT, ACCOUNT_TYPE);
         AccountManager accountManager = (AccountManager) context.getSystemService(ACCOUNT_SERVICE);
-
-        if (accountManager.addAccountExplicitly(newAccount, null, null)) {
-            /*
-             * If you don't set android:syncable="true" in
-             * in your <provider> element in the manifest,
-             * then call context.setIsSyncable(account, AUTHORITY, 1)
-             * here.
-             */
-        } else {
-            /*
-             * The account exists or some other error occurred. Log this, report it,
-             * or handle it internally.
-             */
-        }
         return newAccount;
 
     }

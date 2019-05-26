@@ -1,7 +1,6 @@
 package com.androidtitan.culturedapp.main.toparticle.ui;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.androidtitan.culturedapp.common.Constants.ARTICLE_BOOKMARKED;
@@ -47,13 +46,13 @@ public class TopArticleActivity extends MvpActivity<TopArticlePresenter, TopArti
 
     TopArticlePresenter presenter;
 
-    @Bind(R.id.topArticleRecyclerView)
+    @BindView(R.id.topArticleRecyclerView)
     RecyclerView recyclerView;
 
-    @Bind(R.id.pleaseWaitTextView)
+    @BindView(R.id.pleaseWaitTextView)
     TextView pleaseWaitText;
 
-    @Bind(R.id.fab)
+    @BindView(R.id.fab)
     FloatingActionButton refreshFab;
 
     private LinearLayoutManager linearLayoutManager;

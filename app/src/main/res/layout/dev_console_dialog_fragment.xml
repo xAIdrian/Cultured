@@ -22,8 +22,8 @@
             android:layout_weight="1"
             android:padding="8dp"
             android:textStyle="bold"
-            android:gravity="right"
-            android:layout_gravity="right"
+            android:gravity="end"
+            android:layout_gravity="end"
             android:text="@string/dev_console"
             android:textColor="@android:color/white"/>
 
