@@ -1,5 +1,3 @@
-![free-spaceship-launch-vector-illustration](https://user-images.githubusercontent.com/7444521/59155441-98f04780-8a3e-11e9-97c6-89d29aeee37d.jpg)
-
 # Cultured
 Don't just stay up to date with what's going on in the world, know why it's happening.
 
